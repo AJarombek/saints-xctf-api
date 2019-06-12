@@ -11,3 +11,6 @@ pip3 install flask
 # Run the app from a development server
 export FLASK_APP=app.py
 python3 -m flask run
+
+pip3 install pymysql
+pip3 install boto3
