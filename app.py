@@ -5,8 +5,10 @@ Date: 6/8/2019
 """
 
 from flask import Flask, jsonify
+from route.mailRoute import mail_route
 
 app = Flask('saints-xctf-api')
+app.register_blueprint(mail_route)
 
 version_number = 2
 
@@ -55,4 +57,5 @@ def version():
     })
 
 
-app.run(port=8081)
+if __name__ == '__main__':
+    app.run(port=8081)

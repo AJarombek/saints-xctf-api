@@ -1,0 +1,19 @@
+# Dependencies and environment for the saints-xctf-api application.
+# Similar to package.json for npm & Node.js.
+# Author: Andrew Jarombek
+# Date: 6/14/2019
+
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+flask = ">=1.0.3"
+pymysql = ">=0.9.3"
+boto3 = ">=1.9.169"
+
+[requires]
+python_version = "3.7"
