@@ -18,5 +18,20 @@ Files
 +----------------------+----------------------------------------------------------------------------------------------+
 | ``route``            | HTTP routes in the API.  Each route contains sub-routes, forming API endpoints.              |
 +----------------------+----------------------------------------------------------------------------------------------+
+| ``utils``            | Utility functions for AWS and MySQL.                                                         |
++----------------------+----------------------------------------------------------------------------------------------+
 | ``app.py``           | Entrypoint to the Flask application.                                                         |
 +----------------------+----------------------------------------------------------------------------------------------+
+| ``Pipfile``          | Pip dependencies and virtual environment for the application.                                |
++----------------------+----------------------------------------------------------------------------------------------+
+| ``Pipfile.lock``     | State of the installed dependencies from the Pipfile.                                        |
++----------------------+----------------------------------------------------------------------------------------------+
+| ``setup.sh``         | Bash file with commands to setup the flask app and ``pipenv``.                               |
++----------------------+----------------------------------------------------------------------------------------------+
+
+References
+----------
+
+[1] `reStructuredText Documentation <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_
+
+[2] `pipenv Guide <https://realpython.com/pipenv-guide/>`_

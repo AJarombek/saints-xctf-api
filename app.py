@@ -7,10 +7,16 @@ Date: 6/8/2019
 from flask import Flask, jsonify
 from route.mailRoute import mail_route
 
-app = Flask('saints-xctf-api')
-app.register_blueprint(mail_route)
-
 version_number = 2
+
+
+def create_app():
+    """
+    Application factory function for the Flask app.
+    Source: http://flask.pocoo.org/docs/1.0/patterns/appfactories/
+    """
+    app = Flask(__name__)
+    app.register_blueprint(mail_route)
 
 
 @app.route('/', methods=['GET'])

@@ -6,7 +6,7 @@ Date: 6/12/2019
 
 import os
 import pymysql
-import aws
+from utils import aws
 
 
 def get_connection():

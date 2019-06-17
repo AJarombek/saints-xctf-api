@@ -1,7 +1,7 @@
 Overview
 --------
 
-HTTP routes in the SaintsXCTF REST API.
+Utility functions for accessing AWS resources and connecting to databases.
 
 Files
 -----
@@ -9,9 +9,9 @@ Files
 +----------------------+----------------------------------------------------------------------------------------------+
 | Filename             | Description                                                                                  |
 +======================+==============================================================================================+
-| ``mailRoute.py``     | API routes for sending emails.                                                               |
+| ``aws.py``           | Retrieve database secrets and hostnames from my AWS account.                                 |
 +----------------------+----------------------------------------------------------------------------------------------+
-| ``userRoute.py``     | API routes for application users.                                                            |
+| ``db.py``            | Get a MySQL database connection object.                                                      |
 +----------------------+----------------------------------------------------------------------------------------------+
 
 References
