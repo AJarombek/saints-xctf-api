@@ -5,6 +5,7 @@ Date: 6/16/2019
 """
 
 from flask import Blueprint, request
+from dao.userDao import UserDao
 
 mail_route = Blueprint('user_route', __name__, url_prefix='/user')
 
@@ -17,4 +18,6 @@ def users():
 @mail_route.route('/<username>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def user(username):
     if request.method == 'GET':
+        user_dao = UserDao()
+        user = user_dao.get_user_by_username(username=username)
         return

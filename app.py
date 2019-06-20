@@ -6,17 +6,36 @@ Date: 6/8/2019
 
 from flask import Flask, jsonify
 from route.mailRoute import mail_route
+from utils.db import get_connection
+from pymysql import Connection
 
 version_number = 2
 
+app = Flask(__name__)
+app.register_blueprint(mail_route)
 
-def create_app():
+
+def get_db() -> Connection:
     """
-    Application factory function for the Flask app.
-    Source: http://flask.pocoo.org/docs/1.0/patterns/appfactories/
+    Get a database connection to MySQL.  The database connection is stored in the global 'g' variable maintained by
+    Flask and is reused throughout the application.  It's lifespan is the application context (beginning with an
+    incoming request and ending with a response).
+    Sources: [http://flask.pocoo.org/docs/0.12/tutorial/dbcon/]
+    :return: A database connection object used to execute queries.
     """
-    app = Flask(__name__)
-    app.register_blueprint(mail_route)
+    if not hasattr(g, 'mysql_db'):
+        g.mysql_db = get_connection()
+    return g.mysql_db
+
+
+@app.teardown_appcontext
+def close_db() -> None:
+    """
+    Closes the database connection when the Flask application context tears down.
+    :return:
+    """
+    if hasattr(g, 'mysql_db'):
+        g.mysql_db.close()
 
 
 @app.route('/', methods=['GET'])
@@ -64,4 +83,4 @@ def version():
 
 
 if __name__ == '__main__':
-    app.run(port=8081)
+    app.run(port=9000)
