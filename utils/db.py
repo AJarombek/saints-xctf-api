@@ -5,14 +5,13 @@ Date: 6/12/2019
 """
 
 import os
-from pymysql import connect, cursors, Connection
 from utils import aws
 
 
-def get_connection() -> Connection:
+def get_connection_url() -> str:
     """
-    Connect to the MySQL database depending on the environment
-    :return: Connection object for interacting with the MySQL database
+    Create a connection URL to the MySQL database depending on the environment
+    :return: Connection URL for interacting with the MySQL database
     """
     try:
         env = os.environ['ENV']
@@ -20,13 +19,10 @@ def get_connection() -> Connection:
         env = "prod"
 
     secret_map = aws.retrieve_db_cred(env)
-    db_host = aws.retrieve_db_host(env)
 
-    return connect(
-        host=db_host,
-        user=secret_map.get("username"),
-        password=secret_map.get("password"),
-        db='saintsxctf',
-        charset='utf8mb4',
-        cursorclass=cursors.DictCursor
-    )
+    hostname = aws.retrieve_db_host(env)
+    username = secret_map.get("username")
+    password = secret_map.get("password")
+    database = 'saintsxctf'
+
+    return f'mysql://{username}:{password}@{hostname}/${database}'
