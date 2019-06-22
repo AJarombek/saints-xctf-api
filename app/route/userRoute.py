@@ -5,7 +5,7 @@ Date: 6/16/2019
 """
 
 from flask import Blueprint, request
-from dao.userDao import UserDao
+from app.dao.userDao import UserDao
 
 user_route = Blueprint('user_route', __name__, url_prefix='/user')
 
