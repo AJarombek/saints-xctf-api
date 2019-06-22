@@ -13,5 +13,8 @@ class WeekStart(db.Model):
 
     week_start = Column(db.VARCHAR(15), primary_key=True)
 
+    user = db.relationship('User', backref='user')
+    group = db.relationship('Group', backref='group')
+
     def __repr__(self):
         return '<WeekStart %r>' % self.week_start

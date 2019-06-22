@@ -12,8 +12,8 @@ class Notification(db.Model):
     __tablename__ = 'notifications'
 
     notification_id = Column(db.INT, autoincrement=True, primary_key=True)
-    username = Column(db.VARCHAR(20), nullable=False)
-    time = Column(db.DATETIME, nullable=False)
+    username = Column(db.VARCHAR(20), db.ForeignKey('users.username'), nullable=False, index=True)
+    time = Column(db.DATETIME, nullable=False, index=True)
     link = Column(db.VARCHAR(127))
     viewed = Column(db.CHAR(1), nullable=False)
     description = Column(db.VARCHAR(127))

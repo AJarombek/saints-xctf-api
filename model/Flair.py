@@ -12,7 +12,7 @@ class Flair(db.Model):
     __tablename__ = 'flair'
 
     flair_id = Column(db.INT, autoincrement=True, primary_key=True)
-    username = Column(db.VARCHAR(20))
+    username = Column(db.VARCHAR(20), db.ForeignKey('users.username'))
     flair = Column(db.VARCHAR(50))
 
     def __repr__(self):

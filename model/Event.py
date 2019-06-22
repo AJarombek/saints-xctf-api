@@ -13,7 +13,7 @@ class Event(db.Model):
 
     event_id = Column(db.INT, autoincrement=True, primary_key=True)
     name = Column(db.VARCHAR(40), nullable=False)
-    group_name = Column(db.VARCHAR(20), nullable=False)
+    group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), nullable=False)
     start_date = Column(db.DATE, nullable=False)
     end_date = Column(db.DATE)
     start_time = Column(db.TIME)

@@ -13,5 +13,7 @@ class Status(db.Model):
 
     status = Column(db.VARCHAR(10), primary_key=True)
 
+    group_members = db.relationship('GroupMember', backref='group_member')
+
     def __repr__(self):
         return '<Status %r>' % self.status

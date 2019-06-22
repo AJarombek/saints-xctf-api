@@ -12,7 +12,7 @@ class ForgotPassword(db.Model):
     __tablename__ = 'forgotpassword'
 
     forgot_code = Column(db.VARCHAR(8), primary_key=True)
-    username = Column(db.VARCHAR(20), nullable=False)
+    username = Column(db.VARCHAR(20), db.ForeignKey('users.username'), nullable=False, index=True)
     expires = Column(db.DATETIME, nullable=False)
 
     def __repr__(self):

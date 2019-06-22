@@ -12,10 +12,10 @@ class Message(db.Model):
     __tablename__ = 'messages'
 
     message_id = Column(db.INT, autoincrement=True, primary_key=True)
-    username = Column(db.VARCHAR(20), nullable=False)
+    username = Column(db.VARCHAR(20), db.ForeignKey('users.username'), nullable=False)
     first = Column(db.VARCHAR(30), nullable=False)
     last = Column(db.VARCHAR(30), nullable=False)
-    group_name = Column(db.VARCHAR(20), nullable=False)
+    group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), nullable=False)
     time = Column(db.DATETIME, nullable=False)
     content = Column(db.VARCHAR(1000))
 
