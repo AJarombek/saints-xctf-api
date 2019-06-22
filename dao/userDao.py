@@ -4,17 +4,18 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from app import get_db
-from pymysql import Error
+from app import db
+from model.User import User
 
 
 class UserDao:
 
     def __init__(self):
         """
-        Initialize the UserDao object by defining a MySQL database connection object
+        Initialize the UserDao object by defining a MySQL database object and User ORM model
         """
-        self.connection = get_db()
+        self.db = db
+        self.user = User
 
     def get_user_by_username(self, username: str):
         """
