@@ -8,7 +8,7 @@ from app import db
 from sqlalchemy import Column
 
 
-class Flair(db.Model):
+class WeekStart(db.Model):
     __tablename__ = 'weekstart'
 
     week_start = Column(db.VARCHAR(15), primary_key=True)
