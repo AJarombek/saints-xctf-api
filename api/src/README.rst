@@ -33,3 +33,5 @@ References
 [1] `reStructuredText Documentation <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_
 
 [2] `pipenv Guide <https://realpython.com/pipenv-guide/>`_
+
+[3] `Flask Factories <http://flask.pocoo.org/docs/1.0/patterns/appfactories/>`_

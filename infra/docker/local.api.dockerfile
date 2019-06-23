@@ -19,7 +19,7 @@ RUN apk update \
     && export FLASK_APP=app.py \
     && apk add --update mysql mysql-client
 
-RUN mysql -h ${HOST} -u saintsxctflocal -D saintsxctf -p saintsxctf < saints-xctf-backup-dev.sql
+RUN mysql -h ${HOST} -u saintsxctflocal -D saintsxctf -p saintsxctf < local-db.sql
 
 EXPOSE 8080
 ENTRYPOINT ["python", "-m", "flask", "run"]
