@@ -6,6 +6,7 @@ Date: 6/16/2019
 
 from app import db, app
 from dao.basicDao import BasicDao
+from dao.codeDao import CodeDao
 from model.User import User
 from model.Code import Code
 
@@ -40,10 +41,27 @@ class UserDao:
 
     @staticmethod
     def add_user(user: User) -> bool:
-        activation_code_count = Code.query.filter_by(activation_code=user.activation_code).count()
+        """
+        Add a user if it has a valid activation code.
+        :param user: Object representing a user for the application.
+        :return: True if the user is inserted into the database, False otherwise.
+        """
+        activation_code_count = CodeDao.get_code_count(activation_code=user.activation_code)
         if activation_code_count == 1:
+            # First add the user since its activation code is valid
             db.session.add(user)
-            return BasicDao.safe_commit()
+            result = BasicDao.safe_commit()
+
+            if not result:
+                return False
+
+            # Second remove the activation code so it cant be used again
+            code = Code(activation_code=user.activation_code)
+            return CodeDao.remove_code(code)
         else:
             app.logger.error('Failed to create new User: The Activation Code does not exist.')
             return False
+
+    @staticmethod
+    def update_user(user: User) -> bool:
+        pass
