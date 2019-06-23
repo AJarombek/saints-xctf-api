@@ -5,10 +5,11 @@ Date: 6/22/2019
 """
 
 import unittest
+from flask import current_app
 from ..basicFlaskTestSuite import BasicFlaskTestSuite
 
 
 class AppTests(unittest.TestCase, BasicFlaskTestSuite):
 
     def test_app_exists(self):
-        pass
+        self.assertTrue(current_app is not None)

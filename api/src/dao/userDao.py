@@ -4,47 +4,46 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from app import db
+from app import db, app
+from dao.basicDao import BasicDao
 from model.User import User
+from model.Code import Code
 
 
 class UserDao:
 
-    def __init__(self):
+    @staticmethod
+    def get_users() -> list:
         """
-        Initialize the UserDao object by defining a MySQL database object and User ORM model
+        Get a list of all the users in the database.
+        :return: A list containing User model objects.
         """
-        self.db = db
-        self.user = User
+        return User.query.all()
 
-    def get_user_by_username(self, username: str):
+    @staticmethod
+    def get_user_by_username(username: str) -> User:
         """
         Get a single user from the database based on their username.
         :param username: Username which uniquely identifies the user.
         :return: The result of the database query.
         """
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "SELECT * FROM users WHERE username=%s"
-                cursor.execute(sql, args=[username])
-                result = cursor.fetchone()
-                print(result)
-                return result
-        except Error as e:
-            print(e)
+        return User.query.filter_by(username=username).first()
 
-    def get_user_by_email(self, email: str):
+    @staticmethod
+    def get_user_by_email(email: str) -> User:
         """
         Get a single user from the database based on their email.
         :param email: Email which uniquely identifies the user.
         :return: The result of the database query.
         """
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "SELECT * FROM users WHERE email=%s"
-                cursor.execute(sql, args=[email])
-                result = cursor.fetchone()
-                print(result)
-                return result
-        except Error as e:
-            print(e)
+        return User.query.filter_by(email=email).first()
+
+    @staticmethod
+    def add_user(user: User) -> bool:
+        activation_code_count = Code.query.filter_by(activation_code=user.activation_code).count()
+        if activation_code_count == 1:
+            db.session.add(user)
+            return BasicDao.safe_commit()
+        else:
+            app.logger.error('Failed to create new User: The Activation Code does not exist.')
+            return False
