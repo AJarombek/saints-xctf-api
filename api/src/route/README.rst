@@ -1,7 +1,7 @@
 Overview
 --------
 
-HTTP routes in the SaintsXCTF REST API.
+HTTP routes in the SaintsXCTF REST API.  Contains the business logic for each endpoint in the API.
 
 Files
 -----
@@ -9,6 +9,8 @@ Files
 +----------------------+----------------------------------------------------------------------------------------------+
 | Filename             | Description                                                                                  |
 +======================+==============================================================================================+
+| ``apiRoute.py``      | Routes that describe the API and link to relevant endpoints.                                 |
++----------------------+----------------------------------------------------------------------------------------------+
 | ``mailRoute.py``     | API routes for sending emails.                                                               |
 +----------------------+----------------------------------------------------------------------------------------------+
 | ``userRoute.py``     | API routes for application users.                                                            |

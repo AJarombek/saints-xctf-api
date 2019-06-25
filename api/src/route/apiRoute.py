@@ -5,9 +5,10 @@ Date: 6/21/2019
 """
 
 from flask import Blueprint, jsonify
-from app import version_number
+from app import app
 
 api_route = Blueprint('api_route', __name__, url_prefix='/')
+base_url = app.config.get('BASE_URL')
 
 
 @api_route.route('/', methods=['GET'])
@@ -17,38 +18,45 @@ def api():
     :return: A JSON welcome message
     """
     return jsonify({
-        'api': 'saints-xctf',
-        'version': 1.0,
-        'message': 'Welcome to the saints-xctf API!'
+        'self_link': '/',
+        'api_name': 'saints-xctf-api',
+        'versions_link': '/versions'
+    })
+
+
+@api_route.route('/versions', methods=['GET'])
+def versions():
+    return jsonify({
+        'self': '/versions',
+        'version_latest': '/v2',
+        'version_1': None,
+        'version_2': '/v2'
+    })
+
+
+@api_route.route('/v2', methods=['GET'])
+def version2():
+    return jsonify({
+        'self': '/v2',
+        'version': 2,
+        'latest': True,
+        'entities': '/v2/entities'
     })
 
 
 @api_route.errorhandler(404)
 def error_404(ex):
     return jsonify({
-        'api': 'saints-xctf',
-        'version': 2.0,
         'error_description': "Page Not Found",
-        'error_code': 404,
-        'exception': str(ex)
+        'exception': str(ex),
+        'contact': 'andrew@jarombek.com'
     }), 404
 
 
 @api_route.errorhandler(500)
 def error_500(ex):
     return jsonify({
-        'api': 'saints-xctf',
-        'version': 2.0,
         'error_description': "Internal Server Error",
-        'error_code': 500,
-        'exception': str(ex)
+        'exception': str(ex),
+        'contact': 'andrew@jarombek.com'
     }), 500
-
-
-@api_route.route(f'/v{version_number}/', methods=['GET'])
-def version():
-    return jsonify({
-        'api': 'saints-xctf',
-        'version': 2.0,
-        'message': f'This endpoint is for version {version_number} of the API.  This is the latest version'
-    })
