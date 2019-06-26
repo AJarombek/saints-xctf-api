@@ -44,12 +44,22 @@ def version2():
     })
 
 
+@api_route.route('/v2/entities', methods=['GET'])
+def version2():
+    return jsonify({
+        'self': '/v2/entities',
+        'admin': '/v2/mail',
+        'code': '/v2/users'
+    })
+
+
 @api_route.errorhandler(404)
 def error_404(ex):
     return jsonify({
         'error_description': "Page Not Found",
         'exception': str(ex),
-        'contact': 'andrew@jarombek.com'
+        'contact': 'andrew@jarombek.com',
+        'api_index': '/versions'
     }), 404
 
 

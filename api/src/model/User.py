@@ -10,6 +10,30 @@ from sqlalchemy.dialects.mysql import TINYINT, LONGBLOB
 
 
 class User(db.Model):
+
+    def __init__(self, user: dict):
+        """
+        Initialize a User by passing in a dictionary.
+        :param user: A dictionary with fields matching the User fields
+        """
+        self.username = user.get('username')
+        self.first = user.get('first')
+        self.last = user.get('last')
+        self.salt = user.get('salt')
+        self.password = user.get('password')
+        self.profilepic = user.get('profilepic')
+        self.profilepic_name = user.get('profilepic_name')
+        self.description = user.get('description')
+        self.member_since = user.get('member_since')
+        self.class_year = user.get('class_year')
+        self.location = user.get('location')
+        self.favorite_event = user.get('favorite_event')
+        self.activation_code = user.get('activation_code')
+        self.email = user.get('email')
+        self.subscribed = user.get('subscribed')
+        self.last_signin = user.get('last_signin')
+        self.week_start = user.get('week_start')
+
     __tablename__ = 'users'
 
     username = Column(db.VARCHAR(20), primary_key=True)
