@@ -16,6 +16,7 @@ class User(db.Model):
         Initialize a User by passing in a dictionary.
         :param user: A dictionary with fields matching the User fields
         """
+        # get() returns None by default
         self.username = user.get('username')
         self.first = user.get('first')
         self.last = user.get('last')
@@ -32,7 +33,7 @@ class User(db.Model):
         self.email = user.get('email')
         self.subscribed = user.get('subscribed')
         self.last_signin = user.get('last_signin')
-        self.week_start = user.get('week_start')
+        self.week_start = user.get('week_start', 'monday')
 
     __tablename__ = 'users'
 

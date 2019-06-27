@@ -1,8 +1,8 @@
-# Docker Compose configuration for the local environment
+# Docker Compose configuration for the API in my local environment
 # Author: Andrew Jarombek
 # Date: 6/22/2019
 
-version: '3'
+version: '3.7'
 services:
   api:
     build:
@@ -14,16 +14,6 @@ services:
       - type: volume
         source: local-saints-xctf-api-vol
         target: /src
-  watch:
-    build:
-      context: ../../infra/docker
-      dockerfile: local.watch.dockerfile
-  db:
-    build:
-      context: ../../infra/docker
-      dockerfile: local.db.dockerfile
-    networks:
-      - local-saints-xctf-api-net
 
 networks:
   local-saints-xctf-api-net:

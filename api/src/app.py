@@ -7,6 +7,7 @@ Date: 6/8/2019
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from config import config
 from utils.db import get_connection_url
 from route.apiRoute import api_route
@@ -41,3 +42,5 @@ def create_app(config_name) -> Flask:
 
 flask_env = os.getenv('FLASK_ENV') or 'local'
 app = create_app(flask_env)
+
+bcrypt = Bcrypt(app)

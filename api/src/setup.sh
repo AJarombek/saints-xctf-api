@@ -28,3 +28,7 @@ pipenv install flask
 pipenv uninstall pymysql
 pipenv install boto3
 pipenv install flask-sqlalchemy
+pipenv install flask-bcrypt
+
+# Docker Compose commands
+docker-compose version

@@ -19,7 +19,9 @@ RUN apk update \
     && export FLASK_APP=app.py \
     && apk add --update mysql mysql-client
 
-RUN mysql -h ${HOST} -u saintsxctflocal -D saintsxctf -p saintsxctf < local-db.sql
+RUN mysql -ve "CREATE USER 'saintsxctflocal'@'localhost' IDENTIFIED BY 'saintsxctf'"
+
+RUN mysql -h localhost:3306 -u saintsxctflocal -D saintsxctf -p saintsxctf < local-db.sql
 
 EXPOSE 8080
 ENTRYPOINT ["python", "-m", "flask", "run"]

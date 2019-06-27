@@ -14,6 +14,7 @@ verify_ssl = true
 flask = ">=1.0.3"
 boto3 = ">=1.9.169"
 flask-sqlalchemy = "*"
+flask-bcrypt = "*"
 
 [requires]
 python_version = "3.7"
