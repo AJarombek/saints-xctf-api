@@ -6,8 +6,10 @@ version: '3.7'
 services:
   api:
     build:
-      context: ../../infra/docker
+      context: ../../api/src/
       dockerfile: local.api.dockerfile
+      # Needed to connect to the running MySQL database - https://stackoverflow.com/a/47068162
+      network: host
     networks:
       - local-saints-xctf-api-net
     volumes:

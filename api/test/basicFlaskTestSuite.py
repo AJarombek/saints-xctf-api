@@ -5,6 +5,7 @@ Date: 6/22/2019
 """
 
 import unittest
+from flask.testing import FlaskClient
 from ..src.app import create_app, db
 
 
@@ -14,9 +15,10 @@ class BasicFlaskTestSuite(unittest.TestCase):
         """
         Set up logic for the test suite.  Invoked before unit tests are run.
         """
-        self.app = create_app()
+        self.app = create_app('local')
         self.app_context = self.app.app_context()
         self.app_context.push()
+        self.client: FlaskClient = self.app.test_client()
 
     def tearDown(self) -> None:
         """

@@ -19,9 +19,10 @@ RUN apk update \
     && export FLASK_APP=app.py \
     && apk add --update mysql mysql-client
 
-RUN mysql -ve "CREATE USER 'saintsxctflocal'@'localhost' IDENTIFIED BY 'saintsxctf'"
+RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'localhost'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'localhost' IDENTIFIED BY 'saintsxctf'"
 
-RUN mysql -h localhost:3306 -u saintsxctflocal -D saintsxctf -p saintsxctf < local-db.sql
+RUN ls && mysql -h localhost -P 3306 --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
 EXPOSE 8080
 ENTRYPOINT ["python", "-m", "flask", "run"]

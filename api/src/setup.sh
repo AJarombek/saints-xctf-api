@@ -32,3 +32,7 @@ pipenv install flask-bcrypt
 
 # Docker Compose commands
 docker-compose version
+
+# ...should be executed in this order
+docker-compose -f docker-compose-db-local.yml up --build
+docker-compose -f docker-compose-api-local.yml up --build

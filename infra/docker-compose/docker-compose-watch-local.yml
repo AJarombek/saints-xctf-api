@@ -1,13 +1,13 @@
-# Docker Compose configuration for the MySQL database in my local environment
+# Docker Compose configuration to watch for file changes in my local environment
 # Author: Andrew Jarombek
 # Date: 6/26/2019
 
 version: '3.7'
 services:
-  db:
+  watch:
     build:
-      context: ../../infra/docker
-      dockerfile: local.db.dockerfile
+      context: ../../api/src/
+      dockerfile: local.watch.dockerfile
     networks:
       - local-saints-xctf-api-net
 
