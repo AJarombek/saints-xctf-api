@@ -15,3 +15,12 @@ Files
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-watch-local.yml`` | Docker compose file to watch for code changes locally and refresh the API.                   |
 +------------------------------------+----------------------------------------------------------------------------------------------+
+
+References
+----------
+
+[1] `MySQL Docker Images <https://hub.docker.com/_/mysql/>`_
+
+[2] `Python APK Dependencies for Alpine Linux <https://github.com/pypa/pipenv/issues/3632#issuecomment-475175361>`_
+
+[3] `MySQL create user commands used by the local Dockerfiles <https://stackoverflow.com/a/36190905>`_

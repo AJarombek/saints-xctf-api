@@ -16,7 +16,7 @@ WORKDIR /src
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
     && pip install pipenv \
-    && pipenv install \
+    && pipenv install --system --deploy --ignore-pipfile \
     && export FLASK_APP=app.py \
     && apk add --update mysql mysql-client
 

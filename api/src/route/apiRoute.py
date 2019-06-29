@@ -5,7 +5,7 @@ Date: 6/21/2019
 """
 
 from flask import Blueprint, jsonify
-from app import app
+from ..app import app
 
 api_route = Blueprint('api_route', __name__, url_prefix='/')
 base_url = app.config.get('BASE_URL')

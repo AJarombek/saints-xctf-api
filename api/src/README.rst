@@ -49,3 +49,9 @@ References
 [2] `pipenv Guide <https://realpython.com/pipenv-guide/>`_
 
 [3] `Flask Factories <http://flask.pocoo.org/docs/1.0/patterns/appfactories/>`_
+
+[4] `Flask Logging <http://flask.pocoo.org/docs/1.0/logging/>`_
+
+[5] `'pipenv install' fix for Docker <https://stackoverflow.com/a/49705601>`_
+
+[6] `After Request Callbacks <http://flask.pocoo.org/snippets/53/>`_

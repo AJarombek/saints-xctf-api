@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from app import app, bcrypt
+from ..app import app, bcrypt
 from flask import Blueprint, request, jsonify
 from dao.userDao import UserDao
 from model.Code import Code

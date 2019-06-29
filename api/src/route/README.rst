@@ -19,4 +19,6 @@ Files
 References
 ----------
 
-`Flask Request Data <https://stackoverflow.com/a/25268170>`_
+[1] `Flask Request Data <https://stackoverflow.com/a/25268170>`_
+
+[2] `Google API Design <https://cloud.google.com/blog/products/application-development/api-design-why-you-should-use-links-not-keys-to-represent-relationships-in-apis>`_

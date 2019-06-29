@@ -4,6 +4,10 @@
 # Author: Andrew Jarombek
 # Date: 6/8/2019
 
+# Upgrade Python to 3.7 on mac
+brew install python3
+brew link --overwrite python
+
 # Install flask
 pip3 --version
 pip3 install flask
@@ -29,10 +33,4 @@ pipenv uninstall pymysql
 pipenv install boto3
 pipenv install flask-sqlalchemy
 pipenv install flask-bcrypt
-
-# Docker Compose commands
-docker-compose version
-
-# ...should be executed in this order
-docker-compose -f docker-compose-db-local.yml up --build
-docker-compose -f docker-compose-api-local.yml up --build
+pipenv install flask-sslify

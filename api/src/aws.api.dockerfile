@@ -14,6 +14,7 @@ WORKDIR /src
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
     && pip install pipenv \
+    && pipenv shell \
     && pipenv install \
     && export FLASK_APP=app.py
 
