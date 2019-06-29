@@ -14,15 +14,19 @@ WORKDIR /src
 # Install Python dependencies along with MySQL.  On my local environment, MySQL is run in a Docker container.
 # Before I start the API, I wan't to populate MySQL with data from a production backup.
 RUN apk update \
+    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
     && pip install pipenv \
     && pipenv install \
     && export FLASK_APP=app.py \
     && apk add --update mysql mysql-client
 
-RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'localhost'" \
-    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'localhost' IDENTIFIED BY 'saintsxctf'"
+RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'%'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'%' IDENTIFIED BY 'saintsxctf'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE DATABASE IF NOT EXISTS saintsxctf" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "FLUSH PRIVILEGES"
 
-RUN ls && mysql -h localhost -P 3306 --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
+RUN mysql -h localhost -P 3306 --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
 EXPOSE 8080
 ENTRYPOINT ["python", "-m", "flask", "run"]
