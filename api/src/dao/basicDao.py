@@ -4,7 +4,8 @@ Author: Andrew Jarombek
 Date: 6/23/2019
 """
 
-from app import db, app
+from database import db
+from flask import current_app
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -18,10 +19,10 @@ class BasicDao:
         """
         try:
             db.session.commit()
-            app.logger.info('SQL Safely Committed')
+            current_app.logger.info('SQL Safely Committed')
             return True
         except SQLAlchemyError as error:
             db.session.rollback()
-            app.logger.error('SQL Commit Failed!  Rolling back...')
-            app.logger.error(error.args)
+            current_app.logger.error('SQL Commit Failed!  Rolling back...')
+            current_app.logger.error(error.args)
             return False

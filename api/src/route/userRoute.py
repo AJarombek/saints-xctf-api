@@ -4,8 +4,8 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from ..app import app, bcrypt
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+from bcrypt import bcrypt
 from dao.userDao import UserDao
 from model.Code import Code
 from model.User import User
@@ -66,7 +66,7 @@ def users():
                 response.status_code = 201
                 return response
         else:
-            app.logger.error('Failed to create new User: The Activation Code does not exist.')
+            current_app.logger.error('Failed to create new User: The Activation Code does not exist.')
             response = jsonify({
                 'self': '/v2/users',
                 'users': None,

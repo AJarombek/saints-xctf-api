@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 6/21/2019
 """
 
-from app import db
+from database import db
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import TINYINT, LONGBLOB
 
@@ -46,7 +46,7 @@ class User(db.Model):
     profilepic_name = Column(db.VARCHAR(50))
     description = Column(db.VARCHAR(255))
     member_since = Column(db.DATE, nullable=False)
-    class_year = Column(db.INT(4), index=True)
+    class_year = Column(db.INTEGER, index=True)
     location = Column(db.VARCHAR(50))
     favorite_event = Column(db.VARCHAR(20))
     activation_code = Column(db.VARCHAR(8), nullable=False)

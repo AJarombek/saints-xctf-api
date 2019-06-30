@@ -5,10 +5,8 @@ Date: 6/21/2019
 """
 
 from flask import Blueprint, jsonify
-from ..app import app
 
 api_route = Blueprint('api_route', __name__, url_prefix='/')
-base_url = app.config.get('BASE_URL')
 
 
 @api_route.route('/', methods=['GET'])
@@ -45,7 +43,7 @@ def version2():
 
 
 @api_route.route('/v2/entities', methods=['GET'])
-def version2():
+def entities():
     return jsonify({
         'self': '/v2/entities',
         'admin': '/v2/mail',

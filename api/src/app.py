@@ -6,17 +6,14 @@ Date: 6/8/2019
 
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy, get_debug_queries, current_app
-from flask.ext.bcrypt import Bcrypt
+from flask_sqlalchemy import get_debug_queries, current_app
+from database import db
+from bcrypt import bcrypt
 from config import config
 from utils.db import get_connection_url
 from route.apiRoute import api_route
 from route.mailRoute import mail_route
 from route.userRoute import user_route
-
-version_number = 2
-
-db = SQLAlchemy()
 
 
 def create_app(config_name) -> Flask:
@@ -24,28 +21,26 @@ def create_app(config_name) -> Flask:
     Application factory function for the Flask app.
     Source: http://flask.pocoo.org/docs/1.0/patterns/appfactories/
     """
-    app = Flask(__name__)
-    app.config.from_object(config[config_name])
+    application = Flask(__name__)
+    application.config.from_object(config[config_name])
 
-    app.register_blueprint(api_route)
-    app.register_blueprint(mail_route)
-    app.register_blueprint(user_route)
+    application.register_blueprint(api_route)
+    application.register_blueprint(mail_route)
+    application.register_blueprint(user_route)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_RECORD_QUERIES'] = True
-    app.config['SLOW_DB_QUERY_TIME'] = 0.5
+    application.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
+    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    application.config['SQLALCHEMY_RECORD_QUERIES'] = True
+    application.config['SLOW_DB_QUERY_TIME'] = 0.5
 
-    config[config_name].init_app(app)
-    db.init_app(app)
+    db.init_app(application)
+    bcrypt.init_app(application)
 
-    return app
+    return application
 
 
 flask_env = os.getenv('FLASK_ENV') or 'local'
 app = create_app(flask_env)
-
-bcrypt = Bcrypt(app)
 
 
 @app.after_request

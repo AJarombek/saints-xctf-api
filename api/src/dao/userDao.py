@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from app import db, app
+from database import db
 from dao.basicDao import BasicDao
 from model.User import User
 

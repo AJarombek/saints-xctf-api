@@ -18,6 +18,10 @@ def get_connection_url() -> str:
     except KeyError:
         env = "prod"
 
+    # Local development credentials aren't stored in a Secret
+    if env == 'local':
+        return 'mysql://saintsxctflocal:saintsxctf@localhost/saintsxctf'
+
     secret_map = aws.retrieve_db_cred(env)
 
     hostname = aws.retrieve_db_host(env)
