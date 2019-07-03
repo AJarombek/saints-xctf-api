@@ -7,6 +7,8 @@ Date: 6/16/2019
 from flask import Blueprint, request, jsonify, current_app
 from bcrypt import bcrypt
 from dao.userDao import UserDao
+from dao.groupDao import GroupDao
+from dao.groupMemberDao import GroupMemberDao
 from model.Code import Code
 from model.User import User
 from dao.codeDao import CodeDao
@@ -99,7 +101,15 @@ def user(username):
                 'users': False
             })
         else:
-            groups = None  # TODO
+            groups = GroupMemberDao.get_user_groups(username=user['username'])
+
+            for group in groups:
+                newest_log = GroupDao.get_newest_log_date(group['group_name'])
+                group['newest_log'] = newest_log
+
+                newest_message = GroupDao.get_newest_message_date(group['group_name'])
+                group['newest_message'] = newest_message
+
             user['groups'] = groups
 
             forgot_password = None  # TODO
