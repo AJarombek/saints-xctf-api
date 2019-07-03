@@ -22,6 +22,7 @@ def users():
     """
     if request.method == 'GET':
         all_users = UserDao.get_users()
+        all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
 
         return jsonify({
             'self': '/v2/users',
@@ -96,6 +97,54 @@ def user(username):
             return jsonify({
                 'self': f'/v2/users/{username}',
                 'users': False
+            })
+        else:
+            groups = None  # TODO
+            user['groups'] = groups
+
+            forgot_password = None  # TODO
+            user['forgotpassword'] = forgot_password
+
+            flair = None  # TODO
+            user['flair'] = flair
+
+            notifications = None  # TODO
+            user['notifications'] = notifications
+
+            # TODO: User Statistics
+            miles = None
+            miles_past_year = None
+            miles_past_month = None
+            miles_past_week = None
+            run_miles = None
+            run_miles_past_year = None
+            run_miles_past_month = None
+            run_miles_past_week = None
+            all_time_feel = None
+            year_feel = None
+            month_feel = None
+            week_feel = None
+
+            stats = {
+                'miles': miles,
+                'milespastyear': miles_past_year,
+                'milespastmonth': miles_past_month,
+                'milespastweek': miles_past_week,
+                'runmiles': run_miles,
+                'runmilespastyear': run_miles_past_year,
+                'runmilespastmonth': run_miles_past_month,
+                'runmilespastweek': run_miles_past_week,
+                'alltimefeel': all_time_feel,
+                'yearfeel': year_feel,
+                'monthfeel': month_feel,
+                'weekfeel': week_feel
+            }
+
+            user['statistics'] = stats
+
+            return jsonify({
+                'self': f'/v2/users/{username}',
+                'users': user
             })
 
     elif request.method == 'PUT':
