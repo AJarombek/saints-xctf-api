@@ -127,10 +127,10 @@ def user(username):
             user['notifications'] = notifications
 
             # All user statistics are queried separately but combined into a single map
-            miles = LogDao.get_user_miles(username=username)
-            miles_past_year = None
-            miles_past_month = None
-            miles_past_week = None
+            miles = LogDao.get_user_miles(username)
+            miles_past_year = LogDao.get_user_miles_interval(username, 'year')
+            miles_past_month = LogDao.get_user_miles_interval(username, 'month')
+            miles_past_week = LogDao.get_user_miles_interval(username, 'week', week_start=user['week_start'])
             run_miles = None
             run_miles_past_year = None
             run_miles_past_month = None

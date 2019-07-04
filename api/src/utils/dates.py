@@ -4,19 +4,42 @@ Author: Andrew Jarombek
 Date: 7/4/2019
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
-def get_first_day_of_year():
+def get_start_date_interval(interval: str, week_start: str) -> date:
+    start_date = None
+    if interval == 'year':
+        start_date = get_first_day_of_year()
+    elif interval == 'month':
+        start_date = get_first_day_of_month()
+    elif interval == 'week':
+        start_date = get_first_day_of_week(week_start=week_start)
+    return start_date
+
+
+def get_first_day_of_year() -> date:
+    """
+    Retrieve the first day of this year.
+    :return: Date object representing January 1st of this year.
+    """
     return datetime.today().date().replace(month=1, day=1)
 
 
-def get_first_day_of_month():
+def get_first_day_of_month() -> date:
+    """
+    Retrieve the first day of this month.
+    :return: A Date object.
+    """
     return datetime.today().date().replace(day=1)
 
 
-def get_first_day_of_week(week_start: str = 'monday'):
-
+def get_first_day_of_week(week_start: str = 'monday') -> date:
+    """
+    Retreive either last Sunday or Monday
+    :param week_start: Either 'monday' or 'sunday'
+    :return: A date object representing the first day of the past week
+    """
     sunday_week_start = 0
     if week_start == 'sunday':
         sunday_week_start = 1
