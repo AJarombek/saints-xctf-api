@@ -48,8 +48,43 @@ class UserDao:
         return BasicDao.safe_commit()
 
     @staticmethod
-    def update_user(user: User) -> bool:
-        pass
+    def update_user(username: str, user: User) -> bool:
+        """
+        Update a user in the database.  This function does NOT update passwords.
+        :param username: Username which uniquely identifies the user.
+        :param user: Object representing an updated user for the application.
+        :return: True if the user is updated in the database, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE users SET 
+                first=:first, 
+                last=:last, 
+                email=:email,
+                profilepic=:profilepic, 
+                profilepic_name=:profilepic_name, 
+                description=:description,
+                class_year=:class_year, 
+                location=:location, 
+                favorite_event=:favorite_event, 
+                week_start=:week_start 
+            WHERE username=:username
+            ''',
+            {
+                'first': user.first,
+                'last': user.last,
+                'email': user.email,
+                'profilepic': user.profilepic,
+                'profilepic_name': user.profilepic_name,
+                'description': user.description,
+                'class_year': user.class_year,
+                'location': user.location,
+                'favorite_event': user.favorite_event,
+                'week_start': user.week_start,
+                'username': username
+            }
+        )
+        return BasicDao.safe_commit()
 
     @staticmethod
     def delete_user(username: str) -> bool:

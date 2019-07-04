@@ -61,7 +61,7 @@ def users():
             if added_user is None:
                 response = jsonify({
                     'self': '/v2/users',
-                    'users': None,
+                    'user': None,
                     'error': 'an unexpected error occurred creating the user'
                 })
                 response.status_code = 500
@@ -69,7 +69,7 @@ def users():
             else:
                 response = jsonify({
                     'self': '/v2/users',
-                    'users': added_user,
+                    'user': added_user,
                     'new_user': f'/v2/users/{added_user.username}'
                 })
                 response.status_code = 201
@@ -78,7 +78,7 @@ def users():
             current_app.logger.error('Failed to create new User: The Activation Code does not exist.')
             response = jsonify({
                 'self': '/v2/users',
-                'users': None,
+                'user': None,
                 'error': 'the activation code does not exist'
             })
             response.status_code = 400
@@ -105,64 +105,12 @@ def user(username):
         if user is None:
             return jsonify({
                 'self': f'/v2/users/{username}',
-                'users': False
+                'user': None
             })
         else:
-            username = user['username']
-            groups = GroupMemberDao.get_user_groups(username=username)
-
-            for group in groups:
-                newest_log = GroupDao.get_newest_log_date(group['group_name'])
-                group['newest_log'] = newest_log
-
-                newest_message = GroupDao.get_newest_message_date(group['group_name'])
-                group['newest_message'] = newest_message
-
-            user['groups'] = groups
-
-            forgot_password = ForgotPasswordDao.get_forgot_password_codes(username=username)
-            user['forgotpassword'] = forgot_password
-
-            flair = FlairDao.get_flair_by_username(username=username)
-            user['flair'] = flair
-
-            notifications = NotificationDao.get_notification_by_username(username=username)
-            user['notifications'] = notifications
-
-            # All user statistics are queried separately but combined into a single map
-            miles = LogDao.get_user_miles(username)
-            miles_past_year = LogDao.get_user_miles_interval(username, 'year')
-            miles_past_month = LogDao.get_user_miles_interval(username, 'month')
-            miles_past_week = LogDao.get_user_miles_interval(username, 'week', week_start=user['week_start'])
-            run_miles = LogDao.get_user_miles_interval_by_type(username, 'run')
-            run_miles_past_year = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
-            run_miles_past_month = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
-            run_miles_past_week = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
-            all_time_feel = LogDao.get_user_avg_feel(username)
-            year_feel = LogDao.get_user_avg_feel_interval(username, 'year')
-            month_feel = LogDao.get_user_avg_feel_interval(username, 'month')
-            week_feel = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user['week_start'])
-
-            stats = {
-                'miles': miles,
-                'milespastyear': miles_past_year,
-                'milespastmonth': miles_past_month,
-                'milespastweek': miles_past_week,
-                'runmiles': run_miles,
-                'runmilespastyear': run_miles_past_year,
-                'runmilespastmonth': run_miles_past_month,
-                'runmilespastweek': run_miles_past_week,
-                'alltimefeel': all_time_feel,
-                'yearfeel': year_feel,
-                'monthfeel': month_feel,
-                'weekfeel': week_feel
-            }
-
-            user['statistics'] = stats
-
             return jsonify({
                 'self': f'/v2/users/{username}',
-                'users': user
+                'user': user
             })
 
     elif request.method == 'PUT':
@@ -171,6 +119,36 @@ def user(username):
 
         user_data: dict = request.get_json()
         new_user = User(user_data)
+
+        if new_user != old_user:
+            is_updated = UserDao.update_user(username, new_user)
+
+            if is_updated:
+                updated_user = UserDao.get_user_by_username(username)
+
+                response = jsonify({
+                    'self': f'/v2/users/{username}',
+                    'updated': True,
+                    'user': updated_user
+                })
+                response.status_code = 200
+                return response
+            else:
+                response = jsonify({
+                    'self': f'/v2/users/{username}',
+                    'updated': False,
+                    'error': 'the user failed to update'
+                })
+                response.status_code = 500
+                return response
+        else:
+            response = jsonify({
+                'self': f'/v2/users/{username}',
+                'updated': False,
+                'error': 'the user submitted is equal to the existing user'
+            })
+            response.status_code = 400
+            return response
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/users/<username> '''
@@ -187,3 +165,83 @@ def user(username):
         })
         response.status_code = status_code
         return response
+
+
+@user_route.route('/snapshot/<username>', methods=['GET'])
+def user_snapshot(username):
+    """
+    Endpoint for a website snapshot for a specific user.  Provides more details than the base user route,
+    such as group memberships and statistics.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a user and relevant metadata
+    """
+    user = UserDao.get_user_by_username(username=username)
+
+    # If the user cant be found, try searching the email column in the database
+    if user is None:
+        email = username
+        user = UserDao.get_user_by_email(email=email)
+
+    # If the user still can't be found, return with an error code
+    if user is None:
+        return jsonify({
+            'self': f'/v2/users/{username}',
+            'user': False
+        })
+    else:
+        username = user['username']
+        groups = GroupMemberDao.get_user_groups(username=username)
+
+        for group in groups:
+            newest_log = GroupDao.get_newest_log_date(group['group_name'])
+            group['newest_log'] = newest_log
+
+            newest_message = GroupDao.get_newest_message_date(group['group_name'])
+            group['newest_message'] = newest_message
+
+        user['groups'] = groups
+
+        forgot_password = ForgotPasswordDao.get_forgot_password_codes(username=username)
+        user['forgotpassword'] = forgot_password
+
+        flair = FlairDao.get_flair_by_username(username=username)
+        user['flair'] = flair
+
+        notifications = NotificationDao.get_notification_by_username(username=username)
+        user['notifications'] = notifications
+
+        # All user statistics are queried separately but combined into a single map
+        miles = LogDao.get_user_miles(username)
+        miles_past_year = LogDao.get_user_miles_interval(username, 'year')
+        miles_past_month = LogDao.get_user_miles_interval(username, 'month')
+        miles_past_week = LogDao.get_user_miles_interval(username, 'week', week_start=user['week_start'])
+        run_miles = LogDao.get_user_miles_interval_by_type(username, 'run')
+        run_miles_past_year = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
+        run_miles_past_month = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
+        run_miles_past_week = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
+        all_time_feel = LogDao.get_user_avg_feel(username)
+        year_feel = LogDao.get_user_avg_feel_interval(username, 'year')
+        month_feel = LogDao.get_user_avg_feel_interval(username, 'month')
+        week_feel = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user['week_start'])
+
+        stats = {
+            'miles': miles,
+            'milespastyear': miles_past_year,
+            'milespastmonth': miles_past_month,
+            'milespastweek': miles_past_week,
+            'runmiles': run_miles,
+            'runmilespastyear': run_miles_past_year,
+            'runmilespastmonth': run_miles_past_month,
+            'runmilespastweek': run_miles_past_week,
+            'alltimefeel': all_time_feel,
+            'yearfeel': year_feel,
+            'monthfeel': month_feel,
+            'weekfeel': week_feel
+        }
+
+        user['statistics'] = stats
+
+        return jsonify({
+            'self': f'/v2/users/{username}',
+            'user': user
+        })
