@@ -9,6 +9,8 @@ from bcrypt import bcrypt
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
+from dao.forgotPasswordDao import ForgotPasswordDao
+from dao.flairDao import FlairDao
 from model.Code import Code
 from model.User import User
 from dao.codeDao import CodeDao
@@ -112,10 +114,10 @@ def user(username):
 
             user['groups'] = groups
 
-            forgot_password = None  # TODO
+            forgot_password = ForgotPasswordDao.get_forgot_password_codes(username=user['username'])
             user['forgotpassword'] = forgot_password
 
-            flair = None  # TODO
+            flair = FlairDao.get_flair_by_username(username=username)
             user['flair'] = flair
 
             notifications = None  # TODO
