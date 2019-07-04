@@ -47,7 +47,19 @@ class UserDao:
         db.session.add(user)
         return BasicDao.safe_commit()
 
-
     @staticmethod
     def update_user(user: User) -> bool:
         pass
+
+    @staticmethod
+    def delete_user(username: str) -> bool:
+        """
+        Delete a user from the database based on its username.
+        :param username: Username which uniquely identifies the user.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM users WHERE username=:username',
+            {'username': username}
+        )
+        return BasicDao.safe_commit()

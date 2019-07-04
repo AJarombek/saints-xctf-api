@@ -27,6 +27,7 @@ def users():
     :return: JSON representation of a list of users and relevant metadata
     """
     if request.method == 'GET':
+        ''' [GET] /v2/users '''
         all_users = UserDao.get_users()
         all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
 
@@ -36,6 +37,7 @@ def users():
         })
 
     elif request.method == 'POST':
+        ''' [POST] /v2/users '''
         user_data: dict = request.get_json()
 
         # Passwords must be hashed before stored in the database
@@ -91,6 +93,7 @@ def user(username):
     :return: JSON representation of a user and relevant metadata
     """
     if request.method == 'GET':
+        ''' [GET] /v2/users/<username> '''
         user = UserDao.get_user_by_username(username=username)
 
         # If the user cant be found, try searching the email column in the database
@@ -131,14 +134,14 @@ def user(username):
             miles_past_year = LogDao.get_user_miles_interval(username, 'year')
             miles_past_month = LogDao.get_user_miles_interval(username, 'month')
             miles_past_week = LogDao.get_user_miles_interval(username, 'week', week_start=user['week_start'])
-            run_miles = None
-            run_miles_past_year = None
-            run_miles_past_month = None
-            run_miles_past_week = None
-            all_time_feel = None
-            year_feel = None
-            month_feel = None
-            week_feel = None
+            run_miles = LogDao.get_user_miles_interval_by_type(username, 'run')
+            run_miles_past_year = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
+            run_miles_past_month = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
+            run_miles_past_week = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
+            all_time_feel = LogDao.get_user_avg_feel(username)
+            year_feel = LogDao.get_user_avg_feel_interval(username, 'year')
+            month_feel = LogDao.get_user_avg_feel_interval(username, 'month')
+            week_feel = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user['week_start'])
 
             stats = {
                 'miles': miles,
@@ -163,6 +166,24 @@ def user(username):
             })
 
     elif request.method == 'PUT':
-        pass
+        ''' [PUT] /v2/users/<username> '''
+        old_user = UserDao.get_user_by_username(username=username)
+
+        user_data: dict = request.get_json()
+        new_user = User(user_data)
+
     elif request.method == 'DELETE':
-        pass
+        ''' [DELETE] /v2/users/<username> '''
+        is_deleted = UserDao.delete_user(username=username)
+
+        if is_deleted:
+            status_code = 204
+        else:
+            status_code = 400
+
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'deleted': is_deleted
+        })
+        response.status_code = status_code
+        return response
