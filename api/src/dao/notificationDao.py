@@ -13,11 +13,16 @@ class NotificationDao:
 
     @staticmethod
     def get_notification_by_username(username: str) -> list:
+        """
+        Retrieve all the notifications for a user from the past two weeks
+        :param username: Unique identifier for a user
+        :return: A list of notifications
+        """
         return db.session.execute(
             '''
             SELECT * FROM notifications 
             WHERE username=:username 
-            AND time >= curdate() - INTERVAL dayofweek(curdate()) + 13 DAY 
+            AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
             ORDER BY time DESC
             ''',
             {'username': username}

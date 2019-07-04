@@ -11,6 +11,8 @@ from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.forgotPasswordDao import ForgotPasswordDao
 from dao.flairDao import FlairDao
+from dao.notificationDao import NotificationDao
+from dao.logDao import LogDao
 from model.Code import Code
 from model.User import User
 from dao.codeDao import CodeDao
@@ -103,7 +105,8 @@ def user(username):
                 'users': False
             })
         else:
-            groups = GroupMemberDao.get_user_groups(username=user['username'])
+            username = user['username']
+            groups = GroupMemberDao.get_user_groups(username=username)
 
             for group in groups:
                 newest_log = GroupDao.get_newest_log_date(group['group_name'])
@@ -114,17 +117,17 @@ def user(username):
 
             user['groups'] = groups
 
-            forgot_password = ForgotPasswordDao.get_forgot_password_codes(username=user['username'])
+            forgot_password = ForgotPasswordDao.get_forgot_password_codes(username=username)
             user['forgotpassword'] = forgot_password
 
             flair = FlairDao.get_flair_by_username(username=username)
             user['flair'] = flair
 
-            notifications = None  # TODO
+            notifications = NotificationDao.get_notification_by_username(username=username)
             user['notifications'] = notifications
 
-            # TODO: User Statistics
-            miles = None
+            # All user statistics are queried separately but combined into a single map
+            miles = LogDao.get_user_miles(username=username)
             miles_past_year = None
             miles_past_month = None
             miles_past_week = None
