@@ -6,6 +6,7 @@ Date: 7/3/2019
 """
 
 from database import db
+from dao.basicDao import BasicDao
 from model.ForgotPassword import ForgotPassword
 
 
@@ -27,3 +28,13 @@ class ForgotPasswordDao:
             ''',
             {'username': username}
         )
+
+    @staticmethod
+    def add_forgot_password_code(code: ForgotPassword) -> bool:
+        """
+        Insert a forgot password code and corresponding user into the database.
+        :param code: A ForgotPassword object representing a code that expires after a certain date.
+        :return: True if the code was inserted successfully, False otherwise.
+        """
+        db.session.add(code)
+        return BasicDao.safe_commit()
