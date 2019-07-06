@@ -9,6 +9,15 @@ from sqlalchemy import Column
 
 
 class Flair(db.Model):
+
+    def __init__(self, flair: dict) -> None:
+        """
+        Initialize a Flair object by passing in a dictionary.
+        :param flair: A dictionary with fields matching the Flair fields
+        """
+        self.username = flair.get('username')
+        self.flair = flair.get('flair')
+
     __tablename__ = 'flair'
 
     flair_id = Column(db.INT, autoincrement=True, primary_key=True)

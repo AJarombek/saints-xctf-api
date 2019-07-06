@@ -281,3 +281,28 @@ def user_change_password(username):
         })
         response.status_code = 500
         return response
+
+
+@user_route.route('/<username>/update_last_login', methods=['PUT'])
+def user_update_last_login(username):
+    """
+    Update the date of a users previous sign in.
+    :param username: Username which uniquely identifies a user.
+    :return: JSON with the result of the last login update
+    """
+    last_login_updated = UserDao.update_user_last_login(username)
+    if last_login_updated:
+        response = jsonify({
+            'self': f'/v2/users/{username}/update_last_login',
+            'last_login_updated': True
+        })
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/{username}/update_last_login',
+            'last_login_updated': False,
+            'error': 'an unexpected error occurred updating the users last login date'
+        })
+        response.status_code = 500
+        return response

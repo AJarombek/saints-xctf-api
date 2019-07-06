@@ -11,10 +11,10 @@ from utils.codes import generate_code
 from dao.forgotPasswordDao import ForgotPasswordDao
 from model.ForgotPassword import ForgotPassword
 
-user_route = Blueprint('forgot_password_route', __name__, url_prefix='/v2/forgot_password')
+forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix='/v2/forgot_password')
 
 
-@user_route.route('/<username>', methods=['GET', 'POST'])
+@forgot_password_route.route('/<username>', methods=['GET', 'POST'])
 def forgot_password(username):
     """
     Endpoints for retrieving or creating a forgot password code

@@ -101,6 +101,19 @@ class UserDao:
         return BasicDao.safe_commit()
 
     @staticmethod
+    def update_user_last_login(username: str) -> bool:
+        """
+        Update the date of the previous login for a user.
+        :param username: Username which uniquely identifies the user.
+        :return: True if the update was successful, False otherwise
+        """
+        db.session.execute(
+            'UPDATE users SET last_signin=:DATE WHERE username=:username',
+            {'username': username}
+        )
+        return BasicDao.safe_commit()
+
+    @staticmethod
     def delete_user(username: str) -> bool:
         """
         Delete a user from the database based on its username.
