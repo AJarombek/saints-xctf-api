@@ -21,6 +21,16 @@ class FlairDao:
         return Flair.query.filter_by(username=username).with_entities(Flair.flair).all()
 
     @staticmethod
+    def get_flair_by_content(username: str, flair: str) -> dict:
+        """
+        Retrieve a Flair object based on its username and flair contents.
+        :param username: Unique identifier for the user.
+        :param flair: Content of the flair which is displayed on the users profile.
+        :return: The result of the database query
+        """
+        return Flair.query.filter_by(username=username, flair=flair).first()
+
+    @staticmethod
     def add_flair(flair: Flair) -> bool:
         """
         Add a flair item to the database.

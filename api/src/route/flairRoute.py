@@ -12,21 +12,22 @@ flair_route = Blueprint('flair_route', __name__, url_prefix='/v2/flair')
 
 
 @flair_route.route('/', methods=['POST'])
-def flair(username):
+def flair():
     """
     Endpoint for creating flair used on a users profile.
-    :param username:
-    :return:
+    :return: JSON with the resulting Flair object and relevant metadata.
     """
     flair_data: dict = request.get_json()
+    username = flair_data.get('username')
+    flair_content = flair_data.get('flair')
     flair = Flair({
-        'username': flair_data.get('username'),
-        'flair': flair_data.get('flair')
+        'username': username,
+        'flair': flair_content
     })
     flair_added = FlairDao.add_flair(flair)
 
     if flair_added:
-        new_flair = None # TODO
+        new_flair = FlairDao.get_flair_by_content(username, flair_content)
         response = jsonify({
             'self': f'/v2/flair',
             'added': True,
