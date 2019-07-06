@@ -157,7 +157,7 @@ def user(username):
         if is_deleted:
             status_code = 204
         else:
-            status_code = 400
+            status_code = 500
 
         response = jsonify({
             'self': f'/v2/users/{username}',
@@ -245,3 +245,39 @@ def user_snapshot(username):
             'self': f'/v2/users/{username}',
             'user': user
         })
+
+
+@user_route.route('/<username>/change_password', methods=['PUT'])
+def user_change_password(username):
+    """
+    Endpoint for changing a users password.
+    :param username: Username which uniquely identifies a user.
+    :return: JSON with the result of the password change.
+    """
+    # Request should use the following pattern: {"forgot_password_code": "...", "new_password": "..."}
+    request_dict: dict = request.get_json()
+    forgot_password_code = request_dict.get('forgot_password_code')
+    new_password = request_dict.get('new_password')
+
+    hashed_password = bcrypt.generate_password_hash(new_password)
+
+    password_updated = UserDao.update_user_password(username, hashed_password)
+
+    if password_updated:
+        code_deleted = ForgotPasswordDao.delete_forgot_password_code(code=forgot_password_code)
+        response = jsonify({
+            'self': f'/v2/users/{username}/change_password',
+            'password_updated': True,
+            'forgot_password_code_deleted': code_deleted
+        })
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/{username}/change_password',
+            'password_updated': False,
+            'forgot_password_code_deleted': False,
+            'error': 'an unexpected error occurred changing passwords'
+        })
+        response.status_code = 500
+        return response

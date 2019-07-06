@@ -37,7 +37,20 @@ def forgot_password(username):
         })
         forgot_password_inserted = ForgotPasswordDao.add_forgot_password_code(new_forgot_password)
 
-        if forgot_password_inserted:  # TODO
-            pass
+        if forgot_password_inserted:
+            new_forgot_password = ForgotPasswordDao.get_forgot_password_code(code)
+            response = jsonify({
+                'self': f'/v2/forgot_password/{username}',
+                'updated': True,
+                'user': new_forgot_password
+            })
+            response.status_code = 200
+            return response
         else:
-            pass
+            response = jsonify({
+                'self': f'/v2/forgot_password/{username}',
+                'inserted': False,
+                'error': 'the forgot password code creation failed'
+            })
+            response.status_code = 500
+            return response
