@@ -12,13 +12,21 @@ from model.Log import Log
 class LogDao:
 
     @staticmethod
-    def get_log_by_id(id: int) -> list:
+    def get_logs() -> list:
+        """
+        Retrieve all the exercise logs in the database
+        :return: The result of the query.
+        """
+        return Log.query.order_by(Log.date)
+
+    @staticmethod
+    def get_log_by_id(log_id: int) -> list:
         """
         Retrieve a specific exercise log based on its id number
-        :param id:
-        :return:
+        :param log_id: Unique identifier for an exercise log.
+        :return: The result of the query.
         """
-        return Log.query.filter_by(log_id=id).all()
+        return Log.query.filter_by(log_id=log_id).all()
 
     @staticmethod
     def get_user_miles(username: str) -> dict:
