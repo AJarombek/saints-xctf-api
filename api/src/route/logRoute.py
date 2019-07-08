@@ -93,11 +93,42 @@ def logs(log_id):
         ''' [PUT] /v2/logs/<log_id> '''
         old_log = LogDao.get_log_by_id(log_id=log_id)
 
+        if old_log is None:
+            response = jsonify({
+                'self': f'/v2/logs/{log_id}',
+                'updated': False,
+                'log': None,
+                'error': 'there is no existing log with this id'
+            })
+            response.status_code = 400
+            return response
+
         log_data: dict = request.get_json()
         new_log = Log(log_data)
 
         if old_log != new_log:
-            pass
+            is_updated = LogDao.update_log(new_log)
+
+            if is_updated:
+                updated_log = LogDao.get_log_by_id(log_id=new_log.log_id)
+
+                response = jsonify({
+                    'self': f'/v2/logs/{log_id}',
+                    'updated': True,
+                    'log': updated_log
+                })
+                response.status_code = 200
+                return response
+            else:
+                response = jsonify({
+                    'self': f'/v2/logs/{log_id}',
+                    'updated': False,
+                    'log': None,
+                    'error': 'the log failed to update'
+                })
+                response.status_code = 500
+                return response
+
         else:
             response = jsonify({
                 'self': f'/v2/logs/{log_id}',
@@ -110,3 +141,31 @@ def logs(log_id):
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/logs/<log_id> '''
+        are_comments_deleted = CommentDao.delete_comments_by_log_id(log_id=log_id)
+
+        if not are_comments_deleted:
+            response = jsonify({
+                'self': f'/v2/logs/{log_id}',
+                'deleted': False,
+                'error': 'failed to delete the comments on this log'
+            })
+            response.status_code = 500
+            return response
+
+        is_log_deleted = LogDao.delete_log(log_id=log_id)
+
+        if is_log_deleted:
+            response = jsonify({
+                'self': f'/v2/logs/{log_id}',
+                'deleted': True,
+            })
+            response.status_code = 204
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/logs/{log_id}',
+                'deleted': False,
+                'error': 'failed to delete the log'
+            })
+            response.status_code = 500
+            return response

@@ -183,11 +183,34 @@ class LogDao:
             )
 
     @staticmethod
-    def add_log(new_log: Log):
+    def add_log(new_log: Log) -> bool:
         """
         Add an exercise log to the database.
         :param new_log: Object representing an exercise log for a user.
         :return: True if the log is inserted into the database, False otherwise.
         """
         db.session.add(new_log)
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def update_log(log: Log) -> bool:
+        """
+        Update a log in the database.
+        :param log: Object representing an updated log.
+        :return: True if the log is updated in the database, False otherwise.
+        """
+        db.session.add(log)
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def delete_log(log_id: int) -> bool:
+        """
+        Delete a log from the database based on its id.
+        :param log_id: ID which uniquely identifies the log.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM logs WHERE log_id=:log_id',
+            {'log_id': log_id}
+        )
         return BasicDao.safe_commit()

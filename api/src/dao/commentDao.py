@@ -5,6 +5,7 @@ Date: 7/3/2019
 """
 
 from database import db
+from dao.basicDao import BasicDao
 from model.Comment import Comment
 
 
@@ -25,3 +26,16 @@ class CommentDao:
             ''',
             {'log_id': log_id}
         )
+
+    @staticmethod
+    def delete_comments_by_log_id(log_id: int) -> bool:
+        """
+        Delete comments from the database based on the log they are bound 2.
+        :param log_id: ID which uniquely identifies the log.
+        :return: True if the deletions were successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM comments WHERE log_id=:log_id',
+            {'log_id': log_id}
+        )
+        return BasicDao.safe_commit()
