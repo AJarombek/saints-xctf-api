@@ -18,7 +18,7 @@ class LogDao:
         Retrieve all the exercise logs in the database
         :return: The result of the query.
         """
-        return Log.query.order_by(Log.date)
+        return Log.query.order_by(Log.date).all()
 
     @staticmethod
     def get_log_by_id(log_id: int) -> list:

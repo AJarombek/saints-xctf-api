@@ -14,6 +14,23 @@ from model.GroupMember import GroupMember
 class GroupDao:
 
     @staticmethod
+    def get_groups() -> list:
+        """
+        Retrieve all the groups in the database
+        :return: The result of the query.
+        """
+        return Group.query.all()
+
+    @staticmethod
+    def get_group(group_name: str) -> dict:
+        """
+        Retrieve a group with a given name from the database.
+        :param group_name: A name which uniquely identifies a group.
+        :return: The result of the query.
+        """
+        return Group.query.filter_by(group_name=group_name).first()
+
+    @staticmethod
     def get_newest_log_date(group_name: str) -> str:
         """
         Get the date of the newest exercise log in the group

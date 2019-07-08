@@ -66,7 +66,7 @@ def logs():
 
 
 @log_route.route('/<log_id>', methods=['GET', 'PUT', 'DELETE'])
-def logs(log_id):
+def logs_with_id(log_id):
     if request.method == 'GET':
         ''' [GET] /v2/logs/<log_id> '''
         log = LogDao.get_log_by_id(log_id)
