@@ -137,6 +137,7 @@ def user(username):
                 response = jsonify({
                     'self': f'/v2/users/{username}',
                     'updated': False,
+                    'user': None,
                     'error': 'the user failed to update'
                 })
                 response.status_code = 500
@@ -145,6 +146,7 @@ def user(username):
             response = jsonify({
                 'self': f'/v2/users/{username}',
                 'updated': False,
+                'user': None,
                 'error': 'the user submitted is equal to the existing user'
             })
             response.status_code = 400

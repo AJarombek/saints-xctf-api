@@ -5,6 +5,7 @@ Date: 7/3/2019
 """
 
 import utils.dates as dates
+from dao.basicDao import BasicDao
 from database import db
 from model.Log import Log
 
@@ -150,7 +151,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_user_avg_feel_interval(username: str, interval: str = None, week_start: str = 'monday'):
+    def get_user_avg_feel_interval(username: str, interval: str = None, week_start: str = 'monday') -> list:
         """
         Retrieve the average feel statistic for a user during a certain interval in time
         :param username: Unique identifier for a user
@@ -180,3 +181,13 @@ class LogDao:
                 ''',
                 {'username': username, 'date': date}
             )
+
+    @staticmethod
+    def add_log(new_log: Log):
+        """
+        Add an exercise log to the database.
+        :param new_log: Object representing an exercise log for a user.
+        :return: True if the log is inserted into the database, False otherwise.
+        """
+        db.session.add(new_log)
+        return BasicDao.safe_commit()

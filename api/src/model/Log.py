@@ -9,6 +9,28 @@ from sqlalchemy import Column
 
 
 class Log(db.Model):
+
+    def __init__(self, user: dict):
+        """
+        Initialize a Log by passing in a dictionary.
+        :param user: A dictionary with fields matching the Log fields
+        """
+        self.username = user.get('username')
+        self.first = user.get('first')
+        self.last = user.get('last')
+        self.name = user.get('name')
+        self.location = user.get('location')
+        self.date = user.get('date')
+        self.type = user.get('type')
+        self.distance = user.get('distance')
+        self.metric = user.get('metric')
+        self.miles = user.get('miles')
+        self.time = user.get('time')
+        self.pace = user.get('pace')
+        self.feel = user.get('feel')
+        self.description = user.get('description')
+        self.time_created = user.get('time_created')
+
     __tablename__ = 'logs'
 
     log_id = Column(db.INT, autoincrement=True, primary_key=True)
