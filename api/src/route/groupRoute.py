@@ -109,7 +109,7 @@ def group_snapshot(group_name):
 
     if group is None:
         response = jsonify({
-            'self': f'/v2/groups/members/{group_name}',
+            'self': f'/v2/groups/snapshot/{group_name}',
             'group_link': f'/v2/groups/{group_name}',
             'group': None,
             'error': 'the group does not exist'
@@ -124,7 +124,7 @@ def group_snapshot(group_name):
     miles_past_year = LogDao.get_group_miles_interval(group_name, 'year')
     miles_past_month = LogDao.get_group_miles_interval(group_name, 'month')
     miles_past_week = LogDao.get_group_miles_interval(group_name, 'week', week_start=group['week_start'])
-    run_miles = LogDao.get_user_group_interval_by_type(group_name, 'run')
+    run_miles = LogDao.get_group_miles_interval_by_type(group_name, 'run')
     run_miles_past_year = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
     run_miles_past_month = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
     run_miles_past_week = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'week')
@@ -147,3 +147,14 @@ def group_snapshot(group_name):
         'monthfeel': month_feel,
         'weekfeel': week_feel
     }
+
+    group['members'] = group_members
+    group['statistics'] = statistics
+
+    response = jsonify({
+        'self': f'/v2/groups/snapshot/{group_name}',
+        'group_link': f'/v2/groups/{group_name}',
+        'group': group
+    })
+    response.status_code = 200
+    return response

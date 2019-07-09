@@ -135,7 +135,7 @@ class LogDao:
             )
 
     @staticmethod
-    def get_user_avg_feel(username: str):
+    def get_user_avg_feel(username: str) -> dict:
         """
         Retrieve the average feel statistic for a user
         :param username: Unique identifier for a user
@@ -216,23 +216,119 @@ class LogDao:
         if date is None:
             return db.session.execute(
                 '''
-                select sum(miles) as total 
-                from logs 
-                inner join groupmembers on logs.username = groupmembers.username 
-                where group_name=:group_name
-                and status='accepted'
+                SELECT SUM(miles) AS total 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name
+                AND status='accepted'
                 ''',
                 {'group_name': group_name}
             )
         else:
             return db.session.execute(
                 '''
-                select sum(miles) as total 
-                from logs 
-                inner join groupmembers on logs.username = groupmembers.username 
-                where group_name=:group_name 
-                and date >= :date 
-                and status='accepted'
+                SELECT SUM(miles) AS total 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name 
+                AND date >= :date 
+                AND status='accepted'
+                ''',
+                {'group_name': group_name, 'date': date}
+            )
+
+    @staticmethod
+    def get_group_miles_interval_by_type(group_name: str, exercise_type: str,
+                                         interval: str = None, week_start: str = 'monday'):
+        """
+        Get the total number of miles exercised by all the group members in a certain time interval and of a specific
+        exercise type.  The interval options include the past year, month, and week.
+        The exercise type options include run, bike, swim, and other.
+        :param group_name: A name which uniquely identifies a group.
+        :param interval: Time interval for logs to count towards the mileage total.
+        :param exercise_type: Type of exercise to filter the logs by.
+        :param week_start: An option for which day is used as the start of the week.
+        Both 'monday' and 'sunday' are valid options.
+        :return: The total number of miles for the given exercise type
+        """
+        date = dates.get_start_date_interval(interval=interval, week_start=week_start)
+
+        if date is None:
+            return db.session.execute(
+                '''
+                SELECT SUM(miles) AS total 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name 
+                AND type=:exercise_type
+                AND status='accepted'
+                ''',
+                {'group_name': group_name, 'exercise_type': exercise_type}
+            )
+        else:
+            return db.session.execute(
+                '''
+                SELECT SUM(miles) AS total 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name 
+                AND type=:exercise_type
+                AND date >= :date 
+                AND status='accepted'
+                ''',
+                {'group_name': group_name, 'exercise_type': exercise_type, 'date': date}
+            )
+
+    @staticmethod
+    def get_group_avg_feel(group_name: str) -> dict:
+        """
+        Retrieve the average feel statistic for a group.
+        :param group_name: A name which uniquely identifies a group.
+        :return: The average feel.
+        """
+        return db.session.execute(
+            '''
+            SELECT AVG(feel) AS average 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_name=:group_name 
+            AND status='accepted'
+            ''',
+            {'group_name': group_name}
+        )
+
+    @staticmethod
+    def get_group_avg_feel_interval(group_name: str, interval: str = None, week_start: str = 'monday') -> dict:
+        """
+        Retrieve the average feel statistic for all group members during a certain interval in time.
+        :param group_name: A name which uniquely identifies a group.
+        :param interval: Time interval for logs to count towards the average feel
+        :param week_start: An option for which day is used as the start of the week.
+        Both 'monday' and 'sunday' are valid options.
+        :return: The average feel during the interval
+        """
+        date = dates.get_start_date_interval(interval=interval, week_start=week_start)
+
+        if date is None:
+            return db.session.execute(
+                '''
+                SELECT AVG(feel) AS average 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name 
+                AND status='accepted'
+                ''',
+                {'group_name': group_name}
+            )
+        else:
+            return db.session.execute(
+                '''
+                SELECT AVG(feel) AS average 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_name=:group_name 
+                AND date >= :date
+                AND status='accepted'
                 ''',
                 {'group_name': group_name, 'date': date}
             )
