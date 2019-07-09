@@ -46,7 +46,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_user_miles_by_type(username: str, exercise_type: str):
+    def get_user_miles_by_type(username: str, exercise_type: str) -> dict:
         """
         Get the total miles of a certain exercise for a user
         :param username: Unique identifier for a user
@@ -180,6 +180,61 @@ class LogDao:
                 AND date >= :date
                 ''',
                 {'username': username, 'date': date}
+            )
+
+    @staticmethod
+    def get_group_miles(group_name: str):
+        """
+        Get the total exercise miles for all the users in a group.
+        :param group_name: Unique name for a group.
+        :return: The total number of miles exercised.
+        """
+        return db.session.execute(
+            '''
+            SELECT SUM(miles) AS total 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_name=:team 
+            AND status='accepted'
+            ''',
+            {'group_name': group_name}
+        )
+
+    @staticmethod
+    def get_group_miles_interval(group_name: str, interval: str = None, week_start: str = 'monday'):
+        """
+        Get the total number of miles exercised by all the group members in a certain time interval.  The time interval
+        options include the past year, month, or week.
+        :param group_name: Name which uniquely identifies for a group
+        :param interval: Time interval for logs to count towards the mileage total
+        :param week_start: An option for which day is used as the start of the week.
+        Both 'monday' and 'sunday' are valid options.
+        :return: The total number of miles exercised
+        """
+        date = dates.get_start_date_interval(interval=interval, week_start=week_start)
+
+        if date is None:
+            return db.session.execute(
+                '''
+                select sum(miles) as total 
+                from logs 
+                inner join groupmembers on logs.username = groupmembers.username 
+                where group_name=:group_name
+                and status='accepted'
+                ''',
+                {'group_name': group_name}
+            )
+        else:
+            return db.session.execute(
+                '''
+                select sum(miles) as total 
+                from logs 
+                inner join groupmembers on logs.username = groupmembers.username 
+                where group_name=:group_name 
+                and date >= :date 
+                and status='accepted'
+                ''',
+                {'group_name': group_name, 'date': date}
             )
 
     @staticmethod
