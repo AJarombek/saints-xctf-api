@@ -29,3 +29,21 @@ class GroupMemberDao:
             ''',
             {'username': username}
         )
+
+    @staticmethod
+    def get_group_members(group_name: str) -> list:
+        """
+        Get the users who are members of a group.
+        :param group_name: Unique name of a group.
+        :return: A list of group members.
+        """
+        return db.session.execute(
+            '''
+            SELECT users.username,first,last,member_since,user,status 
+            FROM groupmembers 
+            INNER JOIN groups ON groups.group_name=groupmembers.group_name 
+            INNER JOIN users ON groupmembers.username=users.username 
+            WHERE groupmembers.group_name=:group_name
+            ''',
+            {'group_name': group_name}
+        )

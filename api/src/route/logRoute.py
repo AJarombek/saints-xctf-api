@@ -14,6 +14,10 @@ log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
 @log_route.route('/', methods=['GET', 'POST'])
 def logs():
+    """
+    Endpoints for retrieving all the logs and creating new logs.
+    :return: JSON representation of exercise logs and relevant metadata.
+    """
     if request.method == 'GET':
         ''' [GET] /v2/logs '''
         logs = LogDao.get_logs()
@@ -67,6 +71,11 @@ def logs():
 
 @log_route.route('/<log_id>', methods=['GET', 'PUT', 'DELETE'])
 def logs_with_id(log_id):
+    """
+    Endpoints for retrieving a single log, editing an existing log, and deleting a log.
+    :param log_id: Unique identifier for a log.
+    :return: JSON representation of a log and relevant metadata.
+    """
     if request.method == 'GET':
         ''' [GET] /v2/logs/<log_id> '''
         log = LogDao.get_log_by_id(log_id)
