@@ -334,6 +334,31 @@ class LogDao:
             )
 
     @staticmethod
+    def get_log_feed(limit: int, offset: int) -> list:
+        """
+        Retrieve a collection of logs
+        :param limit: The maximum number of logs to return
+        :param offset: The number of logs to skip before returning
+        :return: A list of logs
+        """
+        return db.session.execute(
+            '''
+            SELECT * FROM logs 
+            ORDER BY date DESC, log_id DESC
+            LIMIT :limit OFFSET :offset
+            ''',
+            {'limit': limit, 'offset': offset}
+        )
+
+    @staticmethod
+    def get_user_log_feed(username: str, limit: int, offset: int) -> list:
+        pass
+
+    @staticmethod
+    def get_group_log_feed(group_name: str, limit: int, offset: int) -> list:
+        pass
+
+    @staticmethod
     def add_log(new_log: Log) -> bool:
         """
         Add an exercise log to the database.
