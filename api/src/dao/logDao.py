@@ -352,11 +352,45 @@ class LogDao:
 
     @staticmethod
     def get_user_log_feed(username: str, limit: int, offset: int) -> list:
-        pass
+        """
+        Retrieve a collection of logs by a user
+        :param username: The unique username for a user
+        :param limit: The maximum number of logs to return
+        :param offset: The number of logs to skip before returning
+        :return: A list of logs
+        """
+        return db.session.execute(
+            '''
+            SELECT * FROM logs 
+            WHERE username=:username
+            ORDER BY date DESC, log_id DESC
+            LIMIT :limit OFFSET :offset
+            ''',
+            {'username': username, 'limit': limit, 'offset': offset}
+        )
 
     @staticmethod
     def get_group_log_feed(group_name: str, limit: int, offset: int) -> list:
-        pass
+        """
+        Retrieve a collection of logs by a group
+        :param group_name: The unique name of a group
+        :param limit: The maximum number of logs to return
+        :param offset: The number of logs to skip before returning
+        :return: A list of logs
+        """
+        return db.session.execute(
+            '''
+            SELECT log_id,logs.username,first,last,name,location,date,type,
+                    distance,metric,miles,time,pace,feel,description 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username=groupmembers.username 
+            WHERE group_name=:group_name 
+            AND status='accepted' 
+            ORDER BY date DESC, log_id DESC 
+            LIMIT :limit OFFSET :offset
+            ''',
+            {'group_name': group_name, 'limit': limit, 'offset': offset}
+        )
 
     @staticmethod
     def add_log(new_log: Log) -> bool:

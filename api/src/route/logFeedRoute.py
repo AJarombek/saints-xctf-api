@@ -6,8 +6,6 @@ Date: 7/10/2019
 
 from flask import Blueprint, request, jsonify, current_app
 from dao.logDao import LogDao
-from dao.commentDao import CommentDao
-from model.Log import Log
 
 log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/logfeed')
 
@@ -31,3 +29,38 @@ def logs(filter_by, bucket, limit, offset):
             logs = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
         elif filter_by == 'all':
             logs = LogDao.get_log_feed(limit=limit, offset=offset)
+        else:
+            logs = None
+
+        # Generate LogFeed API URLs
+        self_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset}'
+
+        prev_offset = offset - limit >= 0
+        if prev_offset:
+            prev_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{prev_offset}'
+        else:
+            prev_url = None
+
+        if logs is None:
+            next_url = None
+
+            response = jsonify({
+                'self': self_url,
+                'next': next_url,
+                'prev': prev_url,
+                'logs': None,
+                'error': 'no logs found in this feed'
+            })
+            response.status_code = 500
+            return response
+        else:
+            next_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset + limit}'
+
+            response = jsonify({
+                'self': self_url,
+                'next': next_url,
+                'prev': prev_url,
+                'logs': logs
+            })
+            response.status_code = 200
+            return response
