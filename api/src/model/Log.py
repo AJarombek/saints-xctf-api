@@ -10,26 +10,26 @@ from sqlalchemy import Column
 
 class Log(db.Model):
 
-    def __init__(self, user: dict):
+    def __init__(self, log: dict):
         """
         Initialize a Log by passing in a dictionary.
-        :param user: A dictionary with fields matching the Log fields
+        :param log: A dictionary with fields matching the Log fields
         """
-        self.username = user.get('username')
-        self.first = user.get('first')
-        self.last = user.get('last')
-        self.name = user.get('name')
-        self.location = user.get('location')
-        self.date = user.get('date')
-        self.type = user.get('type')
-        self.distance = user.get('distance')
-        self.metric = user.get('metric')
-        self.miles = user.get('miles')
-        self.time = user.get('time')
-        self.pace = user.get('pace')
-        self.feel = user.get('feel')
-        self.description = user.get('description')
-        self.time_created = user.get('time_created')
+        self.username = log.get('username')
+        self.first = log.get('first')
+        self.last = log.get('last')
+        self.name = log.get('name')
+        self.location = log.get('location')
+        self.date = log.get('date')
+        self.type = log.get('type')
+        self.distance = log.get('distance')
+        self.metric = log.get('metric')
+        self.miles = log.get('miles')
+        self.time = log.get('time')
+        self.pace = log.get('pace')
+        self.feel = log.get('feel')
+        self.description = log.get('description')
+        self.time_created = log.get('time_created')
 
     __tablename__ = 'logs'
 

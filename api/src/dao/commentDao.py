@@ -45,6 +45,16 @@ class CommentDao:
         )
 
     @staticmethod
+    def add_comment(new_comment: Comment) -> bool:
+        """
+        Add a comment for an exercise log to the database.
+        :param new_comment: Object representing a comment for an exercise log.
+        :return: True if the comment is inserted into the database, False otherwise.
+        """
+        db.session.add(new_comment)
+        return BasicDao.safe_commit()
+
+    @staticmethod
     def delete_comments_by_log_id(log_id: int) -> bool:
         """
         Delete comments from the database based on the log they are bound 2.

@@ -5,7 +5,6 @@ Date: 7/12/2019
 """
 
 from flask import Blueprint, request, jsonify, current_app
-from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 from model.Comment import Comment
 
@@ -31,6 +30,9 @@ def comments():
             response.status_code = 500
             return response
         else:
+            for comment in comments:
+                comment.log = f'/v2/logs/{comment.log_id}'
+
             response = jsonify({
                 'self': '/v2/comments',
                 'comments': comments
@@ -40,7 +42,29 @@ def comments():
 
     elif request.method == 'POST':
         ''' [POST] /v2/comments '''
-        pass
+        comment_data: dict = request.get_json()
+        comment_to_add = Comment(comment_data)
+        comment_added_successfully = CommentDao.add_comment(new_comment=comment_to_add)
+
+        if comment_added_successfully:
+            comment_added = CommentDao.get_comment_by_id(comment_to_add.comment_id)
+
+            response = jsonify({
+                'self': '/v2/comments',
+                'added': True,
+                'comment': comment_added
+            })
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify({
+                'self': '/v2/comments',
+                'added': False,
+                'comment': None,
+                'error': 'failed to create a new comment'
+            })
+            response.status_code = 500
+            return response
 
 
 @comment_route.route('/<comment_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -53,9 +77,47 @@ def comment_with_id(comment_id):
     if request.method == 'GET':
         ''' [GET] /v2/comments/<comment_id> '''
         comment = CommentDao.get_comment_by_id(comment_id=comment_id)
+
+        if comment is None:
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'comment': None,
+                'log': None,
+                'error': 'there is no comment with this identifier'
+            })
+            response.status_code = 400
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'comment': comment,
+                'log': f'/v2/logs/{comment.get("log_id")}'
+            })
+            response.status_code = 200
+            return response
+
     elif request.method == 'PUT':
         ''' [PUT] /v2/comments/<comment_id> '''
-        pass
+        old_comment = CommentDao.get_comment_by_id(comment_id=comment_id)
+
+        if old_comment is None:
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'updated': False,
+                'comment': None,
+                'error': 'there is no existing comment with this id'
+            })
+            response.status_code = 400
+            return response
+
+        comment_data: dict = request.get_json()
+        new_comment = Comment(comment_data)
+
+        if old_comment != new_comment:
+            pass
+        else:
+            pass
+
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/comments/<comment_id> '''
         pass

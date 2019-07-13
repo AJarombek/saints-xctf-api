@@ -9,6 +9,20 @@ from sqlalchemy import Column
 
 
 class Comment(db.Model):
+
+    def __init__(self, comment: dict):
+        """
+        Initialize a Comment by passing in a dictionary.
+        :param comment: A dictionary with fields matching the Comment fields
+        """
+        self.comment_id = comment.get('comment_id')
+        self.username = comment.get('username')
+        self.first = comment.get('first')
+        self.last = comment.get('last')
+        self.log_id = comment.get('log_id')
+        self.time = comment.get('time')
+        self.content = comment.get('content')
+
     __tablename__ = 'comments'
 
     comment_id = Column(db.INT, autoincrement=True, primary_key=True)
