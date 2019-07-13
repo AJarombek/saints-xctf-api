@@ -12,7 +12,24 @@ from model.Comment import Comment
 class CommentDao:
 
     @staticmethod
-    def get_comment_by_log_id(log_id: int) -> list:
+    def get_comments() -> list:
+        """
+        Retrieve all the comments in the database.
+        :return: The result of the query.
+        """
+        return Comment.query.order_by(Comment.time).all()
+
+    @staticmethod
+    def get_comment_by_id(comment_id: int) -> dict:
+        """
+        Retrieve a single comment by its unique id
+        :param comment_id: The unique identifier for a comment.
+        :return: The result of the query.
+        """
+        return Comment.query.filter_by(comment_id=comment_id).first()
+
+    @staticmethod
+    def get_comments_by_log_id(log_id: int) -> list:
         """
         Retrieve all the comments on a specific exercise log.
         :param log_id: Unique identifier for an exercise log.

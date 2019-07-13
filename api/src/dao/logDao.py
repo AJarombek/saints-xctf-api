@@ -21,13 +21,13 @@ class LogDao:
         return Log.query.order_by(Log.date).all()
 
     @staticmethod
-    def get_log_by_id(log_id: int) -> list:
+    def get_log_by_id(log_id: int) -> dict:
         """
         Retrieve a specific exercise log based on its id number
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return Log.query.filter_by(log_id=log_id).all()
+        return Log.query.filter_by(log_id=log_id).first()
 
     @staticmethod
     def get_user_miles(username: str) -> dict:

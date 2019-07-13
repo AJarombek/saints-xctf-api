@@ -32,7 +32,7 @@ def logs():
             return response
         else:
             for log in logs:
-                log_comments = CommentDao.get_comment_by_log_id(log.get('log_id'))
+                log_comments = CommentDao.get_comments_by_log_id(log.get('log_id'))
                 log['comments'] = log_comments
 
             response = jsonify({
@@ -81,7 +81,7 @@ def logs_with_id(log_id):
         log = LogDao.get_log_by_id(log_id)
 
         if log is None:
-            comments = CommentDao.get_comment_by_log_id(log_id)
+            comments = CommentDao.get_comments_by_log_id(log_id)
             response = jsonify({
                 'self': f'/v2/logs/{log_id}',
                 'log': log,

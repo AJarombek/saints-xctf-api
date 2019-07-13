@@ -6,6 +6,7 @@ Date: 7/10/2019
 
 from flask import Blueprint, request, jsonify, current_app
 from dao.logDao import LogDao
+from dao.commentDao import CommentDao
 
 log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/logfeed')
 
@@ -54,6 +55,11 @@ def logs(filter_by, bucket, limit, offset):
             response.status_code = 500
             return response
         else:
+
+            for log in logs:
+                comments = CommentDao.get_comments_by_log_id(log.get('log_id'))
+                log.comments = comments
+
             next_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
             response = jsonify({
