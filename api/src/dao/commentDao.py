@@ -55,6 +55,41 @@ class CommentDao:
         return BasicDao.safe_commit()
 
     @staticmethod
+    def update_comment(comment: Comment) -> bool:
+        """
+        Update a comment in the database. Certain fields (log_id, username, first, last) can't be modified.
+        :param comment: Object representing an updated comment.
+        :return: True if the comment is updated in the database, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE comments SET 
+                time=:time, 
+                content=:content 
+            WHERE comment_id=:comment_id
+            ''',
+            {
+                'comment_id': comment.comment_id,
+                'time': comment.time,
+                'content': comment.content
+            }
+        )
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def delete_comment_by_id(comment_id: int) -> bool:
+        """
+        Delete a comment from the database based on its id.
+        :param comment_id: ID which uniquely identifies the comment.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM comments WHERE comment_id=:comment_id',
+            {'comment_id': comment_id}
+        )
+        return BasicDao.safe_commit()
+
+    @staticmethod
     def delete_comments_by_log_id(log_id: int) -> bool:
         """
         Delete comments from the database based on the log they are bound 2.

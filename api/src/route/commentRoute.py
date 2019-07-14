@@ -114,10 +114,53 @@ def comment_with_id(comment_id):
         new_comment = Comment(comment_data)
 
         if old_comment != new_comment:
-            pass
+            is_updated = CommentDao.update_comment(comment=new_comment)
+
+            if is_updated:
+                updated_comment = CommentDao.get_comment_by_id(comment_id=new_comment.comment_id)
+
+                response = jsonify({
+                    'self': f'/v2/comments/{comment_id}',
+                    'updated': True,
+                    'comment': updated_comment
+                })
+                response.status_code = 200
+                return response
+            else:
+                response = jsonify({
+                    'self': f'/v2/comments/{comment_id}',
+                    'updated': False,
+                    'comment': None,
+                    'error': 'the comment failed to update'
+                })
+                response.status_code = 500
+                return response
         else:
-            pass
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'updated': False,
+                'comment': None,
+                'error': 'the comment submitted is equal to the existing comment with the same id'
+            })
+            response.status_code = 400
+            return response
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/comments/<comment_id> '''
-        pass
+        is_deleted = CommentDao.delete_comment_by_id(comment_id=comment_id)
+
+        if is_deleted:
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'deleted': True,
+            })
+            response.status_code = 204
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/comments/{comment_id}',
+                'deleted': False,
+                'error': 'failed to delete the comment'
+            })
+            response.status_code = 500
+            return response
