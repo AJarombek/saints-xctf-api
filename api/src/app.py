@@ -16,7 +16,11 @@ from route.mailRoute import mail_route
 from route.userRoute import user_route
 from route.forgotPasswordRoute import forgot_password_route
 from route.flairRoute import flair_route
+from route.logRoute import log_route
 from route.logFeedRoute import log_feed_route
+from route.messageRoute import message_route
+from route.groupRoute import group_route
+from route.commentRoute import comment_route
 
 
 def create_app(config_name) -> Flask:
@@ -32,7 +36,11 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(user_route)
     application.register_blueprint(forgot_password_route)
     application.register_blueprint(flair_route)
+    application.register_blueprint(log_route)
     application.register_blueprint(log_feed_route)
+    application.register_blueprint(group_route)
+    application.register_blueprint(message_route)
+    application.register_blueprint(comment_route)
 
     application.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
