@@ -65,7 +65,7 @@ def messages():
 
 
 @message_route.route('/<message_id>', methods=['GET', 'PUT', 'DELETE'])
-def logs_with_id(message_id):
+def messages_with_id(message_id):
     """
     Endpoints for retrieving a single message, editing an existing message, and deleting a message.
     :param message_id: Unique identifier for a message.
@@ -93,8 +93,70 @@ def logs_with_id(message_id):
 
     elif request.method == 'PUT':
         ''' [PUT] /v2/messages/<message_id> '''
-        pass
+        old_message = MessageDao.get_message_by_id(message_id=message_id)
+
+        if old_message is None:
+            response = jsonify({
+                'self': f'/v2/messages/{message_id}',
+                'updated': False,
+                'message': None,
+                'error': 'there is no existing message with this id'
+            })
+            response.status_code = 400
+            return response
+
+        message_data: dict = request.get_json()
+        new_message = Message(message_data)
+
+        if old_message != new_message:
+            is_updated = MessageDao.update_message(new_message)
+
+            if is_updated:
+                updated_log = MessageDao.get_message_by_id(message_id=new_message.message_id)
+
+                response = jsonify({
+                    'self': f'/v2/messages/{message_id}',
+                    'updated': True,
+                    'message': updated_log
+                })
+                response.status_code = 200
+                return response
+            else:
+                response = jsonify({
+                    'self': f'/v2/messages/{message_id}',
+                    'updated': False,
+                    'message': None,
+                    'error': 'the message failed to update'
+                })
+                response.status_code = 500
+                return response
+
+        else:
+            response = jsonify({
+                'self': f'/v2/messages/{message_id}',
+                'updated': False,
+                'message': None,
+                'error': 'the message submitted is equal to the existing message with the same id'
+            })
+            response.status_code = 400
+            return response
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/messages/<message_id> '''
-        pass
+        is_deleted = MessageDao.delete_message_by_id(message_id=message_id)
+
+        if is_deleted:
+            response = jsonify({
+                'self': f'/v2/messages/{message_id}',
+                'deleted': True,
+            })
+            response.status_code = 204
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/messages/{message_id}',
+                'deleted': False,
+                'error': 'failed to delete the message'
+            })
+            response.status_code = 500
+            return response

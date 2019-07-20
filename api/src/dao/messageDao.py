@@ -58,3 +58,16 @@ class MessageDao:
             }
         )
         return BasicDao.safe_commit()
+
+    @staticmethod
+    def delete_message_by_id(message_id: int) -> bool:
+        """
+        Delete a message from the database based on its id.
+        :param message_id: ID which uniquely identifies the message.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM messages WHERE message_id=:message_id',
+            {'message_id': message_id}
+        )
+        return BasicDao.safe_commit()
