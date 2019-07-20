@@ -93,7 +93,8 @@ def logs_with_id(log_id):
             response = jsonify({
                 'self': f'/v2/logs/{log_id}',
                 'log': None,
-                'comments': None
+                'comments': None,
+                'message': 'failed to retrieve a log with this id'
             })
             response.status_code = 500
             return response
