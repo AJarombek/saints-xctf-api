@@ -14,7 +14,7 @@ log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/logfeed')
 @log_feed_route.route('/<filter_by>/<bucket>/<limit>/<offset>', methods=['GET'])
 def logs(filter_by, bucket, limit, offset):
     """
-    Endpoints for retrieving all the logs and creating new logs.
+    Endpoints for retrieving exercise logs based on filters.
     :param filter_by: The filtering mechanism for the exercise logs.
     You can filter by user (username) or group (group_name).
     :param bucket: The bucket to filter by (either a username or a group name)
@@ -36,7 +36,7 @@ def logs(filter_by, bucket, limit, offset):
         # Generate LogFeed API URLs
         self_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset}'
 
-        prev_offset = offset - limit >= 0
+        prev_offset = (offset - limit) >= 0
         if prev_offset:
             prev_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{prev_offset}'
         else:

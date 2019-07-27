@@ -29,6 +29,25 @@ class MessageDao:
         return Message.query.filter_by(message_id=message_id).first()
 
     @staticmethod
+    def get_message_feed(group_name: str, limit: int, offset: int) -> list:
+        """
+        Retrieve a collection of messages in a group
+        :param group_name: The unique name of a group
+        :param limit: The maximum number of messages to return
+        :param offset: The number of messages to skip before returning
+        :return: A list of messages
+        """
+        return db.session.execute(
+            '''
+            SELECT * FROM messages 
+            WHERE group_name=:group_name 
+            ORDER BY time DESC 
+            LIMIT :limit OFFSET :offset
+            ''',
+            {'group_name': group_name, 'limit': limit, 'offset': offset}
+        )
+
+    @staticmethod
     def add_message(new_message: Message) -> bool:
         """
         Add a group message to the database.
