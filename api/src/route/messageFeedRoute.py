@@ -21,7 +21,7 @@ def messages(filter_by, bucket, limit, offset):
     :return: JSON representation of group messages and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/message_feed '''
+        ''' [GET] /v2/messagefeed '''
         if filter_by == 'group' or filter_by == 'groups':
             messages = MessageDao.get_message_feed(group_name=bucket, limit=limit, offset=offset)
         else:

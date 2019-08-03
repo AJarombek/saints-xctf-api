@@ -22,6 +22,7 @@ from route.messageRoute import message_route
 from route.groupRoute import group_route
 from route.commentRoute import comment_route
 from route.messageFeedRoute import message_feed_route
+from route.rangeViewRoute import range_view_route
 
 
 def create_app(config_name) -> Flask:
@@ -43,6 +44,7 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(message_route)
     application.register_blueprint(comment_route)
     application.register_blueprint(message_feed_route)
+    application.register_blueprint(range_view_route)
 
     application.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -23,7 +23,7 @@ def logs(filter_by, bucket, limit, offset):
     :return: JSON representation of exercise logs and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/log_feed '''
+        ''' [GET] /v2/logfeed '''
         if filter_by == 'group' or filter_by == 'groups':
             logs = LogDao.get_group_log_feed(group_name=bucket, limit=limit, offset=offset)
         elif filter_by == 'user' or filter_by == 'users':

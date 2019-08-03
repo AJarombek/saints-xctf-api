@@ -393,6 +393,55 @@ class LogDao:
         )
 
     @staticmethod
+    def get_range_view(types: list, start: str, end: str) -> list:
+        type_query = None
+        return db.session.execute(
+            f'''
+            SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
+            FROM logs 
+            WHERE date >= :start 
+            AND date <= :end
+            {type_query}
+            GROUP BY date
+            ''',
+            {'start': start, 'end': end}
+        )
+
+    @staticmethod
+    def get_user_range_view(username: str, types: list, start: str, end: str) -> list:
+        type_query = None
+        return db.session.execute(
+            f'''
+            SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
+            FROM logs 
+            WHERE username=:username 
+            AND date >= :start 
+            AND date <= :end
+            {type_query}
+            GROUP BY date
+            ''',
+            {'username': username, 'start': start, 'end': end}
+        )
+
+    @staticmethod
+    def get_group_range_view(group_name: str, types: list, start: str, end: str) -> list:
+        type_query = None
+        return db.session.execute(
+            f'''
+            SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
+            FROM logs 
+            INNER JOIN groupmembers 
+            ON logs.username=groupmembers.username 
+            WHERE group_name=:group_name
+            AND date >= :start 
+            AND date <= :end
+            {type_query}
+            GROUP BY date
+            ''',
+            {'group_name': group_name, 'start': start, 'end': end}
+        )
+
+    @staticmethod
     def add_log(new_log: Log) -> bool:
         """
         Add an exercise log to the database.
