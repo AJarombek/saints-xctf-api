@@ -6,6 +6,7 @@ Date: 8/3/2019
 
 from flask import Blueprint, request, jsonify, current_app
 from dao.logDao import LogDao
+from utils import exerciseFilters
 
 range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/rangeview')
 
@@ -24,11 +25,18 @@ def messages(filter_by, bucket, exercise_types, start, end):
     """
     if request.method == 'GET':
         ''' [GET] /v2/rangeview '''
+        exercise_type_filter_list = exerciseFilters.create_exercise_filter_list(exercise_types)
+
         if filter_by == 'group' or filter_by == 'groups':
-            range_view = LogDao.get_group_range_view(group_name=bucket, types=exercise_types, start=start, end=end)
+            range_view = LogDao.get_group_range_view(
+                group_name=bucket,
+                types=exercise_type_filter_list,
+                start=start,
+                end=end
+            )
         elif filter_by == 'user' or filter_by == 'users':
-            range_view = LogDao.get_user_range_view(username=bucket, types=exercise_types, start=start, end=end)
+            range_view = LogDao.get_user_range_view(username=bucket, types=exercise_type_filter_list, start=start, end=end)
         elif filter_by == 'all':
-            range_view = LogDao.get_range_view(types=exercise_types, start=start, end=end)
+            range_view = LogDao.get_range_view(types=exercise_type_filter_list, start=start, end=end)
         else:
             range_view = None

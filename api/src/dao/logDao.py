@@ -8,6 +8,7 @@ import utils.dates as dates
 from dao.basicDao import BasicDao
 from database import db
 from model.Log import Log
+from utils.exerciseFilters import generate_exercise_filter_sql_query
 
 
 class LogDao:
@@ -394,7 +395,14 @@ class LogDao:
 
     @staticmethod
     def get_range_view(types: list, start: str, end: str) -> list:
-        type_query = None
+        """
+        Get exercise log statistics over a date range.
+        :param types: Types of exercise logs to filter by.
+        :param start: The first date to include in the range.
+        :param end: The last date to include in the range.
+        :return: A list of exercise miles and feel statistics for each day a log exists.
+        """
+        type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
             f'''
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
@@ -409,7 +417,15 @@ class LogDao:
 
     @staticmethod
     def get_user_range_view(username: str, types: list, start: str, end: str) -> list:
-        type_query = None
+        """
+        Get exercise log statistics for a user over a date range.
+        :param username: Unique identifier for a user.
+        :param types: Types of exercise logs to filter by.
+        :param start: The first date to include in the range.
+        :param end: The last date to include in the range.
+        :return: A list of exercise miles and feel statistics for each day a log exists.
+        """
+        type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
             f'''
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
@@ -425,7 +441,15 @@ class LogDao:
 
     @staticmethod
     def get_group_range_view(group_name: str, types: list, start: str, end: str) -> list:
-        type_query = None
+        """
+        Get exercise log statistics for a group over a date range.
+        :param group_name: Unique identifier for a group.
+        :param types: Types of exercise logs to filter by.
+        :param start: The first date to include in the range.
+        :param end: The last date to include in the range.
+        :return: A list of exercise miles and feel statistics for each day a log exists.
+        """
+        type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
             f'''
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
