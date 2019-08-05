@@ -35,8 +35,33 @@ def messages(filter_by, bucket, exercise_types, start, end):
                 end=end
             )
         elif filter_by == 'user' or filter_by == 'users':
-            range_view = LogDao.get_user_range_view(username=bucket, types=exercise_type_filter_list, start=start, end=end)
+            range_view = LogDao.get_user_range_view(
+                username=bucket,
+                types=exercise_type_filter_list,
+                start=start,
+                end=end
+            )
         elif filter_by == 'all':
-            range_view = LogDao.get_range_view(types=exercise_type_filter_list, start=start, end=end)
+            range_view = LogDao.get_range_view(
+                types=exercise_type_filter_list,
+                start=start,
+                end=end
+            )
         else:
             range_view = None
+
+        if range_view is None:
+            response = jsonify({
+                'self': f'/v2/rangeview/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
+                'range_view': None,
+                'error': 'no logs found in this date range with the selected filters'
+            })
+            response.status_code = 500
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/rangeview/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
+                'range_view': range_view
+            })
+            response.status_code = 200
+            return response
