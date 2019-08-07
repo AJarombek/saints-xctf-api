@@ -6,6 +6,7 @@ Date: 8/5/2019
 """
 
 from flask import Blueprint, request, jsonify, current_app
+from dao.activationCodeDao import ActivationCodeDao
 
 activation_code_route = Blueprint('activation_code_route', __name__, url_prefix='/v2/activationcode')
 
@@ -23,5 +24,5 @@ def activation_code():
 @activation_code_route.route('/<code>', methods=['DELETE'])
 def activation_code_by_code(code):
     if request.method == 'DELETE':
-        ''' [GET] /v2/activationcode/<code> '''
+        ''' [DELETE] /v2/activationcode/<code> '''
         pass
