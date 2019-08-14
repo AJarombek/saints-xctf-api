@@ -13,6 +13,10 @@ notification_route = Blueprint('notification_route', __name__, url_prefix='/v2/n
 
 @notification_route.route('/', methods=['GET', 'POST'])
 def notifications():
+    """
+    Endpoints for retrieving all the notifications and creating new notifications.
+    :return: JSON representation of notifications and relevant metadata.
+    """
     if request.method == 'GET':
         ''' [GET] /v2/notification '''
         pass
@@ -23,6 +27,11 @@ def notifications():
 
 @notification_route.route('/<id>', methods=['GET', 'PUT', 'DELETE'])
 def notification_by_id(id):
+    """
+    Endpoints for retrieving a single notification, updating existing notifications, and deleting notifications.
+    :param id: Unique identifier for a notification.
+    :return: JSON representation of notifications and relevant metadata.
+    """
     if request.method == 'GET':
         ''' [GET] /v2/notification/<id> '''
         pass
