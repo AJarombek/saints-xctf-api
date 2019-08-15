@@ -6,6 +6,7 @@ Date: 7/3/2019
 """
 
 from database import db
+from dao.basicDao import BasicDao
 from model.Notification import Notification
 
 
@@ -44,3 +45,34 @@ class NotificationDao:
             ''',
             {'username': username}
         )
+
+    @staticmethod
+    def add_notification(new_notification: Notification) -> bool:
+        """
+        Add a notification for a user to the database.
+        :param new_notification: Object representing a notification for a user.
+        :return: True if the notification is inserted into the database, False otherwise.
+        """
+        db.session.add(new_notification)
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def update_notification(notification: Notification) -> bool:
+        """
+        Update a notification in the database. Certain fields (notification_id, username, time, link, description)
+        can't be modified.
+        :param notification: Object representing an updated notification.
+        :return: True if the notification is updated in the database, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE notifications 
+            SET viewed=:viewed
+            WHERE notification_id=:notification_id
+            ''',
+            {
+                'notification_id': notification.notification_id,
+                'viewed': notification.viewed
+            }
+        )
+        return BasicDao.safe_commit()
