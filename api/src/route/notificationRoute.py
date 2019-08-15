@@ -113,12 +113,52 @@ def notification_by_id(notification_id):
             is_updated = NotificationDao.update_notification(notification=new_notification)
 
             if is_updated:
-                pass
+                updated_notification = NotificationDao.get_notification_by_id(
+                    notification_id=new_notification.notification_id
+                )
+
+                response = jsonify({
+                    'self': f'/v2/notifications/{notification_id}',
+                    'updated': True,
+                    'notification': updated_notification
+                })
+                response.status_code = 200
+                return response
             else:
-                pass
+                response = jsonify({
+                    'self': f'/v2/notifications/{notification_id}',
+                    'updated': False,
+                    'notification': None,
+                    'error': 'the notification failed to update'
+                })
+                response.status_code = 500
+                return response
         else:
-            pass
+            response = jsonify({
+                'self': f'/v2/notifications/{notification_id}',
+                'updated': False,
+                'notification': None,
+                'error': 'the notification submitted is equal to the existing notification with the same id'
+            })
+            response.status_code = 400
+            return response
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/notifications/<notification_id> '''
-        pass
+        is_deleted = NotificationDao.delete_notification_by_id(notification_id=notification_id)
+
+        if is_deleted:
+            response = jsonify({
+                'self': f'/v2/notifications/{notification_id}',
+                'deleted': True,
+            })
+            response.status_code = 204
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/notifications/{notification_id}',
+                'deleted': False,
+                'error': 'failed to delete the notification'
+            })
+            response.status_code = 500
+            return response

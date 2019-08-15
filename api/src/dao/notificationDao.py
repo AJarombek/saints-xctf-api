@@ -76,3 +76,16 @@ class NotificationDao:
             }
         )
         return BasicDao.safe_commit()
+
+    @staticmethod
+    def delete_notification_by_id(notification_id: int) -> bool:
+        """
+        Delete a notification from the database based on its id.
+        :param notification_id: ID which uniquely identifies the notification.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM notifications WHERE notification_id=:notification_id',
+            {'notification_id': notification_id}
+        )
+        return BasicDao.safe_commit()
