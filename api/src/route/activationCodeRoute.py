@@ -25,9 +25,24 @@ def activation_code():
         code_added_successfully = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 
         if code_added_successfully:
-            pass
+            code_added = ActivationCodeDao.get_activation_code(code=code_to_add.activation_code)
+
+            response = jsonify({
+                'self': '/v2/activationcode',
+                'added': True,
+                'activation_code': code_added
+            })
+            response.status_code = 200
+            return response
         else:
-            pass
+            response = jsonify({
+                'self': '/v2/activationcode',
+                'added': False,
+                'activation_code': None,
+                'error': 'failed to create a new activation code'
+            })
+            response.status_code = 500
+            return response
 
 
 @activation_code_route.route('/<code>', methods=['DELETE'])
@@ -60,4 +75,20 @@ def activation_code_by_code(code):
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/activationcode/<code> '''
-        pass
+        is_deleted = ActivationCodeDao.delete_code(activation_code=code)
+
+        if is_deleted:
+            response = jsonify({
+                'self': f'/v2/activationcode/{code}',
+                'deleted': True,
+            })
+            response.status_code = 204
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/activationcode/{code}',
+                'deleted': False,
+                'error': 'failed to delete the activation code'
+            })
+            response.status_code = 500
+            return response

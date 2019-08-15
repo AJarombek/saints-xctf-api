@@ -12,8 +12,13 @@ from model.Code import Code
 class ActivationCodeDao:
 
     @staticmethod
-    def get_activation_codes() -> list:
-        pass
+    def get_activation_code(code: str) -> list:
+        """
+        Retrieve a single activation code by its unique characters.
+        :param code: An activation code.
+        :return: The result of the query.
+        """
+        return Code.query.filter_by(activation_code=code).first()
 
     @staticmethod
     def activation_code_exists(activation_code: str) -> dict:
@@ -39,4 +44,17 @@ class ActivationCodeDao:
         :return: True if the code is inserted into the database, False otherwise.
         """
         db.session.add(new_code)
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def delete_code(activation_code: str) -> bool:
+        """
+        Delete an activation code from the database based on its code.
+        :param activation_code: An activation code.
+        :return: True if the deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            'DELETE FROM codes WHERE activation_code=:activation_code',
+            {'activation_code': activation_code}
+        )
         return BasicDao.safe_commit()
