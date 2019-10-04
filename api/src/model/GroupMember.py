@@ -11,6 +11,7 @@ from sqlalchemy import Column
 class GroupMember(db.Model):
     __tablename__ = 'groupmembers'
 
+    id = Column(db.INTEGER, primary_key=True)
     group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), index=True)
     username = Column(db.VARCHAR(20), index=True)
     status = Column(db.VARCHAR(10), db.ForeignKey('status.status'))

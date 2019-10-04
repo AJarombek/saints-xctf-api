@@ -46,7 +46,7 @@ class Log(db.Model):
     miles = Column(db.FLOAT, index=True)
     time = Column(db.TIME, index=True)
     pace = Column(db.TIME)
-    feel = Column(db.INT(2), nullable=False, index=True)
+    feel = Column(db.INT, nullable=False, index=True)
     description = Column(db.VARCHAR(1000))
     time_created = Column(db.DATETIME, nullable=False)
 

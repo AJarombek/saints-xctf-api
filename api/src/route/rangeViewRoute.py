@@ -8,7 +8,7 @@ from flask import Blueprint, request, jsonify, current_app
 from dao.logDao import LogDao
 from utils import exerciseFilters
 
-range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/rangeview')
+range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/range_view')
 
 
 @range_view_route.route('/<filter_by>/<bucket>/<exercise_types>/<start>/<end>', methods=['GET'])
@@ -24,7 +24,7 @@ def messages(filter_by, bucket, exercise_types, start, end):
     :return: JSON representation of a log feed and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/rangeview '''
+        ''' [GET] /v2/range_view '''
         exercise_type_filter_list = exerciseFilters.create_exercise_filter_list(exercise_types)
 
         if filter_by == 'group' or filter_by == 'groups':
@@ -52,7 +52,7 @@ def messages(filter_by, bucket, exercise_types, start, end):
 
         if range_view is None:
             response = jsonify({
-                'self': f'/v2/rangeview/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
+                'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
                 'range_view': None,
                 'error': 'no logs found in this date range with the selected filters'
             })
@@ -60,7 +60,7 @@ def messages(filter_by, bucket, exercise_types, start, end):
             return response
         else:
             response = jsonify({
-                'self': f'/v2/rangeview/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
+                'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
                 'range_view': range_view
             })
             response.status_code = 200

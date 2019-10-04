@@ -38,16 +38,27 @@ def version2():
         'self': '/v2',
         'version': 2,
         'latest': True,
-        'entities': '/v2/entities'
+        'links': '/v2/links'
     })
 
 
-@api_route.route('/v2/entities', methods=['GET'])
-def entities():
+@api_route.route('/v2/links', methods=['GET'])
+def links():
     return jsonify({
-        'self': '/v2/entities',
-        'admin': '/v2/mail',
-        'code': '/v2/users'
+        'self': '/v2/links',
+        'activation_code': '/v2/activation_code/links',
+        'comment': '/v2/comments/links',
+        'flair': '/v2/flair/links',
+        'forgot_password': '/v2/forgot_password/links',
+        'group': '/v2/groups/links',
+        'log_feed': '/v2/log_feed/links',
+        'log': '/v2/logs/links',
+        'mail': '/v2/mail/links',
+        'message_feed': '/v2/message_feed/links',
+        'message': '/v2/messages/links',
+        'notification': '/v2/notifications/links',
+        'range_view': '/v2/range_view/links',
+        'user': '/v2/users/links'
     })
 
 

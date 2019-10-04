@@ -7,7 +7,7 @@ Date: 7/27/2019
 from flask import Blueprint, request, jsonify, current_app
 from dao.messageDao import MessageDao
 
-message_feed_route = Blueprint('message_feed_route', __name__, url_prefix='/v2/messagefeed')
+message_feed_route = Blueprint('message_feed_route', __name__, url_prefix='/v2/message_feed')
 
 
 @message_feed_route.route('/<filter_by>/<bucket>/<limit>/<offset>', methods=['GET'])
@@ -21,18 +21,18 @@ def messages(filter_by, bucket, limit, offset):
     :return: JSON representation of group messages and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/messagefeed '''
+        ''' [GET] /v2/message_feed '''
         if filter_by == 'group' or filter_by == 'groups':
             messages = MessageDao.get_message_feed(group_name=bucket, limit=limit, offset=offset)
         else:
             messages = None
 
         # Generate MessageFeed API URLs
-        self_url = f'/v2/messagefeed/{filter_by}/{bucket}/{limit}/{offset}'
+        self_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{offset}'
 
         prev_offset = (offset - limit) >= 0
         if prev_offset:
-            prev_url = f'/v2/messagefeed/{filter_by}/{bucket}/{limit}/{prev_offset}'
+            prev_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{prev_offset}'
         else:
             prev_url = None
 
@@ -49,7 +49,7 @@ def messages(filter_by, bucket, limit, offset):
             response.status_code = 500
             return response
         else:
-            next_url = f'/v2/messagefeed/{filter_by}/{bucket}/{limit}/{offset + limit}'
+            next_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
             response = jsonify({
                 'self': self_url,

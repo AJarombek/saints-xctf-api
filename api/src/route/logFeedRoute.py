@@ -8,7 +8,7 @@ from flask import Blueprint, request, jsonify, current_app
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 
-log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/logfeed')
+log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/log_feed')
 
 
 @log_feed_route.route('/<filter_by>/<bucket>/<limit>/<offset>', methods=['GET'])
@@ -23,7 +23,7 @@ def logs(filter_by, bucket, limit, offset):
     :return: JSON representation of exercise logs and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/logfeed '''
+        ''' [GET] /v2/log_feed '''
         if filter_by == 'group' or filter_by == 'groups':
             logs = LogDao.get_group_log_feed(group_name=bucket, limit=limit, offset=offset)
         elif filter_by == 'user' or filter_by == 'users':
@@ -34,11 +34,11 @@ def logs(filter_by, bucket, limit, offset):
             logs = None
 
         # Generate LogFeed API URLs
-        self_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset}'
+        self_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset}'
 
         prev_offset = (offset - limit) >= 0
         if prev_offset:
-            prev_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{prev_offset}'
+            prev_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{prev_offset}'
         else:
             prev_url = None
 
@@ -60,7 +60,7 @@ def logs(filter_by, bucket, limit, offset):
                 comments = CommentDao.get_comments_by_log_id(log.get('log_id'))
                 log.comments = comments
 
-            next_url = f'/v2/logfeed/{filter_by}/{bucket}/{limit}/{offset + limit}'
+            next_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
             response = jsonify({
                 'self': self_url,

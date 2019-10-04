@@ -29,4 +29,4 @@ def get_connection_url() -> str:
     password = secret_map.get("password")
     database = 'saintsxctf'
 
-    return f'mysql://{username}:{password}@{hostname}/${database}'
+    return f'mysql+pymysql:://{username}:{password}@{hostname}/${database}'
