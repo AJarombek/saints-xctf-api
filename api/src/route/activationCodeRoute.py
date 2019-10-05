@@ -51,6 +51,10 @@ def activation_code_links():
 
 
 def activation_code_post():
+    """
+    Create a new activation code.
+    :return: A response object for the POST API request
+    """
     code_data: dict = request.get_json()
     code_to_add = Code(code_data)
     code_added_successfully = ActivationCodeDao.add_activation_code(new_code=code_to_add)
@@ -77,6 +81,11 @@ def activation_code_post():
 
 
 def activation_code_by_code_get(code: str):
+    """
+    Get an activation code based on its unique code.
+    :param code: The unique activation code.
+    :return: A response object for the GET API request
+    """
     matching_codes = ActivationCodeDao.activation_code_exists(code)
     matching_code_exists = matching_codes.get('exists')
 
@@ -98,6 +107,11 @@ def activation_code_by_code_get(code: str):
 
 
 def activation_code_by_code_delete(code: str):
+    """
+    Delete an activation code based on a unique code.
+    :param code: The activation code to delete.
+    :return: A response object for the DELETE API request.
+    """
     is_deleted = ActivationCodeDao.delete_code(activation_code=code)
 
     if is_deleted:
@@ -118,6 +132,10 @@ def activation_code_by_code_delete(code: str):
 
 
 def activation_code_links_get():
+    """
+    Get all the other activation code API endpoints.
+    :return: A response object for the GET API request
+    """
     response = jsonify({
         'self': f'/v2/activation_code/links',
         'endpoints': [

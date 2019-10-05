@@ -42,4 +42,5 @@ pipenv --rm
 pipenv install
 
 export FLASK_APP=app.py
+export ENV=local
 pipenv run python3 -m flask run

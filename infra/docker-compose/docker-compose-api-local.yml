@@ -10,16 +10,11 @@ services:
       dockerfile: local.api.dockerfile
       # Needed to connect to the running MySQL database - https://stackoverflow.com/a/47068162
       network: host
+    ports:
+      - 5000:5000
     networks:
       - local-saints-xctf-api-net
-    volumes:
-      - type: volume
-        source: local-saints-xctf-api-vol
-        target: /src
 
 networks:
   local-saints-xctf-api-net:
     driver: bridge
-
-volumes:
-  local-saints-xctf-api-vol:

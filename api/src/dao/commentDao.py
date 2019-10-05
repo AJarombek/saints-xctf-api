@@ -35,7 +35,7 @@ class CommentDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return db.session.query(
+        return db.session.execute(
             '''
             SELECT * FROM comments 
             WHERE log_id=:log_id 

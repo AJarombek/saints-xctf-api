@@ -15,10 +15,13 @@ WORKDIR /src
 # Before I start the API, I wan't to populate MySQL with data from a production backup.
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
+    && pip install --upgrade pip \
     && pip install pipenv \
-    && pipenv install --system --deploy --ignore-pipfile \
-    && export FLASK_APP=app.py \
+    && pipenv install \
     && apk add --update mysql mysql-client
+
+ENV FLASK_APP app.py
+ENV ENV local
 
 RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'%'" \
     && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'%' IDENTIFIED BY 'saintsxctf'" \
@@ -28,5 +31,5 @@ RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS '
 
 RUN mysql -h localhost -P 3306 --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
-EXPOSE 8080
-ENTRYPOINT ["python", "-m", "flask", "run"]
+EXPOSE 5000
+ENTRYPOINT ["pipenv", "run", "python", "-m", "flask", "run", "--host=0.0.0.0"]

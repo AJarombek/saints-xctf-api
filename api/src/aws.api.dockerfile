@@ -14,8 +14,10 @@ WORKDIR /src
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
     && pip install pipenv \
-    && pipenv install \
-    && export FLASK_APP=app.py
+    && pipenv install
+
+ENV FLASK_APP app.py
+ENV ENV production
 
 EXPOSE 8080
 ENTRYPOINT ["python", "-m", "flask", "run"]

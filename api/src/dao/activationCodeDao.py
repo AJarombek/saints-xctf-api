@@ -27,7 +27,7 @@ class ActivationCodeDao:
         :param activation_code: Random characters that make up an activation code.
         :return: The result of the query.
         """
-        return db.session.query(
+        return db.session.execute(
             '''
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
