@@ -5,6 +5,7 @@ Author: Andrew Jarombek
 Date: 8/5/2019
 """
 
+from datetime import datetime
 from flask import Blueprint, request, jsonify, Response
 from sqlalchemy.schema import Column
 from dao.activationCodeDao import ActivationCodeDao
@@ -38,6 +39,18 @@ def activation_code_by_code(code) -> Response:
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/activation_code/<code> '''
         return activation_code_by_code_delete(code)
+
+
+@activation_code_route.route('/soft/<code>', methods=['DELETE'])
+def activation_code_soft_by_code(code) -> Response:
+    """
+    Endpoints for soft deleting activation codes.
+    :param code: Random characters that make up an activation code.
+    :return: JSON representation of activation codes and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/activation_code/soft/<code> '''
+        return activation_code_by_code_soft_delete(code)
 
 
 @activation_code_route.route('/links', methods=['GET'])
@@ -132,6 +145,51 @@ def activation_code_by_code_delete(code: str) -> Response:
         return response
 
 
+def activation_code_by_code_soft_delete(code: str) -> Response:
+    """
+    Soft delete an activation code based on a unique code.
+    :param code: The activation code to delete.
+    :return: A response object for the DELETE API request.
+    """
+    existing_code = ActivationCodeDao.get_activation_code(code=code)
+
+    if existing_code is None:
+        response = jsonify({
+            'self': f'/v2/activation_code/soft/{existing_code}',
+            'deleted': False,
+            'error': 'there is no existing activation code with this code'
+        })
+        response.status_code = 400
+        return response
+
+    code: Code = Code(existing_code)
+
+    # Update the activation code model to reflect the soft delete
+    code.deleted = True
+    code.deleted_date = datetime.now()
+    code.deleted_app = 'api'
+    code.modified_date = datetime.now()
+    code.modified_app = 'api'
+
+    is_deleted = ActivationCodeDao.soft_delete_code(code)
+
+    if is_deleted:
+        response = jsonify({
+            'self': f'/v2/activation_code/soft/{code}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/activation_code/soft/{code}',
+            'deleted': False,
+            'error': 'failed to soft delete the activation code'
+        })
+        response.status_code = 500
+        return response
+
+
 def activation_code_links_get() -> Response:
     """
     Get all the other activation code API endpoints.
@@ -154,6 +212,11 @@ def activation_code_links_get() -> Response:
                 'link': '/v2/activation_code/<code>',
                 'verb': 'DELETE',
                 'description': 'Delete a single activation code.'
+            },
+            {
+                'link': '/v2/activation_code/soft/<code>',
+                'verb': 'DELETE',
+                'description': 'Soft delete a single activation code.'
             }
         ],
     })

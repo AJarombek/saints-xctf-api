@@ -61,3 +61,13 @@ class ActivationCodeDao:
             {'activation_code': activation_code}
         )
         return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_code(code: Code) -> bool:
+        """
+        Soft delete an activation code from the database based on its code.
+        :param code: Object representing an activation code for a user.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.add(code)
+        return BasicDao.safe_commit()
