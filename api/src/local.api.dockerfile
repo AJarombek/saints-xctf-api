@@ -29,7 +29,7 @@ RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS '
     && mysql --protocol=tcp -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'" \
     && mysql --protocol=tcp -u root --password=saintsxctf -e "FLUSH PRIVILEGES"
 
-RUN mysql -h localhost -P 3306 --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
+RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
 EXPOSE 5000
 ENTRYPOINT ["pipenv", "run", "python", "-m", "flask", "run", "--host=0.0.0.0"]

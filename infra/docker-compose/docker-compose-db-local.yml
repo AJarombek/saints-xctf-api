@@ -8,6 +8,7 @@ services:
     build:
       context: ../../api/src/
       dockerfile: local.db.dockerfile
+      network: host
     environment:
       MYSQL_ROOT_PASSWORD: saintsxctf
     ports:

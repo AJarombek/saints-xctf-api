@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 8/6/2019
 """
 
+from sqlalchemy.engine import ResultProxy
+from sqlalchemy.schema import Column
 from database import db
 from dao.basicDao import BasicDao
 from model.Code import Code
@@ -21,13 +23,13 @@ class ActivationCodeDao:
         return Code.query.filter_by(activation_code=code).first()
 
     @staticmethod
-    def activation_code_exists(activation_code: str) -> dict:
+    def activation_code_exists(activation_code: str) -> Column:
         """
         Retrieve the count of activation codes that match an identifier.
         :param activation_code: Random characters that make up an activation code.
         :return: The result of the query.
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
@@ -35,6 +37,7 @@ class ActivationCodeDao:
             ''',
             {'activation_code': activation_code}
         )
+        return result.first()
 
     @staticmethod
     def add_activation_code(new_code: Code) -> bool:

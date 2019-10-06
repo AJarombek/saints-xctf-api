@@ -5,7 +5,8 @@ Author: Andrew Jarombek
 Date: 8/5/2019
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, Response
+from sqlalchemy.schema import Column
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 
@@ -13,7 +14,7 @@ activation_code_route = Blueprint('activation_code_route', __name__, url_prefix=
 
 
 @activation_code_route.route('/', methods=['POST'])
-def activation_code():
+def activation_code() -> Response:
     """
     Endpoint for creating new activation codes.
     :return: JSON representation of activation codes and relevant metadata.
@@ -24,7 +25,7 @@ def activation_code():
 
 
 @activation_code_route.route('/<code>', methods=['GET', 'DELETE'])
-def activation_code_by_code(code):
+def activation_code_by_code(code) -> Response:
     """
     Endpoints for retrieving a single activation codes and deleting codes.
     :param code: Random characters that make up an activation code.
@@ -40,7 +41,7 @@ def activation_code_by_code(code):
 
 
 @activation_code_route.route('/links', methods=['GET'])
-def activation_code_links():
+def activation_code_links() -> Response:
     """
     Endpoint for information about the activation code API endpoints.
     :return: Metadata about the activation code API.
@@ -50,7 +51,7 @@ def activation_code_links():
         return activation_code_links_get()
 
 
-def activation_code_post():
+def activation_code_post() -> Response:
     """
     Create a new activation code.
     :return: A response object for the POST API request
@@ -80,16 +81,16 @@ def activation_code_post():
         return response
 
 
-def activation_code_by_code_get(code: str):
+def activation_code_by_code_get(code: str) -> Response:
     """
     Get an activation code based on its unique code.
     :param code: The unique activation code.
     :return: A response object for the GET API request
     """
-    matching_codes = ActivationCodeDao.activation_code_exists(code)
-    matching_code_exists = matching_codes.get('exists')
+    matching_codes: Column = ActivationCodeDao.activation_code_exists(code)
+    matching_code_exists: int = matching_codes['exists']
 
-    if matching_code_exists:
+    if matching_code_exists == 1:
         response = jsonify({
             'self': f'/v2/activation_code/{code}',
             'matching_code_exists': matching_code_exists,
@@ -106,7 +107,7 @@ def activation_code_by_code_get(code: str):
         return response
 
 
-def activation_code_by_code_delete(code: str):
+def activation_code_by_code_delete(code: str) -> Response:
     """
     Delete an activation code based on a unique code.
     :param code: The activation code to delete.
@@ -131,7 +132,7 @@ def activation_code_by_code_delete(code: str):
         return response
 
 
-def activation_code_links_get():
+def activation_code_links_get() -> Response:
     """
     Get all the other activation code API endpoints.
     :return: A response object for the GET API request
