@@ -20,8 +20,8 @@ class Group(db.Model):
     description = Column(db.VARCHAR(255))
 
     group_member = db.relationship('GroupMember', backref='group_member')
-    event = db.relationship('Event', backref='event')
-    message = db.relationship('Message', backref='message')
+    # event = db.relationship('Event', backref='event')
+    message = db.relationship('Message', backref='group_message')
 
     def __repr__(self):
         return '<Group %r>' % self.group_name

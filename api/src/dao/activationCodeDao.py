@@ -14,7 +14,7 @@ from model.Code import Code
 class ActivationCodeDao:
 
     @staticmethod
-    def get_activation_code(code: str) -> list:
+    def get_activation_code(code: str) -> Code:
         """
         Retrieve a single activation code by its unique characters.
         :param code: An activation code.

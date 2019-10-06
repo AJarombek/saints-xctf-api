@@ -41,6 +41,18 @@ def activation_code_by_code(code) -> Response:
         return activation_code_by_code_delete(code)
 
 
+@activation_code_route.route('/exists/<code>', methods=['GET'])
+def activation_code_exists_by_code(code) -> Response:
+    """
+    Endpoints determining if an activation code exists.
+    :param code: Random characters that make up an activation code.
+    :return: JSON representation of an activation code and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/activation_code/exists/<code> '''
+        return activation_code_exists_get(code)
+
+
 @activation_code_route.route('/soft/<code>', methods=['DELETE'])
 def activation_code_soft_by_code(code) -> Response:
     """
@@ -70,16 +82,50 @@ def activation_code_post() -> Response:
     :return: A response object for the POST API request
     """
     code_data: dict = request.get_json()
-    code_to_add = Code(code_data)
-    code_added_successfully = ActivationCodeDao.add_activation_code(new_code=code_to_add)
+
+    if code_data is None:
+        response = jsonify({
+            'self': f'/v2/activation_code',
+            'added': False,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
+    code_to_add: Code = Code(code_data)
+
+    if code_to_add.activation_code is None:
+        response = jsonify({
+            'self': f'/v2/activation_code',
+            'added': False,
+            'error': "'activation_code' is a required field"
+        })
+        response.status_code = 400
+        return response
+
+    if len(code_to_add.activation_code) != 6 or type(code_to_add.activation_code) is not str:
+        response = jsonify({
+            'self': f'/v2/activation_code',
+            'added': False,
+            'error': "'activation_code' must be a string of length 6"
+        })
+        response.status_code = 400
+        return response
+
+    # The created date must be accurate, don't trust the date coming from the client.
+    code_to_add.created_date = datetime.now()
+
+    code_added_successfully: bool = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 
     if code_added_successfully:
-        code_added = ActivationCodeDao.get_activation_code(code=code_to_add.activation_code)
+        code_added: Code = ActivationCodeDao.get_activation_code(code=code_to_add.activation_code)
+        code_added_dict: dict = code_added.__dict__
+        del code_added_dict['_sa_instance_state']
 
         response = jsonify({
             'self': '/v2/activation_code',
             'added': True,
-            'activation_code': code_added
+            'activation_code': code_added.__dict__
         })
         response.status_code = 200
         return response
@@ -94,7 +140,7 @@ def activation_code_post() -> Response:
         return response
 
 
-def activation_code_by_code_get(code: str) -> Response:
+def activation_code_exists_get(code: str) -> Response:
     """
     Get an activation code based on its unique code.
     :param code: The unique activation code.
@@ -118,6 +164,10 @@ def activation_code_by_code_get(code: str) -> Response:
         })
         response.status_code = 400
         return response
+
+
+def activation_code_by_code_get(code: str) -> Response:
+    pass
 
 
 def activation_code_by_code_delete(code: str) -> Response:

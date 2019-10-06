@@ -50,7 +50,7 @@ class Log(db.Model):
     description = Column(db.VARCHAR(1000))
     time_created = Column(db.DATETIME, nullable=False)
 
-    comment = db.relationship('Comment', backref='comment')
+    comment = db.relationship('Comment', backref='log_comment')
 
     def __repr__(self):
         return '<Log %r>' % self.log_id

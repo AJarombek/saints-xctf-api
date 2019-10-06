@@ -55,7 +55,7 @@ class User(db.Model):
     last_signin = Column(db.DATETIME, nullable=False)
     week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
 
-    flair = db.relationship('Flair', backref='flair')
+    flair = db.relationship('Flair', backref='user_flair')
     notification = db.relationship('Notification', backref='notification')
     log = db.relationship('Log', backref='log')
     forgot_password = db.relationship('ForgotPassword', backref='forgot_password')
