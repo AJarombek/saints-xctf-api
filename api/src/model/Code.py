@@ -29,8 +29,11 @@ class Code(db.Model):
 
     __tablename__ = 'codes'
 
+    # Data Columns
     activation_code = Column(db.VARCHAR(8), primary_key=True)
     deleted = Column(db.CHAR(1))
+
+    # Audit Columns
     created_date = Column(db.DATETIME)
     created_user = Column(db.VARCHAR(31))
     created_app = Column(db.VARCHAR(31))

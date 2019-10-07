@@ -20,7 +20,7 @@ class CommentDao:
         return Comment.query.order_by(Comment.time).all()
 
     @staticmethod
-    def get_comment_by_id(comment_id: int) -> dict:
+    def get_comment_by_id(comment_id: int) -> Comment:
         """
         Retrieve a single comment by its unique id
         :param comment_id: The unique identifier for a comment.

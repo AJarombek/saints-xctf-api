@@ -48,8 +48,8 @@ def activation_code_exists_by_code(code) -> Response:
     :param code: Random characters that make up an activation code.
     :return: JSON representation of an activation code and relevant metadata.
     """
-    if request.method == 'DELETE':
-        ''' [DELETE] /v2/activation_code/exists/<code> '''
+    if request.method == 'GET':
+        ''' [GET] /v2/activation_code/exists/<code> '''
         return activation_code_exists_get(code)
 
 
@@ -94,6 +94,7 @@ def activation_code_post() -> Response:
 
     code_to_add: Code = Code(code_data)
 
+    # Perform some validation on the JSON object coming from the client.
     if code_to_add.activation_code is None:
         response = jsonify({
             'self': f'/v2/activation_code',
@@ -125,7 +126,7 @@ def activation_code_post() -> Response:
         response = jsonify({
             'self': '/v2/activation_code',
             'added': True,
-            'activation_code': code_added.__dict__
+            'activation_code': code_added_dict
         })
         response.status_code = 200
         return response
@@ -142,7 +143,7 @@ def activation_code_post() -> Response:
 
 def activation_code_exists_get(code: str) -> Response:
     """
-    Get an activation code based on its unique code.
+    Determine if an activation code exists.
     :param code: The unique activation code.
     :return: A response object for the GET API request
     """
@@ -151,14 +152,14 @@ def activation_code_exists_get(code: str) -> Response:
 
     if matching_code_exists == 1:
         response = jsonify({
-            'self': f'/v2/activation_code/{code}',
+            'self': f'/v2/activation_code/exists/{code}',
             'matching_code_exists': matching_code_exists,
         })
         response.status_code = 200
         return response
     else:
         response = jsonify({
-            'self': f'/v2/activation_code/{code}',
+            'self': f'/v2/activation_code/exists/{code}',
             'matching_code_exists': matching_code_exists,
             'error': 'there is no matching activation code'
         })
@@ -167,7 +168,31 @@ def activation_code_exists_get(code: str) -> Response:
 
 
 def activation_code_by_code_get(code: str) -> Response:
-    pass
+    """
+    Get an activation code based on its unique code.
+    :param code: The unique activation code.
+    :return: A response object for the GET API request
+    """
+    activation_code_object: Code = ActivationCodeDao.get_activation_code(code=code)
+
+    if activation_code_object is not None:
+        activation_code_dict: dict = activation_code_object.__dict__
+        del activation_code_dict['_sa_instance_state']
+
+        response = jsonify({
+            'self': f'/v2/activation_code/{code}',
+            'activation_code': activation_code_dict,
+        })
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/activation_code/{code}',
+            'activation_code': None,
+            'error': 'there is no matching activation code'
+        })
+        response.status_code = 400
+        return response
 
 
 def activation_code_by_code_delete(code: str) -> Response:
@@ -201,7 +226,7 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
     :param code: The activation code to delete.
     :return: A response object for the DELETE API request.
     """
-    existing_code = ActivationCodeDao.get_activation_code(code=code)
+    existing_code: Code = ActivationCodeDao.get_activation_code(code=code)
 
     if existing_code is None:
         response = jsonify({
@@ -212,16 +237,14 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
         response.status_code = 400
         return response
 
-    code: Code = Code(existing_code)
-
     # Update the activation code model to reflect the soft delete
-    code.deleted = True
-    code.deleted_date = datetime.now()
-    code.deleted_app = 'api'
-    code.modified_date = datetime.now()
-    code.modified_app = 'api'
+    existing_code.deleted = True
+    existing_code.deleted_date = datetime.now()
+    existing_code.deleted_app = 'api'
+    existing_code.modified_date = datetime.now()
+    existing_code.modified_app = 'api'
 
-    is_deleted = ActivationCodeDao.soft_delete_code(code)
+    is_deleted = ActivationCodeDao.soft_delete_code(existing_code)
 
     if is_deleted:
         response = jsonify({

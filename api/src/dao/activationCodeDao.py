@@ -33,7 +33,8 @@ class ActivationCodeDao:
             '''
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
-            WHERE activation_code=:activation_code
+            WHERE activation_code=:activation_code 
+            AND deleted='1'
             ''',
             {'activation_code': activation_code}
         )
