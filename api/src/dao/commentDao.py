@@ -101,3 +101,7 @@ class CommentDao:
             {'log_id': log_id}
         )
         return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_comment_by_id(comment_id: int) -> bool:
+        pass

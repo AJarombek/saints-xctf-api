@@ -4,6 +4,7 @@ Author: Andrew Jarombek
 Date: 7/12/2019
 """
 
+from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app, Response
 from dao.commentDao import CommentDao
 from model.Comment import Comment
@@ -46,8 +47,20 @@ def comment_with_id(comment_id) -> Response:
         comment_with_id_delete(comment_id)
 
 
+@comment_route.route('/soft/<comment_id>', methods=['DELETE'])
+def activation_code_soft_by_code(comment_id) -> Response:
+    """
+    Endpoints for soft deleting comments.
+    :param comment_id: Unique identifier for a comment.
+    :return: JSON representation of comments and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/comments/soft/<code> '''
+        return comment_with_id_soft_delete(comment_id)
+
+
 @comment_route.route('/links', methods=['GET'])
-def activation_code_links() -> Response:
+def comment_links() -> Response:
     """
     Endpoint for information about the comment API endpoints.
     :return: Metadata about the comment API.
@@ -201,6 +214,49 @@ def comment_with_id_delete(comment_id):
         return response
 
 
+def comment_with_id_soft_delete(comment_id):
+    """
+    Soft delete a comment based on a unique id.
+    :param comment_id: Unique identifier for a comment.
+    :return: A response object for the DELETE API request.
+    """
+    existing_comment: Comment = CommentDao.get_comment_by_id(comment_id=comment_id)
+
+    if existing_comment is None:
+        response = jsonify({
+            'self': f'/v2/comments/soft/{comment_id}',
+            'deleted': False,
+            'error': 'there is no existing comment with this id'
+        })
+        response.status_code = 400
+        return response
+
+    # Update the comment model to reflect the soft delete
+    existing_comment.deleted = True
+    existing_comment.deleted_date = datetime.now()
+    existing_comment.deleted_app = 'api'
+    existing_comment.modified_date = datetime.now()
+    existing_comment.modified_app = 'api'
+
+    is_deleted: bool = CommentDao.soft_delete_comment_by_id(existing_comment)
+
+    if is_deleted:
+        response = jsonify({
+            'self': f'/v2/comments/soft/{comment_id}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/comments/soft/{comment_id}',
+            'deleted': False,
+            'error': 'failed to soft delete the comment'
+        })
+        response.status_code = 500
+        return response
+
+
 def comment_links_get() -> Response:
     """
     Get all the other comment API endpoints.
@@ -208,7 +264,38 @@ def comment_links_get() -> Response:
     """
     response = jsonify({
         'self': f'/v2/comments/links',
-        'endpoints': [],
+        'endpoints': [
+            {
+                'link': '/v2/comments',
+                'verb': 'GET',
+                'description': 'Get all the comments in the database.'
+            },
+            {
+                'link': '/v2/comments',
+                'verb': 'POST',
+                'description': 'Create a new comment.'
+            },
+            {
+                'link': '/v2/comments/<comment_id>',
+                'verb': 'GET',
+                'description': 'Retrieve a single comment with a given unique id.'
+            },
+            {
+                'link': '/v2/comments/<comment_id>',
+                'verb': 'PUT',
+                'description': 'Update a comment with a given unique id.'
+            },
+            {
+                'link': '/v2/comments/<comment_id>',
+                'verb': 'DELETE',
+                'description': 'Delete a single comment with a given unique id.'
+            },
+            {
+                'link': '/v2/comments/soft/<comment_id>',
+                'verb': 'DELETE',
+                'description': 'Soft delete a single comment with a given unique id.'
+            }
+        ],
     })
     response.status_code = 200
     return response
