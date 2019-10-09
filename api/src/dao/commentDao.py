@@ -103,5 +103,11 @@ class CommentDao:
         return BasicDao.safe_commit()
 
     @staticmethod
-    def soft_delete_comment_by_id(comment_id: int) -> bool:
-        pass
+    def soft_delete_comment_by_id(comment: Comment) -> bool:
+        """
+        Soft Delete a comment from the database.
+        :param comment: Object representing a comment to soft delete.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.add(comment)
+        return BasicDao.safe_commit()

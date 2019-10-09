@@ -5,11 +5,23 @@ Date: 7/12/2019
 """
 
 from datetime import datetime
-from flask import Blueprint, request, jsonify, current_app, Response
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from dao.commentDao import CommentDao
 from model.Comment import Comment
+from model.CommentData import CommentData
 
 comment_route = Blueprint('comment_route', __name__, url_prefix='/v2/comments')
+
+
+@comment_route.route('', methods=['GET', 'POST'])
+def comments_redirect() -> Response:
+    if request.method == 'GET':
+        ''' [GET] /v2/comments '''
+        return redirect(url_for('comment_route.comments'), code=302)
+
+    elif request.method == 'POST':
+        ''' [POST] /v2/comments '''
+        return redirect(url_for('comment_route.comments'), code=307)
 
 
 @comment_route.route('/', methods=['GET', 'POST'])
@@ -20,11 +32,11 @@ def comments() -> Response:
     """
     if request.method == 'GET':
         ''' [GET] /v2/comments '''
-        comments_get()
+        return comments_get()
 
     elif request.method == 'POST':
         ''' [POST] /v2/comments '''
-        comment_post()
+        return comment_post()
 
 
 @comment_route.route('/<comment_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -36,15 +48,15 @@ def comment_with_id(comment_id) -> Response:
     """
     if request.method == 'GET':
         ''' [GET] /v2/comments/<comment_id> '''
-        comment_with_id_get(comment_id)
+        return comment_with_id_get(comment_id)
 
     elif request.method == 'PUT':
         ''' [PUT] /v2/comments/<comment_id> '''
-        comment_with_id_put(comment_id)
+        return comment_with_id_put(comment_id)
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/comments/<comment_id> '''
-        comment_with_id_delete(comment_id)
+        return comment_with_id_delete(comment_id)
 
 
 @comment_route.route('/soft/<comment_id>', methods=['DELETE'])
@@ -71,6 +83,10 @@ def comment_links() -> Response:
 
 
 def comments_get():
+    """
+    Get all the comments in the database.
+    :return: A response object for the GET API request.
+    """
     comments: list = CommentDao.get_comments()
 
     if comments is None:
@@ -82,18 +98,24 @@ def comments_get():
         response.status_code = 500
         return response
     else:
-        for comment in comments:
-            comment.log = f'/v2/logs/{comment.log_id}'
+        comment_dicts = [CommentData(comment).__dict__ for comment in comments]
+
+        for comment_dict in comment_dicts:
+            comment_dict['log'] = f'/v2/logs/{comment_dict.get("log_id")}'
 
         response = jsonify({
             'self': '/v2/comments',
-            'comments': comments
+            'comments': comment_dicts
         })
         response.status_code = 200
         return response
 
 
 def comment_post():
+    """
+    Create a new comment.
+    :return: A response object for the POST API request.
+    """
     comment_data: dict = request.get_json()
     comment_to_add = Comment(comment_data)
     comment_added_successfully = CommentDao.add_comment(new_comment=comment_to_add)
@@ -122,6 +144,11 @@ def comment_post():
 
 
 def comment_with_id_get(comment_id):
+    """
+    Get a single comment with a unique ID.
+    :param comment_id: The unique identifier for a comment.
+    :return: A response object for the GET API request.
+    """
     comment = CommentDao.get_comment_by_id(comment_id=comment_id)
 
     if comment is None:
@@ -144,6 +171,11 @@ def comment_with_id_get(comment_id):
 
 
 def comment_with_id_put(comment_id):
+    """
+    Update an existing comment.
+    :param comment_id: The unique identifier for a comment.
+    :return: A response object for the PUT API request.
+    """
     old_comment = CommentDao.get_comment_by_id(comment_id=comment_id)
 
     if old_comment is None:
@@ -195,6 +227,11 @@ def comment_with_id_put(comment_id):
 
 
 def comment_with_id_delete(comment_id):
+    """
+    Delete an existing comment.
+    :param comment_id: The unique identifier for a comment.
+    :return: A response object for the DELETE API request
+    """
     is_deleted = CommentDao.delete_comment_by_id(comment_id=comment_id)
 
     if is_deleted:
