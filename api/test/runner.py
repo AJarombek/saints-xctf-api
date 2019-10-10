@@ -14,8 +14,6 @@ def run_tests(verbosity: int = 3) -> TestResult:
     Execute Unit tests for the API.
     :param verbosity: Set the verbosity level of the unit test logs.  Defaults to 3.
     """
-
-    # Create the test suite
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 

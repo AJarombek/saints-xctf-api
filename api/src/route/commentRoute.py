@@ -15,6 +15,10 @@ comment_route = Blueprint('comment_route', __name__, url_prefix='/v2/comments')
 
 @comment_route.route('', methods=['GET', 'POST'])
 def comments_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'comments' to the comment routes.
+    :return: Response object letting the browser know where to redirect the request to.
+    """
     if request.method == 'GET':
         ''' [GET] /v2/comments '''
         return redirect(url_for('comment_route.comments'), code=302)
@@ -117,13 +121,33 @@ def comment_post():
     :return: A response object for the POST API request.
     """
     comment_data: dict = request.get_json()
+
+    if comment_data is None:
+        response = jsonify({
+            'self': f'/v2/comments',
+            'added': False,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
     comment_to_add = Comment(comment_data)
-    comment_added_successfully = CommentDao.add_comment(new_comment=comment_to_add)
+
+    if None in [comment_to_add.username, comment_to_add.first, comment_to_add.last,
+                comment_to_add.log_id, comment_to_add.time]:
+        response = jsonify({
+            'self': f'/v2/comments',
+            'added': False,
+            'error': "'username', 'first', 'last', 'log_id', and 'time' are required fields"
+        })
+        response.status_code = 400
+        return response
+
+    comment_added_successfully: bool = CommentDao.add_comment(new_comment=comment_to_add)
 
     if comment_added_successfully:
         comment_added = CommentDao.get_comment_by_id(comment_to_add.comment_id)
-        comment_added_dict: dict = comment_added.__dict__
-        del comment_added_dict['_sa_instance_state']
+        comment_added_dict: dict = CommentData(comment_added).__dict__
 
         response = jsonify({
             'self': '/v2/comments',

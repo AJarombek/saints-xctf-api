@@ -6,12 +6,23 @@ Date: 8/5/2019
 """
 
 from datetime import datetime
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from sqlalchemy.schema import Column
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 
 activation_code_route = Blueprint('activation_code_route', __name__, url_prefix='/v2/activation_code')
+
+
+@activation_code_route.route('', methods=['POST'])
+def activation_code_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'activation_code' to the activation code routes.
+    :return: Response object letting the browser know where to redirect the request to.
+    """
+    if request.method == 'POST':
+        ''' [POST] /v2/activation_code '''
+        return redirect(url_for('activation_code_route.activation_code'), code=307)
 
 
 @activation_code_route.route('/', methods=['POST'])

@@ -33,6 +33,7 @@ pipenv install boto3
 pipenv install flask-sqlalchemy
 pipenv install flask-bcrypt
 pipenv install flask-sslify
+pipenv install coverage --dev
 
 ### Local Startup Commands - MacOS
 brew update python
