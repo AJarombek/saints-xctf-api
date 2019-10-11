@@ -32,7 +32,7 @@ def activation_code() -> Response:
     :return: JSON representation of activation codes and relevant metadata.
     """
     if request.method == 'POST':
-        ''' [POST] /v2/activation_code '''
+        ''' [POST] /v2/activation_code/ '''
         return activation_code_post()
 
 

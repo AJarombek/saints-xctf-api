@@ -1,5 +1,5 @@
 """
-Test suite for the main routes describing the API (api/test_src/test_route/apiRoute.py)
+Test suite for the main routes describing the API (api/src/route/apiRoute.py)
 Author: Andrew Jarombek
 Date: 6/27/2019
 """
@@ -72,3 +72,27 @@ class TestApiRoute(TestSuite):
         self.assertEqual(response_json.get('notification'), '/v2/notifications/links')
         self.assertEqual(response_json.get('range_view'), '/v2/range_view/links')
         self.assertEqual(response_json.get('user'), '/v2/users/links')
+
+    def test_404_route(self) -> None:
+        """
+        Test performing an HTTP GET request against an endpoint that simulates a 404 error.
+        """
+        response: Response = self.client.get('/404')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response_json.get('error_description'), 'Page Not Found')
+        self.assertGreater(len(response_json.get('exception')), 0)
+        self.assertEqual(response_json.get('contact'), 'andrew@jarombek.com')
+        self.assertEqual(response_json.get('api_index'), '/versions')
+
+    def test_500_route(self) -> None:
+        """
+        Test performing an HTTP GET request against an endpoint that simulates a 500 error.
+        """
+        response: Response = self.client.get('/500')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response_json.get('error_description'), 'Internal Server Error')
+        self.assertGreater(len(response_json.get('exception')), 0)
+        self.assertEqual(response_json.get('contact'), 'andrew@jarombek.com')
+        self.assertEqual(response_json.get('api_index'), '/versions')

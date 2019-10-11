@@ -4,13 +4,13 @@ Author: Andrew Jarombek
 Date: 6/21/2019
 """
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, Response, abort
 
 api_route = Blueprint('api_route', __name__, url_prefix='/')
 
 
 @api_route.route('/', methods=['GET'])
-def api():
+def api() -> Response:
     """
     Entry point for the SaintsXCTF API
     :return: A JSON welcome message
@@ -23,7 +23,7 @@ def api():
 
 
 @api_route.route('/versions', methods=['GET'])
-def versions():
+def versions() -> Response:
     return jsonify({
         'self': '/versions',
         'version_latest': '/v2',
@@ -33,7 +33,7 @@ def versions():
 
 
 @api_route.route('/v2', methods=['GET'])
-def version2():
+def version2() -> Response:
     return jsonify({
         'self': '/v2',
         'version': 2,
@@ -43,7 +43,7 @@ def version2():
 
 
 @api_route.route('/v2/links', methods=['GET'])
-def links():
+def links() -> Response:
     return jsonify({
         'self': '/v2/links',
         'activation_code': '/v2/activation_code/links',
@@ -60,3 +60,21 @@ def links():
         'range_view': '/v2/range_view/links',
         'user': '/v2/users/links'
     })
+
+
+@api_route.route('/404', methods=['GET'])
+def error404() -> Response:
+    """
+    Route for testing the logic of 404 HTTP errors.
+    :return: Custom error handling JSON.
+    """
+    abort(404)
+
+
+@api_route.route('/500', methods=['GET'])
+def error500() -> Response:
+    """
+    Route for testing the logic of 500 HTTP errors.
+    :return: Custom error handling JSON.
+    """
+    raise Exception

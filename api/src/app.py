@@ -84,7 +84,8 @@ def create_app(config_name) -> Flask:
         return jsonify({
             'error_description': "Internal Server Error",
             'exception': str(ex),
-            'contact': 'andrew@jarombek.com'
+            'contact': 'andrew@jarombek.com',
+            'api_index': '/versions'
         }), 500
 
     return application
