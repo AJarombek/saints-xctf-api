@@ -9,6 +9,7 @@ from flask import Flask
 from flask_sqlalchemy import get_debug_queries, current_app
 from database import db
 from bcrypt import bcrypt
+from commands import test
 from config import config
 from utils.db import get_connection_url
 from route.activationCodeRoute import activation_code_route
@@ -55,6 +56,8 @@ def create_app(config_name) -> Flask:
 
     db.init_app(application)
     bcrypt.init_app(application)
+
+    application.cli.add_command(test)
 
     return application
 

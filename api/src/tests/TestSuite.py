@@ -6,10 +6,11 @@ Date: 6/22/2019
 
 import unittest
 from flask.testing import FlaskClient
-from ..src.app import create_app, db
+from app import create_app
+from database import db
 
 
-class BasicFlaskTestSuite(unittest.TestCase):
+class TestSuite(unittest.TestCase):
 
     def setUp(self) -> None:
         """

@@ -35,6 +35,9 @@ pipenv install flask-bcrypt
 pipenv install flask-sslify
 pipenv install coverage --dev
 
+# See all the endpoints exposed by Flask, ensure there are no syntax errors in the Python files
+pipenv run flask routes
+
 ### Local Startup Commands - MacOS
 brew update python
 pip3 install pipenv

@@ -8,26 +8,29 @@ import os
 import coverage
 import click
 import sys
-from app import app
-from ..test.runner import run_tests
+import unittest
+from flask.cli import with_appcontext
 
 cov = None
 if os.environ.get('FLASK_COVERAGE'):
-    cov = coverage.coverage(branch=True, include=['dao/*', 'model/*', 'route/*', 'utils/*'])
+    cov = coverage.coverage(branch=True, include=['dao/*', 'model/*', 'test_route/*', 'utils/*'])
     cov.start()
 
 
-@app.cli.command()
-@click.option('--coverage/--no-coverage', default=False, help='Print code coverage after running unit tests')
+@click.command()
+@with_appcontext
 def test():
     """
     Create a Flask command for running unit tests.  Execute with 'flask test' from a command line.
     """
-    if coverage and not os.environ.get('FLASK_COVERAGE'):
+    if not os.environ.get('FLASK_COVERAGE'):
         os.environ['FLASK_COVERAGE'] = '1'
         os.execvp(sys.executable, [sys.executable] + sys.argv)
 
-    run_tests(verbosity=3)
+    # Create a test runner an execute the test suite
+    tests = unittest.TestLoader().discover('tests')
+    runner = unittest.TextTestRunner(verbosity=3)
+    runner.run(tests)
 
     if cov:
         cov.stop()
