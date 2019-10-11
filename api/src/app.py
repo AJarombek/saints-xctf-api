@@ -5,7 +5,7 @@ Date: 6/8/2019
 """
 
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import get_debug_queries, current_app
 from database import db
 from bcrypt import bcrypt
@@ -58,6 +58,34 @@ def create_app(config_name) -> Flask:
     bcrypt.init_app(application)
 
     application.cli.add_command(test)
+
+    # Custom Error Handling
+    @application.errorhandler(404)
+    def error_404(ex):
+        """
+        Custom error handler for when 404 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Page Not Found",
+            'exception': str(ex),
+            'contact': 'andrew@jarombek.com',
+            'api_index': '/versions'
+        }), 404
+
+    @application.errorhandler(500)
+    def error_500(ex):
+        """
+        Custom error handler for when 500 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Internal Server Error",
+            'exception': str(ex),
+            'contact': 'andrew@jarombek.com'
+        }), 500
 
     return application
 

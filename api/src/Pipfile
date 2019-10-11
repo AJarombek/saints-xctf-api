@@ -9,7 +9,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-coverage = "*"
 
 [packages]
 flask = ">=1.0.3"
@@ -17,6 +16,7 @@ boto3 = ">=1.9.169"
 flask-sqlalchemy = ">=2.4.0"
 flask-bcrypt = ">=0.7.1"
 pymysql = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.7"

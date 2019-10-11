@@ -60,22 +60,3 @@ def links():
         'range_view': '/v2/range_view/links',
         'user': '/v2/users/links'
     })
-
-
-@api_route.errorhandler(404)
-def error_404(ex):
-    return jsonify({
-        'error_description': "Page Not Found",
-        'exception': str(ex),
-        'contact': 'andrew@jarombek.com',
-        'api_index': '/versions'
-    }), 404
-
-
-@api_route.errorhandler(500)
-def error_500(ex):
-    return jsonify({
-        'error_description': "Internal Server Error",
-        'exception': str(ex),
-        'contact': 'andrew@jarombek.com'
-    }), 500

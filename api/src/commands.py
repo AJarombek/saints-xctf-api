@@ -13,7 +13,7 @@ from flask.cli import with_appcontext
 
 cov = None
 if os.environ.get('FLASK_COVERAGE'):
-    cov = coverage.coverage(branch=True, include=['dao/*', 'model/*', 'test_route/*', 'utils/*'])
+    cov = coverage.coverage(branch=True, include=['app.py', 'dao/*', 'model/*', 'route/*', 'utils/*'])
     cov.start()
 
 
