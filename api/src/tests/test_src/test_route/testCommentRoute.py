@@ -9,4 +9,23 @@ from tests.TestSuite import TestSuite
 
 
 class TestCommentRoute(TestSuite):
-    pass
+
+    def test_comment_get_route_redirect(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/comments' route. This route is redirected to
+        '/v2/comments/' by default.
+        """
+        response: Response = self.client.post('/v2/comments')
+        headers = response.headers
+        self.assertEqual(response.status_code, 307)
+        self.assertIn('/v2/comments/', headers.get('Location'))
+
+    def test_comment_post_route_redirect(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/comments' route. This route is redirected to
+        '/v2/comments/' by default.
+        """
+        response: Response = self.client.post('/v2/comments')
+        headers = response.headers
+        self.assertEqual(response.status_code, 307)
+        self.assertIn('/v2/comments/', headers.get('Location'))
