@@ -1,0 +1,17 @@
+# Docker Compose configuration for unit testing the API
+# Author: Andrew Jarombek
+# Date: 10/13/2019
+
+version: '3.7'
+services:
+  test:
+    build:
+      context: ../../api/src/
+      dockerfile: local.test.dockerfile
+      network: host
+    networks:
+      - local-saints-xctf-api-net
+
+networks:
+  local-saints-xctf-api-net:
+    driver: bridge

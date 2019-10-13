@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from sqlalchemy.schema import Column
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
+from model.CodeData import CodeData
 
 activation_code_route = Blueprint('activation_code_route', __name__, url_prefix='/v2/activation_code')
 
@@ -131,8 +132,7 @@ def activation_code_post() -> Response:
 
     if code_added_successfully:
         code_added: Code = ActivationCodeDao.get_activation_code(code=code_to_add.activation_code)
-        code_added_dict: dict = code_added.__dict__
-        del code_added_dict['_sa_instance_state']
+        code_added_dict: dict = CodeData(code_added).__dict__
 
         response = jsonify({
             'self': '/v2/activation_code',
