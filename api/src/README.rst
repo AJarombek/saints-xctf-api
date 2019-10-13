@@ -18,6 +18,8 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``route``                   | HTTP routes in the API.  Each route contains sub-routes, forming API endpoints.              |
 +-----------------------------+----------------------------------------------------------------------------------------------+
+| ``tests``                   | Unit tests for the SaintsXCTF API.                                                           |
++-----------------------------+----------------------------------------------------------------------------------------------+
 | ``utils``                   | Utility functions for AWS and MySQL.                                                         |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``app.py``                  | Entrypoint to the Flask application.                                                         |
@@ -25,6 +27,8 @@ Files
 | ``commands.py``             | Custom CLI commands for the Flask application.                                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``config.py``               | Environment specific configuration for the API.                                              |
++-----------------------------+----------------------------------------------------------------------------------------------+
+| ``database.py``             | Database object for use throughout the API.                                                  |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``Pipfile``                 | Pip dependencies and virtual environment for the application.                                |
 +-----------------------------+----------------------------------------------------------------------------------------------+
@@ -55,3 +59,7 @@ References
 [5] `'pipenv install' fix for Docker <https://stackoverflow.com/a/49705601>`_
 
 [6] `After Request Callbacks <http://flask.pocoo.org/snippets/53/>`_
+
+[7] `Python Code Coverage <https://coverage.readthedocs.io/en/v4.5.x/api_coverage.html>`_
+
+[8] `@with_appcontext <https://stackoverflow.com/a/51824469>`_
