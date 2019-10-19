@@ -34,7 +34,7 @@ class ActivationCodeDao:
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
             WHERE activation_code=:activation_code 
-            AND deleted='1'
+            AND deleted IS NULL
             ''',
             {'activation_code': activation_code}
         )

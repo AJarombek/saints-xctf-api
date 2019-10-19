@@ -187,8 +187,7 @@ def activation_code_by_code_get(code: str) -> Response:
     activation_code_object: Code = ActivationCodeDao.get_activation_code(code=code)
 
     if activation_code_object is not None:
-        activation_code_dict: dict = activation_code_object.__dict__
-        del activation_code_dict['_sa_instance_state']
+        activation_code_dict: dict = CodeData(activation_code_object).__dict__
 
         response = jsonify({
             'self': f'/v2/activation_code/{code}',

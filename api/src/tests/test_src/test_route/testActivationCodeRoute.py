@@ -129,3 +129,86 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('added'), False)
         self.assertEqual(response_json.get('activation_code'), None)
         self.assertEqual(response_json.get('error'), 'failed to create a new activation code')
+
+    def test_activation_code_exists_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/activation_code/exists/<code>' route.  This test proves that
+        if the code exists in the database a 200 success response will be returned.
+        """
+        # Ensure that the activation code exists prior to testing for existence.
+        self.client.delete('/v2/activation_code/60UN02')
+        request_body = json.dumps({'activation_code': '60UN02'})
+        post_response = self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        self.assertEqual(post_response.status_code, 200)
+
+        response: Response = self.client.get('/v2/activation_code/exists/60UN02')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/exists/60UN02')
+        self.assertEqual(response_json.get('matching_code_exists'), True)
+
+    def test_activation_code_exists_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/activation_code/exists/<code>' route.  This test proves that
+        if the code exists in the database a 400 failure response will be returned.
+        """
+        # Ensure that the code doesn't exist by hard deleting it.
+        self.client.delete('/v2/activation_code/60UN03')
+
+        response: Response = self.client.get('/v2/activation_code/exists/60UN03')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/exists/60UN03')
+        self.assertEqual(response_json.get('matching_code_exists'), False)
+
+    def test_activation_code_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/activation_code/<code>' route.  This test proves that if the
+        activation code searched for exists, a 200 status code and a JSON object with the code is returned
+        """
+
+        # Ensure that the activation code exists prior to retrieval.
+        self.client.delete('/v2/activation_code/60UN02')
+        request_body = json.dumps({'activation_code': '60UN02'})
+        post_response = self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        self.assertEqual(post_response.status_code, 200)
+
+        response: Response = self.client.get('/v2/activation_code/60UN02')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/60UN02')
+        self.assertEqual(response_json.get('activation_code'), {'activation_code': '60UN02', 'deleted': None})
+
+    def test_activation_code_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/activation_code/<code>' route.  This test proves that if the
+        activation code searched for doesn't exist, the endpoint returns a 400 HTTP error status.
+        """
+
+        # Ensure that the code doesn't exist by hard deleting it.
+        self.client.delete('/v2/activation_code/60UN03')
+
+        response: Response = self.client.get('/v2/activation_code/60UN03')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/60UN03')
+        self.assertEqual(response_json.get('activation_code'), None)
+        self.assertEqual(response_json.get('error'), 'there is no matching activation code')
+
+    def test_activation_code_delete_route_204(self) -> None:
+        pass
+
+    def test_activation_code_delete_route_500(self) -> None:
+        pass
+
+    def test_activation_code_soft_delete_route_204(self) -> None:
+        pass
+
+    def test_activation_code_soft_delete_route_400(self) -> None:
+        pass
+
+    def test_activation_code_soft_delete_route_500(self) -> None:
+        pass
+
+    def test_activation_code_links_route_200(self) -> None:
+        pass
