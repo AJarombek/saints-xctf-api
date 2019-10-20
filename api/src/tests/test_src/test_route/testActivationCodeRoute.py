@@ -196,14 +196,20 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('error'), 'there is no matching activation code')
 
     def test_activation_code_delete_route_204(self) -> None:
-        # Ensure that the activation code exists before testing the DELETE endpoint
-        request_body = json.dumps({'activation_code': 'TESTCD'})
-        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that the
+        endpoint should return a 204 success status, no matter if the code existed or not.
+        """
 
         response: Response = self.client.delete('/v2/activation_code/TESTCD')
         self.assertEqual(response.status_code, 204)
 
     def test_activation_code_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that if
+        the activation code exists and wasn't already soft deleted, the endpoint will return a successful 204 status.
+        """
+
         # Ensure that the activation code exists before testing the DELETE endpoint
         self.client.delete('/v2/activation_code/TESTCD')
 
@@ -214,6 +220,11 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 204)
 
     def test_activation_code_soft_delete_route_400_does_not_exist(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.  This test proves that if
+        the activation code the user is trying to soft delete doesn't exist, a 400 error code is returned.
+        """
+
         # Ensure that the activation code was already deleted before testing the DELETE endpoint.
         self.client.delete('/v2/activation_code/TESTCD')
 
@@ -225,6 +236,11 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('error'), 'there is no existing activation code with this code')
 
     def test_activation_code_soft_delete_route_400_already_deleted(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.  This test proves that
+        if the activation code was already soft deleted, the endpoint returns a 400 error code.
+        """
+
         # Ensure that the activation code was already soft deleted before testing the DELETE endpoint
         self.client.delete('/v2/activation_code/TESTCD')
         request_body = json.dumps({'activation_code': 'TESTCD'})
@@ -239,6 +255,10 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('error'), 'this activation code is already soft deleted')
 
     def test_activation_code_get_links_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/activation_code/links' route.  This test proves that calling
+        this endpoint returns a list of other activation code endpoints.
+        """
         response: Response = self.client.get('/v2/activation_code/links')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
