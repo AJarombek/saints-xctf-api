@@ -57,4 +57,25 @@ class Comment(db.Model):
     deleted_app = Column(db.VARCHAR(31))
 
     def __repr__(self):
+        """
+        String representation of the comment.
+        :return: The comment string.
+        """
         return '<Comment %r>' % self.comment_id
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this Comment.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return all([
+            self.comment_id == other.comment_id,
+            self.username == other.username,
+            self.first == other.first,
+            self.last == other.last,
+            self.log_id == other.log_id,
+            self.time == other.time,
+            self.content == other.content,
+            self.deleted == other.deleted
+        ])

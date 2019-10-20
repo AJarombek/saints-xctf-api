@@ -185,10 +185,12 @@ def comment_with_id_get(comment_id):
         response.status_code = 400
         return response
     else:
+        comment_dict: dict = CommentData(comment).__dict__
+
         response = jsonify({
             'self': f'/v2/comments/{comment_id}',
-            'comment': comment,
-            'log': f'/v2/logs/{comment.get("log_id")}'
+            'comment': comment_dict,
+            'log': f'/v2/logs/{comment_dict.get("log_id")}'
         })
         response.status_code = 200
         return response
@@ -200,7 +202,7 @@ def comment_with_id_put(comment_id):
     :param comment_id: The unique identifier for a comment.
     :return: A response object for the PUT API request.
     """
-    old_comment = CommentDao.get_comment_by_id(comment_id=comment_id)
+    old_comment: Comment = CommentDao.get_comment_by_id(comment_id=comment_id)
 
     if old_comment is None:
         response = jsonify({
@@ -220,8 +222,7 @@ def comment_with_id_put(comment_id):
 
         if is_updated:
             updated_comment: Comment = CommentDao.get_comment_by_id(comment_id=new_comment.comment_id)
-            updated_comment_dict: dict = updated_comment.__dict__
-            del updated_comment_dict['_sa_instance_state']
+            updated_comment_dict: dict = CommentData(updated_comment).__dict__
 
             response = jsonify({
                 'self': f'/v2/comments/{comment_id}',
