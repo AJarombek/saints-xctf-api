@@ -191,7 +191,7 @@ def activation_code_by_code_get(code: str) -> Response:
 
         response = jsonify({
             'self': f'/v2/activation_code/{code}',
-            'activation_code': activation_code_dict,
+            'activation_code': activation_code_dict
         })
         response.status_code = 200
         return response
@@ -216,7 +216,7 @@ def activation_code_by_code_delete(code: str) -> Response:
     if is_deleted:
         response = jsonify({
             'self': f'/v2/activation_code/{code}',
-            'deleted': True,
+            'deleted': True
         })
         response.status_code = 204
         return response
@@ -240,9 +240,18 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
 
     if existing_code is None:
         response = jsonify({
-            'self': f'/v2/activation_code/soft/{existing_code}',
+            'self': f'/v2/activation_code/soft/{code}',
             'deleted': False,
             'error': 'there is no existing activation code with this code'
+        })
+        response.status_code = 400
+        return response
+
+    if existing_code.deleted:
+        response = jsonify({
+            'self': f'/v2/activation_code/soft/{code}',
+            'deleted': False,
+            'error': 'this activation code is already soft deleted'
         })
         response.status_code = 400
         return response
@@ -259,7 +268,7 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
     if is_deleted:
         response = jsonify({
             'self': f'/v2/activation_code/soft/{code}',
-            'deleted': True,
+            'deleted': True
         })
         response.status_code = 204
         return response

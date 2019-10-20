@@ -29,3 +29,10 @@ class TestCommentRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/comments/', headers.get('Location'))
+
+    def test_comment_get_links_route_200(self) -> None:
+        response: Response = self.client.get('/v2/comments/links')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/comments/links')
+        self.assertEqual(len(response_json.get('endpoints')), 6)

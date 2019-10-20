@@ -196,19 +196,51 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('error'), 'there is no matching activation code')
 
     def test_activation_code_delete_route_204(self) -> None:
-        pass
+        # Ensure that the activation code exists before testing the DELETE endpoint
+        request_body = json.dumps({'activation_code': 'TESTCD'})
+        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
 
-    def test_activation_code_delete_route_500(self) -> None:
-        pass
+        response: Response = self.client.delete('/v2/activation_code/TESTCD')
+        self.assertEqual(response.status_code, 204)
 
     def test_activation_code_soft_delete_route_204(self) -> None:
-        pass
+        # Ensure that the activation code exists before testing the DELETE endpoint
+        self.client.delete('/v2/activation_code/TESTCD')
 
-    def test_activation_code_soft_delete_route_400(self) -> None:
-        pass
+        request_body = json.dumps({'activation_code': 'TESTCD'})
+        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
 
-    def test_activation_code_soft_delete_route_500(self) -> None:
-        pass
+        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        self.assertEqual(response.status_code, 204)
 
-    def test_activation_code_links_route_200(self) -> None:
-        pass
+    def test_activation_code_soft_delete_route_400_does_not_exist(self) -> None:
+        # Ensure that the activation code was already deleted before testing the DELETE endpoint.
+        self.client.delete('/v2/activation_code/TESTCD')
+
+        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/soft/TESTCD')
+        self.assertEqual(response_json.get('deleted'), False)
+        self.assertEqual(response_json.get('error'), 'there is no existing activation code with this code')
+
+    def test_activation_code_soft_delete_route_400_already_deleted(self) -> None:
+        # Ensure that the activation code was already soft deleted before testing the DELETE endpoint
+        self.client.delete('/v2/activation_code/TESTCD')
+        request_body = json.dumps({'activation_code': 'TESTCD'})
+        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        self.client.delete('/v2/activation_code/soft/TESTCD')
+
+        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/soft/TESTCD')
+        self.assertEqual(response_json.get('deleted'), False)
+        self.assertEqual(response_json.get('error'), 'this activation code is already soft deleted')
+
+    def test_activation_code_get_links_route_200(self) -> None:
+        response: Response = self.client.get('/v2/activation_code/links')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code/links')
+        self.assertEqual(len(response_json.get('endpoints')), 4)

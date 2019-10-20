@@ -292,6 +292,15 @@ def comment_with_id_soft_delete(comment_id):
         response.status_code = 400
         return response
 
+    if existing_comment.deleted:
+        response = jsonify({
+            'self': f'/v2/comments/soft/{comment_id}',
+            'deleted': False,
+            'error': 'this comment is already soft deleted'
+        })
+        response.status_code = 400
+        return response
+
     # Update the comment model to reflect the soft delete
     existing_comment.deleted = True
     existing_comment.deleted_date = datetime.now()
