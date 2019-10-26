@@ -44,5 +44,16 @@ class Code(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
+    def __str__(self):
+        """
+        String representation of an activation code.  This representation is meant to be human readable.
+        :return: The activation code string.
+        """
+        return f'Code: [activation_code: {self.activation_code}, deleted: {self.deleted}]'
+
     def __repr__(self):
+        """
+        String representation of an activation code.  This representation is meant to be machine readable.
+        :return: The activation code string.
+        """
         return '<Code %r>' % self.activation_code

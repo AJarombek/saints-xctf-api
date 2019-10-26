@@ -5,6 +5,7 @@ Date: 10/11/2019
 """
 
 import json
+from datetime import datetime
 from flask import Response
 from tests.TestSuite import TestSuite
 
@@ -128,6 +129,10 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response_json.get('log'), '/v2/logs/1')
 
     def test_comment_with_id_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that trying to
+        update a comment that doesn't exist results in a 400 error.
+        """
         response: Response = self.client.put('/v2/comments/0')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -137,14 +142,16 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response_json.get('error'), 'there is no existing comment with this id')
 
     def test_comment_with_id_put_route_400_no_update(self) -> None:
-        request_body = json.dumps({
-            "username": "andy",
-            "first": "Andrew",
-            "last": "Jarombek",
-            "log_id": 1,
-            "time": "2016-12-23 21:32:42",
-            "content": "First Log!"
-        })
+        """
+        Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that if the
+        updated comment is the same as the original comment, a 400 error is returned.
+        """
+        response: Response = self.client.get('/v2/comments/1')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('comment'))
+
+        request_body = json.dumps(response_json.get('comment'))
 
         response: Response = self.client.put(
             '/v2/comments/1',
@@ -154,9 +161,40 @@ class TestCommentRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/comments/1')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('comment'))
+        self.assertEqual(
+            response_json.get('error'),
+            'the comment submitted is equal to the existing comment with the same id'
+        )
 
     def test_comment_with_id_put_route_200(self) -> None:
-        pass
+        """
+        Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that if a valid
+        comment JSON is passed to this endpoint, the existing comment will be updated and a valid 200 response code
+        will be returned.
+        """
+        request_body = json.dumps({
+            "comment_id": 1,
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": "2016-12-23 21:32:42",
+            "content": f"First Comment! (Edited {datetime.now()})",
+            "deleted": None
+        })
+
+        response: Response = self.client.put(
+            '/v2/comments/1',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/comments/1')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('comment'))
 
     def test_comment_with_id_delete_route_204(self) -> None:
         pass

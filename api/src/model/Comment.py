@@ -56,9 +56,18 @@ class Comment(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
+    def __str__(self):
+        """
+        String representation of the comment.  This representation is meant to be human readable.
+        :return: The comment string.
+        """
+        return f"Comment: [comment_id: {self.comment_id}, username: {self.username}, first: {self.first}, " \
+            f"last: {self.last}, log_id: {self.log_id}, time: {self.time}, content: {self.content}, " \
+            f"deleted: {self.deleted}]"
+
     def __repr__(self):
         """
-        String representation of the comment.
+        String representation of the comment.  This representation is meant to be machine readable.
         :return: The comment string.
         """
         return '<Comment %r>' % self.comment_id
@@ -75,7 +84,7 @@ class Comment(db.Model):
             self.first == other.first,
             self.last == other.last,
             self.log_id == other.log_id,
-            self.time == other.time,
+            str(self.time) == str(other.time),
             self.content == other.content,
             self.deleted == other.deleted
         ])

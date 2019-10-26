@@ -186,6 +186,7 @@ def comment_with_id_get(comment_id):
         return response
     else:
         comment_dict: dict = CommentData(comment).__dict__
+        comment_dict['time'] = str(comment_dict['time'])
 
         response = jsonify({
             'self': f'/v2/comments/{comment_id}',
