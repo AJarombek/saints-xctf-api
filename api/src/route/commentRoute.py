@@ -219,6 +219,10 @@ def comment_with_id_put(comment_id):
     new_comment = Comment(comment_data)
 
     if old_comment != new_comment:
+
+        new_comment.modified_date = datetime.now()
+        new_comment.modified_app = 'api'
+
         is_updated = CommentDao.update_comment(comment=new_comment)
 
         if is_updated:

@@ -197,16 +197,70 @@ class TestCommentRoute(TestSuite):
         self.assertIsNotNone(response_json.get('comment'))
 
     def test_comment_with_id_delete_route_204(self) -> None:
-        pass
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
+        endpoint should return a 204 success status, no matter if the code existed or not.
+        """
+        response: Response = self.client.delete('/v2/comments/0')
+        self.assertEqual(response.status_code, 204)
+
+    def test_comment_with_id_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that
+        soft deleting an existing non-soft deleted comment will execute successfully and return a valid 204 status.
+        """
+        # Ensure that the comment exists before testing the soft DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": "2019-10-26 20:00:00",
+            "content": f"Comment to be soft deleted",
+            "deleted": None
+        })
+        response: Response = self.client.post('/v2/comments/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        comment_id = response_json.get('comment').get('comment_id')
+
+        response = self.client.delete(f'/v2/comments/soft/{comment_id}')
+        self.assertEqual(response.status_code, 204)
 
     def test_comment_with_id_soft_delete_route_400_no_existing(self) -> None:
-        pass
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that if
+        the comment doesn't exist, a 400 error is returned.
+        """
+        # Ensure that the comment was already deleted before testing the DELETE endpoint
+        self.client.delete('/v2/comments/0')
+
+        response: Response = self.client.delete('/v2/comments/soft/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
 
     def test_comment_with_id_soft_delete_route_400_already_deleted(self) -> None:
-        pass
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that if
+        the comment was already soft deleted, a 400 error is returned.
+        """
+        # Ensure that the comment was already soft deleted before testing the DELETE endpoint
+        request_body = json.dumps({
+            "comment_id": 1,
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": "2016-12-23 21:32:42",
+            "content": f"First Comment! (Edited {datetime.now()})",
+            "deleted": True
+        })
+        self.client.put('/v2/comments/1', data=request_body, content_type='application/json')
 
-    def test_comment_with_id_soft_delete_route_200(self) -> None:
-        pass
+        response: Response = self.client.delete('/v2/comments/soft/1')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
 
     def test_comment_get_links_route_200(self) -> None:
         """
