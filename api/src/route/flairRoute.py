@@ -4,15 +4,47 @@ Author: Andrew Jarombek
 Date: 7/5/2019
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, redirect, url_for, Response
 from dao.flairDao import FlairDao
 from model.Flair import Flair
 
 flair_route = Blueprint('flair_route', __name__, url_prefix='/v2/flair')
 
 
+@flair_route.route('', methods=['POST'])
+def flair_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'flair' to the flair routes.
+    :return: Response object letting the browser know where to redirect the request to.
+    """
+    if request.method == 'POST':
+        ''' [POST] /v2/flair '''
+        return redirect(url_for('flair_route.flair'), code=307)
+
+
 @flair_route.route('/', methods=['POST'])
 def flair():
+    """
+    Endpoint for creating flair.
+    :return: JSON representation of user's flair and relevant metadata.
+    """
+    if request.method == 'POST':
+        ''' [GET] /v2/flair/ '''
+        return flair_post()
+
+
+@flair_route.route('/links', methods=['GET'])
+def flair_links() -> Response:
+    """
+    Endpoint for information about the flair API endpoints.
+    :return: Metadata about the flair API.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/flair/links '''
+        return flair_links_get()
+
+
+def flair_post():
     """
     Endpoint for creating flair used on a users profile.
     :return: JSON with the resulting Flair object and relevant metadata.
@@ -44,3 +76,22 @@ def flair():
         })
         response.status_code = 500
         return response
+
+
+def flair_links_get() -> Response:
+    """
+    Get all the other flair API endpoints.
+    :return: A response object for the GET API request
+    """
+    response = jsonify({
+        'self': f'/v2/flair/links',
+        'endpoints': [
+            {
+                'link': '/v2/flair',
+                'verb': 'POST',
+                'description': 'Create a new flair item.'
+            }
+        ],
+    })
+    response.status_code = 200
+    return response
