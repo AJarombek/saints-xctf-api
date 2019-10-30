@@ -13,16 +13,40 @@ class Flair(db.Model):
     def __init__(self, flair: dict) -> None:
         """
         Initialize a Flair object by passing in a dictionary.
-        :param flair: A dictionary with fields matching the Flair fields
+        :param flair: A dictionary with fields matching the Flair fields.
         """
+        self.flair_id = flair.get('flair_id')
         self.username = flair.get('username')
         self.flair = flair.get('flair')
+        self.deleted = flair.get('deleted')
+        self.created_date = flair.get('created_date')
+        self.created_user = flair.get('created_user')
+        self.created_app = flair.get('created_app')
+        self.modified_date = flair.get('modified_date')
+        self.modified_user = flair.get('modified_user')
+        self.modified_app = flair.get('modified_app')
+        self.deleted_date = flair.get('deleted_date')
+        self.deleted_user = flair.get('deleted_user')
+        self.deleted_app = flair.get('deleted_app')
 
     __tablename__ = 'flair'
 
+    # Data Columns
     flair_id = Column(db.INT, autoincrement=True, primary_key=True)
     username = Column(db.VARCHAR(20), db.ForeignKey('users.username'))
     flair = Column(db.VARCHAR(50))
+    deleted = Column(db.CHAR(1))
+
+    # Audit Columns
+    created_date = Column(db.DATETIME)
+    created_user = Column(db.VARCHAR(31))
+    created_app = Column(db.VARCHAR(31))
+    modified_date = Column(db.DATETIME)
+    modified_user = Column(db.VARCHAR(31))
+    modified_app = Column(db.VARCHAR(31))
+    deleted_date = Column(db.DATETIME)
+    deleted_user = Column(db.VARCHAR(31))
+    deleted_app = Column(db.VARCHAR(31))
 
     def __repr__(self):
         return '<Flair %r,%r>' % (self.username, self.flair)

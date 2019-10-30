@@ -11,7 +11,7 @@ class CodeData:
     def __init__(self, code: Code):
         """
         Create an activation code object without any auditing fields.
-        :param code: A dictionary with fields matching the Code fields
+        :param code: The original Code object with auditing fields.
         """
         self.activation_code = code.activation_code
         self.deleted = code.deleted

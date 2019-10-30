@@ -11,7 +11,7 @@ class CommentData:
     def __init__(self, comment: Comment):
         """
         Create a comment object without any auditing fields.
-        :param comment: A dictionary with fields matching the Comment fields
+        :param comment: The original Comment object with auditing fields.
         """
         self.comment_id = comment.comment_id
         self.username = comment.username

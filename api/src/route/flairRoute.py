@@ -7,6 +7,7 @@ Date: 7/5/2019
 from flask import Blueprint, request, jsonify, redirect, url_for, Response
 from dao.flairDao import FlairDao
 from model.Flair import Flair
+from model.FlairData import FlairData
 
 flair_route = Blueprint('flair_route', __name__, url_prefix='/v2/flair')
 
@@ -59,11 +60,13 @@ def flair_post():
     flair_added = FlairDao.add_flair(flair)
 
     if flair_added:
-        new_flair = FlairDao.get_flair_by_content(username, flair_content)
+        new_flair: Flair = FlairDao.get_flair_by_content(username, flair_content)
+        new_flair_dict: dict = FlairData(new_flair).__dict__
+
         response = jsonify({
             'self': f'/v2/flair',
             'added': True,
-            'flair': new_flair
+            'flair': new_flair_dict
         })
         response.status_code = 201
         return response
