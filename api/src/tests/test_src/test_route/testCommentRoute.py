@@ -17,9 +17,9 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/comments' route. This route is redirected to
         '/v2/comments/' by default.
         """
-        response: Response = self.client.post('/v2/comments')
+        response: Response = self.client.get('/v2/comments')
         headers = response.headers
-        self.assertEqual(response.status_code, 307)
+        self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/comments/', headers.get('Location'))
 
     def test_comment_post_route_redirect(self) -> None:

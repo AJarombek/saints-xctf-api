@@ -51,13 +51,34 @@ def flair_post():
     :return: JSON with the resulting Flair object and relevant metadata.
     """
     flair_data: dict = request.get_json()
+
+    if flair_data is None:
+        response = jsonify({
+            'self': f'/v2/flair',
+            'added': False,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
     username = flair_data.get('username')
     flair_content = flair_data.get('flair')
+
+    if username is None or flair_content is None:
+        response = jsonify({
+            'self': f'/v2/flair',
+            'added': False,
+            'error': "'username' and 'flair' are required fields"
+        })
+        response.status_code = 400
+        return response
+
     flair = Flair({
         'username': username,
         'flair': flair_content
     })
-    flair_added = FlairDao.add_flair(flair)
+
+    flair_added: bool = FlairDao.add_flair(flair)
 
     if flair_added:
         new_flair: Flair = FlairDao.get_flair_by_content(username, flair_content)
