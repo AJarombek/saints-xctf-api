@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify, Response
 from utils.codes import generate_code
 from dao.forgotPasswordDao import ForgotPasswordDao
 from model.ForgotPassword import ForgotPassword
+from model.ForgotPasswordData import ForgotPasswordData
 
 forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix='/v2/forgot_password')
 
@@ -57,7 +58,7 @@ def forgot_password_get(username) -> Response:
         response.status_code = 400
         return response
     else:
-        forgot_password_dicts: list = [CommentData(code).__dict__ for code in forgot_password_codes]
+        forgot_password_dicts: list = [ForgotPasswordData(code).__dict__ for code in forgot_password_codes]
 
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
@@ -88,10 +89,10 @@ def forgot_password_post(username) -> Response:
         new_forgot_password = ForgotPasswordDao.get_forgot_password_code(code)
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'updated': True,
+            'inserted': True,
             'forgot_password_code': new_forgot_password
         })
-        response.status_code = 200
+        response.status_code = 201
         return response
     else:
         response = jsonify({

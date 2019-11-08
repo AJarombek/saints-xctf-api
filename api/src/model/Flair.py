@@ -48,5 +48,17 @@ class Flair(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
+    def __str__(self):
+        """
+        String representation of the user's flair.  This representation is meant to be human readable.
+        :return: The flair in string form.
+        """
+        return f'Flair: [flair_id: {self.flair_id}, username: {self.username}, flair: {self.flair}, ' \
+            f'deleted: {self.deleted}]'
+
     def __repr__(self):
+        """
+        String representation of the user's flair.  This representation is meant to be machine readable.
+        :return: The flair in string form.
+        """
         return '<Flair %r,%r>' % (self.username, self.flair)

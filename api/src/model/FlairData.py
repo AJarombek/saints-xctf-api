@@ -16,3 +16,4 @@ class FlairData:
         self.flair_id = flair.flair_id
         self.username = flair.username
         self.flair = flair.flair
+        self.deleted = flair.deleted

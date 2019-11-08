@@ -13,7 +13,7 @@ class ForgotPassword(db.Model):
     def __init__(self, forgot_password: dict):
         """
         Initialize a ForgotPassword object by passing in a dictionary.
-        :param user: A dictionary with fields matching the ForgotPassword fields
+        :param forgot_password: A dictionary with fields matching the ForgotPassword fields
         """
         self.forgot_code = forgot_password.get('forgot_code')
         self.username = forgot_password.get('username')
@@ -48,5 +48,17 @@ class ForgotPassword(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
+    def __str__(self):
+        """
+        String representation of a forgot password code.  This representation is meant to be human readable.
+        :return: The forgot password code in string form.
+        """
+        return f'ForgotPassword: [forgot_code: {self.forgot_code}, username: {self.username}, ' \
+            f'expires: {self.expires}, deleted: {self.deleted}]'
+
     def __repr__(self):
+        """
+        String representation of a forgot password code.  This representation is meant to be machine readable.
+        :return: The forgot password code in string form.
+        """
         return '<ForgotPassword %r,%r>' % (self.forgot_code, self.username)
