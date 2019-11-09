@@ -13,7 +13,7 @@ from model.ForgotPassword import ForgotPassword
 class ForgotPasswordDao:
 
     @staticmethod
-    def get_forgot_password_code(code: str) -> dict:
+    def get_forgot_password_code(code: str) -> ForgotPassword:
         """
         Retrieve the forgot password code based on the code value
         :param code: Value of the secret forgot password code
@@ -30,7 +30,7 @@ class ForgotPasswordDao:
         """
         return db.session.execute(
             '''
-            SELECT forgot_code 
+            SELECT forgot_code, username, expires, deleted 
             FROM forgotpassword 
             WHERE username=:username 
             AND expires >= NOW()

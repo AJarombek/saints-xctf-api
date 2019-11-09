@@ -58,11 +58,18 @@ def forgot_password_get(username) -> Response:
         response.status_code = 400
         return response
     else:
-        forgot_password_dicts: list = [ForgotPasswordData(code).__dict__ for code in forgot_password_codes]
+        forgot_password_list = []
+        for code in forgot_password_codes:
+            fpw = ForgotPasswordData(None)
+            fpw.forgot_code = code[0]
+            fpw.username = code[1]
+            fpw.expires = code[2]
+            fpw.deleted = code[3]
+            forgot_password_list.append(fpw.__dict__)
 
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'forgot_password_codes': forgot_password_dicts,
+            'forgot_password_codes': forgot_password_list,
         })
         response.status_code = 200
         return response
@@ -76,7 +83,6 @@ def forgot_password_post(username) -> Response:
     """
     code = generate_code(length=8)
     expires = datetime.now() + timedelta(hours=2)
-    expires = expires.date()
 
     new_forgot_password = ForgotPassword({
         'forgot_code': code,
@@ -90,7 +96,7 @@ def forgot_password_post(username) -> Response:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
             'inserted': True,
-            'forgot_password_code': new_forgot_password
+            'forgot_password_code': ForgotPasswordData(new_forgot_password).__dict__
         })
         response.status_code = 201
         return response

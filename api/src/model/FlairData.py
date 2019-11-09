@@ -13,10 +13,11 @@ class FlairData:
         Create a flair object without any auditing fields.
         :param flair: The original Flair object with auditing fields.
         """
-        self.flair_id = flair.flair_id
-        self.username = flair.username
-        self.flair = flair.flair
-        self.deleted = flair.deleted
+        if flair is not None:
+            self.flair_id = flair.flair_id
+            self.username = flair.username
+            self.flair = flair.flair
+            self.deleted = flair.deleted
 
     def __str__(self):
         """

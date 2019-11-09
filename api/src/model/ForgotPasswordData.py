@@ -13,10 +13,11 @@ class ForgotPasswordData:
         Create a forgot password object without any auditing fields.
         :param forgot_password: The original Forgot Password object with auditing fields.
         """
-        self.forgot_code = forgot_password.forgot_code
-        self.username = forgot_password.username
-        self.expires = forgot_password.expires
-        self.deleted = forgot_password.deleted
+        if forgot_password is not None:
+            self.forgot_code = forgot_password.forgot_code
+            self.username = forgot_password.username
+            self.expires = forgot_password.expires
+            self.deleted = forgot_password.deleted
 
     def __str__(self):
         """

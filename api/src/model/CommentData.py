@@ -13,14 +13,15 @@ class CommentData:
         Create a comment object without any auditing fields.
         :param comment: The original Comment object with auditing fields.
         """
-        self.comment_id = comment.comment_id
-        self.username = comment.username
-        self.first = comment.first
-        self.last = comment.last
-        self.log_id = comment.log_id
-        self.time = comment.time
-        self.content = comment.content
-        self.deleted = comment.deleted
+        if comment is not None:
+            self.comment_id = comment.comment_id
+            self.username = comment.username
+            self.first = comment.first
+            self.last = comment.last
+            self.log_id = comment.log_id
+            self.time = comment.time
+            self.content = comment.content
+            self.deleted = comment.deleted
 
     def __str__(self):
         """

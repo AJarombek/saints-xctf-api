@@ -13,8 +13,9 @@ class CodeData:
         Create an activation code object without any auditing fields.
         :param code: The original Code object with auditing fields.
         """
-        self.activation_code = code.activation_code
-        self.deleted = code.deleted
+        if code is not None:
+            self.activation_code = code.activation_code
+            self.deleted = code.deleted
 
     def __str__(self):
         """
