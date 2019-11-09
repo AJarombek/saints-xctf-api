@@ -9,11 +9,19 @@ from sqlalchemy import Column
 
 
 class Admin(db.Model):
+
+    def __init__(self, code: dict):
+        """
+        Initialize an Admin object by passing in a dictionary.
+        :param code: A dictionary with fields matching the Admin fields
+        """
+        self.user = code.get('user')
+
     __tablename__ = 'admins'
 
     user = Column(db.VARCHAR(10), primary_key=True)
 
-    group_members = db.relationship('GroupMember', backref='group_member')
+    group_members = db.relationship('GroupMember', backref='admin_group_member')
 
     def __str__(self):
         """
