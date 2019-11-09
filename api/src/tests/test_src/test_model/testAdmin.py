@@ -23,8 +23,8 @@ class TestAdmin(TestSuite):
         Prove that the machine readable string representation of an Admin object is as expected.
         """
         admin = Admin({'user': 'admin'})
-        self.assertEquals(repr(admin), '<Admin user>')
-        self.assertEquals(admin.__repr__(), '<Admin user>')
+        self.assertEquals(repr(admin), "<Admin 'admin'>")
+        self.assertEquals(admin.__repr__(), "<Admin 'admin'>")
 
     def test_admin_eq(self) -> None:
         """

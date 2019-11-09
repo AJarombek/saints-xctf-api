@@ -28,7 +28,7 @@ class CommentData:
         String representation of the comment.  This representation is meant to be human readable.
         :return: The comment string.
         """
-        return f"Comment: [comment_id: {self.comment_id}, username: {self.username}, first: {self.first}, " \
+        return f"CommentData: [comment_id: {self.comment_id}, username: {self.username}, first: {self.first}, " \
             f"last: {self.last}, log_id: {self.log_id}, time: {self.time}, content: {self.content}, " \
             f"deleted: {self.deleted}]"
 
@@ -37,7 +37,7 @@ class CommentData:
         String representation of the comment.  This representation is meant to be machine readable.
         :return: The comment string.
         """
-        return '<Comment %r>' % self.comment_id
+        return '<CommentData %r>' % self.comment_id
 
     def __eq__(self, other):
         """
