@@ -62,3 +62,16 @@ class Flair(db.Model):
         :return: The flair in string form.
         """
         return '<Flair %r,%r>' % (self.username, self.flair)
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this Flair.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return all([
+            self.flair_id == other.flair_id,
+            self.username == other.username,
+            self.flair == other.flair,
+            self.deleted == other.deleted
+        ])

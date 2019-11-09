@@ -57,3 +57,14 @@ class Code(db.Model):
         :return: The activation code string.
         """
         return '<Code %r>' % self.activation_code
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this Code.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return all([
+            self.activation_code == other.activation_code,
+            self.deleted == other.deleted
+        ])

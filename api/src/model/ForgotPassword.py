@@ -62,3 +62,16 @@ class ForgotPassword(db.Model):
         :return: The forgot password code in string form.
         """
         return '<ForgotPassword %r,%r>' % (self.forgot_code, self.username)
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this forgot password code.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return all([
+            self.forgot_code == other.forgot_code,
+            self.username == other.username,
+            self.expires == other.expires,
+            self.deleted == other.deleted
+        ])

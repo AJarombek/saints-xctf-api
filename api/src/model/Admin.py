@@ -15,5 +15,24 @@ class Admin(db.Model):
 
     group_members = db.relationship('GroupMember', backref='group_member')
 
+    def __str__(self):
+        """
+        String representation of a type of group member.  This representation is meant to be human readable.
+        :return: Either a 'user' or 'admin' type of group member.
+        """
+        return f'Admin: [user: {self.user}]'
+
     def __repr__(self):
+        """
+        String representation of a type of group member.  This representation is meant to be machine readable.
+        :return: Either a 'user' or 'admin' type of group member.
+        """
         return '<Admin %r>' % self.user
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this object.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return self.user == other.user

@@ -17,3 +17,31 @@ class ForgotPasswordData:
         self.username = forgot_password.username
         self.expires = forgot_password.expires
         self.deleted = forgot_password.deleted
+
+    def __str__(self):
+        """
+        String representation of a forgot password code.  This representation is meant to be human readable.
+        :return: The forgot password code in string form.
+        """
+        return f'ForgotPassword: [forgot_code: {self.forgot_code}, username: {self.username}, ' \
+            f'expires: {self.expires}, deleted: {self.deleted}]'
+
+    def __repr__(self):
+        """
+        String representation of a forgot password code.  This representation is meant to be machine readable.
+        :return: The forgot password code in string form.
+        """
+        return '<ForgotPassword %r,%r>' % (self.forgot_code, self.username)
+
+    def __eq__(self, other):
+        """
+        Determine value equality between this object and another object.
+        :param other: Another object to compare to this forgot password code.
+        :return: True if the objects are equal, False otherwise.
+        """
+        return all([
+            self.forgot_code == other.forgot_code,
+            self.username == other.username,
+            self.expires == other.expires,
+            self.deleted == other.deleted
+        ])
