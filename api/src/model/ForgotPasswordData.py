@@ -24,7 +24,7 @@ class ForgotPasswordData:
         String representation of a forgot password code.  This representation is meant to be human readable.
         :return: The forgot password code in string form.
         """
-        return f'ForgotPassword: [forgot_code: {self.forgot_code}, username: {self.username}, ' \
+        return f'ForgotPasswordData: [forgot_code: {self.forgot_code}, username: {self.username}, ' \
             f'expires: {self.expires}, deleted: {self.deleted}]'
 
     def __repr__(self):
@@ -32,7 +32,7 @@ class ForgotPasswordData:
         String representation of a forgot password code.  This representation is meant to be machine readable.
         :return: The forgot password code in string form.
         """
-        return '<ForgotPassword %r,%r>' % (self.forgot_code, self.username)
+        return '<ForgotPasswordData %r,%r>' % (self.forgot_code, self.username)
 
     def __eq__(self, other):
         """
