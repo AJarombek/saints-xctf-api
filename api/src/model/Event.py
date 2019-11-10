@@ -21,6 +21,7 @@ class Event(db.Model):
         self.start_date = event.get('start_date')
         self.end_date = event.get('end_date')
         self.start_time = event.get('start_time')
+        self.end_time = event.get('end_time')
         self.description = event.get('description')
         self.deleted = event.get('deleted')
         self.created_date = event.get('created_date')
@@ -42,6 +43,7 @@ class Event(db.Model):
     start_date = Column(db.DATE, nullable=False)
     end_date = Column(db.DATE)
     start_time = Column(db.TIME)
+    end_time = Column(db.TIME)
     description = Column(db.VARCHAR(1000))
     deleted = Column(db.CHAR(1))
 
@@ -63,7 +65,7 @@ class Event(db.Model):
         """
         return f"Event: [event_id: {self.event_id}, name: {self.name}, group_name: {self.group_name}, " \
             f"start_date: {self.start_date}, end_date: {self.end_date}, start_time: {self.start_time}, " \
-            f"description: {self.description}]"
+            f"end_time: {self.end_time}, description: {self.description}, deleted: {self.deleted}]"
 
     def __repr__(self):
         """
@@ -85,5 +87,6 @@ class Event(db.Model):
             self.start_date == other.start_date,
             self.end_date == other.end_date,
             self.start_time == other.start_time,
-            self.description == other.description
+            self.description == other.description,
+            self.deleted == other.deleted
         ])
