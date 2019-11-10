@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 7/7/2019
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, Response
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
@@ -13,11 +13,51 @@ group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
 
 
 @group_route.route('/', methods=['GET'])
-def groups():
+def groups() -> Response:
     """
     Endpoints for retrieving all the groups.
     :return: JSON representation of groups and relevant metadata.
     """
+    return groups_get()
+
+
+@group_route.route('/<group_name>', methods=['GET', 'PUT'])
+def group(group_name) -> Response:
+    """
+    Endpoints for retrieving a single group and updating an existing group.
+    :param group_name: Unique name which identifies a group.
+    :return: JSON representation of a group and relevant metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/<group_name> '''
+        return group_by_group_name_get(group_name)
+
+    elif request.method == 'PUT':
+        ''' [PUT] /v2/groups/<group_name> '''
+        return group_by_group_name_put(group_name)
+
+
+@group_route.route('/members/<group_name>', methods=['GET'])
+def group_members(group_name) -> Response:
+    """
+    Endpoint for retrieving the members of a group.
+    :param group_name: Unique name which identifies a group.
+    :return: JSON representation of the members of a group and related metadata.
+    """
+    return group_members_by_group_name_get(group_name)
+
+
+@group_route.route('/snapshot/<group_name>', methods=['GET'])
+def group_snapshot(group_name) -> Response:
+    """
+    Endpoint for retrieving a group along with statistics and leaderboards.
+    :param group_name: Uniquely identifies a group.
+    :return: JSON representation of a group and additional data.
+    """
+    group_snapshot_by_group_name_get(group_name)
+
+
+def groups_get() -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/groups '''
         groups = GroupDao.get_groups()
@@ -39,44 +79,31 @@ def groups():
             return response
 
 
-@group_route.route('/<group_name>', methods=['GET', 'PUT'])
-def group(group_name):
-    """
-    Endpoints for retrieving a single group and updating an existing group.
-    :param group_name: Unique name which identifies a group.
-    :return: JSON representation of a group and relevant metadata.
-    """
-    if request.method == 'GET':
-        ''' [GET] /v2/groups/<group_name> '''
-        group = GroupDao.get_group(group_name=group_name)
+def group_by_group_name_get(group_name: str) -> Response:
+    group = GroupDao.get_group(group_name=group_name)
 
-        if group is None:
-            response = jsonify({
-                'self': f'/v2/groups/{group_name}',
-                'group': None,
-                'error': 'there is no group with this name'
-            })
-            response.status_code = 400
-            return response
-        else:
-            response = jsonify({
-                'self': f'/v2/groups/{group_name}',
-                'group': group
-            })
-            response.status_code = 200
-            return response
-
-    elif request.method == 'PUT':
-        ''' [PUT] /v2/groups/<group_name> '''
+    if group is None:
+        response = jsonify({
+            'self': f'/v2/groups/{group_name}',
+            'group': None,
+            'error': 'there is no group with this name'
+        })
+        response.status_code = 400
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups/{group_name}',
+            'group': group
+        })
+        response.status_code = 200
+        return response
 
 
-@group_route.route('/members/<group_name>', methods=['GET'])
-def group_members(group_name):
-    """
-    Endpoint for retrieving the members of a group.
-    :param group_name: Unique name which identifies a group.
-    :return: JSON representation of the members of a group and related metadata.
-    """
+def group_by_group_name_put(group_name: str) -> Response:
+    pass
+
+
+def group_members_by_group_name_get(group_name: str) -> Response:
     group_members = GroupMemberDao.get_group_members(group_name=group_name)
 
     if group_members is None:
@@ -98,13 +125,7 @@ def group_members(group_name):
         return response
 
 
-@group_route.route('/snapshot/<group_name>', methods=['GET'])
-def group_snapshot(group_name):
-    """
-    Endpoint for retrieving a group along with statistics and leaderboards.
-    :param group_name: Uniquely identifies a group.
-    :return: JSON representation of a group and additional data.
-    """
+def group_snapshot_by_group_name_get(group_name: str) -> Response:
     group = GroupDao.get_group(group_name=group_name)
 
     if group is None:
