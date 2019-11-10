@@ -1,5 +1,5 @@
 """
-Test suite for the model representing a user's flair [without the auditing columns] (api/src/model/Flair.py)
+Test suite for the model representing a user's flair [without the auditing columns] (api/src/model/FlairData.py)
 Author: Andrew Jarombek
 Date: 11/9/2019
 """

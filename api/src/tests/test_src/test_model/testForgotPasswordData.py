@@ -1,5 +1,6 @@
 """
-Test suite for the model representing a user's forgot password code (api/src/model/ForgotPassword.py)
+Test suite for the model representing a user's forgot password code [without the auditing columns]
+(api/src/model/ForgotPasswordData.py)
 Author: Andrew Jarombek
 Date: 11/9/2019
 """
