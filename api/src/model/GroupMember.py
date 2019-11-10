@@ -49,7 +49,7 @@ class GroupMember(db.Model):
         to be human readable.
         :return: The group member in string form.
         """
-        return f'Group: [id: {self.id}, group_name: {self.group_name}, username: {self.username}, ' \
+        return f'GroupMember: [id: {self.id}, group_name: {self.group_name}, username: {self.username}, ' \
             f'status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
 
     def __repr__(self):
