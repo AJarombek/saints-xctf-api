@@ -4,12 +4,23 @@ Author: Andrew Jarombek
 Date: 7/7/2019
 """
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
 
 group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
+
+
+@group_route.route('', methods=['GET', 'POST'])
+def comments_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'groups' to the group routes.
+    :return: Response object letting the browser know where to redirect the request to.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups '''
+        return redirect(url_for('group_route.groups'), code=302)
 
 
 @group_route.route('/', methods=['GET'])
@@ -18,7 +29,9 @@ def groups() -> Response:
     Endpoints for retrieving all the groups.
     :return: JSON representation of groups and relevant metadata.
     """
-    return groups_get()
+    if request.method == 'GET':
+        ''' [GET] /v2/groups '''
+        return groups_get()
 
 
 @group_route.route('/<group_name>', methods=['GET', 'PUT'])
@@ -44,7 +57,9 @@ def group_members(group_name) -> Response:
     :param group_name: Unique name which identifies a group.
     :return: JSON representation of the members of a group and related metadata.
     """
-    return group_members_by_group_name_get(group_name)
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/members/<group_name> '''
+        return group_members_by_group_name_get(group_name)
 
 
 @group_route.route('/snapshot/<group_name>', methods=['GET'])
@@ -54,32 +69,51 @@ def group_snapshot(group_name) -> Response:
     :param group_name: Uniquely identifies a group.
     :return: JSON representation of a group and additional data.
     """
-    group_snapshot_by_group_name_get(group_name)
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/snapshot/<group_name> '''
+        return group_snapshot_by_group_name_get(group_name)
+
+
+@group_route.route('/links', methods=['GET'])
+def group_links() -> Response:
+    """
+    Endpoint for information about the group API endpoints.
+    :return: Metadata about the group API.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/links '''
+        return group_links_get()
 
 
 def groups_get() -> Response:
-    if request.method == 'GET':
-        ''' [GET] /v2/groups '''
-        groups = GroupDao.get_groups()
+    """
+    Get all the groups in the database.
+    :return: A response object for the GET API request.
+    """
+    groups = GroupDao.get_groups()
 
-        if groups is None:
-            response = jsonify({
-                'self': f'/v2/groups',
-                'groups': groups
-            })
-            response.status_code = 200
-            return response
-        else:
-            response = jsonify({
-                'self': f'/v2/groups',
-                'groups': None,
-                'error': 'failed to retrieve groups from the database'
-            })
-            response.status_code = 500
-            return response
+    if groups is None:
+        response = jsonify({
+            'self': f'/v2/groups',
+            'groups': groups
+        })
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups',
+            'groups': None,
+            'error': 'failed to retrieve groups from the database'
+        })
+        response.status_code = 500
+        return response
 
 
 def group_by_group_name_get(group_name: str) -> Response:
+    """
+    Get a group based on the unique group name.
+    :return: A response object for the GET API request.
+    """
     group = GroupDao.get_group(group_name=group_name)
 
     if group is None:
@@ -100,10 +134,20 @@ def group_by_group_name_get(group_name: str) -> Response:
 
 
 def group_by_group_name_put(group_name: str) -> Response:
+    """
+    Update a group in the database.
+    :param group_name: Unique name of a group.
+    :return: A response object for the PUT API request.
+    """
     pass
 
 
 def group_members_by_group_name_get(group_name: str) -> Response:
+    """
+    Get the members of a group based on the group name.
+    :param group_name: Unique name of a group.
+    :return: A response object for the GET API request.
+    """
     group_members = GroupMemberDao.get_group_members(group_name=group_name)
 
     if group_members is None:
@@ -126,6 +170,11 @@ def group_members_by_group_name_get(group_name: str) -> Response:
 
 
 def group_snapshot_by_group_name_get(group_name: str) -> Response:
+    """
+    Get a snapshot about a group based on the group name.
+    :param group_name: Unique name of a group.
+    :return: A response object for the GET API request.
+    """
     group = GroupDao.get_group(group_name=group_name)
 
     if group is None:
@@ -176,6 +225,45 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
         'self': f'/v2/groups/snapshot/{group_name}',
         'group_link': f'/v2/groups/{group_name}',
         'group': group
+    })
+    response.status_code = 200
+    return response
+
+
+def group_links_get() -> Response:
+    """
+    Get all the other group API endpoints.
+    :return: A response object for the GET API request
+    """
+    response = jsonify({
+        'self': f'/v2/groups/links',
+        'endpoints': [
+            {
+                'link': '/v2/groups',
+                'verb': 'GET',
+                'description': 'Get all the groups in the database.'
+            },
+            {
+                'link': '/v2/groups/<group_name>',
+                'verb': 'GET',
+                'description': 'Retrieve a single group based on the group name.'
+            },
+            {
+                'link': '/v2/groups/<group_name>',
+                'verb': 'PUT',
+                'description': 'Update a group based on the group name.'
+            },
+            {
+                'link': '/v2/groups/members/<group_name>',
+                'verb': 'GET',
+                'description': 'Get the members of a group based on the group name.'
+            },
+            {
+                'link': '/v2/groups/snapshot/<group_name>',
+                'verb': 'GET',
+                'description': 'Get a snapshot about a group based on the group name.'
+            }
+        ],
     })
     response.status_code = 200
     return response
