@@ -5,6 +5,11 @@ Date: 7/7/2019
 """
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from datetime import datetime
+from model.Group import Group
+from model.GroupData import GroupData
+from model.GroupMember import GroupMember
+from model.GroupMemberData import GroupMemberData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
@@ -12,8 +17,8 @@ from dao.logDao import LogDao
 group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
 
 
-@group_route.route('', methods=['GET', 'POST'])
-def comments_redirect() -> Response:
+@group_route.route('', methods=['GET'])
+def groups_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'groups' to the group routes.
     :return: Response object letting the browser know where to redirect the request to.
@@ -92,7 +97,7 @@ def groups_get() -> Response:
     """
     groups = GroupDao.get_groups()
 
-    if groups is None:
+    if groups is not None:
         response = jsonify({
             'self': f'/v2/groups',
             'groups': groups
@@ -139,7 +144,57 @@ def group_by_group_name_put(group_name: str) -> Response:
     :param group_name: Unique name of a group.
     :return: A response object for the PUT API request.
     """
-    pass
+    old_group: Group = GroupDao.get_group(group_name=group_name)
+
+    if old_group is None:
+        response = jsonify({
+            'self': f'/v2/groups/{group_name}',
+            'updated': False,
+            'comment': None,
+            'error': 'there is no existing group with this name'
+        })
+        response.status_code = 400
+        return response
+
+    group_data: dict = request.get_json()
+    new_group = Group(group_data)
+
+    if old_group != new_group:
+
+        new_group.modified_date = datetime.now()
+        new_group.modified_app = 'api'
+
+        is_updated = GroupDao.update_group(group=new_group)
+
+        if is_updated:
+            updated_group: Group = GroupDao.get_group(group_name=new_group.group_name)
+            updated_group_dict: dict = GroupData(updated_group).__dict__
+
+            response = jsonify({
+                'self': f'/v2/groups/{group_name}',
+                'updated': True,
+                'comment': updated_group_dict
+            })
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/groups/{group_name}',
+                'updated': False,
+                'comment': None,
+                'error': 'the group failed to update'
+            })
+            response.status_code = 500
+            return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups/{group_name}',
+            'updated': False,
+            'comment': None,
+            'error': 'the group submitted is equal to the existing group with the same name'
+        })
+        response.status_code = 400
+        return response
 
 
 def group_members_by_group_name_get(group_name: str) -> Response:
