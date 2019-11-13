@@ -5,6 +5,8 @@ Author: Andrew Jarombek
 Date: 11/10/2019
 """
 
+import json
+from datetime import datetime
 from flask import Response
 from tests.TestSuite import TestSuite
 
@@ -53,4 +55,71 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/wmenstf')
+        self.assertIsNotNone(response_json.get('group'))
+
+    def test_group_by_group_name_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_name>' route.  This test proves that trying to
+        update a group that doesn't exist results in a 400 error.
+        """
+        response: Response = self.client.put('/v2/groups/invalid_group_name')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/invalid_group_name')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertEqual(response_json.get('error'), 'there is no existing group with this name')
+
+    def test_group_by_group_name_put_route_400_no_update(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_name>' route.  This test proves that if the
+        updated group is the same as the original group, a 400 error is returned.
+        """
+        response: Response = self.client.get('/v2/groups/wmenstf')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+
+        request_body = json.dumps(response_json.get('group'))
+
+        response: Response = self.client.put(
+            '/v2/groups/wmenstf',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/wmenstf')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertEqual(
+            response_json.get('error'),
+            'the group submitted is equal to the existing group with the same name'
+        )
+
+    def test_group_by_group_name_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_name>' route.  This test proves that if a valid
+        group JSON is passed to this endpoint, the existing group will be updated and a valid 200 response code
+        will be returned.
+        """
+        request_body = json.dumps({
+            "group_name": "alumni",
+            "group_title": "Alumni",
+            "grouppic": "picture_bytes",
+            "grouppic_name": "picture.png",
+            "week_start": "sunday",
+            "description": f"Updated: {datetime.now()}",
+            "deleted": None
+        })
+
+        response: Response = self.client.put(
+            '/v2/groups/alumni',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/alumni')
+        self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('group'))

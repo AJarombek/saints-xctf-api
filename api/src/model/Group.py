@@ -71,10 +71,28 @@ class Group(db.Model):
         :param other: Another object to compare to this group.
         :return: True if the objects are equal, False otherwise.
         """
+        if self.grouppic is None:
+            self_grouppic = bytes()
+        else:
+            try:
+                self_grouppic = self.grouppic
+                self_grouppic = self_grouppic.decode('utf-8')
+            except AttributeError:
+                pass
+
+        if other.grouppic is None:
+            other_grouppic = bytes()
+        else:
+            try:
+                other_grouppic = other.grouppic
+                other_grouppic = other_grouppic.decode('utf-8')
+            except AttributeError:
+                pass
+
         return all([
             self.group_name == other.group_name,
             self.group_title == other.group_title,
-            self.grouppic == other.grouppic,
+            self_grouppic.decode('utf-8') == other_grouppic.decode('utf-8'),
             self.grouppic_name == other.grouppic_name,
             self.week_start == other.week_start,
             self.description == other.description,

@@ -95,12 +95,21 @@ def groups_get() -> Response:
     Get all the groups in the database.
     :return: A response object for the GET API request.
     """
-    groups = GroupDao.get_groups()
+    group_list: list = GroupDao.get_groups()
 
-    if groups is not None:
+    if group_list is not None:
+        group_data_list: list = [GroupData(group_obj).__dict__ for group_obj in group_list]
+
+        for group_dict in group_data_list:
+            if group_dict['grouppic'] is not None:
+                try:
+                    group_dict['grouppic'] = group_dict['grouppic'].decode('utf-8')
+                except AttributeError:
+                    pass
+
         response = jsonify({
             'self': f'/v2/groups',
-            'groups': groups
+            'groups': group_data_list
         })
         response.status_code = 200
         return response
@@ -119,7 +128,7 @@ def group_by_group_name_get(group_name: str) -> Response:
     Get a group based on the unique group name.
     :return: A response object for the GET API request.
     """
-    group = GroupDao.get_group(group_name=group_name)
+    group: Group = GroupDao.get_group(group_name=group_name)
 
     if group is None:
         response = jsonify({
@@ -130,9 +139,17 @@ def group_by_group_name_get(group_name: str) -> Response:
         response.status_code = 400
         return response
     else:
+        group_dict = GroupData(group).__dict__
+
+        if group_dict['grouppic'] is not None:
+            try:
+                group_dict['grouppic'] = group_dict['grouppic'].decode('utf-8')
+            except AttributeError:
+                pass
+
         response = jsonify({
             'self': f'/v2/groups/{group_name}',
-            'group': group
+            'group': group_dict
         })
         response.status_code = 200
         return response
@@ -150,7 +167,7 @@ def group_by_group_name_put(group_name: str) -> Response:
         response = jsonify({
             'self': f'/v2/groups/{group_name}',
             'updated': False,
-            'comment': None,
+            'group': None,
             'error': 'there is no existing group with this name'
         })
         response.status_code = 400
@@ -170,10 +187,16 @@ def group_by_group_name_put(group_name: str) -> Response:
             updated_group: Group = GroupDao.get_group(group_name=new_group.group_name)
             updated_group_dict: dict = GroupData(updated_group).__dict__
 
+            if updated_group_dict['grouppic'] is not None:
+                try:
+                    updated_group_dict['grouppic'] = updated_group_dict['grouppic'].decode('utf-8')
+                except AttributeError:
+                    pass
+
             response = jsonify({
                 'self': f'/v2/groups/{group_name}',
                 'updated': True,
-                'comment': updated_group_dict
+                'group': updated_group_dict
             })
             response.status_code = 200
             return response
@@ -181,7 +204,7 @@ def group_by_group_name_put(group_name: str) -> Response:
             response = jsonify({
                 'self': f'/v2/groups/{group_name}',
                 'updated': False,
-                'comment': None,
+                'group': None,
                 'error': 'the group failed to update'
             })
             response.status_code = 500
@@ -190,7 +213,7 @@ def group_by_group_name_put(group_name: str) -> Response:
         response = jsonify({
             'self': f'/v2/groups/{group_name}',
             'updated': False,
-            'comment': None,
+            'group': None,
             'error': 'the group submitted is equal to the existing group with the same name'
         })
         response.status_code = 400
