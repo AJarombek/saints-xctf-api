@@ -74,8 +74,8 @@ class Group(db.Model):
         if self.grouppic is None:
             self_grouppic = bytes()
         else:
+            self_grouppic = self.grouppic
             try:
-                self_grouppic = self.grouppic
                 self_grouppic = self_grouppic.decode('utf-8')
             except AttributeError:
                 pass
@@ -83,8 +83,8 @@ class Group(db.Model):
         if other.grouppic is None:
             other_grouppic = bytes()
         else:
+            other_grouppic = other.grouppic
             try:
-                other_grouppic = other.grouppic
                 other_grouppic = other_grouppic.decode('utf-8')
             except AttributeError:
                 pass
@@ -92,7 +92,7 @@ class Group(db.Model):
         return all([
             self.group_name == other.group_name,
             self.group_title == other.group_title,
-            self_grouppic.decode('utf-8') == other_grouppic.decode('utf-8'),
+            self_grouppic == other_grouppic,
             self.grouppic_name == other.grouppic_name,
             self.week_start == other.week_start,
             self.description == other.description,

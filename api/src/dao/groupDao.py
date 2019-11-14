@@ -92,6 +92,7 @@ class GroupDao:
                 'week_start': group.week_start,
                 'deleted': group.deleted,
                 'group_name': group.group_name,
+                'modified_date': group.modified_date,
                 'modified_app': group.modified_app
             }
         )

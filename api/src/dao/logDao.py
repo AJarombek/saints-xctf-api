@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
+from sqlalchemy.engine import ResultProxy
+from sqlalchemy.schema import Column
 import utils.dates as dates
 from dao.basicDao import BasicDao
 from database import db
@@ -184,13 +186,13 @@ class LogDao:
             )
 
     @staticmethod
-    def get_group_miles(group_name: str):
+    def get_group_miles(group_name: str) -> Column:
         """
         Get the total exercise miles for all the users in a group.
         :param group_name: Unique name for a group.
         :return: The total number of miles exercised.
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT SUM(miles) AS total 
             FROM logs 
@@ -200,9 +202,10 @@ class LogDao:
             ''',
             {'group_name': group_name}
         )
+        return result.first()
 
     @staticmethod
-    def get_group_miles_interval(group_name: str, interval: str = None, week_start: str = 'monday'):
+    def get_group_miles_interval(group_name: str, interval: str = None, week_start: str = 'monday') -> Column:
         """
         Get the total number of miles exercised by all the group members in a certain time interval.  The time interval
         options include the past year, month, or week.
@@ -215,7 +218,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -225,8 +228,9 @@ class LogDao:
                 ''',
                 {'group_name': group_name}
             )
+            return result.first()
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -237,10 +241,11 @@ class LogDao:
                 ''',
                 {'group_name': group_name, 'date': date}
             )
+            return result.first()
 
     @staticmethod
     def get_group_miles_interval_by_type(group_name: str, exercise_type: str,
-                                         interval: str = None, week_start: str = 'monday'):
+                                         interval: str = None, week_start: str = 'monday') -> Column:
         """
         Get the total number of miles exercised by all the group members in a certain time interval and of a specific
         exercise type.  The interval options include the past year, month, and week.
@@ -255,7 +260,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -266,8 +271,9 @@ class LogDao:
                 ''',
                 {'group_name': group_name, 'exercise_type': exercise_type}
             )
+            return result.first()
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -279,15 +285,16 @@ class LogDao:
                 ''',
                 {'group_name': group_name, 'exercise_type': exercise_type, 'date': date}
             )
+            return result.first()
 
     @staticmethod
-    def get_group_avg_feel(group_name: str) -> dict:
+    def get_group_avg_feel(group_name: str) -> Column:
         """
         Retrieve the average feel statistic for a group.
         :param group_name: A name which uniquely identifies a group.
         :return: The average feel.
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT AVG(feel) AS average 
             FROM logs 
@@ -297,9 +304,10 @@ class LogDao:
             ''',
             {'group_name': group_name}
         )
+        return result.first()
 
     @staticmethod
-    def get_group_avg_feel_interval(group_name: str, interval: str = None, week_start: str = 'monday') -> dict:
+    def get_group_avg_feel_interval(group_name: str, interval: str = None, week_start: str = 'monday') -> Column:
         """
         Retrieve the average feel statistic for all group members during a certain interval in time.
         :param group_name: A name which uniquely identifies a group.
@@ -311,7 +319,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT AVG(feel) AS average 
                 FROM logs 
@@ -321,8 +329,9 @@ class LogDao:
                 ''',
                 {'group_name': group_name}
             )
+            return result.first()
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT AVG(feel) AS average 
                 FROM logs 
@@ -333,6 +342,7 @@ class LogDao:
                 ''',
                 {'group_name': group_name, 'date': date}
             )
+            return result.first()
 
     @staticmethod
     def get_log_feed(limit: int, offset: int) -> list:

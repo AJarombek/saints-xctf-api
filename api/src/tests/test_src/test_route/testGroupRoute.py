@@ -123,3 +123,36 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/groups/alumni')
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('group'))
+
+    def test_group_members_by_group_name_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/members/<group_name>' route.  This test proves that
+        trying to retrieve group members from a group with a group name that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/groups/members/invalid_group_name')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/invalid_group_name')
+        self.assertEqual(response_json.get('group'), '/v2/groups/invalid_group_name')
+        self.assertIsNone(response_json.get('group_members'))
+        self.assertEqual(response_json.get('error'), 'the group does not exist or there are no members in the group')
+
+    def test_group_members_by_group_name_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/members/<group_name>' route.  This test proves that
+        retrieving group members from a group with a valid group name results in the group and a 200 status.
+        """
+        response: Response = self.client.get('/v2/groups/members/wmenstf')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/wmenstf')
+        self.assertEqual(response_json.get('group'), '/v2/groups/wmenstf')
+        self.assertIsNotNone(response_json.get('group_members'))
+        self.assertGreaterEqual(len(response_json.get('group_members')), 1)
+        self.assertIn('username', response_json.get('group_members')[0])
+        self.assertIn('first', response_json.get('group_members')[0])
+        self.assertIn('last', response_json.get('group_members')[0])
+        self.assertIn('member_since', response_json.get('group_members')[0])
+        self.assertIn('user', response_json.get('group_members')[0])
+        self.assertIn('deleted', response_json.get('group_members')[0])
+        self.assertIsNotNone(response_json.get('group_members')[0]['username'])

@@ -5,11 +5,11 @@ Date: 7/7/2019
 """
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from sqlalchemy.engine import ResultProxy
+from sqlalchemy.schema import Column
 from datetime import datetime
 from model.Group import Group
 from model.GroupData import GroupData
-from model.GroupMember import GroupMember
-from model.GroupMemberData import GroupMemberData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
@@ -226,9 +226,9 @@ def group_members_by_group_name_get(group_name: str) -> Response:
     :param group_name: Unique name of a group.
     :return: A response object for the GET API request.
     """
-    group_members = GroupMemberDao.get_group_members(group_name=group_name)
+    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name)
 
-    if group_members is None:
+    if group_members is None or group_members.rowcount == 0:
         response = jsonify({
             'self': f'/v2/groups/members/{group_name}',
             'group': f'/v2/groups/{group_name}',
@@ -238,10 +238,21 @@ def group_members_by_group_name_get(group_name: str) -> Response:
         response.status_code = 400
         return response
     else:
+        group_members_list = [{
+                'username': member.username,
+                'first': member.first,
+                'last': member.last,
+                'member_since': member.member_since,
+                'user': member.user,
+                'status': member.status,
+                'deleted': member.deleted
+            }
+            for member in group_members]
+
         response = jsonify({
             'self': f'/v2/groups/members/{group_name}',
             'group': f'/v2/groups/{group_name}',
-            'group_members': group_members
+            'group_members': group_members_list
         })
         response.status_code = 200
         return response
@@ -253,7 +264,7 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
     :param group_name: Unique name of a group.
     :return: A response object for the GET API request.
     """
-    group = GroupDao.get_group(group_name=group_name)
+    group: Group = GroupDao.get_group(group_name=group_name)
 
     if group is None:
         response = jsonify({
@@ -265,38 +276,48 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
         response.status_code = 400
         return response
 
-    group_members = GroupMemberDao.get_group_members(group_name=group_name)
+    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name)
+    group_members_list = [{
+            'username': member.username,
+            'first': member.first,
+            'last': member.last,
+            'member_since': member.member_since,
+            'user': member.user,
+            'status': member.status,
+            'deleted': member.deleted
+        }
+        for member in group_members]
 
     # All group statistics are queried separately but combined into a single map
-    miles = LogDao.get_group_miles(group_name)
-    miles_past_year = LogDao.get_group_miles_interval(group_name, 'year')
-    miles_past_month = LogDao.get_group_miles_interval(group_name, 'month')
-    miles_past_week = LogDao.get_group_miles_interval(group_name, 'week', week_start=group['week_start'])
-    run_miles = LogDao.get_group_miles_interval_by_type(group_name, 'run')
-    run_miles_past_year = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
-    run_miles_past_month = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
-    run_miles_past_week = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'week')
-    all_time_feel = LogDao.get_group_avg_feel(group_name)
-    year_feel = LogDao.get_group_avg_feel_interval(group_name, 'year')
-    month_feel = LogDao.get_group_avg_feel_interval(group_name, 'month')
-    week_feel = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group['week_start'])
+    miles: Column = LogDao.get_group_miles(group_name)
+    miles_past_year: Column = LogDao.get_group_miles_interval(group_name, 'year')
+    miles_past_month: Column = LogDao.get_group_miles_interval(group_name, 'month')
+    miles_past_week: Column = LogDao.get_group_miles_interval(group_name, 'week', week_start=group['week_start'])
+    run_miles: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run')
+    run_miles_past_year: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
+    run_miles_past_month: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
+    run_miles_past_week: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'week')
+    all_time_feel: Column = LogDao.get_group_avg_feel(group_name)
+    year_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'year')
+    month_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'month')
+    week_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group['week_start'])
 
     statistics = {
-        'miles': miles,
-        'milespastyear': miles_past_year,
-        'milespastmonth': miles_past_month,
-        'milespastweek': miles_past_week,
-        'runmiles': run_miles,
-        'runmilespastyear': run_miles_past_year,
-        'runmilespastmonth': run_miles_past_month,
-        'runmilespastweek': run_miles_past_week,
-        'alltimefeel': all_time_feel,
-        'yearfeel': year_feel,
-        'monthfeel': month_feel,
-        'weekfeel': week_feel
+        'miles': miles['total'],
+        'milespastyear': miles_past_year['total'],
+        'milespastmonth': miles_past_month['total'],
+        'milespastweek': miles_past_week['total'],
+        'runmiles': run_miles['total'],
+        'runmilespastyear': run_miles_past_year['total'],
+        'runmilespastmonth': run_miles_past_month['total'],
+        'runmilespastweek': run_miles_past_week['total'],
+        'alltimefeel': all_time_feel['average'],
+        'yearfeel': year_feel['average'],
+        'monthfeel': month_feel['average'],
+        'weekfeel': week_feel['average']
     }
 
-    group['members'] = group_members
+    group['members'] = group_members_list
     group['statistics'] = statistics
 
     response = jsonify({
