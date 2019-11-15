@@ -21,8 +21,6 @@ class Admin(db.Model):
 
     user = Column(db.VARCHAR(10), primary_key=True)
 
-    group_members = db.relationship('GroupMember', backref='admin_group_member')
-
     def __str__(self):
         """
         String representation of a type of group member.  This representation is meant to be human readable.

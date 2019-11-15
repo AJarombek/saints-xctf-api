@@ -156,3 +156,44 @@ class TestGroupRoute(TestSuite):
         self.assertIn('user', response_json.get('group_members')[0])
         self.assertIn('deleted', response_json.get('group_members')[0])
         self.assertIsNotNone(response_json.get('group_members')[0]['username'])
+
+    def test_group_snapshot_by_group_name_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.  This test proves that
+        trying to retrieve a snapshot about a group with a group name that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/groups/snapshot/invalid_group_name')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/snapshot/invalid_group_name')
+        self.assertEqual(response_json.get('group'), '/v2/groups/invalid_group_name')
+        self.assertIsNone(response_json.get('group_snapshot'))
+        self.assertEqual(response_json.get('error'), 'the group does not exist')
+
+    def test_group_snapshot_by_group_name_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.  This test proves that
+        retrieving a snapshot about a group with a valid group name results in the group and a 200 status.
+        """
+        response: Response = self.client.get('/v2/groups/snapshot/wmenstf')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/snapshot/wmenstf')
+        self.assertEqual(response_json.get('group'), '/v2/groups/wmenstf')
+        self.assertIsNotNone(response_json.get('group_snapshot'))
+        self.assertIn('members', response_json.get('group_snapshot'))
+        self.assertIn('statistics', response_json.get('group_snapshot'))
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['miles'], 0)
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['runmiles'], 0)
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['alltimefeel'], 0)
+
+    def test_group_get_links_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/links' route.  This test proves that calling
+        this endpoint returns a list of other group endpoints.
+        """
+        response: Response = self.client.get('/v2/groups/links')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/links')
+        self.assertEqual(len(response_json.get('endpoints')), 5)

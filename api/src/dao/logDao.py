@@ -197,7 +197,7 @@ class LogDao:
             SELECT SUM(miles) AS total 
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
-            WHERE group_name=:team 
+            WHERE group_name=:group_name 
             AND status='accepted'
             ''',
             {'group_name': group_name}

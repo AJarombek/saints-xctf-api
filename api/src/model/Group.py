@@ -46,7 +46,6 @@ class Group(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
-    group_member = db.relationship('GroupMember', backref='group_member')
     message = db.relationship('Message', backref='group_message')
 
     def __str__(self):

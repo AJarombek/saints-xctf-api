@@ -269,8 +269,8 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
     if group is None:
         response = jsonify({
             'self': f'/v2/groups/snapshot/{group_name}',
-            'group_link': f'/v2/groups/{group_name}',
-            'group': None,
+            'group': f'/v2/groups/{group_name}',
+            'group_snapshot': None,
             'error': 'the group does not exist'
         })
         response.status_code = 400
@@ -292,7 +292,7 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
     miles: Column = LogDao.get_group_miles(group_name)
     miles_past_year: Column = LogDao.get_group_miles_interval(group_name, 'year')
     miles_past_month: Column = LogDao.get_group_miles_interval(group_name, 'month')
-    miles_past_week: Column = LogDao.get_group_miles_interval(group_name, 'week', week_start=group['week_start'])
+    miles_past_week: Column = LogDao.get_group_miles_interval(group_name, 'week', week_start=group.week_start)
     run_miles: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run')
     run_miles_past_year: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
     run_miles_past_month: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
@@ -300,7 +300,7 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
     all_time_feel: Column = LogDao.get_group_avg_feel(group_name)
     year_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'year')
     month_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'month')
-    week_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group['week_start'])
+    week_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group.week_start)
 
     statistics = {
         'miles': miles['total'],
@@ -317,13 +317,32 @@ def group_snapshot_by_group_name_get(group_name: str) -> Response:
         'weekfeel': week_feel['average']
     }
 
-    group['members'] = group_members_list
-    group['statistics'] = statistics
+    if statistics.get('alltimefeel') is not None:
+        statistics['alltimefeel'] = int(statistics.get('alltimefeel'))
+
+    if statistics.get('yearfeel') is not None:
+        statistics['yearfeel'] = int(statistics.get('yearfeel'))
+
+    if statistics.get('monthfeel') is not None:
+        statistics['monthfeel'] = int(statistics.get('monthfeel'))
+
+    if statistics.get('weekfeel') is not None:
+        statistics['weekfeel'] = int(statistics.get('weekfeel'))
+
+    group_dict: dict = GroupData(group).__dict__
+
+    try:
+        group_dict['grouppic'] = group_dict['grouppic'].decode('utf-8')
+    except AttributeError:
+        pass
+
+    group_dict['members'] = group_members_list
+    group_dict['statistics'] = statistics
 
     response = jsonify({
         'self': f'/v2/groups/snapshot/{group_name}',
-        'group_link': f'/v2/groups/{group_name}',
-        'group': group
+        'group': f'/v2/groups/{group_name}',
+        'group_snapshot': group_dict
     })
     response.status_code = 200
     return response
