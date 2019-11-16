@@ -23,6 +23,15 @@ class Group(db.Model):
         self.week_start = group.get('week_start')
         self.description = group.get('description')
         self.deleted = group.get('deleted')
+        self.created_date = group.get('created_date')
+        self.created_user = group.get('created_user')
+        self.created_app = group.get('created_app')
+        self.modified_date = group.get('modified_date')
+        self.modified_user = group.get('modified_user')
+        self.modified_app = group.get('modified_app')
+        self.deleted_date = group.get('deleted_date')
+        self.deleted_user = group.get('deleted_user')
+        self.deleted_app = group.get('deleted_app')
 
     __tablename__ = 'groups'
 

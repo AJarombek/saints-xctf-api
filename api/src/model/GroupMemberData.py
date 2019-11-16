@@ -44,11 +44,4 @@ class GroupMemberData:
         :param other: Another object to compare to this group member.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            self.id == other.id,
-            self.group_name == other.group_name,
-            self.username == other.username,
-            self.status == other.status,
-            self.user == other.user,
-            self.deleted == other.deleted
-        ])
+        return GroupMember.compare(self, other)

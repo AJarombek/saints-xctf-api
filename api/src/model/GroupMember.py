@@ -21,6 +21,15 @@ class GroupMember(db.Model):
         self.status = group_member.get('status')
         self.user = group_member.get('user')
         self.deleted = group_member.get('deleted')
+        self.created_date = group_member.get('created_date')
+        self.created_user = group_member.get('created_user')
+        self.created_app = group_member.get('created_app')
+        self.modified_date = group_member.get('modified_date')
+        self.modified_user = group_member.get('modified_user')
+        self.modified_app = group_member.get('modified_app')
+        self.deleted_date = group_member.get('deleted_date')
+        self.deleted_user = group_member.get('deleted_user')
+        self.deleted_app = group_member.get('deleted_app')
 
     __tablename__ = 'groupmembers'
 
@@ -66,11 +75,21 @@ class GroupMember(db.Model):
         :param other: Another object to compare to this group member.
         :return: True if the objects are equal, False otherwise.
         """
+        return GroupMember.compare(self, other)
+
+    @classmethod
+    def compare(cls, group_member_1, group_member_2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be group members.
+        :param group_member_1: The first group member object.
+        :param group_member_2: The second group member object.
+        :return: True if the objects are equal, False otherwise.
+        """
         return all([
-            self.id == other.id,
-            self.group_name == other.group_name,
-            self.username == other.username,
-            self.status == other.status,
-            self.user == other.user,
-            self.deleted == other.deleted
+            group_member_1.id == group_member_2.id,
+            group_member_1.group_name == group_member_2.group_name,
+            group_member_1.username == group_member_2.username,
+            group_member_1.status == group_member_2.status,
+            group_member_1.user == group_member_2.user,
+            group_member_1.deleted == group_member_2.deleted
         ])
