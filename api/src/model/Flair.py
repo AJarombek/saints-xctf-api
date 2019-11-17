@@ -69,9 +69,19 @@ class Flair(db.Model):
         :param other: Another object to compare to this Flair.
         :return: True if the objects are equal, False otherwise.
         """
+        Flair.compare(self, other)
+
+    @classmethod
+    def compare(cls, flair1, flair2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be user's flair.
+        :param flair1: The first flair object.
+        :param flair2: The second flair object.
+        :return: True if the objects are equal, False otherwise.
+        """
         return all([
-            self.flair_id == other.flair_id,
-            self.username == other.username,
-            self.flair == other.flair,
-            self.deleted == other.deleted
+            flair1.flair_id == flair2.flair_id,
+            flair1.username == flair2.username,
+            flair1.flair == flair2.flair,
+            flair1.deleted == flair2.deleted
         ])

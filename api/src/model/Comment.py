@@ -78,13 +78,24 @@ class Comment(db.Model):
         :param other: Another object to compare to this Comment.
         :return: True if the objects are equal, False otherwise.
         """
+        Comment.compare(self, other)
+
+    @classmethod
+    def compare(cls, comment1, comment2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be comments
+        on exercise logs.
+        :param comment1: The first comment object.
+        :param comment2: The second comment object.
+        :return: True if the objects are equal, False otherwise.
+        """
         return all([
-            self.comment_id == other.comment_id,
-            self.username == other.username,
-            self.first == other.first,
-            self.last == other.last,
-            self.log_id == other.log_id,
-            str(self.time) == str(other.time),
-            self.content == other.content,
-            self.deleted == other.deleted
+            comment1.comment_id == comment2.comment_id,
+            comment1.username == comment2.username,
+            comment1.first == comment2.first,
+            comment1.last == comment2.last,
+            comment1.log_id == comment2.log_id,
+            str(comment1.time) == str(comment2.time),
+            comment1.content == comment2.content,
+            comment1.deleted == comment2.deleted
         ])

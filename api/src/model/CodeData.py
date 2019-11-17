@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 10/8/2019
 """
 
-from . import Code
+from .Code import Code
 
 
 class CodeData:
@@ -37,7 +37,4 @@ class CodeData:
         :param other: Another object to compare to this Code.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            self.activation_code == other.activation_code,
-            self.deleted == other.deleted
-        ])
+        return Code.compare(self, other)

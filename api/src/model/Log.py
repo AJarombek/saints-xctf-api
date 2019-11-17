@@ -60,6 +60,7 @@ class Log(db.Model):
     feel = Column(db.INT, nullable=False, index=True)
     description = Column(db.VARCHAR(1000))
     time_created = Column(db.DATETIME, nullable=False)
+    deleted = Column(db.CHAR(1))
 
     # Audit Columns
     created_date = Column(db.DATETIME)
@@ -82,7 +83,8 @@ class Log(db.Model):
         return f'Log: [log_id: {self.log_id}, username: {self.username}, first: {self.first}, last: {self.last}, ' \
             f'name: {self.name}, location: {self.location}, date: {self.date}, type: {self.type} ' \
             f'distance: {self.distance}, metric: {self.metric}, miles: {self.miles}, time: {self.time}, ' \
-            f'pace: {self.pace}, feel: {self.feel}, description: {self.description}, deleted: {self.deleted}]'
+            f'pace: {self.pace}, feel: {self.feel}, description: {self.description}, ' \
+            f'time_created: {self.time_created}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """

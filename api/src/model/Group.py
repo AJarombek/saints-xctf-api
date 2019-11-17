@@ -79,30 +79,40 @@ class Group(db.Model):
         :param other: Another object to compare to this group.
         :return: True if the objects are equal, False otherwise.
         """
-        if self.grouppic is None:
+        return Group.compare(self, other)
+
+    @classmethod
+    def compare(cls, group_1, group_2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be groups of athletes.
+        :param group_1: The first group object.
+        :param group_2: The second group object.
+        :return: True if the objects are equal, False otherwise.
+        """
+        if group_1.grouppic is None:
             self_grouppic = bytes()
         else:
-            self_grouppic = self.grouppic
+            self_grouppic = group_1.grouppic
             try:
                 self_grouppic = self_grouppic.decode('utf-8')
             except AttributeError:
                 pass
 
-        if other.grouppic is None:
+        if group_2.grouppic is None:
             other_grouppic = bytes()
         else:
-            other_grouppic = other.grouppic
+            other_grouppic = group_2.grouppic
             try:
                 other_grouppic = other_grouppic.decode('utf-8')
             except AttributeError:
                 pass
 
         return all([
-            self.group_name == other.group_name,
-            self.group_title == other.group_title,
+            group_1.group_name == group_2.group_name,
+            group_1.group_title == group_2.group_title,
             self_grouppic == other_grouppic,
-            self.grouppic_name == other.grouppic_name,
-            self.week_start == other.week_start,
-            self.description == other.description,
-            self.deleted == other.deleted
+            group_1.grouppic_name == group_2.grouppic_name,
+            group_1.week_start == group_2.week_start,
+            group_1.description == group_2.description,
+            group_1.deleted == group_2.deleted
         ])

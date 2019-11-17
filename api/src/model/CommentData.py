@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 10/8/2019
 """
 
-from . import Comment
+from .Comment import Comment
 
 
 class CommentData:
@@ -45,13 +45,4 @@ class CommentData:
         :param other: Another object to compare to this Comment.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            self.comment_id == other.comment_id,
-            self.username == other.username,
-            self.first == other.first,
-            self.last == other.last,
-            self.log_id == other.log_id,
-            str(self.time) == str(other.time),
-            self.content == other.content,
-            self.deleted == other.deleted
-        ])
+        Comment.compare(self, other)

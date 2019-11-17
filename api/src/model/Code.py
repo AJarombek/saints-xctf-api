@@ -64,7 +64,18 @@ class Code(db.Model):
         :param other: Another object to compare to this Code.
         :return: True if the objects are equal, False otherwise.
         """
+        return Code.compare(self, other)
+
+    @classmethod
+    def compare(cls, code1, code2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be activation
+        codes for users.
+        :param code1: The first activation code object.
+        :param code2: The second activation code object.
+        :return: True if the objects are equal, False otherwise.
+        """
         return all([
-            self.activation_code == other.activation_code,
-            self.deleted == other.deleted
+            code1.activation_code == code2.activation_code,
+            code1.deleted == code2.deleted
         ])

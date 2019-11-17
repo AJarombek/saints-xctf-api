@@ -69,9 +69,21 @@ class ForgotPassword(db.Model):
         :param other: Another object to compare to this forgot password code.
         :return: True if the objects are equal, False otherwise.
         """
+        return ForgotPassword.compare(self, other)
+
+
+    @classmethod
+    def compare(cls, code_1, code_2) -> bool:
+        """
+        Helper function used to determine value equality between two objects that are assumed to be
+        forgot password codes.
+        :param code_1: The first forgot password object.
+        :param code_2: The second forgot password object.
+        :return: True if the objects are equal, False otherwise.
+        """
         return all([
-            self.forgot_code == other.forgot_code,
-            self.username == other.username,
-            self.expires == other.expires,
-            self.deleted == other.deleted
+            code_1.forgot_code == code_2.forgot_code,
+            code_1.username == code_2.username,
+            str(code_1.expires) == str(code_2.expires),
+            code_1.deleted == code_2.deleted
         ])

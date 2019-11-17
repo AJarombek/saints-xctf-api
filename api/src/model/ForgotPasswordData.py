@@ -40,9 +40,4 @@ class ForgotPasswordData:
         :param other: Another object to compare to this forgot password code.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            self.forgot_code == other.forgot_code,
-            self.username == other.username,
-            self.expires == other.expires,
-            self.deleted == other.deleted
-        ])
+        return ForgotPassword.compare(self, other)

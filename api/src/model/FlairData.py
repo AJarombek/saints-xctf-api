@@ -40,9 +40,4 @@ class FlairData:
         :param other: Another object to compare to this Flair.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            self.flair_id == other.flair_id,
-            self.username == other.username,
-            self.flair == other.flair,
-            self.deleted == other.deleted
-        ])
+        Flair.compare(self, other)
