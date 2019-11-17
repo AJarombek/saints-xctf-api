@@ -78,7 +78,7 @@ class Comment(db.Model):
         :param other: Another object to compare to this Comment.
         :return: True if the objects are equal, False otherwise.
         """
-        Comment.compare(self, other)
+        return Comment.compare(self, other)
 
     @classmethod
     def compare(cls, comment1, comment2) -> bool:

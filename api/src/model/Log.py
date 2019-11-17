@@ -15,6 +15,7 @@ class Log(db.Model):
         Initialize a Log by passing in a dictionary.
         :param log: A dictionary with fields matching the Log fields
         """
+        self.log_id = log.get('log_id')
         self.username = log.get('username')
         self.first = log.get('first')
         self.last = log.get('last')

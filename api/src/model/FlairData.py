@@ -40,4 +40,4 @@ class FlairData:
         :param other: Another object to compare to this Flair.
         :return: True if the objects are equal, False otherwise.
         """
-        Flair.compare(self, other)
+        return Flair.compare(self, other)

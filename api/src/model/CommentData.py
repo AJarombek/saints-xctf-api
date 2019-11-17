@@ -45,4 +45,4 @@ class CommentData:
         :param other: Another object to compare to this Comment.
         :return: True if the objects are equal, False otherwise.
         """
-        Comment.compare(self, other)
+        return Comment.compare(self, other)
