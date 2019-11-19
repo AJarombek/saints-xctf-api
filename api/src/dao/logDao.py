@@ -345,7 +345,7 @@ class LogDao:
             return result.first()
 
     @staticmethod
-    def get_log_feed(limit: int, offset: int) -> list:
+    def get_log_feed(limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of logs
         :param limit: The maximum number of logs to return
@@ -362,7 +362,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_user_log_feed(username: str, limit: int, offset: int) -> list:
+    def get_user_log_feed(username: str, limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of logs by a user
         :param username: The unique username for a user
@@ -381,7 +381,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_group_log_feed(group_name: str, limit: int, offset: int) -> list:
+    def get_group_log_feed(group_name: str, limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of logs by a group
         :param group_name: The unique name of a group
@@ -404,7 +404,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_range_view(types: list, start: str, end: str) -> list:
+    def get_range_view(types: list, start: str, end: str) -> ResultProxy:
         """
         Get exercise log statistics over a date range.
         :param types: Types of exercise logs to filter by.
@@ -426,7 +426,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_user_range_view(username: str, types: list, start: str, end: str) -> list:
+    def get_user_range_view(username: str, types: list, start: str, end: str) -> ResultProxy:
         """
         Get exercise log statistics for a user over a date range.
         :param username: Unique identifier for a user.
@@ -450,7 +450,7 @@ class LogDao:
         )
 
     @staticmethod
-    def get_group_range_view(group_name: str, types: list, start: str, end: str) -> list:
+    def get_group_range_view(group_name: str, types: list, start: str, end: str) -> ResultProxy:
         """
         Get exercise log statistics for a group over a date range.
         :param group_name: Unique identifier for a group.

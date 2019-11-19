@@ -4,6 +4,7 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
+from sqlalchemy import desc
 from database import db
 from dao.basicDao import BasicDao
 from model.Comment import Comment
@@ -35,14 +36,7 @@ class CommentDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return db.session.execute(
-            '''
-            SELECT * FROM comments 
-            WHERE log_id=:log_id 
-            ORDER BY time DESC
-            ''',
-            {'log_id': log_id}
-        )
+        return Comment.query.filter_by(log_id=log_id).order_by(desc(Comment.time))
 
     @staticmethod
     def add_comment(new_comment: Comment) -> bool:

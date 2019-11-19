@@ -5,6 +5,8 @@ Date: 7/10/2019
 """
 
 from flask import Blueprint, request, jsonify, Response
+from sqlalchemy.engine import ResultProxy
+from model.CommentData import CommentData
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 
@@ -48,30 +50,30 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
     :param offset: The number of logs to skip from the results of this filter before returning
     :return: A response object for the GET API request.
     """
-    if filter_by == 'group' or filter_by == 'groups':
-        logs: list = LogDao.get_group_log_feed(group_name=bucket, limit=limit, offset=offset)
-    elif filter_by == 'user' or filter_by == 'users':
-        logs: list = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
+    logs: ResultProxy = None
+    limit = int(limit)
+    offset = int(offset)
+
+    if filter_by == 'group' or filter_by == 'groups' or filter_by == 'groupname':
+        logs = LogDao.get_group_log_feed(group_name=bucket, limit=limit, offset=offset)
+    elif filter_by == 'user' or filter_by == 'users' or filter_by == 'username':
+        logs = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
     elif filter_by == 'all':
-        logs: list = LogDao.get_log_feed(limit=limit, offset=offset)
-    else:
-        logs = None
+        logs = LogDao.get_log_feed(limit=limit, offset=offset)
 
     # Generate LogFeed API URLs
     self_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset}'
 
-    prev_offset = (offset - limit) >= 0
-    if prev_offset:
+    prev_offset = offset - limit
+    if prev_offset >= 0:
         prev_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{prev_offset}'
     else:
         prev_url = None
 
-    if logs is None:
-        next_url = None
-
+    if logs is None or logs.rowcount == 0:
         response = jsonify({
             'self': self_url,
-            'next': next_url,
+            'next': None,
             'prev': prev_url,
             'logs': None,
             'error': 'no logs found in this feed'
@@ -80,9 +82,29 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
         return response
     else:
 
+        log_list = []
         for log in logs:
-            comments: list = CommentDao.get_comments_by_log_id(log.get('log_id'))
-            log.comments = comments
+            comments: list = CommentDao.get_comments_by_log_id(log.log_id)
+            comments = [CommentData(comment).__dict__ for comment in comments]
+
+            log_list.append({
+                'log_id': log.log_id,
+                'username': log.username,
+                'first': log.first,
+                'last': log.last,
+                'name': log.name,
+                'location': log.location,
+                'date': log.date,
+                'type': log.type,
+                'distance': log.distance,
+                'metric': log.metric,
+                'miles': log.miles,
+                'time': log.time,
+                'pace': log.pace,
+                'feel': log.feel,
+                'description': log.description,
+                'comments': comments
+            })
 
         next_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
@@ -90,7 +112,7 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
             'self': self_url,
             'next': next_url,
             'prev': prev_url,
-            'logs': logs
+            'logs': log_list
         })
         response.status_code = 200
         return response
