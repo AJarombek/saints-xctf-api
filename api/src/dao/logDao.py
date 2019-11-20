@@ -24,7 +24,7 @@ class LogDao:
         return Log.query.order_by(Log.date).all()
 
     @staticmethod
-    def get_log_by_id(log_id: int) -> dict:
+    def get_log_by_id(log_id: int) -> Log:
         """
         Retrieve a specific exercise log based on its id number
         :param log_id: Unique identifier for an exercise log.
@@ -506,4 +506,14 @@ class LogDao:
             'DELETE FROM logs WHERE log_id=:log_id',
             {'log_id': log_id}
         )
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_log(log: Log) -> bool:
+        """
+        Soft Delete an exercise log from the database.
+        :param log: Object representing a log to soft delete.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.add(log)
         return BasicDao.safe_commit()

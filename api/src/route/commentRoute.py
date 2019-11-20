@@ -64,7 +64,7 @@ def comment_with_id(comment_id) -> Response:
 
 
 @comment_route.route('/soft/<comment_id>', methods=['DELETE'])
-def activation_code_soft_by_code(comment_id) -> Response:
+def comment_soft_by_code(comment_id) -> Response:
     """
     Endpoints for soft deleting comments.
     :param comment_id: Unique identifier for a comment.
@@ -260,7 +260,7 @@ def comment_with_id_delete(comment_id):
     """
     Delete an existing comment.
     :param comment_id: The unique identifier for a comment.
-    :return: A response object for the DELETE API request
+    :return: A response object for the DELETE API request.
     """
     is_deleted = CommentDao.delete_comment_by_id(comment_id=comment_id)
 
@@ -314,7 +314,7 @@ def comment_with_id_soft_delete(comment_id):
     existing_comment.modified_date = datetime.now()
     existing_comment.modified_app = 'api'
 
-    is_deleted: bool = CommentDao.soft_delete_comment_by_id(existing_comment)
+    is_deleted: bool = CommentDao.soft_delete_comment(existing_comment)
 
     if is_deleted:
         response = jsonify({

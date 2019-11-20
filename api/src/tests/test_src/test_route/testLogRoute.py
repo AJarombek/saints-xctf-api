@@ -11,4 +11,23 @@ from tests.TestSuite import TestSuite
 
 
 class TestLogRoute(TestSuite):
-    pass
+
+    def test_log_get_route_redirect(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/logs' route. This route is redirected to
+        '/v2/logs/' by default.
+        """
+        response: Response = self.client.get('/v2/logs')
+        headers = response.headers
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/v2/logs/', headers.get('Location'))
+
+    def test_comment_post_route_redirect(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/logs' route. This route is redirected to
+        '/v2/logs/' by default.
+        """
+        response: Response = self.client.post('/v2/logs')
+        headers = response.headers
+        self.assertEqual(response.status_code, 307)
+        self.assertIn('/v2/logs/', headers.get('Location'))

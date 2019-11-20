@@ -4,6 +4,7 @@ Author: Andrew Jarombek
 Date: 7/6/2019
 """
 
+from datetime import datetime
 from flask import Blueprint, request, jsonify, redirect, url_for, Response
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
@@ -62,6 +63,18 @@ def logs_with_id(log_id):
         return log_by_id_delete(log_id)
 
 
+@log_route.route('/soft/<log_id>', methods=['DELETE'])
+def log_soft_with_id(log_id) -> Response:
+    """
+    Endpoints for soft deleting exercise logs.
+    :param log_id: Unique identifier for an exercise log.
+    :return: JSON representation of logs and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/logs/soft/<code> '''
+        return log_by_id_soft_delete(log_id)
+
+
 @log_route.route('/links', methods=['GET'])
 def log_links() -> Response:
     """
@@ -74,6 +87,10 @@ def log_links() -> Response:
 
 
 def logs_get() -> Response:
+    """
+    Retrieve all the exercise logs in the database.
+    :return: A response object for the GET API request.
+    """
     logs = LogDao.get_logs()
 
     if logs is None:
@@ -98,6 +115,10 @@ def logs_get() -> Response:
 
 
 def logs_post() -> Response:
+    """
+    Create a new exercise log.
+    :return: A response object for the POST API request.
+    """
     log_data: dict = request.get_json()
     log_to_add = Log(log_data)
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
@@ -124,6 +145,11 @@ def logs_post() -> Response:
 
 
 def log_by_id_get(log_id) -> Response:
+    """
+    Get a single exercise log based on a unique ID.
+    :param log_id: The unique identifier for an exercise log.
+    :return: A response object for the GET API request.
+    """
     log = LogDao.get_log_by_id(log_id)
 
     if log is None:
@@ -147,6 +173,11 @@ def log_by_id_get(log_id) -> Response:
 
 
 def log_by_id_put(log_id) -> Response:
+    """
+    Update an existing exercise log based on a unique ID.
+    :param log_id: The unique identifier for an exercise log.
+    :return: A response object for the PUT API request.
+    """
     old_log = LogDao.get_log_by_id(log_id=log_id)
 
     if old_log is None:
@@ -197,6 +228,11 @@ def log_by_id_put(log_id) -> Response:
 
 
 def log_by_id_delete(log_id) -> Response:
+    """
+    Delete an existing exercise log based on a unique ID.
+    :param log_id: The unique identifier for an exercise log.
+    :return: A response object for the DELETE API request.
+    """
     are_comments_deleted = CommentDao.delete_comments_by_log_id(log_id=log_id)
 
     if not are_comments_deleted:
@@ -222,6 +258,58 @@ def log_by_id_delete(log_id) -> Response:
             'self': f'/v2/logs/{log_id}',
             'deleted': False,
             'error': 'failed to delete the log'
+        })
+        response.status_code = 500
+        return response
+
+
+def log_by_id_soft_delete(log_id) -> Response:
+    """
+    Soft delete an exercise log based on a unique id.
+    :param log_id: Unique identifier for an exercise log.
+    :return: A response object for the DELETE API request.
+    """
+    existing_log: Log = LogDao.get_log_by_id(log_id=log_id)
+
+    if existing_log is None:
+        response = jsonify({
+            'self': f'/v2/logs/soft/{log_id}',
+            'deleted': False,
+            'error': 'there is no existing exercise log with this id'
+        })
+        response.status_code = 400
+        return response
+
+    if existing_log.deleted:
+        response = jsonify({
+            'self': f'/v2/logs/soft/{log_id}',
+            'deleted': False,
+            'error': 'this exercise log is already soft deleted'
+        })
+        response.status_code = 400
+        return response
+
+    # Update the comment model to reflect the soft delete
+    existing_log.deleted = True
+    existing_log.deleted_date = datetime.now()
+    existing_log.deleted_app = 'api'
+    existing_log.modified_date = datetime.now()
+    existing_log.modified_app = 'api'
+
+    is_deleted: bool = LogDao.soft_delete_log(existing_log)
+
+    if is_deleted:
+        response = jsonify({
+            'self': f'/v2/logs/soft/{log_id}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/logs/soft/{log_id}',
+            'deleted': False,
+            'error': 'failed to soft delete the log'
         })
         response.status_code = 500
         return response
