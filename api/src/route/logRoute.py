@@ -9,6 +9,7 @@ from flask import Blueprint, request, jsonify, redirect, url_for, Response
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 from model.Log import Log
+from model.LogData import LogData
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -91,7 +92,7 @@ def logs_get() -> Response:
     Retrieve all the exercise logs in the database.
     :return: A response object for the GET API request.
     """
-    logs = LogDao.get_logs()
+    logs: list = LogDao.get_logs()
 
     if logs is None:
         response = jsonify({
@@ -102,13 +103,17 @@ def logs_get() -> Response:
         response.status_code = 500
         return response
     else:
+        log_dicts = []
+
         for log in logs:
-            log_comments = CommentDao.get_comments_by_log_id(log.get('log_id'))
-            log['comments'] = log_comments
+            log_dict: dict = LogData(log).__dict__
+            log_comments = CommentDao.get_comments_by_log_id(log.log_id)
+            log_dict['comments'] = log_comments
+            log_dicts += log_dict
 
         response = jsonify({
             'self': '/v2/logs',
-            'logs': logs
+            'logs': log_dicts
         })
         response.status_code = 200
         return response
@@ -120,16 +125,38 @@ def logs_post() -> Response:
     :return: A response object for the POST API request.
     """
     log_data: dict = request.get_json()
-    log_to_add = Log(log_data)
+
+    if log_data is None:
+        response = jsonify({
+            'self': f'/v2/logs',
+            'added': False,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
+    log_to_add: Log = Log(log_data)
+
+    if None in [log_to_add.log_id, log_to_add.username, log_to_add.first, log_to_add.last, log_to_add.date,
+                log_to_add.type, log_to_add.feel, log_to_add.time_created]:
+        response = jsonify({
+            'self': f'/v2/logs',
+            'added': False,
+            'error': "'log_id', 'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' "
+                     "are required fields"
+        })
+        response.status_code = 400
+        return response
+
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
 
     if log_added_successfully:
-        log_added = LogDao.get_log_by_id(log_id=log_to_add.log_id)
+        log_added: Log = LogDao.get_log_by_id(log_id=log_to_add.log_id)
 
         response = jsonify({
             'self': '/v2/logs',
             'added': True,
-            'log': log_added
+            'log': LogData(log_added).__dict__
         })
         response.status_code = 200
         return response
