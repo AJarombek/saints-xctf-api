@@ -10,12 +10,12 @@ from sqlalchemy import Column
 
 class Metric(db.Model):
 
-    def __init__(self, log: dict):
+    def __init__(self, metric: dict):
         """
         Initialize a Metric by passing in a dictionary.
-        :param log: A dictionary with fields matching the Metric fields
+        :param metric: A dictionary with fields matching the Metric fields
         """
-        self.metric = log.get('metric')
+        self.metric = metric.get('metric')
 
     __tablename__ = 'metrics'
 

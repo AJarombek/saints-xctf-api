@@ -138,13 +138,12 @@ def logs_post() -> Response:
 
     log_to_add: Log = Log(log_data)
 
-    if None in [log_to_add.log_id, log_to_add.username, log_to_add.first, log_to_add.last, log_to_add.date,
+    if None in [log_to_add.username, log_to_add.first, log_to_add.last, log_to_add.date,
                 log_to_add.type, log_to_add.feel, log_to_add.time_created]:
         response = jsonify({
             'self': f'/v2/logs',
             'added': False,
-            'error': "'log_id', 'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' "
-                     "are required fields"
+            'error': "'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' are required fields"
         })
         response.status_code = 400
         return response
@@ -187,7 +186,17 @@ def log_by_id_get(log_id) -> Response:
         for comment in comments:
             comment_dict: dict = CommentData(comment).__dict__
             comment_dict['comment'] = f'/v2/comments/{comment.comment_id}'
-            comment_dicts.append(comment_dict)
+
+            if comment_dict['date'] is not None:
+                comment_dict['date'] = str(comment_dict['date'])
+
+            if comment_dict['time'] is not None:
+                comment_dict['time'] = str(comment_dict['time'])
+
+            if comment_dict['pace'] is not None:
+                comment_dict['pace'] = str(comment_dict['pace'])
+
+            comment_dicts += comment_dict
 
         response = jsonify({
             'self': f'/v2/logs/{log_id}',
@@ -201,9 +210,9 @@ def log_by_id_get(log_id) -> Response:
             'self': f'/v2/logs/{log_id}',
             'log': None,
             'comments': None,
-            'message': 'failed to retrieve a log with this id'
+            'error': 'there is no log with this identifier'
         })
-        response.status_code = 500
+        response.status_code = 400
         return response
 
 
