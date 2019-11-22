@@ -10,6 +10,7 @@ from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 from model.Log import Log
 from model.LogData import LogData
+from model.CommentData import CommentData
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -177,14 +178,21 @@ def log_by_id_get(log_id) -> Response:
     :param log_id: The unique identifier for an exercise log.
     :return: A response object for the GET API request.
     """
-    log = LogDao.get_log_by_id(log_id)
+    log: Log = LogDao.get_log_by_id(log_id)
 
-    if log is None:
+    if log is not None:
         comments = CommentDao.get_comments_by_log_id(log_id)
+
+        comment_dicts = []
+        for comment in comments:
+            comment_dict: dict = CommentData(comment).__dict__
+            comment_dict['comment'] = f'/v2/comments/{comment.comment_id}'
+            comment_dicts.append(comment_dict)
+
         response = jsonify({
             'self': f'/v2/logs/{log_id}',
-            'log': log,
-            'comments': comments
+            'log': LogData(log).__dict__,
+            'comments': comment_dicts
         })
         response.status_code = 200
         return response

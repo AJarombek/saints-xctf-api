@@ -13,7 +13,5 @@ class Type(db.Model):
 
     type = Column(db.VARCHAR(15), primary_key=True)
 
-    log = db.relationship('Log', backref='log')
-
     def __repr__(self):
         return '<Type %r>' % self.type

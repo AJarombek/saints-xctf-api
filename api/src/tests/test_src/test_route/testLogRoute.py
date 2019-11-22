@@ -87,3 +87,31 @@ class TestLogRoute(TestSuite):
             response_json.get('error'),
             "'log_id', 'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' are required fields"
         )
+
+    def test_log_post_route_200(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/logs/' route.  This test proves that calling
+        this endpoint with a valid request JSON results in a 200 success code and a new log object.
+        """
+        request_body = json.dumps({
+            "log_id": 2,
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "date": "2019-11-21",
+            "type": "run",
+            "feel": 6,
+            "miles": 4.75,
+            "time_created": str(datetime.now())
+        })
+
+        response: Response = self.client.post(
+            '/v2/logs/',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/logs')
+        self.assertEqual(response_json.get('added'), True)
+        self.assertIsNotNone(response_json.get('log'))
