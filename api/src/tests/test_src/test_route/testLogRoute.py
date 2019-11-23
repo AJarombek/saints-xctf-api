@@ -227,6 +227,49 @@ class TestLogRoute(TestSuite):
         response: Response = self.client.delete('/v2/logs/0')
         self.assertEqual(response.status_code, 204)
 
+    def test_log_by_id_soft_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.  This test proves that if
+        the log doesn't exist, a 400 error is returned.
+        """
+        # Ensure that the log was already deleted before testing the DELETE endpoint
+        self.client.delete('/v2/logs/0')
+
+        response: Response = self.client.delete('/v2/logs/soft/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
+    def test_log_by_id_soft_delete_route_400_already_deleted(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that if
+        the comment was already soft deleted, a 400 error is returned.
+        """
+        # Ensure that the log was already soft deleted before testing the DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "name": "Bike Warmup",
+            "location": "Riverside, CT",
+            "date": "2019-11-23",
+            "type": "bike",
+            "time": "00:35:00",
+            "feel": 5,
+            "description": f"Loosen up my legs before running this morning, my knee hurt a little bit yesterday and I"
+            f"want it to be healthy for the Manchester Road Race on Thursday.",
+            "time_created": "2019-11-23 16:00:00",
+            "deleted": True
+        })
+        response: Response = self.client.post('/v2/logs/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        log_id = response_json.get('log').get('log_id')
+
+        response: Response = self.client.delete(f'/v2/comments/soft/{log_id}')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
     def test_log_by_id_soft_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.  This test proves that
@@ -263,3 +306,14 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('log'))
         self.assertTrue(response_json.get('log').get('deleted'))
+
+    def test_log_get_links_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/logs/links' route.  This test proves that calling
+        this endpoint returns a list of other log endpoints.
+        """
+        response: Response = self.client.get('/v2/logs/links')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/logs/links')
+        self.assertEqual(len(response_json.get('endpoints')), 6)

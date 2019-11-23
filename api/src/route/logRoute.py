@@ -170,10 +170,19 @@ def logs_post() -> Response:
     if log_added_successfully:
         log_added: Log = LogDao.get_log_by_id(log_id=log_to_add.log_id)
 
+        log_dict: dict = LogData(log_added).__dict__
+
+        if log_dict.get('date') is not None:
+            log_dict['date'] = str(log_dict['date'])
+        if log_dict.get('time') is not None:
+            log_dict['time'] = str(log_dict['time'])
+        if log_dict.get('pace') is not None:
+            log_dict['pace'] = str(log_dict['pace'])
+
         response = jsonify({
             'self': '/v2/logs',
             'added': True,
-            'log': LogData(log_added).__dict__
+            'log': log_dict
         })
         response.status_code = 200
         return response
