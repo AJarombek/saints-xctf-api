@@ -5,6 +5,7 @@ Date: 11/17/2019
 """
 
 import json
+import unittest
 from datetime import datetime
 from flask import Response
 from tests.TestSuite import TestSuite
@@ -32,6 +33,7 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/logs/', headers.get('Location'))
 
+    @unittest.skip('Expensive Test')
     def test_log_get_all_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/logs/' route.  This test proves that the endpoint returns
@@ -117,7 +119,7 @@ class TestLogRoute(TestSuite):
 
     def test_log_by_id_get_route_400(self) -> None:
         """
-        Test performing an HTTP GET request on the '/v2/logs/<comment_id>' route.  This test proves that trying to
+        Test performing an HTTP GET request on the '/v2/logs/<log_id>' route.  This test proves that trying to
         retrieve a log with an ID that doesn't exist results in a HTTP 400 error.
         """
         response: Response = self.client.get('/v2/logs/0')
@@ -128,9 +130,9 @@ class TestLogRoute(TestSuite):
         self.assertIsNone(response_json.get('comments'))
         self.assertEqual(response_json.get('error'), 'there is no log with this identifier')
 
-    def test_comment_by_id_get_route_200(self) -> None:
+    def test_log_by_id_get_route_200(self) -> None:
         """
-        Test performing an HTTP GET request on the '/v2/logs/<comment_id>' route.  This test proves that retrieving
+        Test performing an HTTP GET request on the '/v2/logs/<log_id>' route.  This test proves that retrieving
         a log with a valid ID results in the log and a 200 status.
         """
         response: Response = self.client.get('/v2/logs/1')
@@ -138,4 +140,17 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/logs/1')
         self.assertIsNotNone(response_json.get('log'))
-        self.assertGreaterEqual(response_json.get('comments'), 1)
+        self.assertGreaterEqual(len(response_json.get('comments')), 1)
+
+    def test_log_by_id_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that trying to
+        update a log that doesn't exist results in a 400 error.
+        """
+        response: Response = self.client.put('/v2/logs/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/logs/0')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('log'))
+        self.assertEqual(response_json.get('error'), 'there is no existing log with this id')

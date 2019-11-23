@@ -36,7 +36,7 @@ class CommentDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return Comment.query.filter_by(log_id=log_id).order_by(desc(Comment.time))
+        return Comment.query.filter_by(log_id=log_id).order_by(desc(Comment.time)).all()
 
     @staticmethod
     def add_comment(new_comment: Comment) -> bool:

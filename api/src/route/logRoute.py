@@ -109,8 +109,25 @@ def logs_get() -> Response:
         for log in logs:
             log_dict: dict = LogData(log).__dict__
             log_comments = CommentDao.get_comments_by_log_id(log.log_id)
-            log_dict['comments'] = log_comments
-            log_dicts += log_dict
+
+            comment_dicts = []
+            for comment in log_comments:
+                comment_dict: dict = CommentData(comment).__dict__
+                comment_dict['comment'] = f'/v2/comments/{comment.comment_id}'
+                comment_dict['time'] = str(comment_dict['time'])
+
+                comment_dicts.append(comment_dict)
+
+            log_dict['comments'] = comment_dicts
+
+            if log_dict.get('date') is not None:
+                log_dict['date'] = str(log_dict['date'])
+            if log_dict.get('time') is not None:
+                log_dict['time'] = str(log_dict['time'])
+            if log_dict.get('pace') is not None:
+                log_dict['pace'] = str(log_dict['pace'])
+
+            log_dicts.append(log_dict)
 
         response = jsonify({
             'self': '/v2/logs',
@@ -186,21 +203,22 @@ def log_by_id_get(log_id) -> Response:
         for comment in comments:
             comment_dict: dict = CommentData(comment).__dict__
             comment_dict['comment'] = f'/v2/comments/{comment.comment_id}'
+            comment_dict['time'] = str(comment_dict['time'])
 
-            if comment_dict['date'] is not None:
-                comment_dict['date'] = str(comment_dict['date'])
+            comment_dicts.append(comment_dict)
 
-            if comment_dict['time'] is not None:
-                comment_dict['time'] = str(comment_dict['time'])
+        log_dict = LogData(log).__dict__
 
-            if comment_dict['pace'] is not None:
-                comment_dict['pace'] = str(comment_dict['pace'])
-
-            comment_dicts += comment_dict
+        if log_dict.get('date') is not None:
+            log_dict['date'] = str(log_dict['date'])
+        if log_dict.get('time') is not None:
+            log_dict['time'] = str(log_dict['time'])
+        if log_dict.get('pace') is not None:
+            log_dict['pace'] = str(log_dict['pace'])
 
         response = jsonify({
             'self': f'/v2/logs/{log_id}',
-            'log': LogData(log).__dict__,
+            'log': log_dict,
             'comments': comment_dicts
         })
         response.status_code = 200
@@ -222,7 +240,7 @@ def log_by_id_put(log_id) -> Response:
     :param log_id: The unique identifier for an exercise log.
     :return: A response object for the PUT API request.
     """
-    old_log = LogDao.get_log_by_id(log_id=log_id)
+    old_log: Log = LogDao.get_log_by_id(log_id=log_id)
 
     if old_log is None:
         response = jsonify({
@@ -238,15 +256,27 @@ def log_by_id_put(log_id) -> Response:
     new_log = Log(log_data)
 
     if old_log != new_log:
-        is_updated = LogDao.update_log(new_log)
+        new_log.modified_date = datetime.now()
+        new_log.modified_app = 'api'
+
+        is_updated: bool = LogDao.update_log(new_log)
 
         if is_updated:
-            updated_log = LogDao.get_log_by_id(log_id=new_log.log_id)
+            updated_log: Log = LogDao.get_log_by_id(log_id=new_log.log_id)
+
+            log_dict: dict = LogData(updated_log).__dict__
+
+            if log_dict.get('date') is not None:
+                log_dict['date'] = str(log_dict['date'])
+            if log_dict.get('time') is not None:
+                log_dict['time'] = str(log_dict['time'])
+            if log_dict.get('pace') is not None:
+                log_dict['pace'] = str(log_dict['pace'])
 
             response = jsonify({
                 'self': f'/v2/logs/{log_id}',
                 'updated': True,
-                'log': updated_log
+                'log': log_dict
             })
             response.status_code = 200
             return response
