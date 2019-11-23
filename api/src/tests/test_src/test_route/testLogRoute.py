@@ -154,3 +154,112 @@ class TestLogRoute(TestSuite):
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('log'))
         self.assertEqual(response_json.get('error'), 'there is no existing log with this id')
+
+    def test_log_by_id_put_route_400_no_update(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that if the
+        updated log is the same as the original log, a 400 error is returned.
+        """
+        response: Response = self.client.get('/v2/logs/1')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('log'))
+
+        request_body = json.dumps(response_json.get('log'))
+
+        response: Response = self.client.put(
+            '/v2/logs/1',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/logs/1')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('log'))
+        self.assertEqual(
+            response_json.get('error'),
+            'the log submitted is equal to the existing log with the same id'
+        )
+
+    def test_log_by_id_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that if a valid
+        log JSON is passed to this endpoint, the existing log will be updated and a valid 200 response code
+        will be returned.
+        """
+        request_body = json.dumps({
+            "log_id": 1,
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "name": "Rockies",
+            "location": "Sleepy Hollow, NY",
+            "date": "2016-12-23",
+            "type": "run",
+            "distance": 8.5,
+            "metric": "miles",
+            "miles": 8.5,
+            "time": "60:00:00",
+            "pace": "00:07:04",
+            "feel": 8,
+            "description": f"Really nice run through the trails at night.  (Edited {datetime.now()})",
+            "time_created": "0000-00-00 00:00:00",
+            "deleted": None
+        })
+
+        response: Response = self.client.put(
+            '/v2/comments/1',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/comments/1')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('comment'))
+
+    def test_log_by_id_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
+        endpoint should return a 204 success status, no matter if the code existed or not.
+        """
+        response: Response = self.client.delete('/v2/logs/0')
+        self.assertEqual(response.status_code, 204)
+
+    def test_log_by_id_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.  This test proves that
+        soft deleting an existing non-soft deleted log will execute successfully and return a valid 204 status.
+        """
+        # Ensure that the log exists before testing the soft DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "name": "Short Morning Run",
+            "location": "Riverside, CT",
+            "date": "2019-11-23",
+            "type": "run",
+            "distance": 2.3,
+            "metric": "miles",
+            "miles": 2.3,
+            "time": "00:16:24",
+            "pace": "00:07:08",
+            "feel": 5,
+            "description": f"Short run around the neighborhood after unloading Christmas trees this morning.",
+            "time_created": "2019-11-23 15:00:00",
+            "deleted": None
+        })
+        response: Response = self.client.post('/v2/logs/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        log_id = response_json.get('log').get('log_id')
+
+        response = self.client.delete(f'/v2/logs/soft/{log_id}')
+        self.assertEqual(response.status_code, 204)
+
+        response: Response = self.client.get(f'/v2/logs/{log_id}')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('log'))
+        self.assertTrue(response_json.get('log').get('deleted'))
