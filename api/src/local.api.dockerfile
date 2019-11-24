@@ -2,7 +2,7 @@
 # Author: Andrew Jarombek
 # Date: 6/22/2019
 
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 LABEL maintainer="andrew@jarombek.com" \
       version="1.0.0" \
