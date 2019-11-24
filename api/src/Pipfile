@@ -15,8 +15,8 @@ flask = ">=1.0.3"
 boto3 = ">=1.9.169"
 flask-sqlalchemy = ">=2.4.0"
 flask-bcrypt = ">=0.7.1"
-pymysql = "*"
-coverage = "*"
+pymysql = ">=0.9.3"
+coverage = ">=4.5.4"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
