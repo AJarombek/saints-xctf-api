@@ -5,8 +5,10 @@ Date: 7/18/2019
 """
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from datetime import datetime
 from dao.messageDao import MessageDao
 from model.Message import Message
+from model.MessageData import MessageData
 
 message_route = Blueprint('message_route', __name__, url_prefix='/v2/messages')
 
@@ -74,7 +76,7 @@ def message_soft_with_id(message_id) -> Response:
 
 
 @message_route.route('/links', methods=['GET'])
-def log_links() -> Response:
+def message_links() -> Response:
     """
     Endpoint for information about the message API endpoints.
     :return: Metadata about the message API.
@@ -85,6 +87,10 @@ def log_links() -> Response:
 
 
 def messages_get() -> Response:
+    """
+    Retrieve all the messages in the database.
+    :return: A response object for the GET API request.
+    """
     messages = MessageDao.get_messages()
 
     if messages is None:
@@ -96,15 +102,29 @@ def messages_get() -> Response:
         response.status_code = 500
         return response
     else:
+        message_dicts = []
+
+        for message in messages:
+            message_dict = MessageData(message).__dict__
+
+            if message_dict.get('time') is not None:
+                message_dict['time'] = str(message_dict['time'])
+
+            message_dicts.append(message_dict)
+
         response = jsonify({
             'self': '/v2/messages',
-            'messages': messages
+            'messages': message_dicts
         })
         response.status_code = 200
         return response
 
 
 def message_post() -> Response:
+    """
+    Create a new message in a group or team.
+    :return: A response object for the POST API request.
+    """
     message_data: dict = request.get_json()
     message_to_add = Message(message_data)
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
@@ -131,6 +151,11 @@ def message_post() -> Response:
 
 
 def message_by_id_get(message_id) -> Response:
+    """
+    Get a single message based on a unique ID.
+    :param message_id: The unique identifier for a team/group message.
+    :return: A response object for the GET API request.
+    """
     message = MessageDao.get_message_by_id(message_id)
 
     if message is None:
@@ -151,6 +176,11 @@ def message_by_id_get(message_id) -> Response:
 
 
 def messages_by_id_put(message_id) -> Response:
+    """
+    Update an existing message with a given unique ID.
+    :param message_id: The unique identifier for a team/group message.
+    :return: A response object for the PUT API request.
+    """
     old_message = MessageDao.get_message_by_id(message_id=message_id)
 
     if old_message is None:
@@ -201,6 +231,11 @@ def messages_by_id_put(message_id) -> Response:
 
 
 def message_by_id_delete(message_id) -> Response:
+    """
+    Hard delete an existing message with a given unique ID.
+    :param message_id: The unique identifier for a team/group message.
+    :return: A response object for the DELETE API request.
+    """
     is_deleted = MessageDao.delete_message_by_id(message_id=message_id)
 
     if is_deleted:
@@ -221,7 +256,55 @@ def message_by_id_delete(message_id) -> Response:
 
 
 def message_by_id_soft_delete(message_id) -> Response:
-    pass
+    """
+    Soft delete an existing message with a given unique ID.
+    :param message_id: The unique identifier for a team/group message.
+    :return: A response object for the DELETE API request.
+    """
+    existing_message: Message = MessageDao.get_message_by_id(message_id=message_id)
+
+    if existing_message is None:
+        response = jsonify({
+            'self': f'/v2/messages/soft/{message_id}',
+            'deleted': False,
+            'error': 'there is no existing message with this id'
+        })
+        response.status_code = 400
+        return response
+
+    if existing_message.deleted:
+        response = jsonify({
+            'self': f'/v2/messages/soft/{message_id}',
+            'deleted': False,
+            'error': 'this message is already soft deleted'
+        })
+        response.status_code = 400
+        return response
+
+    # Update the comment model to reflect the soft delete
+    existing_message.deleted = True
+    existing_message.deleted_date = datetime.now()
+    existing_message.deleted_app = 'api'
+    existing_message.modified_date = datetime.now()
+    existing_message.modified_app = 'api'
+
+    is_deleted: bool = MessageDao.soft_delete_message(existing_message)
+
+    if is_deleted:
+        response = jsonify({
+            'self': f'/v2/messages/soft/{message_id}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/messages/soft/{message_id}',
+            'deleted': False,
+            'error': 'failed to soft delete the message'
+        })
+        response.status_code = 500
+        return response
 
 
 def message_links_get() -> Response:

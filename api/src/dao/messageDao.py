@@ -18,10 +18,10 @@ class MessageDao:
         Retrieve all the group messages in the database
         :return: The result of the query.
         """
-        return Message.query.order_by(Message.date).all()
+        return Message.query.order_by(Message.time).all()
 
     @staticmethod
-    def get_message_by_id(message_id: int) -> dict:
+    def get_message_by_id(message_id: int) -> Message:
         """
         Retrieve a single message by its unique id
         :param message_id: The unique identifier for a message.
@@ -90,4 +90,14 @@ class MessageDao:
             'DELETE FROM messages WHERE message_id=:message_id',
             {'message_id': message_id}
         )
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_message(message: Message) -> bool:
+        """
+        Soft Delete a group/team message from the database.
+        :param message: Object representing a message to soft delete.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.add(message)
         return BasicDao.safe_commit()
