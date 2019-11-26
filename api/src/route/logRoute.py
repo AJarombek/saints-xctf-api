@@ -19,7 +19,7 @@ log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 def logs_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'logs' to the log routes.
-    :return: Response object letting the browser know where to redirect the request to.
+    :return: Response object letting the browser or caller know where to redirect the request to.
     """
     if request.method == 'GET':
         ''' [GET] /v2/logs '''

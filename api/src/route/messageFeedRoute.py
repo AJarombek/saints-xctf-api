@@ -49,7 +49,7 @@ def message_feed_get(filter_by, bucket, limit, offset):
     limit = int(limit)
     offset = int(offset)
 
-    if filter_by == 'group' or filter_by == 'groups':
+    if filter_by == 'group' or filter_by == 'groups' or filter_by == 'groupname':
         messages: ResultProxy = MessageDao.get_message_feed(group_name=bucket, limit=limit, offset=offset)
     else:
         messages = None
@@ -76,8 +76,18 @@ def message_feed_get(filter_by, bucket, limit, offset):
         response.status_code = 500
         return response
     else:
-        #message_list = []
-        #for message in messages:
+        message_list = []
+        for message in messages:
+            message_list.append({
+                'message_id': message.message_id,
+                'username': message.username,
+                'first': message.first,
+                'last': message.last,
+                'group_name': message.group_name,
+                'time': str(message.time),
+                'content': message.content,
+                'deleted': message.deleted
+            })
 
         next_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
@@ -85,7 +95,7 @@ def message_feed_get(filter_by, bucket, limit, offset):
             'self': self_url,
             'next': next_url,
             'prev': prev_url,
-            'messages': messages
+            'messages': message_list
         })
         response.status_code = 200
         return response
