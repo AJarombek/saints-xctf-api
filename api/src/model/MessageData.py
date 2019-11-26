@@ -20,7 +20,7 @@ class MessageData:
             self.last = message.last
             self.group_name = message.group_name
             self.time = message.time
-            self.description = message.content
+            self.content = message.content
             self.deleted = message.deleted
 
     def __str__(self):

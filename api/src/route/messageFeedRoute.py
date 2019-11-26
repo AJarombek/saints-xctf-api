@@ -5,6 +5,7 @@ Date: 7/27/2019
 """
 
 from flask import Blueprint, request, jsonify, Response
+from sqlalchemy.engine import ResultProxy
 from dao.messageDao import MessageDao
 
 message_feed_route = Blueprint('message_feed_route', __name__, url_prefix='/v2/message_feed')
@@ -45,21 +46,24 @@ def message_feed_get(filter_by, bucket, limit, offset):
     :param offset: The number of messages to skip from the result of this filter before returning
     :return: A response object for the GET API request.
     """
+    limit = int(limit)
+    offset = int(offset)
+
     if filter_by == 'group' or filter_by == 'groups':
-        messages = MessageDao.get_message_feed(group_name=bucket, limit=limit, offset=offset)
+        messages: ResultProxy = MessageDao.get_message_feed(group_name=bucket, limit=limit, offset=offset)
     else:
         messages = None
 
     # Generate MessageFeed API URLs
     self_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{offset}'
 
-    prev_offset = (offset - limit) >= 0
-    if prev_offset:
+    prev_offset = offset - limit
+    if prev_offset >= 0:
         prev_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{prev_offset}'
     else:
         prev_url = None
 
-    if messages is None:
+    if messages is None or messages.rowcount == 0:
         next_url = None
 
         response = jsonify({
@@ -72,6 +76,9 @@ def message_feed_get(filter_by, bucket, limit, offset):
         response.status_code = 500
         return response
     else:
+        #message_list = []
+        #for message in messages:
+
         next_url = f'/v2/message_feed/{filter_by}/{bucket}/{limit}/{offset + limit}'
 
         response = jsonify({

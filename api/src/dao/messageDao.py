@@ -5,6 +5,7 @@ Date: 7/18/2019
 """
 
 from dao.basicDao import BasicDao
+from sqlalchemy.engine import ResultProxy
 from database import db
 from model.Message import Message
 
@@ -29,7 +30,7 @@ class MessageDao:
         return Message.query.filter_by(message_id=message_id).first()
 
     @staticmethod
-    def get_message_feed(group_name: str, limit: int, offset: int) -> list:
+    def get_message_feed(group_name: str, limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of messages in a group
         :param group_name: The unique name of a group

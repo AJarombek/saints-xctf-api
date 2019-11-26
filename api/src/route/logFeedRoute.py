@@ -81,7 +81,6 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
         response.status_code = 500
         return response
     else:
-
         log_list = []
         for log in logs:
             comments: list = CommentDao.get_comments_by_log_id(log.log_id)
