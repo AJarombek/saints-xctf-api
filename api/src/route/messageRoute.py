@@ -126,16 +126,44 @@ def message_post() -> Response:
     :return: A response object for the POST API request.
     """
     message_data: dict = request.get_json()
+
+    if message_data is None:
+        response = jsonify({
+            'self': f'/v2/messages',
+            'added': False,
+            'message': None,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
     message_to_add = Message(message_data)
+
+    if None in [message_to_add.username, message_to_add.first, message_to_add.last,
+                message_to_add.group_name, message_to_add.time]:
+        response = jsonify({
+            'self': f'/v2/messages',
+            'added': False,
+            'message': None,
+            'error': "'username', 'first', 'last', 'group_name', and 'time' are required fields"
+        })
+        response.status_code = 400
+        return response
+
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
 
     if message_added_successfully:
         message_added = MessageDao.get_message_by_id(message_id=message_to_add.message_id)
 
+        message_dict = MessageData(message_added).__dict__
+
+        if message_dict.get('time') is not None:
+            message_dict['time'] = str(message_dict['time'])
+
         response = jsonify({
             'self': '/v2/messages',
             'added': True,
-            'message': message_added
+            'message': message_dict
         })
         response.status_code = 200
         return response
@@ -156,22 +184,27 @@ def message_by_id_get(message_id) -> Response:
     :param message_id: The unique identifier for a team/group message.
     :return: A response object for the GET API request.
     """
-    message = MessageDao.get_message_by_id(message_id)
+    message: Message = MessageDao.get_message_by_id(message_id)
 
-    if message is None:
+    if message is not None:
+        message_dict = MessageData(message).__dict__
+
+        if message_dict.get('time') is not None:
+            message_dict['time'] = str(message_dict['time'])
+
         response = jsonify({
             'self': f'/v2/messages/{message_id}',
-            'log': message
+            'message': message_dict
         })
         response.status_code = 200
         return response
     else:
         response = jsonify({
             'self': f'/v2/messages/{message_id}',
-            'log': None,
-            'error': 'failed to retrieve a message with this id'
+            'message': None,
+            'error': 'there is no message with this identifier'
         })
-        response.status_code = 500
+        response.status_code = 400
         return response
 
 

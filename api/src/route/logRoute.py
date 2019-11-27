@@ -148,6 +148,7 @@ def logs_post() -> Response:
         response = jsonify({
             'self': f'/v2/logs',
             'added': False,
+            'log': None,
             'error': "the request body isn't populated"
         })
         response.status_code = 400
@@ -160,6 +161,7 @@ def logs_post() -> Response:
         response = jsonify({
             'self': f'/v2/logs',
             'added': False,
+            'log': None,
             'error': "'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' are required fields"
         })
         response.status_code = 400
