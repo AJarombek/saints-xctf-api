@@ -265,7 +265,7 @@ class TestLogRoute(TestSuite):
         response_json: dict = response.get_json()
         log_id = response_json.get('log').get('log_id')
 
-        response: Response = self.client.delete(f'/v2/comments/soft/{log_id}')
+        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))

@@ -70,5 +70,23 @@ class ActivationCodeDao:
         :param code: Object representing an activation code for a user.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
-        db.session.add(code)
+        db.session.execute(
+            '''
+            UPDATE codes SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE activation_code=:activation_code
+            ''',
+            {
+                'activation_code': code.activation_code,
+                'deleted': code.deleted,
+                'modified_date': code.modified_date,
+                'modified_app': code.modified_app,
+                'deleted_date': code.deleted_date,
+                'deleted_app': code.deleted_app
+            }
+        )
         return BasicDao.safe_commit()

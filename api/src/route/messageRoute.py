@@ -230,15 +230,23 @@ def messages_by_id_put(message_id) -> Response:
     new_message = Message(message_data)
 
     if old_message != new_message:
+        new_message.modified_date = datetime.now()
+        new_message.modified_app = 'api'
+
         is_updated = MessageDao.update_message(new_message)
 
         if is_updated:
-            updated_log = MessageDao.get_message_by_id(message_id=new_message.message_id)
+            updated_message: Message = MessageDao.get_message_by_id(message_id=new_message.message_id)
+
+            message_dict = MessageData(updated_message).__dict__
+
+            if message_dict.get('time') is not None:
+                message_dict['time'] = str(message_dict['time'])
 
             response = jsonify({
                 'self': f'/v2/messages/{message_id}',
                 'updated': True,
-                'message': updated_log
+                'message': message_dict
             })
             response.status_code = 200
             return response

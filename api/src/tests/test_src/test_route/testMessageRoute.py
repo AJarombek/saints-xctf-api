@@ -149,6 +149,69 @@ class TestMessageRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/messages/2')
         self.assertIsNotNone(response_json.get('message'))
 
+    def test_message_by_id_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/messages/<message_id>' route.  This test proves that trying to
+        update a message that doesn't exist results in a 400 error.
+        """
+        response: Response = self.client.put('/v2/messages/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/messages/0')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('message'))
+        self.assertEqual(response_json.get('error'), 'there is no existing message with this id')
+
+    def test_message_by_id_put_route_400_no_update(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/messages/<message_id>' route.  This test proves that if the
+        updated message is the same as the original message, a 400 error is returned.
+        """
+        response: Response = self.client.get('/v2/messages/2')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('message'))
+
+        request_body = json.dumps(response_json.get('message'))
+
+        response: Response = self.client.put(
+            '/v2/messages/2',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/messages/2')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('message'))
+        self.assertEqual(
+            response_json.get('error'),
+            'the message submitted is equal to the existing message with the same id'
+        )
+
+    def test_message_by_id_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/messages/<message_id>' route.  This test proves that if a valid
+        message JSON is passed to this endpoint, the existing message will be updated and a valid 200 response code
+        will be returned.
+        """
+        request_body = json.dumps({
+            "message_id": 2,
+            "username": "andy",
+            "first": "Andrew"
+        })
+
+        response: Response = self.client.put(
+            '/v2/messages/2',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/messages/2')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('message'))
+
     def test_message_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/messages/links' route.  This test proves that calling

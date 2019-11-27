@@ -69,12 +69,16 @@ class MessageDao:
         db.session.execute(
             '''
             UPDATE messages SET 
-                content=:content 
+                content=:content,
+                modified_date=:modified_date,
+                modified_app=:modified_app
             WHERE message_id=:message_id
             ''',
             {
                 'message_id': message.message_id,
-                'content': message.content
+                'content': message.content,
+                'modified_date': message.modified_date,
+                'modified_app': message.modified_app
             }
         )
         return BasicDao.safe_commit()
@@ -99,5 +103,23 @@ class MessageDao:
         :param message: Object representing a message to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
-        db.session.add(message)
+        db.session.execute(
+            '''
+            UPDATE messages SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE message_id=:message_id
+            ''',
+            {
+                'message_id': message.message_id,
+                'deleted': message.deleted,
+                'modified_date': message.modified_date,
+                'modified_app': message.modified_app,
+                'deleted_date': message.deleted_date,
+                'deleted_app': message.deleted_app
+            }
+        )
         return BasicDao.safe_commit()

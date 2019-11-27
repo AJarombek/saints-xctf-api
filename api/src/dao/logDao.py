@@ -515,5 +515,23 @@ class LogDao:
         :param log: Object representing a log to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
-        db.session.add(log)
+        db.session.execute(
+            '''
+            UPDATE logs SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE log_id=:log_id
+            ''',
+            {
+                'log_id': log.log_id,
+                'deleted': log.deleted,
+                'modified_date': log.modified_date,
+                'modified_app': log.modified_app,
+                'deleted_date': log.deleted_date,
+                'deleted_app': log.deleted_app
+            }
+        )
         return BasicDao.safe_commit()

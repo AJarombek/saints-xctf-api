@@ -59,13 +59,17 @@ class CommentDao:
             '''
             UPDATE comments SET 
                 time=:time, 
-                content=:content 
+                content=:content, 
+                modified_date=:modified_date,
+                modified_app=:modified_app
             WHERE comment_id=:comment_id
             ''',
             {
                 'comment_id': comment.comment_id,
                 'time': comment.time,
-                'content': comment.content
+                'content': comment.content,
+                'modified_date': comment.modified_date,
+                'modified_app': comment.modified_app,
             }
         )
         return BasicDao.safe_commit()
@@ -103,5 +107,23 @@ class CommentDao:
         :param comment: Object representing a comment to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
-        db.session.add(comment)
+        db.session.execute(
+            '''
+            UPDATE comments SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE comment_id=:comment_id
+            ''',
+            {
+                'comment_id': comment.comment_id,
+                'deleted': comment.deleted,
+                'modified_date': comment.modified_date,
+                'modified_app': comment.modified_app,
+                'deleted_date': comment.deleted_date,
+                'deleted_app': comment.deleted_app
+            }
+        )
         return BasicDao.safe_commit()
