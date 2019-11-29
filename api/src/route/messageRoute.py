@@ -313,7 +313,7 @@ def message_by_id_soft_delete(message_id) -> Response:
         response.status_code = 400
         return response
 
-    if existing_message.deleted:
+    if existing_message.deleted == 'Y':
         response = jsonify({
             'self': f'/v2/messages/soft/{message_id}',
             'deleted': False,
@@ -323,7 +323,7 @@ def message_by_id_soft_delete(message_id) -> Response:
         return response
 
     # Update the comment model to reflect the soft delete
-    existing_message.deleted = True
+    existing_message.deleted = 'Y'
     existing_message.deleted_date = datetime.now()
     existing_message.deleted_app = 'api'
     existing_message.modified_date = datetime.now()

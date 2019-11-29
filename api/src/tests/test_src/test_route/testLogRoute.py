@@ -222,7 +222,7 @@ class TestLogRoute(TestSuite):
     def test_log_by_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
-        endpoint should return a 204 success status, no matter if the code existed or not.
+        endpoint should return a 204 success status, no matter if the log existed or not.
         """
         response: Response = self.client.delete('/v2/logs/0')
         self.assertEqual(response.status_code, 204)
@@ -266,9 +266,7 @@ class TestLogRoute(TestSuite):
         log_id = response_json.get('log').get('log_id')
 
         response: Response = self.client.delete(f'/v2/logs/soft/{log_id}')
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertFalse(response_json.get('deleted'))
 
     def test_log_by_id_soft_delete_route_204(self) -> None:
         """

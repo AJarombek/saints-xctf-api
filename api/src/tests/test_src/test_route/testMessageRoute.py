@@ -212,6 +212,79 @@ class TestMessageRoute(TestSuite):
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('message'))
 
+    def test_message_by_id_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/messages/<message_id>' route.  This test proves that the
+        endpoint should return a 204 success status, no matter if the message existed or not.
+        """
+        response: Response = self.client.delete('/v2/messages/0')
+        self.assertEqual(response.status_code, 204)
+
+    def test_message_by_id_soft_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/messages/soft/<message_id>' route.  This test proves that if
+        the message doesn't exist, a 400 error is returned.
+        """
+        # Ensure that the message was already deleted before testing the DELETE endpoint
+        self.client.delete('/v2/messages/0')
+
+        response: Response = self.client.delete('/v2/messages/soft/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
+    def test_message_by_id_soft_delete_route_400_already_deleted(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/messages/soft/<message_id>' route.  This test proves that if
+        the message was already soft deleted, a 400 error is returned.
+        """
+        # Ensure that the message was already soft deleted before testing the DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "group_name": "alumni",
+            "content": "Test Message",
+            "time": str(datetime.now()),
+            "deleted": True
+        })
+        response: Response = self.client.post('/v2/messages/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        message_id = response_json.get('message').get('message_id')
+
+        response: Response = self.client.delete(f'/v2/messages/soft/{message_id}')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
+    def test_message_by_id_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/messages/soft/<message_id>' route.  This test proves that
+        soft deleting an existing non-soft deleted message will execute successfully and return a valid 204 status.
+        """
+        # Ensure that the message exists before testing the soft DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "group_name": "alumni",
+            "content": "Test Message",
+            "time": str(datetime.now()),
+            "deleted": None
+        })
+        response: Response = self.client.post('/v2/messages/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        message_id = response_json.get('message').get('message_id')
+
+        response = self.client.delete(f'/v2/messages/soft/{message_id}')
+        self.assertEqual(response.status_code, 204)
+
+        response: Response = self.client.get(f'/v2/messages/{message_id}')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('message'))
+        self.assertTrue(response_json.get('message').get('deleted'))
+
     def test_message_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/messages/links' route.  This test proves that calling

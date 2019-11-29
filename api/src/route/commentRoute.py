@@ -298,7 +298,7 @@ def comment_with_id_soft_delete(comment_id):
         response.status_code = 400
         return response
 
-    if existing_comment.deleted:
+    if existing_comment.deleted == 'Y':
         response = jsonify({
             'self': f'/v2/comments/soft/{comment_id}',
             'deleted': False,
@@ -308,7 +308,7 @@ def comment_with_id_soft_delete(comment_id):
         return response
 
     # Update the comment model to reflect the soft delete
-    existing_comment.deleted = True
+    existing_comment.deleted = 'Y'
     existing_comment.deleted_date = datetime.now()
     existing_comment.deleted_app = 'api'
     existing_comment.modified_date = datetime.now()
