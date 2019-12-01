@@ -246,16 +246,14 @@ class TestMessageRoute(TestSuite):
             "group_name": "alumni",
             "content": "Test Message",
             "time": str(datetime.now()),
-            "deleted": True
+            "deleted": 'Y'
         })
         response: Response = self.client.post('/v2/messages/', data=request_body, content_type='application/json')
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')
 
         response: Response = self.client.delete(f'/v2/messages/soft/{message_id}')
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertFalse(response_json.get('deleted'))
 
     def test_message_by_id_soft_delete_route_204(self) -> None:
         """

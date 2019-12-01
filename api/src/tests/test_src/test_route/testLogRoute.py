@@ -259,7 +259,7 @@ class TestLogRoute(TestSuite):
             "description": f"Loosen up my legs before running this morning, my knee hurt a little bit yesterday and I"
             f"want it to be healthy for the Manchester Road Race on Thursday.",
             "time_created": "2019-11-23 16:00:00",
-            "deleted": True
+            "deleted": 'Y'
         })
         response: Response = self.client.post('/v2/logs/', data=request_body, content_type='application/json')
         response_json: dict = response.get_json()
