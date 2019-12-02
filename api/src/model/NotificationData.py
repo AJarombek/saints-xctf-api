@@ -27,15 +27,16 @@ class NotificationData:
         String representation of a notification for a user.  This representation is meant to be human readable.
         :return: The notification in string form.
         """
-        return f'NotificationData: [notification_id: {self.notification_id}, username: {self.username}, time: {self.time}, ' \
-            f'link: {self.link}, viewed: {self.viewed}, description: {self.description}, deleted: {self.content}]'
+        return f'NotificationData: [notification_id: {self.notification_id}, username: {self.username}, ' \
+            f'time: {self.time}, link: {self.link}, viewed: {self.viewed}, description: {self.description}, ' \
+            f'deleted: {self.deleted}]'
 
     def __repr__(self):
         """
         String representation of a notification for a user.  This representation is meant to be machine readable.
         :return: The notification in string form.
         """
-        return '<NotificationData %r,%r>' % (self.username, self.description)
+        return '<NotificationData %d>' % self.notification_id
 
     def __eq__(self, other):
         """
