@@ -5,12 +5,28 @@ Author: Andrew Jarombek
 Date: 8/6/2019
 """
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from datetime import datetime
 from model.Notification import Notification
+from model.NotificationData import NotificationData
 from dao.notificationDao import NotificationDao
 
 notification_route = Blueprint('notification_route', __name__, url_prefix='/v2/notifications')
+
+
+@notification_route.route('', methods=['GET', 'POST'])
+def notifications_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'notifications' to the notification routes.
+    :return: Response object letting the caller know where to redirect the request to.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/notifications '''
+        return redirect(url_for('notification_route.notifications'), code=302)
+
+    elif request.method == 'POST':
+        ''' [POST] /v2/notifications '''
+        return redirect(url_for('notification_route.notifications'), code=307)
 
 
 @notification_route.route('/', methods=['GET', 'POST'])
@@ -20,11 +36,11 @@ def notifications() -> Response:
     :return: JSON representation of notifications and relevant metadata.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/notifications '''
+        ''' [GET] /v2/notifications/ '''
         return notifications_get()
 
     elif request.method == 'POST':
-        ''' [POST] /v2/notifications '''
+        ''' [POST] /v2/notifications/ '''
         return notification_post()
 
 
@@ -48,6 +64,17 @@ def notification_by_id(notification_id) -> Response:
         return notification_by_id_delete(notification_id)
 
 
+@notification_route.route('/links', methods=['GET'])
+def notification_links() -> Response:
+    """
+    Endpoint for information about the notification API endpoints.
+    :return: Metadata about the notification API.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/notifications/links '''
+        return notification_links_get()
+
+
 def notifications_get() -> Response:
     notifications = NotificationDao.get_notifications()
 
@@ -60,9 +87,14 @@ def notifications_get() -> Response:
         response.status_code = 500
         return response
     else:
+        notification_dicts = []
+        for notification in notifications:
+            notification_dict = NotificationData(notification).__dict__
+            notification_dict['time'] = str(notification_dict['time'])
+
         response = jsonify({
             'self': '/v2/notifications',
-            'notifications': notifications
+            'notifications': notification_dicts
         })
         response.status_code = 200
         return response

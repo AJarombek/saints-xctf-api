@@ -41,6 +41,7 @@ class Notification(db.Model):
     link = Column(db.VARCHAR(127))
     viewed = Column(db.CHAR(1), nullable=False)
     description = Column(db.VARCHAR(127))
+    deleted = Column(db.CHAR(1))
 
     # Audit Columns
     created_date = Column(db.DATETIME)
