@@ -6,6 +6,7 @@ Date: 7/3/2019
 """
 
 from database import db
+from sqlalchemy.engine import ResultProxy
 from dao.basicDao import BasicDao
 from model.Notification import Notification
 
@@ -21,7 +22,7 @@ class NotificationDao:
         return Notification.query.order_by(Notification.time).all()
 
     @staticmethod
-    def get_notification_by_id(notification_id: int) -> dict:
+    def get_notification_by_id(notification_id: int) -> Notification:
         """
         Retrieve a single notification by its unique id
         :param notification_id: The unique identifier for a notification.
@@ -30,7 +31,7 @@ class NotificationDao:
         return Notification.query.filter_by(notification_id=notification_id).first()
 
     @staticmethod
-    def get_notification_by_username(username: str) -> list:
+    def get_notification_by_username(username: str) -> ResultProxy:
         """
         Retrieve all the notifications for a user from the past two weeks
         :param username: Unique identifier for a user
@@ -87,5 +88,33 @@ class NotificationDao:
         db.session.execute(
             'DELETE FROM notifications WHERE notification_id=:notification_id',
             {'notification_id': notification_id}
+        )
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_notification(notification: Notification) -> bool:
+        """
+        Soft Delete a user notification from the database.
+        :param notification: Object representing a notification to soft delete.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE notifications SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE notification_id=:notification_id
+            ''',
+            {
+                'notification_id': notification.notification_id,
+                'deleted': notification.deleted,
+                'modified_date': notification.modified_date,
+                'modified_app': notification.modified_app,
+                'deleted_date': notification.deleted_date,
+                'deleted_app': notification.deleted_app
+            }
         )
         return BasicDao.safe_commit()

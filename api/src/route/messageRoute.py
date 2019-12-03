@@ -322,7 +322,7 @@ def message_by_id_soft_delete(message_id) -> Response:
         response.status_code = 400
         return response
 
-    # Update the comment model to reflect the soft delete
+    # Update the message model to reflect the soft delete
     existing_message.deleted = 'Y'
     existing_message.deleted_date = datetime.now()
     existing_message.deleted_app = 'api'
