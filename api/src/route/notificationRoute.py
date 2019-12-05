@@ -91,6 +91,7 @@ def notifications_get() -> Response:
         for notification in notifications:
             notification_dict = NotificationData(notification).__dict__
             notification_dict['time'] = str(notification_dict['time'])
+            notification_dicts.append(notification_dict)
 
         response = jsonify({
             'self': '/v2/notifications',
@@ -102,7 +103,29 @@ def notifications_get() -> Response:
 
 def notification_post() -> Response:
     notification_data: dict = request.get_json()
+
+    if notification_data is None:
+        response = jsonify({
+            'self': f'/v2/notifications',
+            'added': False,
+            'notification': None,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
+
     notification_to_add = Notification(notification_data)
+
+    if None in [notification_to_add.username, notification_to_add.time, notification_to_add.viewed]:
+        response = jsonify({
+            'self': f'/v2/notifications',
+            'added': False,
+            'notification': None,
+            'error': "'username', 'time', and 'viewed' are required fields"
+        })
+        response.status_code = 400
+        return response
+
     notification_added_successfully = NotificationDao.add_notification(new_notification=notification_to_add)
 
     if notification_added_successfully:
