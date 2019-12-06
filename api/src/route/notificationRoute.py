@@ -130,11 +130,13 @@ def notification_post() -> Response:
 
     if notification_added_successfully:
         notification_added = NotificationDao.get_notification_by_id(notification_to_add.notification_id)
+        notification_dict = NotificationData(notification_added).__dict__
+        notification_dict['time'] = str(notification_dict['time'])
 
         response = jsonify({
             'self': '/v2/notifications',
             'added': True,
-            'notification': notification_added
+            'notification': notification_dict
         })
         response.status_code = 200
         return response
@@ -161,9 +163,12 @@ def notification_by_id_get(notification_id) -> Response:
         response.status_code = 400
         return response
     else:
+        notification_dict = NotificationData(notification).__dict__
+        notification_dict['time'] = str(notification_dict['time'])
+
         response = jsonify({
             'self': f'/v2/notifications/{notification_id}',
-            'notification': notification
+            'notification': notification_dict
         })
         response.status_code = 200
         return response
@@ -184,19 +189,23 @@ def notification_by_id_put(notification_id) -> Response:
 
     notification_data: dict = request.get_json()
     new_notification = Notification(notification_data)
+    new_notification.notification_id = notification_id
 
     if old_notification != new_notification:
+        new_notification.modified_date = datetime.now()
+        new_notification.modified_app = 'api'
+
         is_updated = NotificationDao.update_notification(notification=new_notification)
 
         if is_updated:
-            updated_notification = NotificationDao.get_notification_by_id(
-                notification_id=new_notification.notification_id
-            )
+            updated_notification = NotificationDao.get_notification_by_id(notification_id=notification_id)
+            notification_dict = NotificationData(updated_notification).__dict__
+            notification_dict['time'] = str(notification_dict['time'])
 
             response = jsonify({
                 'self': f'/v2/notifications/{notification_id}',
                 'updated': True,
-                'notification': updated_notification
+                'notification': notification_dict
             })
             response.status_code = 200
             return response
