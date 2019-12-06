@@ -221,6 +221,76 @@ class TestNotificationRoute(TestSuite):
         self.assertIn('viewed', response_json.get('notification'))
         self.assertEqual(response_json.get('notification').get('viewed'), 'Y')
 
+    def test_notification_by_id_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
+        that the endpoint should return a 204 success status, no matter if the notification existed or not.
+        """
+        response: Response = self.client.delete('/v2/notifications/0')
+        self.assertEqual(response.status_code, 204)
+
+    def test_notification_by_id_soft_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.  This test
+        proves that if the notification doesn't exist, a 400 error is returned.
+        """
+        # Ensure that the notification was already deleted before testing the DELETE endpoint
+        self.client.delete('/v2/notifications/0')
+
+        response: Response = self.client.delete('/v2/notifications/soft/0')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
+    def test_notification_by_id_soft_delete_route_400_already_deleted(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.  This test
+        proves that if the notification was already soft deleted, a 400 error is returned.
+        """
+        # Ensure that the notification was already soft deleted before testing the DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "time": "2019-12-05 20:00:00",
+            "link": "https://www.saintsxctf.com/",
+            "viewed": "N",
+            "description": "Test Notification",
+            "deleted": 'Y'
+        })
+        response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        notification_id = response_json.get('notification').get('notification_id')
+
+        response: Response = self.client.delete(f'/v2/notifications/soft/{notification_id}')
+        self.assertEqual(response.status_code, 400)
+
+    def test_notification_by_id_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.  This test
+        proves that soft deleting an existing non-soft deleted notification will execute successfully and return a
+        valid 204 status.
+        """
+        # Ensure that the notification exists before testing the soft DELETE endpoint
+        request_body = json.dumps({
+            "username": "andy",
+            "time": "2019-12-05 22:00:00",
+            "link": "https://www.saintsxctf.com/",
+            "viewed": "N",
+            "description": "Test Notification",
+            "deleted": None
+        })
+        response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        notification_id = response_json.get('notification').get('notification_id')
+
+        response = self.client.delete(f'/v2/notifications/soft/{notification_id}')
+        self.assertEqual(response.status_code, 204)
+
+        response: Response = self.client.get(f'/v2/notifications/{notification_id}')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('notification'))
+        self.assertTrue(response_json.get('notification').get('deleted'))
+
     def test_notification_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/notifications/links' route.  This test proves that calling

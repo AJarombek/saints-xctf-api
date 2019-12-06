@@ -64,6 +64,18 @@ def notification_by_id(notification_id) -> Response:
         return notification_by_id_delete(notification_id)
 
 
+@notification_route.route('/soft/<notification_id>', methods=['DELETE'])
+def notification_soft_by_id(notification_id) -> Response:
+    """
+    Endpoints for soft deleting user notifications.
+    :param notification_id: Unique identifier for a notification.
+    :return: JSON representation of messages and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/notifications/soft/<code> '''
+        return notification_by_id_soft_delete(notification_id)
+
+
 @notification_route.route('/links', methods=['GET'])
 def notification_links() -> Response:
     """
@@ -175,6 +187,7 @@ def notification_by_id_get(notification_id) -> Response:
 
 
 def notification_by_id_put(notification_id) -> Response:
+    notification_id = int(notification_id)
     old_notification = NotificationDao.get_notification_by_id(notification_id=notification_id)
 
     if old_notification is None:

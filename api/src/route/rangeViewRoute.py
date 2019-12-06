@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 8/3/2019
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, Response
 from dao.logDao import LogDao
 from utils import exerciseFilters
 
