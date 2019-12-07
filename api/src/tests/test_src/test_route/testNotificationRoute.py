@@ -253,7 +253,7 @@ class TestNotificationRoute(TestSuite):
             "time": "2019-12-05 20:00:00",
             "link": "https://www.saintsxctf.com/",
             "viewed": "N",
-            "description": "Test Notification",
+            "description": "I hope you have a wonderful weekend.  This is our busiest two days selling Christmas Trees",
             "deleted": 'Y'
         })
         response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
