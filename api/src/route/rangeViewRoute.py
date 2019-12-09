@@ -25,7 +25,7 @@ def range_view(filter_by, bucket, exercise_types, start, end):
     """
     if request.method == 'GET':
         ''' [GET] /v2/range_view '''
-        range_view_get(filter_by, bucket, exercise_types, start, end)
+        return range_view_get(filter_by, bucket, exercise_types, start, end)
 
 
 @range_view_route.route('/links', methods=['GET'])
@@ -94,7 +94,7 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
 
         response = jsonify({
             'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
-            'range_view': range_view
+            'range_view': range_view_list
         })
         response.status_code = 200
         return response

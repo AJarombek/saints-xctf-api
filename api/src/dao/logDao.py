@@ -419,7 +419,7 @@ class LogDao:
             FROM logs 
             WHERE date >= :start 
             AND date <= :end
-            {type_query}
+            AND {type_query}
             GROUP BY date
             ''',
             {'start': start, 'end': end}
@@ -443,7 +443,7 @@ class LogDao:
             WHERE username=:username 
             AND date >= :start 
             AND date <= :end
-            {type_query}
+            AND {type_query}
             GROUP BY date
             ''',
             {'username': username, 'start': start, 'end': end}
@@ -469,7 +469,7 @@ class LogDao:
             WHERE group_name=:group_name
             AND date >= :start 
             AND date <= :end
-            {type_query}
+            AND {type_query}
             GROUP BY date
             ''',
             {'group_name': group_name, 'start': start, 'end': end}

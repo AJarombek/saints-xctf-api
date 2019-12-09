@@ -43,5 +43,5 @@ def generate_exercise_filter_sql_query(filters: list) -> str:
     else:
         sql_query = 'type IN ('
         for exercise_filter in filters:
-            sql_query += exercise_filter + ','
+            sql_query += f"'{exercise_filter}'" + ','
         return sql_query[:-1] + ')'

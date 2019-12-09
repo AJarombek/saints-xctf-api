@@ -275,7 +275,8 @@ class TestNotificationRoute(TestSuite):
             "time": "2019-12-05 22:00:00",
             "link": "https://www.saintsxctf.com/",
             "viewed": "N",
-            "description": "Test Notification",
+            "description": "You mean so much to me, so of course whatever you are capable of I will reciprocate back " +
+                           "to you.  You never have to worry about that.  Take your time and do what makes you happy.",
             "deleted": None
         })
         response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
