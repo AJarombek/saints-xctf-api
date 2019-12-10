@@ -79,9 +79,9 @@ class User(db.Model):
         String representation of a user.  This representation is meant to be human readable.
         :return: The user in string form.
         """
-        return f'User: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}' \
+        return f'User: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}, ' \
             f'password: {self.password}, profilepic: {self.profilepic}, profilepic_name: {self.profilepic_name}, ' \
-            f'description: {self.description}, member_since: {self.member_since}, class_year: {self.class_year}' \
+            f'description: {self.description}, member_since: {self.member_since}, class_year: {self.class_year}, ' \
             f'location: {self.location}, favorite_event: {self.favorite_event}, ' \
             f'activation_code: {self.activation_code}, email: {self.email}, subscribed: {self.subscribed}, ' \
             f'last_signin: {self.last_signin}, week_start: {self.week_start}, deleted: {self.deleted}]'

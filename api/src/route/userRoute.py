@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from bcrypt import bcrypt
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
@@ -20,6 +20,21 @@ from dao.codeDao import CodeDao
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
 
+@user_route.route('', methods=['GET', 'POST'])
+def users_redirect() -> Response:
+    """
+    Redirect endpoints looking for a resource named 'users' to the user routes.
+    :return: Response object letting the caller know where to redirect the request to.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users '''
+        return redirect(url_for('user_route.users'), code=302)
+
+    elif request.method == 'POST':
+        ''' [POST] /v2/users '''
+        return redirect(url_for('user_route.users'), code=307)
+
+
 @user_route.route('/', methods=['GET', 'POST'])
 def users():
     """
@@ -27,62 +42,12 @@ def users():
     :return: JSON representation of a list of users and relevant metadata
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users '''
-        all_users = UserDao.get_users()
-        all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
-
-        return jsonify({
-            'self': '/v2/users',
-            'users': all_users
-        })
+        ''' [GET] /v2/users/ '''
+        return users_get()
 
     elif request.method == 'POST':
-        ''' [POST] /v2/users '''
-        user_data: dict = request.get_json()
-
-        # Passwords must be hashed before stored in the database
-        password = user_data.get('password')
-        hashed_password = bcrypt.generate_password_hash(password)
-        user_data.password = hashed_password
-
-        user_to_add = User(user_data)
-
-        activation_code_count = CodeDao.get_code_count(activation_code=user_to_add.activation_code)
-
-        if activation_code_count == 1:
-            # First add the user since its activation code is valid
-            UserDao.add_user(user_to_add)
-            # Second remove the activation code so it cant be used again
-            code = Code(activation_code=user.activation_code)
-            CodeDao.remove_code(code)
-
-            added_user = UserDao.get_user_by_username(user_to_add.username)
-
-            if added_user is None:
-                response = jsonify({
-                    'self': '/v2/users',
-                    'user': None,
-                    'error': 'an unexpected error occurred creating the user'
-                })
-                response.status_code = 500
-                return response
-            else:
-                response = jsonify({
-                    'self': '/v2/users',
-                    'user': added_user,
-                    'new_user': f'/v2/users/{added_user.username}'
-                })
-                response.status_code = 201
-                return response
-        else:
-            current_app.logger.error('Failed to create new User: The Activation Code does not exist.')
-            response = jsonify({
-                'self': '/v2/users',
-                'user': None,
-                'error': 'the activation code does not exist'
-            })
-            response.status_code = 400
-            return response
+        ''' [POST] /v2/users/ '''
+        return user_post()
 
 
 @user_route.route('/<username>', methods=['GET', 'PUT', 'DELETE'])
@@ -94,79 +59,15 @@ def user(username):
     """
     if request.method == 'GET':
         ''' [GET] /v2/users/<username> '''
-        user = UserDao.get_user_by_username(username=username)
-
-        # If the user cant be found, try searching the email column in the database
-        if user is None:
-            email = username
-            user = UserDao.get_user_by_email(email=email)
-
-        # If the user still can't be found, return with an error code
-        if user is None:
-            return jsonify({
-                'self': f'/v2/users/{username}',
-                'user': None
-            })
-        else:
-            return jsonify({
-                'self': f'/v2/users/{username}',
-                'user': user
-            })
+        return user_snapshot_by_username_get(username)
 
     elif request.method == 'PUT':
         ''' [PUT] /v2/users/<username> '''
-        old_user = UserDao.get_user_by_username(username=username)
-
-        user_data: dict = request.get_json()
-        new_user = User(user_data)
-
-        if new_user != old_user:
-            is_updated = UserDao.update_user(username, new_user)
-
-            if is_updated:
-                updated_user = UserDao.get_user_by_username(username)
-
-                response = jsonify({
-                    'self': f'/v2/users/{username}',
-                    'updated': True,
-                    'user': updated_user
-                })
-                response.status_code = 200
-                return response
-            else:
-                response = jsonify({
-                    'self': f'/v2/users/{username}',
-                    'updated': False,
-                    'user': None,
-                    'error': 'the user failed to update'
-                })
-                response.status_code = 500
-                return response
-        else:
-            response = jsonify({
-                'self': f'/v2/users/{username}',
-                'updated': False,
-                'user': None,
-                'error': 'the user submitted is equal to the existing user'
-            })
-            response.status_code = 400
-            return response
+        return user_by_username_put(username)
 
     elif request.method == 'DELETE':
         ''' [DELETE] /v2/users/<username> '''
-        is_deleted = UserDao.delete_user(username=username)
-
-        if is_deleted:
-            status_code = 204
-        else:
-            status_code = 500
-
-        response = jsonify({
-            'self': f'/v2/users/{username}',
-            'deleted': is_deleted
-        })
-        response.status_code = status_code
-        return response
+        return user_by_username_delete(username)
 
 
 @user_route.route('/snapshot/<username>', methods=['GET'])
@@ -177,6 +78,164 @@ def user_snapshot(username):
     :param username: Username (or email) of a User
     :return: JSON representation of a user and relevant metadata
     """
+    return user_snapshot_by_username_get(username)
+
+
+@user_route.route('/<username>/change_password', methods=['PUT'])
+def user_change_password(username):
+    """
+    Endpoint for changing a users password.
+    :param username: Username which uniquely identifies a user.
+    :return: JSON with the result of the password change.
+    """
+    return user_change_password_by_username_get(username)
+
+
+@user_route.route('/<username>/update_last_login', methods=['PUT'])
+def user_update_last_login(username):
+    """
+    Update the date of a users previous sign in.
+    :param username: Username which uniquely identifies a user.
+    :return: JSON with the result of the last login update
+    """
+    return user_update_last_login_by_username_put(username)
+
+
+def users_get() -> Response:
+    all_users = UserDao.get_users()
+    all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
+
+    return jsonify({
+        'self': '/v2/users',
+        'users': all_users
+    })
+
+
+def user_post() -> Response:
+    user_data: dict = request.get_json()
+
+    # Passwords must be hashed before stored in the database
+    password = user_data.get('password')
+    hashed_password = bcrypt.generate_password_hash(password)
+    user_data.password = hashed_password
+
+    user_to_add = User(user_data)
+
+    activation_code_count = CodeDao.get_code_count(activation_code=user_to_add.activation_code)
+
+    if activation_code_count == 1:
+        # First add the user since its activation code is valid
+        UserDao.add_user(user_to_add)
+        # Second remove the activation code so it cant be used again
+        code = Code(activation_code=user.activation_code)
+        CodeDao.remove_code(code)
+
+        added_user = UserDao.get_user_by_username(user_to_add.username)
+
+        if added_user is None:
+            response = jsonify({
+                'self': '/v2/users',
+                'user': None,
+                'error': 'an unexpected error occurred creating the user'
+            })
+            response.status_code = 500
+            return response
+        else:
+            response = jsonify({
+                'self': '/v2/users',
+                'user': added_user,
+                'new_user': f'/v2/users/{added_user.username}'
+            })
+            response.status_code = 201
+            return response
+    else:
+        current_app.logger.error('Failed to create new User: The Activation Code does not exist.')
+        response = jsonify({
+            'self': '/v2/users',
+            'user': None,
+            'error': 'the activation code does not exist'
+        })
+        response.status_code = 400
+        return response
+
+
+def user_by_username_get(username) -> Response:
+    user = UserDao.get_user_by_username(username=username)
+
+    # If the user cant be found, try searching the email column in the database
+    if user is None:
+        email = username
+        user = UserDao.get_user_by_email(email=email)
+
+    # If the user still can't be found, return with an error code
+    if user is None:
+        return jsonify({
+            'self': f'/v2/users/{username}',
+            'user': None
+        })
+    else:
+        return jsonify({
+            'self': f'/v2/users/{username}',
+            'user': user
+        })
+
+
+def user_by_username_put(username) -> Response:
+    old_user = UserDao.get_user_by_username(username=username)
+
+    user_data: dict = request.get_json()
+    new_user = User(user_data)
+
+    if new_user != old_user:
+        is_updated = UserDao.update_user(username, new_user)
+
+        if is_updated:
+            updated_user = UserDao.get_user_by_username(username)
+
+            response = jsonify({
+                'self': f'/v2/users/{username}',
+                'updated': True,
+                'user': updated_user
+            })
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/users/{username}',
+                'updated': False,
+                'user': None,
+                'error': 'the user failed to update'
+            })
+            response.status_code = 500
+            return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'updated': False,
+            'user': None,
+            'error': 'the user submitted is equal to the existing user'
+        })
+        response.status_code = 400
+        return response
+
+
+def user_by_username_delete(username) -> Response:
+    is_deleted = UserDao.delete_user(username=username)
+
+    if is_deleted:
+        status_code = 204
+    else:
+        status_code = 500
+
+    response = jsonify({
+        'self': f'/v2/users/{username}',
+        'deleted': is_deleted
+    })
+    response.status_code = status_code
+    return response
+
+
+def user_snapshot_by_username_get(username) -> Response:
     user = UserDao.get_user_by_username(username=username)
 
     # If the user cant be found, try searching the email column in the database
@@ -249,13 +308,7 @@ def user_snapshot(username):
         })
 
 
-@user_route.route('/<username>/change_password', methods=['PUT'])
-def user_change_password(username):
-    """
-    Endpoint for changing a users password.
-    :param username: Username which uniquely identifies a user.
-    :return: JSON with the result of the password change.
-    """
+def user_change_password_by_username_get(username) -> Response:
     # Request should use the following pattern: {"forgot_password_code": "...", "new_password": "..."}
     request_dict: dict = request.get_json()
     forgot_password_code = request_dict.get('forgot_password_code')
@@ -285,13 +338,7 @@ def user_change_password(username):
         return response
 
 
-@user_route.route('/<username>/update_last_login', methods=['PUT'])
-def user_update_last_login(username):
-    """
-    Update the date of a users previous sign in.
-    :param username: Username which uniquely identifies a user.
-    :return: JSON with the result of the last login update
-    """
+def user_update_last_login_by_username_put(username) -> Response:
     last_login_updated = UserDao.update_user_last_login(username)
     if last_login_updated:
         response = jsonify({
