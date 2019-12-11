@@ -69,7 +69,7 @@ def notification_soft_by_id(notification_id) -> Response:
     """
     Endpoints for soft deleting user notifications.
     :param notification_id: Unique identifier for a notification.
-    :return: JSON representation of messages and relevant metadata.
+    :return: JSON representation of notifications and relevant metadata.
     """
     if request.method == 'DELETE':
         ''' [DELETE] /v2/notifications/soft/<code> '''
@@ -88,6 +88,10 @@ def notification_links() -> Response:
 
 
 def notifications_get() -> Response:
+    """
+    Retrieve all the notifications in the database.
+    :return: A response object for the GET API request.
+    """
     notifications = NotificationDao.get_notifications()
 
     if notifications is None:
@@ -114,6 +118,10 @@ def notifications_get() -> Response:
 
 
 def notification_post() -> Response:
+    """
+    Create a new notification for a user.
+    :return: A response object for the POST API request.
+    """
     notification_data: dict = request.get_json()
 
     if notification_data is None:
@@ -164,6 +172,11 @@ def notification_post() -> Response:
 
 
 def notification_by_id_get(notification_id) -> Response:
+    """
+    Retrieve a notification based on its identifier.
+    :param notification_id: Unique identifier for a user's notification.
+    :return: A response object for the GET API request.
+    """
     notification = NotificationDao.get_notification_by_id(notification_id=notification_id)
 
     if notification is None:
@@ -187,6 +200,11 @@ def notification_by_id_get(notification_id) -> Response:
 
 
 def notification_by_id_put(notification_id) -> Response:
+    """
+    Update an existing notification based on its identifier.
+    :param notification_id: Unique identifier for a user's notification.
+    :return: A response object for the PUT API request.
+    """
     notification_id = int(notification_id)
     old_notification = NotificationDao.get_notification_by_id(notification_id=notification_id)
 
@@ -243,6 +261,11 @@ def notification_by_id_put(notification_id) -> Response:
 
 
 def notification_by_id_delete(notification_id) -> Response:
+    """
+    Hard delete an existing notification with a given unique ID.
+    :param notification_id: Unique identifier for a user's notification.
+    :return: A response object for the DELETE API request.
+    """
     is_deleted = NotificationDao.delete_notification_by_id(notification_id=notification_id)
 
     if is_deleted:

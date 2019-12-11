@@ -5,6 +5,7 @@ Date: 6/16/2019
 """
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
+from datetime import datetime
 from bcrypt import bcrypt
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
@@ -36,7 +37,7 @@ def users_redirect() -> Response:
 
 
 @user_route.route('/', methods=['GET', 'POST'])
-def users():
+def users() -> Response:
     """
     Endpoints for searching all the users or creating a user
     :return: JSON representation of a list of users and relevant metadata
@@ -51,7 +52,7 @@ def users():
 
 
 @user_route.route('/<username>', methods=['GET', 'PUT', 'DELETE'])
-def user(username):
+def user(username) -> Response:
     """
     Endpoints for specific users (searching, updating, or deleting)
     :param username: Username (or email) of a User
@@ -70,38 +71,71 @@ def user(username):
         return user_by_username_delete(username)
 
 
+@user_route.route('/soft/<username>', methods=['DELETE'])
+def user_soft_by_username(username) -> Response:
+    """
+    Endpoints for soft deleting a user.
+    :param username: Username of a User.
+    :return: JSON representation of users and relevant metadata.
+    """
+    if request.method == 'DELETE':
+        ''' [DELETE] /v2/users/soft/<username> '''
+        return user_by_username_soft_delete(username)
+
+
 @user_route.route('/snapshot/<username>', methods=['GET'])
-def user_snapshot(username):
+def user_snapshot(username) -> Response:
     """
     Endpoint for a website snapshot for a specific user.  Provides more details than the base user route,
     such as group memberships and statistics.
     :param username: Username (or email) of a User
     :return: JSON representation of a user and relevant metadata
     """
-    return user_snapshot_by_username_get(username)
+    if request.method == 'GET':
+        ''' [GET] /v2/users/snapshot/<username> '''
+        return user_snapshot_by_username_get(username)
 
 
 @user_route.route('/<username>/change_password', methods=['PUT'])
-def user_change_password(username):
+def user_change_password(username) -> Response:
     """
     Endpoint for changing a users password.
     :param username: Username which uniquely identifies a user.
     :return: JSON with the result of the password change.
     """
-    return user_change_password_by_username_get(username)
+    if request.method == 'PUT':
+        ''' [GET] /v2/users/<username>/change_password '''
+        return user_change_password_by_username_get(username)
 
 
 @user_route.route('/<username>/update_last_login', methods=['PUT'])
-def user_update_last_login(username):
+def user_update_last_login(username) -> Response:
     """
     Update the date of a users previous sign in.
     :param username: Username which uniquely identifies a user.
     :return: JSON with the result of the last login update
     """
-    return user_update_last_login_by_username_put(username)
+    if request.method == 'PUT':
+        ''' [PUT] /v2/users/<username>/update_last_login'''
+        return user_update_last_login_by_username_put(username)
+
+
+@user_route.route('/links', methods=['GET'])
+def user_links() -> Response:
+    """
+    Endpoint for information about the user API endpoints.
+    :return: Metadata about the user API.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/links '''
+        return user_links_get()
 
 
 def users_get() -> Response:
+    """
+    Retrieve all the users in the database.
+    :return: A response object for the GET API request.
+    """
     all_users = UserDao.get_users()
     all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
 
@@ -112,6 +146,10 @@ def users_get() -> Response:
 
 
 def user_post() -> Response:
+    """
+    Create a new user.
+    :return: A response object for the POST API request.
+    """
     user_data: dict = request.get_json()
 
     # Passwords must be hashed before stored in the database
@@ -160,6 +198,11 @@ def user_post() -> Response:
 
 
 def user_by_username_get(username) -> Response:
+    """
+    Retrieve a user based on its username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
     user = UserDao.get_user_by_username(username=username)
 
     # If the user cant be found, try searching the email column in the database
@@ -181,6 +224,11 @@ def user_by_username_get(username) -> Response:
 
 
 def user_by_username_put(username) -> Response:
+    """
+    Update an existing user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the PUT API request.
+    """
     old_user = UserDao.get_user_by_username(username=username)
 
     user_data: dict = request.get_json()
@@ -220,6 +268,11 @@ def user_by_username_put(username) -> Response:
 
 
 def user_by_username_delete(username) -> Response:
+    """
+    Hard delete an existing user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the DELETE API request.
+    """
     is_deleted = UserDao.delete_user(username=username)
 
     if is_deleted:
@@ -235,7 +288,64 @@ def user_by_username_delete(username) -> Response:
     return response
 
 
+def user_by_username_soft_delete(username) -> Response:
+    """
+    Soft delete an existing user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the DELETE API request.
+    """
+    existing_user: User = UserDao.get_user_by_username(username=username)
+
+    if existing_user is None:
+        response = jsonify({
+            'self': f'/v2/users/soft/{username}',
+            'deleted': False,
+            'error': 'there is no existing user with this username'
+        })
+        response.status_code = 400
+        return response
+
+    if existing_user.deleted == 'Y':
+        response = jsonify({
+            'self': f'/v2/users/soft/{username}',
+            'deleted': False,
+            'error': 'this user is already soft deleted'
+        })
+        response.status_code = 400
+        return response
+
+    # Update the user model to reflect the soft delete
+    existing_user.deleted = 'Y'
+    existing_user.deleted_date = datetime.now()
+    existing_user.deleted_app = 'api'
+    existing_user.modified_date = datetime.now()
+    existing_user.modified_app = 'api'
+
+    is_deleted: bool = UserDao.soft_delete_user(existing_user)
+
+    if is_deleted:
+        response = jsonify({
+            'self': f'/v2/users/soft/{username}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/soft/{username}',
+            'deleted': False,
+            'error': 'failed to soft delete the user'
+        })
+        response.status_code = 500
+        return response
+
+
 def user_snapshot_by_username_get(username) -> Response:
+    """
+    Get a snapshot with information about a user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
     user = UserDao.get_user_by_username(username=username)
 
     # If the user cant be found, try searching the email column in the database
@@ -309,6 +419,11 @@ def user_snapshot_by_username_get(username) -> Response:
 
 
 def user_change_password_by_username_get(username) -> Response:
+    """
+    Change the password of a user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
     # Request should use the following pattern: {"forgot_password_code": "...", "new_password": "..."}
     request_dict: dict = request.get_json()
     forgot_password_code = request_dict.get('forgot_password_code')
@@ -339,6 +454,11 @@ def user_change_password_by_username_get(username) -> Response:
 
 
 def user_update_last_login_by_username_put(username) -> Response:
+    """
+    Change the last login date of a user with a given username.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the PUT API request.
+    """
     last_login_updated = UserDao.update_user_last_login(username)
     if last_login_updated:
         response = jsonify({
@@ -355,3 +475,62 @@ def user_update_last_login_by_username_put(username) -> Response:
         })
         response.status_code = 500
         return response
+
+
+def user_links_get() -> Response:
+    """
+    Get all the other user API endpoints.
+    :return: A response object for the GET API request
+    """
+    response = jsonify({
+        'self': f'/v2/users/links',
+        'endpoints': [
+            {
+                'link': '/v2/users',
+                'verb': 'GET',
+                'description': 'Get all the users in the database.'
+            },
+            {
+                'link': '/v2/users',
+                'verb': 'POST',
+                'description': 'Create a new user.'
+            },
+            {
+                'link': '/v2/users/<username>',
+                'verb': 'GET',
+                'description': 'Retrieve a single user with a given username.'
+            },
+            {
+                'link': '/v2/users/<username>',
+                'verb': 'PUT',
+                'description': 'Update a user with a given username.'
+            },
+            {
+                'link': '/v2/users/<username>',
+                'verb': 'DELETE',
+                'description': 'Delete a user with a given username.'
+            },
+            {
+                'link': '/v2/users/soft/<username>',
+                'verb': 'DELETE',
+                'description': 'Soft delete a user with a given username.'
+            },
+            {
+                'link': '/v2/users/snapshot/<username>',
+                'verb': 'GET',
+                'description': 'Get a snapshot about a user and their exercise statistics with a given username.'
+            },
+            {
+                'link': '/v2/users/<username>/change_password',
+                'verb': 'PUT',
+                'description': 'Update a user with a given username.  Specifically, alter the users password.'
+            },
+            {
+                'link': '/v2/users/<username>/update_last_login',
+                'verb': 'PUT',
+                'description': 'Update a user with a given username.  Specifically, change the users last login date.'
+            }
+        ],
+    })
+    response.status_code = 200
+    return response
