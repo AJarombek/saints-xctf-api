@@ -180,23 +180,47 @@ def user_post() -> Response:
     """
     user_data: dict = request.get_json()
 
-    # Passwords must be hashed before stored in the database
-    password = user_data.get('password')
-    hashed_password = bcrypt.generate_password_hash(password)
-    user_data.password = hashed_password
+    if user_data is None:
+        response = jsonify({
+            'self': f'/v2/users',
+            'added': False,
+            'user': None,
+            'error': "the request body isn't populated"
+        })
+        response.status_code = 400
+        return response
 
     user_to_add = User(user_data)
+
+    if None in [user_to_add.username, user_to_add.first, user_to_add.last, user_to_add.password,
+                user_to_add.activation_code]:
+        response = jsonify({
+            'self': f'/v2/users',
+            'added': False,
+            'user': None,
+            'error': "'username', 'first', 'last', 'password', and 'activation_code' are required fields"
+        })
+        response.status_code = 400
+        return response
+
+    # Passwords must be hashed before stored in the database
+    password = user_to_add.password
+    hashed_password = bcrypt.generate_password_hash(password)
+    user_data.password = hashed_password
 
     activation_code_count = CodeDao.get_code_count(activation_code=user_to_add.activation_code)
 
     if activation_code_count == 1:
-        user_to_add.created_date = datetime.now()
+        now = datetime.now()
+        user_to_add.member_since = now
+        user_to_add.created_date = now
+        user_to_add.last_signin = now
         user_to_add.created_app = 'api'
 
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)
         # Second remove the activation code so it cant be used again
-        code = Code(activation_code=user.activation_code)
+        code = Code({'activation_code': user.activation_code})
         CodeDao.remove_code(code)
 
         added_user = UserDao.get_user_by_username(user_to_add.username)

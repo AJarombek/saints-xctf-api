@@ -51,7 +51,7 @@ class User(db.Model):
     favorite_event = Column(db.VARCHAR(20))
     activation_code = Column(db.VARCHAR(8), nullable=False)
     email = Column(db.VARCHAR(50), index=True)
-    subscribed = Column(TINYINT(1))
+    subscribed = Column(db.CHAR(1))
     last_signin = Column(db.DATETIME, nullable=False)
     week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
     deleted = Column(db.CHAR(1))
