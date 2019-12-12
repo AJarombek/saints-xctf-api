@@ -16,6 +16,7 @@ from dao.notificationDao import NotificationDao
 from dao.logDao import LogDao
 from model.Code import Code
 from model.User import User
+from model.UserData import UserData
 from dao.codeDao import CodeDao
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
@@ -136,13 +137,40 @@ def users_get() -> Response:
     Retrieve all the users in the database.
     :return: A response object for the GET API request.
     """
-    all_users = UserDao.get_users()
-    all_users = map(lambda user: user.update({'this_user': f'/v2/users/{user.get("username")}'}), all_users)
+    all_users: list = UserDao.get_users()
 
-    return jsonify({
-        'self': '/v2/users',
-        'users': all_users
-    })
+    if all_users is None:
+        response = jsonify({
+            'self': '/v2/users',
+            'users': None,
+            'error': 'an unexpected error occurred retrieving users'
+        })
+        response.status_code = 500
+        return response
+    else:
+        user_dicts = []
+
+        for user in all_users:
+            user_dict = UserData(user).__dict__
+            user_dict['this_user'] = f'/v2/users/{user_dict["username"]}'
+
+            if user_dict.get('member_since') is not None:
+                user_dict['member_since'] = str(user_dict['member_since'])
+            if user_dict.get('last_signin') is not None:
+                user_dict['last_signin'] = str(user_dict['last_signin'])
+
+            if user_dict['grouppic'] is not None:
+                try:
+                    user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
+                except AttributeError:
+                    pass
+
+            user_dicts.append(user_dict)
+
+        return jsonify({
+            'self': '/v2/users',
+            'users': all_users
+        })
 
 
 def user_post() -> Response:
@@ -162,6 +190,9 @@ def user_post() -> Response:
     activation_code_count = CodeDao.get_code_count(activation_code=user_to_add.activation_code)
 
     if activation_code_count == 1:
+        user_to_add.created_date = datetime.now()
+        user_to_add.created_app = 'api'
+
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)
         # Second remove the activation code so it cant be used again

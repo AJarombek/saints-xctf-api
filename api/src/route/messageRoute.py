@@ -150,6 +150,9 @@ def message_post() -> Response:
         response.status_code = 400
         return response
 
+    message_to_add.created_date = datetime.now()
+    message_to_add.created_app = 'api'
+
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
 
     if message_added_successfully:

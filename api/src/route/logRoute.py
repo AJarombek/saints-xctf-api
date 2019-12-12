@@ -167,6 +167,9 @@ def logs_post() -> Response:
         response.status_code = 400
         return response
 
+    log_to_add.created_date = datetime.now()
+    log_to_add.created_app = 'api'
+
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
 
     if log_added_successfully:

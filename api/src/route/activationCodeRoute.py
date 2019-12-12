@@ -127,6 +127,7 @@ def activation_code_post() -> Response:
 
     # The created date must be accurate, don't trust the date coming from the client.
     code_to_add.created_date = datetime.now()
+    code_to_add.created_app = 'api'
 
     code_added_successfully: bool = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 

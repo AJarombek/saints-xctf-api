@@ -89,6 +89,10 @@ def forgot_password_post(username) -> Response:
         'username': username,
         'expires': expires
     })
+
+    new_forgot_password.created_date = datetime.now()
+    new_forgot_password.created_app = 'api'
+
     forgot_password_inserted = ForgotPasswordDao.add_forgot_password_code(new_forgot_password)
 
     if forgot_password_inserted:

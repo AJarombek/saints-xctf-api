@@ -5,6 +5,7 @@ Date: 7/5/2019
 """
 
 from flask import Blueprint, request, jsonify, redirect, url_for, Response
+from datetime import datetime
 from dao.flairDao import FlairDao
 from model.Flair import Flair
 from model.FlairData import FlairData
@@ -77,6 +78,9 @@ def flair_post():
         'username': username,
         'flair': flair_content
     })
+
+    flair.created_date = datetime.now()
+    flair.created_app = 'api'
 
     flair_added: bool = FlairDao.add_flair(flair)
 

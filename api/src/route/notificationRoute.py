@@ -146,6 +146,9 @@ def notification_post() -> Response:
         response.status_code = 400
         return response
 
+    notification_to_add.created_date = datetime.now()
+    notification_to_add.created_app = 'api'
+
     notification_added_successfully = NotificationDao.add_notification(new_notification=notification_to_add)
 
     if notification_added_successfully:

@@ -143,6 +143,9 @@ def comment_post():
         response.status_code = 400
         return response
 
+    comment_to_add.created_date = datetime.now()
+    comment_to_add.created_app = 'api'
+
     comment_added_successfully: bool = CommentDao.add_comment(new_comment=comment_to_add)
 
     if comment_added_successfully:
