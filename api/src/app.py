@@ -8,7 +8,7 @@ import os
 from flask import Flask, jsonify
 from flask_sqlalchemy import get_debug_queries, current_app
 from database import db
-from bcrypt import bcrypt
+from flaskBcrypt import flask_bcrypt
 from commands import test
 from config import config
 from utils.db import get_connection_url
@@ -57,7 +57,7 @@ def create_app(config_name) -> Flask:
     application.config['SLOW_DB_QUERY_TIME'] = 0.5
 
     db.init_app(application)
-    bcrypt.init_app(application)
+    flask_bcrypt.init_app(application)
 
     application.cli.add_command(test)
 

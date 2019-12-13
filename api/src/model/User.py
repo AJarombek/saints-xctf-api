@@ -53,7 +53,7 @@ class User(db.Model):
     email = Column(db.VARCHAR(50), index=True)
     subscribed = Column(db.CHAR(1))
     last_signin = Column(db.DATETIME, nullable=False)
-    week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
+    week_start = Column(db.VARCHAR(15))
     deleted = Column(db.CHAR(1))
 
     # Audit Columns

@@ -6,4 +6,4 @@ Date: 6/29/2019
 
 from flask_bcrypt import Bcrypt
 
-bcrypt = Bcrypt()
+flask_bcrypt = Bcrypt()

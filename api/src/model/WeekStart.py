@@ -17,4 +17,8 @@ class WeekStart(db.Model):
     group = db.relationship('Group', backref='group')
 
     def __repr__(self):
+        """
+        String representation of the start of week options.  This representation is meant to be machine readable.
+        :return: The week start object in string form.
+        """
         return '<WeekStart %r>' % self.week_start

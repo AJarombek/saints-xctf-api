@@ -6,7 +6,7 @@ Date: 6/16/2019
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from datetime import datetime
-from bcrypt import bcrypt
+from flaskBcrypt import flask_bcrypt
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
@@ -205,8 +205,8 @@ def user_post() -> Response:
 
     # Passwords must be hashed before stored in the database
     password = user_to_add.password
-    hashed_password = bcrypt.generate_password_hash(password)
-    user_data.password = hashed_password
+    hashed_password = flask_bcrypt.generate_password_hash(password).decode('utf-8')
+    user_to_add.password = hashed_password
 
     activation_code_count = CodeDao.get_code_count(activation_code=user_to_add.activation_code)
 
@@ -220,7 +220,7 @@ def user_post() -> Response:
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)
         # Second remove the activation code so it cant be used again
-        code = Code({'activation_code': user.activation_code})
+        code = Code({'activation_code': user_to_add.activation_code})
         CodeDao.remove_code(code)
 
         added_user = UserDao.get_user_by_username(user_to_add.username)
@@ -484,7 +484,7 @@ def user_change_password_by_username_get(username) -> Response:
     forgot_password_code = request_dict.get('forgot_password_code')
     new_password = request_dict.get('new_password')
 
-    hashed_password = bcrypt.generate_password_hash(new_password)
+    hashed_password = flask_bcrypt.generate_password_hash(new_password).decode('utf-8')
 
     password_updated = UserDao.update_user_password(username, hashed_password)
 

@@ -125,19 +125,64 @@ class TestUserRoute(TestSuite):
             "'username', 'first', 'last', 'password', and 'activation_code' are required fields"
         )
 
-    def test_user_post_route_200(self) -> None:
+    def test_user_post_route_400_invalid_activation_code(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/users/' route.  This test proves that calling
-        this endpoint with a valid request JSON results in a 200 success code and a new user object.
+        this endpoint with a valid user object but an invalid activation code results in a 400 error.
         """
         request_body = json.dumps({
-            "username": "andy",
+            "username": "andy_1",
             "first": "Andrew",
             "last": "Jarombek",
             "password": "B0unD2",
             "description": "It doesn't matter how you tell them, the fact you told them is what will be "
                            "beautiful and perfect to them.",
             "member_since": "2019-12-12",
+            "activation_code": "ABC123",
+            "last_signin": str(datetime.now())
+        })
+
+        response: Response = self.client.post(
+            '/v2/users/',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users')
+        self.assertEqual(response_json.get('added'), False)
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), "the activation code does not exist")
+
+    def test_user_post_route_200(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/users/' route.  This test proves that calling
+        this endpoint with a valid request JSON results in a 200 success code and a new user object.
+        """
+        # Before trying to create the user, make sure that the activation code already exists.
+        self.client.delete('/v2/activation_code/ABC123')
+
+        request_body = json.dumps({'activation_code': 'ABC123'})
+        response: Response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json'
+        )
+
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code')
+        self.assertEqual(response_json.get('added'), True)
+        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'ABC123', 'deleted': None})
+
+        request_body = json.dumps({
+            "username": "andy_2",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "password": "B0unD2",
+            "description": "If it's me, you know that just saying hi to me makes me happy.  Please don't be hard on "
+                           "yourself if you can't or aren't ready yet.  It's okay, I'm still always here for you.",
+            "member_since": "2019-12-13",
             "activation_code": "ABC123",
             "last_signin": str(datetime.now())
         })
@@ -172,3 +217,26 @@ class TestUserRoute(TestSuite):
         self.assertIn('week_start', user)
         self.assertIn('subscribed', user)
         self.assertIn('deleted', user)
+
+    def test_user_by_username_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/<username>' route.  This test proves
+        that trying to retrieve a user with a username that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/users/invalid_username')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/invalid_username')
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), 'there is no user with this username')
+
+    def test_user_by_username_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/<username>' route.  This test proves that
+        retrieving a user with a valid username results in the user and a 200 status.
+        """
+        response: Response = self.client.get('/v2/users/andy')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy')
+        self.assertIsNotNone(response_json.get('user'))
