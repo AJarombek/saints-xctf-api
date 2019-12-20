@@ -27,5 +27,8 @@ class CodeDao:
         :param code: Object model for a row in the code table.
         :return: True if the activation code is deleted, False otherwise.
         """
-        db.session.remove(code)
+        db.session.execute(
+            'DELETE FROM codes WHERE activation_code=:activation_code',
+            {'activation_code': code.activation_code}
+        )
         return BasicDao.safe_commit()

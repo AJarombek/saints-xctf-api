@@ -130,6 +130,9 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/users/' route.  This test proves that calling
         this endpoint with a valid user object but an invalid activation code results in a 400 error.
         """
+        # Delete the user to void a duplicate entry constraint error.
+        self.client.delete('/v2/users/andy_1')
+
         request_body = json.dumps({
             "username": "andy_1",
             "first": "Andrew",
@@ -174,6 +177,9 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), True)
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'ABC123', 'deleted': None})
+
+        # Delete the user to void a duplicate entry constraint error.
+        self.client.delete('/v2/users/andy_2')
 
         request_body = json.dumps({
             "username": "andy_2",
@@ -240,3 +246,16 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/andy')
         self.assertIsNotNone(response_json.get('user'))
+
+    def test_user_by_username_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
+        trying to update a user that doesn't exist results in a 400 error.
+        """
+        response: Response = self.client.put('/v2/users/invalid_username')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/invalid_username')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), 'there is no existing user with this username')
