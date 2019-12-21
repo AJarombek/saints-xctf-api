@@ -125,3 +125,31 @@ class UserDao:
             {'username': username}
         )
         return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_user(user: User) -> bool:
+        """
+        Soft Delete a user from the database.
+        :param user: Object representing a user to soft delete.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE users SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE username=:username
+            ''',
+            {
+                'username': user.username,
+                'deleted': user.deleted,
+                'modified_date': user.modified_date,
+                'modified_app': user.modified_app,
+                'deleted_date': user.deleted_date,
+                'deleted_app': user.deleted_app
+            }
+        )
+        return BasicDao.safe_commit()

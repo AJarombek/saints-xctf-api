@@ -334,7 +334,7 @@ def user_by_username_put(username) -> Response:
             'self': f'/v2/users/{username}',
             'updated': False,
             'user': None,
-            'error': 'the user submitted is equal to the existing user'
+            'error': 'the user submitted is equal to the existing user with the same username'
         })
         response.status_code = 400
         return response
