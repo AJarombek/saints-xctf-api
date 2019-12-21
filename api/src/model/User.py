@@ -112,7 +112,7 @@ class User(db.Model):
         if user_1.profilepic is None:
             self_profilepic = bytes()
         else:
-            self_profilepic = user_1.grouppic
+            self_profilepic = user_1.profilepic
             try:
                 self_profilepic = self_profilepic.decode('utf-8')
             except AttributeError:
@@ -121,7 +121,7 @@ class User(db.Model):
         if user_2.profilepic is None:
             other_profilepic = bytes()
         else:
-            other_profilepic = user_2.grouppic
+            other_profilepic = user_2.profilepic
             try:
                 other_profilepic = other_profilepic.decode('utf-8')
             except AttributeError:
@@ -143,7 +143,7 @@ class User(db.Model):
             user_1.activation_code == user_2.activation_code,
             user_1.email == user_2.email,
             user_1.subscribed == user_2.subscribed,
-            user_1.last_signin == user_2.last_signin,
+            str(user_1.last_signin) == str(user_2.last_signin),
             user_1.week_start == user_2.week_start,
             user_1.deleted == user_2.deleted
         ])

@@ -188,9 +188,9 @@ class TestUserRoute(TestSuite):
             "password": "B0unD2",
             "description": "If it's me, you know that just saying hi to me makes me happy.  Please don't be hard on "
                            "yourself if you can't or aren't ready yet.  It's okay, I'm still always here for you.",
-            "member_since": "2019-12-13",
+            "member_since": str(datetime.fromisoformat('2019-12-13')),
             "activation_code": "ABC123",
-            "last_signin": str(datetime.now())
+            "last_signin": str(datetime.fromisoformat('2019-12-14'))
         })
 
         response: Response = self.client.post(
@@ -265,9 +265,7 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
         if the updated user is the same as the original user, a 400 error is returned.
         """
-        # No matter who you are with and loving, just promise to be gentle to yourself.  If there is one thing you
-        # can do for me just promise me that.  Thank you, I will always love you.
-        response: Response = self.client.get('/v2/users/andy')
+        response: Response = self.client.get('/v2/users/andy_2')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('user'))
@@ -275,16 +273,65 @@ class TestUserRoute(TestSuite):
         request_body = json.dumps(response_json.get('user'))
 
         response: Response = self.client.put(
-            '/v2/users/1',
+            '/v2/users/andy_2',
             data=request_body,
             content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy_2')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('user'))
         self.assertEqual(
             response_json.get('error'),
             'the user submitted is equal to the existing user with the same username'
         )
+
+    def test_user_by_username_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
+        if a valid user JSON is passed to this endpoint, the existing user will be updated and a valid
+        200 response code will be returned.
+        """
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andy",
+            "last": "Jarombek",
+            "email": "andrew@jarombek.com",
+            "profilepic": None,
+            "profilepic_name": None,
+            "description": "I sometimes like to run.",
+            "class_year": "2017",
+            "location": "Riverside, CT",
+            "favorite_event": "5000m, 8K",
+            "week_start": "monday",
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/andy',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('user'))
+
+        # Confirm the fields were updated as expected.
+        self.assertIn('profilepic', response_json.get('user'))
+        self.assertEqual(response_json.get('user').get('profilepic'), None)
+        self.assertIn('profilepic_name', response_json.get('user'))
+        self.assertEqual(response_json.get('user').get('profilepic_name'), None)
+        self.assertIn('favorite_event', response_json.get('user'))
+        self.assertEqual(response_json.get('user').get('favorite_event'), '5000m, 8K')
+        self.assertIn('email', response_json.get('user'))
+        self.assertEqual(response_json.get('user').get('email'), 'andrew@jarombek.com')
+
+    def test_uer_by_username_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/users/<username>' route.  This test proves
+        that the endpoint should return a 204 success status, no matter if the user existed or not.
+        """
+        response: Response = self.client.delete('/v2/users/invalid_user')
+        self.assertEqual(response.status_code, 204)

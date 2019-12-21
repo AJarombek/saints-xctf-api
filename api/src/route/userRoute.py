@@ -62,7 +62,7 @@ def user(username) -> Response:
     """
     if request.method == 'GET':
         ''' [GET] /v2/users/<username> '''
-        return user_snapshot_by_username_get(username)
+        return user_by_username_get(username)
 
     elif request.method == 'PUT':
         ''' [PUT] /v2/users/<username> '''
@@ -273,14 +273,23 @@ def user_by_username_get(username) -> Response:
     if user is None:
         response = jsonify({
             'self': f'/v2/users/{username}',
-            'user': None
+            'user': None,
+            'error': 'there is no user with this username'
         })
         response.status_code = 400
         return response
     else:
+        user_dict: dict = UserData(user).__dict__
+
+        if user_dict['profilepic'] is not None:
+            try:
+                user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
+            except AttributeError:
+                pass
+
         response = jsonify({
             'self': f'/v2/users/{username}',
-            'user': UserData(user).__dict__
+            'user': user_dict
         })
         response.status_code = 200
         return response
@@ -292,7 +301,7 @@ def user_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
-    old_user = UserDao.get_user_by_username(username=username)
+    old_user: User = UserDao.get_user_by_username(username=username)
 
     if old_user is None:
         response = jsonify({
@@ -307,16 +316,28 @@ def user_by_username_put(username) -> Response:
     user_data: dict = request.get_json()
     new_user = User(user_data)
 
+    print(new_user)
+    print(old_user)
+    print(new_user == old_user)
+
     if new_user != old_user:
         is_updated = UserDao.update_user(username, new_user)
 
         if is_updated:
             updated_user = UserDao.get_user_by_username(username)
 
+            updated_user_dict: dict = UserData(updated_user).__dict__
+
+            if updated_user_dict['profilepic'] is not None:
+                try:
+                    updated_user_dict['profilepic'] = updated_user_dict['profilepic'].decode('utf-8')
+                except AttributeError:
+                    pass
+
             response = jsonify({
                 'self': f'/v2/users/{username}',
                 'updated': True,
-                'user': updated_user
+                'user': updated_user_dict
             })
             response.status_code = 200
             return response
@@ -349,16 +370,20 @@ def user_by_username_delete(username) -> Response:
     is_deleted = UserDao.delete_user(username=username)
 
     if is_deleted:
-        status_code = 204
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
     else:
-        status_code = 500
-
-    response = jsonify({
-        'self': f'/v2/users/{username}',
-        'deleted': is_deleted
-    })
-    response.status_code = status_code
-    return response
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'deleted': False,
+            'error': 'failed to delete the user'
+        })
+        response.status_code = 500
+        return response
 
 
 def user_by_username_soft_delete(username) -> Response:

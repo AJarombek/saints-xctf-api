@@ -39,7 +39,7 @@ class LogDao:
         :param username: Unique identifier for a user
         :return: The total number of miles exercised
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT SUM(miles) AS total 
             FROM logs 
@@ -47,6 +47,7 @@ class LogDao:
             ''',
             {'username': username}
         )
+        return result.first()
 
     @staticmethod
     def get_user_miles_by_type(username: str, exercise_type: str) -> Column:
@@ -56,7 +57,7 @@ class LogDao:
         :param exercise_type: A certain type of exercise
         :return: The total number of miles exercised of a certain type
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT SUM(miles) AS total 
             FROM logs 
@@ -65,6 +66,7 @@ class LogDao:
             ''',
             {'username': username, 'exercise_type': exercise_type}
         )
+        return result.first()
 
     @staticmethod
     def get_user_miles_interval(username: str, interval: str = None, week_start: str = 'monday') -> Column:
@@ -80,7 +82,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -89,7 +91,7 @@ class LogDao:
                 {'username': username}
             )
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -98,6 +100,8 @@ class LogDao:
                 ''',
                 {'username': username, 'date': date}
             )
+
+        return result.first()
 
     @staticmethod
     def get_user_miles_interval_by_type(username: str, exercise_type: str,
@@ -116,7 +120,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -126,7 +130,7 @@ class LogDao:
                 {'username': username, 'exercise_type': exercise_type}
             )
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -137,6 +141,8 @@ class LogDao:
                 {'username': username, 'date': date, 'exercise_type': exercise_type}
             )
 
+        return result.first()
+
     @staticmethod
     def get_user_avg_feel(username: str) -> Column:
         """
@@ -144,7 +150,7 @@ class LogDao:
         :param username: Unique identifier for a user
         :return: The average feel
         """
-        return db.session.execute(
+        result: ResultProxy = db.session.execute(
             '''
             SELECT AVG(feel) AS average 
             FROM logs 
@@ -152,6 +158,7 @@ class LogDao:
             ''',
             {'username': username}
         )
+        return result.first()
 
     @staticmethod
     def get_user_avg_feel_interval(username: str, interval: str = None, week_start: str = 'monday') -> Column:
@@ -166,7 +173,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT AVG(feel) AS average 
                 FROM logs 
@@ -175,7 +182,7 @@ class LogDao:
                 {'username': username}
             )
         else:
-            return db.session.execute(
+            result: ResultProxy = db.session.execute(
                 '''
                 SELECT AVG(feel) AS average 
                 FROM logs 
@@ -184,6 +191,8 @@ class LogDao:
                 ''',
                 {'username': username, 'date': date}
             )
+
+        return result.first()
 
     @staticmethod
     def get_group_miles(group_name: str) -> Column:
