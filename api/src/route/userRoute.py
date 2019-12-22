@@ -6,6 +6,7 @@ Date: 6/16/2019
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
+from sqlalchemy.engine import ResultProxy
 from datetime import datetime
 from flaskBcrypt import flask_bcrypt
 from dao.userDao import UserDao
@@ -16,6 +17,7 @@ from dao.flairDao import FlairDao
 from dao.notificationDao import NotificationDao
 from dao.logDao import LogDao
 from model.Code import Code
+from model.FlairData import FlairData
 from model.User import User
 from model.UserData import UserData
 from dao.codeDao import CodeDao
@@ -107,7 +109,7 @@ def user_change_password(username) -> Response:
     """
     if request.method == 'PUT':
         ''' [GET] /v2/users/<username>/change_password '''
-        return user_change_password_by_username_get(username)
+        return user_change_password_by_username_put(username)
 
 
 @user_route.route('/<username>/update_last_login', methods=['PUT'])
@@ -168,10 +170,12 @@ def users_get() -> Response:
 
             user_dicts.append(user_dict)
 
-        return jsonify({
+        response = jsonify({
             'self': '/v2/users',
             'users': user_dicts
         })
+        response.status_code = 200
+        return response
 
 
 def user_post() -> Response:
@@ -454,14 +458,29 @@ def user_snapshot_by_username_get(username) -> Response:
 
     # If the user still can't be found, return with an error code
     if user is None:
-        return jsonify({
-            'self': f'/v2/users/{username}',
-            'user': False
+        response = jsonify({
+            'self': f'/v2/users/snapshot/{username}',
+            'user': None,
+            'error': 'there is no user with this username'
         })
+        response.status_code = 400
+        return response
     else:
         user_dict: dict = UserData(user).__dict__
+
+        if user_dict.get('member_since') is not None:
+            user_dict['member_since'] = str(user_dict['member_since'])
+        if user_dict.get('last_signin') is not None:
+            user_dict['last_signin'] = str(user_dict['last_signin'])
+
+        if user_dict['profilepic'] is not None:
+            try:
+                user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
+            except AttributeError:
+                pass
+
         username = user_dict['username']
-        groups = GroupMemberDao.get_user_groups(username=username)
+        groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
         group_list = []
 
         for group in groups:
@@ -481,14 +500,42 @@ def user_snapshot_by_username_get(username) -> Response:
 
         user_dict['groups'] = group_list
 
-        forgot_password: list = ForgotPasswordDao.get_forgot_password_codes(username=username)
-        user_dict['forgotpassword'] = forgot_password
+        forgot_password_codes: ResultProxy = ForgotPasswordDao.get_forgot_password_codes(username=username)
 
-        flair: list = FlairDao.get_flair_by_username(username=username)
-        user_dict['flair'] = flair
+        forgot_password_list = []
+        for forgot_password_code in forgot_password_codes:
+            forgot_password_list.append({
+                'forgot_code': forgot_password_code['forgot_code'],
+                'username': forgot_password_code['username'],
+                'expires': forgot_password_code['expires'],
+                'deleted': forgot_password_code['deleted'],
+            })
 
-        notifications = NotificationDao.get_notification_by_username(username=username)
-        user_dict['notifications'] = notifications
+        user_dict['forgotpassword'] = forgot_password_list
+
+        flairs: list = FlairDao.get_flair_by_username(username=username)
+        flair_dicts = []
+
+        for flair in flairs:
+            flair_dicts.append(FlairData(flair).__dict__)
+
+        user_dict['flair'] = flair_dicts
+
+        notifications: ResultProxy = NotificationDao.get_notification_by_username(username=username)
+
+        notification_dicts = []
+        for notification in notifications:
+            notification_dicts.append({
+                'notification_id': notification['notification_id'],
+                'username': notification['username'],
+                'time': notification['time'],
+                'link': notification['link'],
+                'viewed': notification['viewed'],
+                'description': notification['description'],
+                'deleted': notification['deleted']
+            })
+
+        user_dict['notifications'] = notification_dicts
 
         # All user statistics are queried separately but combined into a single map
         miles: Column = LogDao.get_user_miles(username)
@@ -521,13 +568,15 @@ def user_snapshot_by_username_get(username) -> Response:
 
         user_dict['statistics'] = stats
 
-        return jsonify({
-            'self': f'/v2/users/{username}',
+        response = jsonify({
+            'self': f'/v2/users/snapshot/{username}',
             'user': user_dict
         })
+        response.status_code = 200
+        return response
 
 
-def user_change_password_by_username_get(username) -> Response:
+def user_change_password_by_username_put(username) -> Response:
     """
     Change the password of a user with a given username.
     :param username: Username that uniquely identifies a user.

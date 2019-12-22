@@ -429,3 +429,40 @@ class TestUserRoute(TestSuite):
 
         response: Response = self.client.delete(f'/v2/users/soft/{username}')
         self.assertEqual(response.status_code, 204)
+
+    def test_user_snapshot_by_username_get_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/snapshot/<username>' route.  This test proves that
+        trying to get a snapshot about a user that doesn't exist results in a 400 error.
+        """
+        # A very important song, but not a username used on the website.
+        response: Response = self.client.get('/v2/users/snapshot/bound2')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/bound2')
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), 'there is no user with this username')
+
+    def test_user_snapshot_by_username_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/snapshot/<username>' route.  This test proves that
+        trying to get a snapshot about a user is successful if the user exists.
+        """
+        # A very important song, but not a username used on the website.
+        response: Response = self.client.get('/v2/users/snapshot/andy_2')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy_2')
+        self.assertIsNotNone(response_json.get('user'))
+        print(response_json.get('user')) # TODO
+
+    def test_user_get_links_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/links' route.  This test proves that calling
+        this endpoint returns a list of other user endpoints.
+        """
+        response: Response = self.client.get('/v2/users/links')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/links')
+        self.assertEqual(len(response_json.get('endpoints')), 9)

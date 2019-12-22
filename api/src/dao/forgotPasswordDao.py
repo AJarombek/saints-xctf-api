@@ -6,6 +6,7 @@ Date: 7/3/2019
 """
 
 from database import db
+from sqlalchemy.engine import ResultProxy
 from dao.basicDao import BasicDao
 from model.ForgotPassword import ForgotPassword
 
@@ -22,7 +23,7 @@ class ForgotPasswordDao:
         return ForgotPassword.query.filter_by(forgot_code=code).first()
 
     @staticmethod
-    def get_forgot_password_codes(username: str) -> list:
+    def get_forgot_password_codes(username: str) -> ResultProxy:
         """
         Retrieve all the forgot password codes that aren't expired yet for a user
         :param username: The unique identifier for a user
