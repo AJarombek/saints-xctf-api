@@ -335,3 +335,97 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.delete('/v2/users/invalid_user')
         self.assertEqual(response.status_code, 204)
+
+    def test_user_by_username_soft_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/users/soft/<username>' route.  This test
+        proves that if the user doesn't exist, a 400 error is returned.
+        """
+        # Ensure that the user was already deleted before testing the DELETE endpoint
+        self.client.delete('/v2/users/invalid_user')
+
+        response: Response = self.client.delete('/v2/users/soft/invalid_user')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+
+    def test_user_by_username_soft_delete_route_400_already_deleted(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/users/soft/<username>' route.  This test
+        proves that if the user was already soft deleted, a 400 error is returned.
+        """
+        # Before trying to create the user, make sure that the activation code already exists.
+        self.client.delete('/v2/activation_code/DEFGHI')
+
+        request_body = json.dumps({'activation_code': 'DEFGHI'})
+        response: Response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json'
+        )
+
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code')
+        self.assertEqual(response_json.get('added'), True)
+        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
+
+        # Delete the user to void a duplicate entry constraint error.
+        self.client.delete('/v2/users/andy_3')
+
+        request_body = json.dumps({
+            "username": "andy_3",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "password": "password",
+            "activation_code": "DEFGHI"
+        })
+
+        response: Response = self.client.post('/v2/users/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        username = response_json.get('user').get('username')
+
+        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        self.assertEqual(response.status_code, 204)
+
+        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        self.assertEqual(response.status_code, 400)
+
+    def test_log_by_id_soft_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.  This test proves that
+        soft deleting an existing non-soft deleted log will execute successfully and return a valid 204 status.
+        """
+        # Before trying to create the user, make sure that the activation code already exists.
+        self.client.delete('/v2/activation_code/DEFGHI')
+
+        request_body = json.dumps({'activation_code': 'DEFGHI'})
+        response: Response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json'
+        )
+
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/activation_code')
+        self.assertEqual(response_json.get('added'), True)
+        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
+
+        # Delete the user to void a duplicate entry constraint error.
+        self.client.delete('/v2/users/andy_3')
+
+        request_body = json.dumps({
+            "username": "andy_3",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "password": "password",
+            "activation_code": "DEFGHI"
+        })
+
+        response: Response = self.client.post('/v2/users/', data=request_body, content_type='application/json')
+        response_json: dict = response.get_json()
+        username = response_json.get('user').get('username')
+
+        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        self.assertEqual(response.status_code, 204)

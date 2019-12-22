@@ -281,6 +281,11 @@ def user_by_username_get(username) -> Response:
     else:
         user_dict: dict = UserData(user).__dict__
 
+        if user_dict.get('member_since') is not None:
+            user_dict['member_since'] = str(user_dict['member_since'])
+        if user_dict.get('last_signin') is not None:
+            user_dict['last_signin'] = str(user_dict['last_signin'])
+
         if user_dict['profilepic'] is not None:
             try:
                 user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
@@ -315,10 +320,6 @@ def user_by_username_put(username) -> Response:
 
     user_data: dict = request.get_json()
     new_user = User(user_data)
-
-    print(new_user)
-    print(old_user)
-    print(new_user == old_user)
 
     if new_user != old_user:
         is_updated = UserDao.update_user(username, new_user)
