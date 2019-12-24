@@ -535,6 +535,63 @@ class TestUserRoute(TestSuite):
         self.assertIn('weekfeel', statistics)
         self.assertTrue(statistics.get('weekfeel') is None or type(statistics.get('weekfeel')) is float)
 
+    def test_user_change_password_by_username_put_route_400_missing_required_field(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>/change_password' route.  This test proves that
+        calling this endpoint with missing required fields results in a 400 error.
+        """
+        # Missing the required 'new_password' field
+        request_body = json.dumps({
+            "forgot_password_code": "123456"
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/andy_2/change_password',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/change_password')
+        self.assertEqual(response_json.get('password_updated'), False)
+        self.assertEqual(response_json.get('forgot_password_code_deleted'), False)
+        self.assertEqual(
+            response_json.get('error'),
+            "'forgot_password_code' and 'new_password' are required fields"
+        )
+
+    def test_user_change_password_by_username_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>/change_password' route.  This test proves that
+        calling this endpoint with the proper fields results in a 200 status code.
+        """
+        request_body = json.dumps({
+            "forgot_password_code": "123456",
+            "new_password": "B0unDTw0"
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/andy_2/change_password',
+            data=request_body,
+            content_type='application/json'
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/change_password')
+        self.assertEqual(response_json.get('password_updated'), True)
+        self.assertEqual(response_json.get('forgot_password_code_deleted'), True)
+
+    def test_user_update_last_login_by_username_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>/update_last_login' route.  This test proves
+        that calling this endpoint with the proper fields results in a 200 status code.
+        """
+        response: Response = self.client.put('/v2/users/andy_2/update_last_login')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/update_last_login')
+        self.assertEqual(response_json.get('last_login_updated'), True)
+
     def test_user_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/links' route.  This test proves that calling

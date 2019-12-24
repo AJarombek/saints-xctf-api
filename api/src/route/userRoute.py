@@ -587,12 +587,22 @@ def user_change_password_by_username_put(username) -> Response:
     forgot_password_code = request_dict.get('forgot_password_code')
     new_password = request_dict.get('new_password')
 
+    if forgot_password_code is None or new_password is None:
+        response = jsonify({
+            'self': f'/v2/users/{username}/change_password',
+            'password_updated': False,
+            'forgot_password_code_deleted': False,
+            'error': "'forgot_password_code' and 'new_password' are required fields"
+        })
+        response.status_code = 500
+        return response
+
     hashed_password = flask_bcrypt.generate_password_hash(new_password).decode('utf-8')
 
-    password_updated = UserDao.update_user_password(username, hashed_password)
+    password_updated: bool = UserDao.update_user_password(username, hashed_password)
 
     if password_updated:
-        code_deleted = ForgotPasswordDao.delete_forgot_password_code(code=forgot_password_code)
+        code_deleted: bool = ForgotPasswordDao.delete_forgot_password_code(code=forgot_password_code)
         response = jsonify({
             'self': f'/v2/users/{username}/change_password',
             'password_updated': True,
@@ -617,7 +627,7 @@ def user_update_last_login_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
-    last_login_updated = UserDao.update_user_last_login(username)
+    last_login_updated: bool = UserDao.update_user_last_login(username)
     if last_login_updated:
         response = jsonify({
             'self': f'/v2/users/{username}/update_last_login',

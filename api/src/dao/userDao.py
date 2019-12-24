@@ -108,7 +108,7 @@ class UserDao:
         :return: True if the update was successful, False otherwise
         """
         db.session.execute(
-            'UPDATE users SET last_signin=:DATE WHERE username=:username',
+            'UPDATE users SET last_signin=SYSDATE() WHERE username=:username',
             {'username': username}
         )
         return BasicDao.safe_commit()
