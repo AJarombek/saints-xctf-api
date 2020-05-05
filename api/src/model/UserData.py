@@ -8,7 +8,7 @@ from .User import User
 
 
 class UserData:
-    def __init__(self, user: User):
+    def __init__(self, user: User, defer_profile_picture: bool = True):
         """
         Create a user object without any auditing fields.
         :param user: The original User object with auditing fields.
@@ -19,8 +19,6 @@ class UserData:
             self.last = user.last
             self.salt = user.salt
             self.password = user.password
-            self.profilepic = user.profilepic
-            self.profilepic_name = user.profilepic_name
             self.description = user.description
             self.member_since = user.member_since
             self.class_year = user.class_year
@@ -32,6 +30,10 @@ class UserData:
             self.last_signin = user.last_signin
             self.week_start = user.week_start
             self.deleted = user.deleted
+
+        if not defer_profile_picture:
+            self.profilepic = user.profilepic
+            self.profilepic_name = user.profilepic_name
 
     def __str__(self):
         """

@@ -4,6 +4,7 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
+from sqlalchemy.orm import defer
 from database import db
 from dao.basicDao import BasicDao
 from model.User import User
@@ -26,7 +27,7 @@ class UserDao:
         :param username: Username which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query.filter_by(username=username).first()
+        return User.query.filter_by(username=username).options(defer('profilepic'), defer('profilepic_name')).first()
 
     @staticmethod
     def get_user_by_email(email: str) -> User:
@@ -35,7 +36,7 @@ class UserDao:
         :param email: Email which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query.filter_by(email=email).first()
+        return User.query.filter_by(email=email).options(defer('profilepic'), defer('profilepic_name')).first()
 
     @staticmethod
     def add_user(user: User) -> bool:

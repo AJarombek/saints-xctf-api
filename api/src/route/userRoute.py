@@ -162,7 +162,7 @@ def users_get() -> Response:
             if user_dict.get('last_signin') is not None:
                 user_dict['last_signin'] = str(user_dict['last_signin'])
 
-            if user_dict['profilepic'] is not None:
+            if user_dict.get('profilepic') is not None:
                 try:
                     user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
                 except AttributeError:
@@ -290,7 +290,7 @@ def user_by_username_get(username) -> Response:
         if user_dict.get('last_signin') is not None:
             user_dict['last_signin'] = str(user_dict['last_signin'])
 
-        if user_dict['profilepic'] is not None:
+        if user_dict.get('profilepic') is not None:
             try:
                 user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
             except AttributeError:

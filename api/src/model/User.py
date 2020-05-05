@@ -6,7 +6,8 @@ Date: 6/21/2019
 
 from database import db
 from sqlalchemy import Column
-from sqlalchemy.dialects.mysql import TINYINT, LONGBLOB
+from sqlalchemy.orm import deferred
+from sqlalchemy.dialects.mysql import LONGBLOB
 
 
 class User(db.Model):
@@ -42,8 +43,8 @@ class User(db.Model):
     last = Column(db.VARCHAR(30), nullable=False, index=True)
     salt = Column(db.VARCHAR(255))
     password = Column(db.VARCHAR(255), nullable=False)
-    profilepic = Column(LONGBLOB)
-    profilepic_name = Column(db.VARCHAR(50))
+    profilepic = deferred(Column(LONGBLOB), group='pictures')
+    profilepic_name = deferred(Column(db.VARCHAR(50)), group='pictures')
     description = Column(db.VARCHAR(255))
     member_since = Column(db.DATE, nullable=False)
     class_year = Column(db.INTEGER, index=True)

@@ -23,6 +23,9 @@ pip3 install boto3
 brew install pipenv
 pipenv --version
 
+# See the home directory for the pipenv project.
+pipenv --where
+
 # See a graph of installed dependencies
 pipenv graph
 
@@ -36,7 +39,7 @@ pipenv install flask-bcrypt
 pipenv install flask-sslify
 pipenv install coverage --dev
 
-# See all the endpoints exposed by Flask, ensure there are no syntax errors in the Python files
+# See all the endpoints exposed by Flask, ensure there are no syntax errors in the Python files.
 pipenv run flask routes
 
 ### Local Startup Commands - MacOS
@@ -49,3 +52,4 @@ pipenv install
 export FLASK_APP=app.py
 export ENV=local
 pipenv run python3 -m flask run
+pipenv run python3 -m flask test
