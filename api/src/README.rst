@@ -50,18 +50,11 @@ Files
 References
 ----------
 
-[1] `reStructuredText Documentation <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_
-
-[2] `pipenv Guide <https://realpython.com/pipenv-guide/>`_
-
-[3] `Flask Factories <http://flask.pocoo.org/docs/1.0/patterns/appfactories/>`_
-
-[4] `Flask Logging <http://flask.pocoo.org/docs/1.0/logging/>`_
-
-[5] `'pipenv install' fix for Docker <https://stackoverflow.com/a/49705601>`_
-
-[6] `After Request Callbacks <http://flask.pocoo.org/snippets/53/>`_
-
-[7] `Python Code Coverage <https://coverage.readthedocs.io/en/v4.5.x/api_coverage.html>`_
-
-[8] `@with_appcontext <https://stackoverflow.com/a/51824469>`_
+1) `reStructuredText Documentation <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_
+2) `pipenv Guide <https://realpython.com/pipenv-guide/>`_
+3) `Flask Factories <http://flask.pocoo.org/docs/1.0/patterns/appfactories/>`_
+4) `Flask Logging <http://flask.pocoo.org/docs/1.0/logging/>`_
+5) `'pipenv install' fix for Docker <https://stackoverflow.com/a/49705601>`_
+6) `After Request Callbacks <http://flask.pocoo.org/snippets/53/>`_
+7) `Python Code Coverage <https://coverage.readthedocs.io/en/v4.5.x/api_coverage.html>`_
+8) `@with_appcontext <https://stackoverflow.com/a/51824469>`_

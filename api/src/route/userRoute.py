@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
+import re
+
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
 from sqlalchemy.engine import ResultProxy
@@ -185,28 +187,44 @@ def user_post() -> Response:
     """
     user_data: dict = request.get_json()
 
-    if user_data is None:
-        response = jsonify({
+    def create_validation_error_response(message: str):
+        """
+        Reusable 400 HTTP error response for the users POST request.
+        :param message: Message sent in the response JSON's 'error' field.
+        :return: An HTTP response object.
+        """
+        error_response = jsonify({
             'self': f'/v2/users',
             'added': False,
             'user': None,
-            'error': "the request body isn't populated"
+            'error': message
         })
-        response.status_code = 400
-        return response
+        error_response.status_code = 400
+        return error_response
+
+    if user_data is None:
+        return create_validation_error_response("The request body isn't populated.")
 
     user_to_add = User(user_data)
 
     if None in [user_to_add.username, user_to_add.first, user_to_add.last, user_to_add.password,
-                user_to_add.activation_code]:
-        response = jsonify({
-            'self': f'/v2/users',
-            'added': False,
-            'user': None,
-            'error': "'username', 'first', 'last', 'password', and 'activation_code' are required fields"
-        })
-        response.status_code = 400
-        return response
+                user_to_add.activation_code, user_to_add.email]:
+        return create_validation_error_response(
+            "'username', 'first', 'last', 'email', 'password', and 'activation_code' are required fields"
+        )
+
+    if len(user_to_add.password) < 6:
+        return create_validation_error_response("Password must contain at least 6 characters.")
+
+    username_pattern = re.compile('^[a-zA-Z0-9]+$')
+
+    if not username_pattern.match(user_to_add.username):
+        return create_validation_error_response("Username can only contain Roman characters and numbers.")
+
+    email_pattern = re.compile('^(([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\\.([a-zA-Z])+([a-zA-Z])+)?$')
+
+    if not email_pattern.match(user_to_add.email):
+        return create_validation_error_response("The email address is invalid.")
 
     # Passwords must be hashed before stored in the database
     password = user_to_add.password
@@ -235,7 +253,7 @@ def user_post() -> Response:
                 'self': '/v2/users',
                 'added': False,
                 'user': None,
-                'error': 'an unexpected error occurred creating the user'
+                'error': 'An unexpected error occurred creating the user.'
             })
             response.status_code = 500
             return response
@@ -254,7 +272,7 @@ def user_post() -> Response:
             'self': '/v2/users',
             'added': False,
             'user': None,
-            'error': 'the activation code does not exist'
+            'error': 'The activation code is invalid or expired.'
         })
         response.status_code = 400
         return response
@@ -333,7 +351,7 @@ def user_by_username_put(username) -> Response:
 
             updated_user_dict: dict = UserData(updated_user).__dict__
 
-            if updated_user_dict['profilepic'] is not None:
+            if updated_user_dict.get('profilepic') is not None:
                 try:
                     updated_user_dict['profilepic'] = updated_user_dict['profilepic'].decode('utf-8')
                 except AttributeError:
@@ -473,7 +491,7 @@ def user_snapshot_by_username_get(username) -> Response:
         if user_dict.get('last_signin') is not None:
             user_dict['last_signin'] = str(user_dict['last_signin'])
 
-        if user_dict['profilepic'] is not None:
+        if user_dict.get('profilepic') is not None:
             try:
                 user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
             except AttributeError:

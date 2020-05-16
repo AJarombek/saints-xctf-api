@@ -55,10 +55,8 @@ class TestUserRoute(TestSuite):
         self.assertTrue(user.get('salt') is None or type(user.get('salt')) is str)
         self.assertIn('password', user)
         self.assertIsInstance(user.get('password'), str)
-        self.assertIn('profilepic', user)
-        self.assertTrue(user.get('profilepic') is None or type(user.get('profilepic')) is str)
-        self.assertIn('profilepic_name', user)
-        self.assertTrue(user.get('profilepic_name') is None or type(user.get('profilepic_name')) is str)
+        self.assertNotIn('profilepic', user)
+        self.assertNotIn('profilepic_name', user)
         self.assertIn('description', user)
         self.assertTrue(user.get('description') is None or type(user.get('description')) is str)
         self.assertIn('member_since', user)
@@ -93,7 +91,7 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/users')
         self.assertEqual(response_json.get('added'), False)
         self.assertIsNone(response_json.get('user'))
-        self.assertEqual(response_json.get('error'), "the request body isn't populated")
+        self.assertEqual(response_json.get('error'), "The request body isn't populated.")
 
     def test_user_post_route_400_missing_required_field(self) -> None:
         """
@@ -103,6 +101,7 @@ class TestUserRoute(TestSuite):
         # Missing the required 'password' field
         request_body = json.dumps({
             "username": "andy",
+            "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
             "member_since": "2019-12-12",
@@ -122,7 +121,7 @@ class TestUserRoute(TestSuite):
         self.assertIsNone(response_json.get('user'))
         self.assertEqual(
             response_json.get('error'),
-            "'username', 'first', 'last', 'password', and 'activation_code' are required fields"
+            "'username', 'first', 'last', 'email', 'password', and 'activation_code' are required fields"
         )
 
     def test_user_post_route_400_invalid_activation_code(self) -> None:
@@ -131,10 +130,11 @@ class TestUserRoute(TestSuite):
         this endpoint with a valid user object but an invalid activation code results in a 400 error.
         """
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy_1')
+        self.client.delete('/v2/users/andy1')
 
         request_body = json.dumps({
-            "username": "andy_1",
+            "username": "andy1",
+            "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
             "password": "B0unD2",
@@ -155,7 +155,7 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/users')
         self.assertEqual(response_json.get('added'), False)
         self.assertIsNone(response_json.get('user'))
-        self.assertEqual(response_json.get('error'), "the activation code does not exist")
+        self.assertEqual(response_json.get('error'), "The activation code is invalid or expired.")
 
     def test_user_post_route_201(self) -> None:
         """
@@ -179,10 +179,11 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'ABC123', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy_2')
+        self.client.delete('/v2/users/andy2')
 
         request_body = json.dumps({
-            "username": "andy_2",
+            "username": "andy2",
+            "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
             "password": "B0unD2",
@@ -210,8 +211,8 @@ class TestUserRoute(TestSuite):
         self.assertIn('last', user)
         self.assertIn('salt', user)
         self.assertIn('password', user)
-        self.assertIn('profilepic', user)
-        self.assertIn('profilepic_name', user)
+        self.assertNotIn('profilepic', user)
+        self.assertNotIn('profilepic_name', user)
         self.assertIn('description', user)
         self.assertIn('member_since', user)
         self.assertIn('class_year', user)
@@ -265,7 +266,7 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
         if the updated user is the same as the original user, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/users/andy_2')
+        response: Response = self.client.get('/v2/users/andy2')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('user'))
@@ -273,13 +274,13 @@ class TestUserRoute(TestSuite):
         request_body = json.dumps(response_json.get('user'))
 
         response: Response = self.client.put(
-            '/v2/users/andy_2',
+            '/v2/users/andy2',
             data=request_body,
             content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy_2')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('user'))
         self.assertEqual(
@@ -319,10 +320,8 @@ class TestUserRoute(TestSuite):
         self.assertIsNotNone(response_json.get('user'))
 
         # Confirm the fields were updated as expected.
-        self.assertIn('profilepic', response_json.get('user'))
-        self.assertEqual(response_json.get('user').get('profilepic'), None)
-        self.assertIn('profilepic_name', response_json.get('user'))
-        self.assertEqual(response_json.get('user').get('profilepic_name'), None)
+        self.assertNotIn('profilepic', response_json.get('user'))
+        self.assertNotIn('profilepic_name', response_json.get('user'))
         self.assertIn('favorite_event', response_json.get('user'))
         self.assertEqual(response_json.get('user').get('favorite_event'), '5000m, 8K')
         self.assertIn('email', response_json.get('user'))
@@ -371,10 +370,11 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy_3')
+        self.client.delete('/v2/users/andy3')
 
         request_body = json.dumps({
-            "username": "andy_3",
+            "username": "andy3",
+            "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
             "password": "password",
@@ -391,10 +391,10 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.delete(f'/v2/users/soft/{username}')
         self.assertEqual(response.status_code, 400)
 
-    def test_log_by_id_soft_delete_route_204(self) -> None:
+    def test_user_by_username_soft_delete_route_204(self) -> None:
         """
-        Test performing an HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.  This test proves that
-        soft deleting an existing non-soft deleted log will execute successfully and return a valid 204 status.
+        Test performing an HTTP DELETE request on the '/v2/users/soft/<username>' route.  This test proves that
+        soft deleting an existing non-soft deleted user will execute successfully and return a valid 204 status.
         """
         # Before trying to create the user, make sure that the activation code already exists.
         self.client.delete('/v2/activation_code/DEFGHI')
@@ -413,10 +413,11 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy_3')
+        self.client.delete('/v2/users/andy3')
 
         request_body = json.dumps({
-            "username": "andy_3",
+            "username": "andy3",
+            "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
             "password": "password",
@@ -449,10 +450,10 @@ class TestUserRoute(TestSuite):
         trying to get a snapshot about a user is successful if the user exists.
         """
         # A very important song, but not a username used on the website.
-        response: Response = self.client.get('/v2/users/snapshot/andy_2')
+        response: Response = self.client.get('/v2/users/snapshot/andy2')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy_2')
+        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy2')
         self.assertIsNotNone(response_json.get('user'))
 
         user = response_json.get('user')
@@ -468,10 +469,8 @@ class TestUserRoute(TestSuite):
         self.assertTrue(user.get('salt') is None or type(user.get('salt')) is str)
         self.assertIn('password', user)
         self.assertIsInstance(user.get('password'), str)
-        self.assertIn('profilepic', user)
-        self.assertTrue(user.get('profilepic') is None or type(user.get('profilepic')) is str)
-        self.assertIn('profilepic_name', user)
-        self.assertTrue(user.get('profilepic_name') is None or type(user.get('profilepic_name')) is str)
+        self.assertNotIn('profilepic', user)
+        self.assertNotIn('profilepic_name', user)
         self.assertIn('description', user)
         self.assertTrue(user.get('description') is None or type(user.get('description')) is str)
         self.assertIn('member_since', user)
@@ -546,13 +545,13 @@ class TestUserRoute(TestSuite):
         })
 
         response: Response = self.client.put(
-            '/v2/users/andy_2/change_password',
+            '/v2/users/andy2/change_password',
             data=request_body,
             content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/change_password')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2/change_password')
         self.assertEqual(response_json.get('password_updated'), False)
         self.assertEqual(response_json.get('forgot_password_code_deleted'), False)
         self.assertEqual(
@@ -571,13 +570,13 @@ class TestUserRoute(TestSuite):
         })
 
         response: Response = self.client.put(
-            '/v2/users/andy_2/change_password',
+            '/v2/users/andy2/change_password',
             data=request_body,
             content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/change_password')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2/change_password')
         self.assertEqual(response_json.get('password_updated'), True)
         self.assertEqual(response_json.get('forgot_password_code_deleted'), True)
 
@@ -586,10 +585,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>/update_last_login' route.  This test proves
         that calling this endpoint with the proper fields results in a 200 status code.
         """
-        response: Response = self.client.put('/v2/users/andy_2/update_last_login')
+        response: Response = self.client.put('/v2/users/andy2/update_last_login')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy_2/update_last_login')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2/update_last_login')
         self.assertEqual(response_json.get('last_login_updated'), True)
 
     def test_user_get_links_route_200(self) -> None:

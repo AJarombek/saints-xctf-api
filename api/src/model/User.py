@@ -81,9 +81,8 @@ class User(db.Model):
         :return: The user in string form.
         """
         return f'User: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}, ' \
-            f'password: {self.password}, profilepic: {self.profilepic}, profilepic_name: {self.profilepic_name}, ' \
-            f'description: {self.description}, member_since: {self.member_since}, class_year: {self.class_year}, ' \
-            f'location: {self.location}, favorite_event: {self.favorite_event}, ' \
+            f'password: {self.password}, description: {self.description}, member_since: {self.member_since}, ' \
+            f'class_year: {self.class_year}, location: {self.location}, favorite_event: {self.favorite_event}, ' \
             f'activation_code: {self.activation_code}, email: {self.email}, subscribed: {self.subscribed}, ' \
             f'last_signin: {self.last_signin}, week_start: {self.week_start}, deleted: {self.deleted}]'
 
@@ -110,7 +109,7 @@ class User(db.Model):
         :param user_2: The second user object.
         :return: True if the objects are equal, False otherwise.
         """
-        if user_1.profilepic is None:
+        if not hasattr(user_1, 'profilepic') or user_1.profilepic is None:
             self_profilepic = bytes()
         else:
             self_profilepic = user_1.profilepic
@@ -119,7 +118,7 @@ class User(db.Model):
             except AttributeError:
                 pass
 
-        if user_2.profilepic is None:
+        if not hasattr(user_2, 'profilepic') or user_2.profilepic is None:
             other_profilepic = bytes()
         else:
             other_profilepic = user_2.profilepic
@@ -128,6 +127,16 @@ class User(db.Model):
             except AttributeError:
                 pass
 
+        if not hasattr(user_1, 'profilepic_name'):
+            self_profilepic_name = None
+        else:
+            self_profilepic_name = user_1.profilepic_name
+
+        if not hasattr(user_2, 'profilepic_name'):
+            other_profilepic_name = None
+        else:
+            other_profilepic_name = user_2.profilepic_name
+
         return all([
             user_1.username == user_2.username,
             user_1.first == user_2.first,
@@ -135,7 +144,7 @@ class User(db.Model):
             user_1.salt == user_2.salt,
             user_1.password == user_2.password,
             self_profilepic == other_profilepic,
-            user_1.profilepic_name == user_2.profilepic_name,
+            self_profilepic_name == other_profilepic_name,
             user_1.description == user_2.description,
             str(user_1.member_since) == str(user_2.member_since),
             user_1.class_year == user_2.class_year,

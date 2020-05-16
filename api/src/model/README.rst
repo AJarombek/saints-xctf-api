@@ -49,3 +49,8 @@ Files
 +----------------------------+----------------------------------------------------------------------------------------------+
 | ``WeekStart.py``           | ``WeekStart`` model for the ``weekstart`` MySQL table.                                       |
 +----------------------------+----------------------------------------------------------------------------------------------+
+
+References
+----------
+
+1) `Deferred Column Loading <https://docs.sqlalchemy.org/en/13/orm/loading_columns.html#deferred-column-loading>`_
