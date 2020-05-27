@@ -4,11 +4,14 @@ Author: Andrew Jarombek
 Date: 11/5/2019
 """
 
+from typing import Optional
+
 from .ForgotPassword import ForgotPassword
 
 
 class ForgotPasswordData:
-    def __init__(self, forgot_password: ForgotPassword):
+
+    def __init__(self, forgot_password: Optional[ForgotPassword]):
         """
         Create a forgot password object without any auditing fields.
         :param forgot_password: The original Forgot Password object with auditing fields.
