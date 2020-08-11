@@ -102,6 +102,18 @@ def user_snapshot(username) -> Response:
         return user_snapshot_by_username_get(username)
 
 
+@user_route.route('/groups/<username>', methods=['GET'])
+def user_groups(username) -> Response:
+    """
+    Endpoint for retrieving a user's group memberships.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a list of group memberships
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/groups/<username> '''
+        return user_groups_by_username_get(username)
+
+
 @user_route.route('/<username>/change_password', methods=['PUT'])
 def user_change_password(username) -> Response:
     """
@@ -502,19 +514,19 @@ def user_snapshot_by_username_get(username) -> Response:
         group_list = []
 
         for group in groups:
-            grout_dict = {
+            group_dict = {
                 'group_name': group['group_name'],
                 'group_title': group['group_title'],
                 'status': group['status'],
                 'user': group['user']
             }
             newest_log: Column = GroupDao.get_newest_log_date(group['group_name'])
-            grout_dict['newest_log'] = newest_log['newest']
+            group_dict['newest_log'] = newest_log['newest']
 
             newest_message = GroupDao.get_newest_message_date(group['group_name'])
-            grout_dict['newest_message'] = newest_message['newest']
+            group_dict['newest_message'] = newest_message['newest']
 
-            group_list.append(grout_dict)
+            group_list.append(group_dict)
 
         user_dict['groups'] = group_list
 
@@ -570,18 +582,18 @@ def user_snapshot_by_username_get(username) -> Response:
         week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
 
         stats = {
-            'miles': miles['total'],
-            'milespastyear': miles_past_year['total'],
-            'milespastmonth': miles_past_month['total'],
-            'milespastweek': miles_past_week['total'],
-            'runmiles': run_miles['total'],
-            'runmilespastyear': run_miles_past_year['total'],
-            'runmilespastmonth': run_miles_past_month['total'],
-            'runmilespastweek': run_miles_past_week['total'],
-            'alltimefeel': all_time_feel['average'],
-            'yearfeel': year_feel['average'],
-            'monthfeel': month_feel['average'],
-            'weekfeel': week_feel['average']
+            'miles': float(miles['total']),
+            'milespastyear': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
+            'milespastmonth': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
+            'milespastweek': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
+            'runmiles': float(0 if run_miles['total'] is None else run_miles['total']),
+            'runmilespastyear': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
+            'runmilespastmonth': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
+            'runmilespastweek': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
+            'alltimefeel': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
+            'yearfeel': float(0 if year_feel['average'] is None else year_feel['average']),
+            'monthfeel': float(0 if month_feel['average'] is None else month_feel['average']),
+            'weekfeel': float(0 if week_feel['average'] is None else week_feel['average'])
         }
 
         user_dict['statistics'] = stats
@@ -592,6 +604,31 @@ def user_snapshot_by_username_get(username) -> Response:
         })
         response.status_code = 200
         return response
+
+
+def user_groups_by_username_get(username) -> Response:
+    """
+    Get the group memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
+    group_list = []
+
+    for group in groups:
+        group_list.append({
+            'group_name': group['group_name'],
+            'group_title': group['group_title'],
+            'status': group['status'],
+            'user': group['user']
+        })
+
+    response = jsonify({
+        'self': f'/v2/users/groups/{username}',
+        'groups': group_list
+    })
+    response.status_code = 200
+    return response
 
 
 def user_change_password_by_username_put(username) -> Response:

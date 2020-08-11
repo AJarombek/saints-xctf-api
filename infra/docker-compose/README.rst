@@ -3,6 +3,15 @@ Overview
 
 Docker compose files used to configure Dockerfiles which build the local environment.
 
+Commands
+--------
+
+.. code-block:: bash
+
+    docker-compose -f docker-compose-db-local.yml up --build
+    docker-compose -f docker-compose-api-local.yml up --build
+    docker-compose -f docker-compose-test-local.yml up --build
+
 Files
 -----
 
