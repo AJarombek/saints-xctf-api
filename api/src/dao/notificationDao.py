@@ -42,6 +42,7 @@ class NotificationDao:
             SELECT * FROM notifications 
             WHERE username=:username 
             AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
+            AND deleted IS NULL OR deleted <> 'Y'
             ORDER BY time DESC
             ''',
             {'username': username}

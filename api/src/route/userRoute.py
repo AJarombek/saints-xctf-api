@@ -114,6 +114,18 @@ def user_groups(username) -> Response:
         return user_groups_by_username_get(username)
 
 
+@user_route.route('/notifications/<username>', methods=['GET'])
+def user_notifications(username) -> Response:
+    """
+    Endpoint for retrieving a user's notifications.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a list of notifications
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/notifications/<username> '''
+        return user_notifications_by_username_get(username)
+
+
 @user_route.route('/<username>/change_password', methods=['PUT'])
 def user_change_password(username) -> Response:
     """
@@ -561,8 +573,7 @@ def user_snapshot_by_username_get(username) -> Response:
                 'time': notification['time'],
                 'link': notification['link'],
                 'viewed': notification['viewed'],
-                'description': notification['description'],
-                'deleted': notification['deleted']
+                'description': notification['description']
             })
 
         user_dict['notifications'] = notification_dicts
@@ -626,6 +637,33 @@ def user_groups_by_username_get(username) -> Response:
     response = jsonify({
         'self': f'/v2/users/groups/{username}',
         'groups': group_list
+    })
+    response.status_code = 200
+    return response
+
+
+def user_notifications_by_username_get(username) -> Response:
+    """
+    Get the notifications for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    notifications: ResultProxy = NotificationDao.get_notification_by_username(username=username)
+
+    notification_dicts = []
+    for notification in notifications:
+        notification_dicts.append({
+            'notification_id': notification['notification_id'],
+            'username': notification['username'],
+            'time': notification['time'],
+            'link': notification['link'],
+            'viewed': notification['viewed'],
+            'description': notification['description']
+        })
+
+    response = jsonify({
+        'self': f'/v2/users/notifications/{username}',
+        'notifications': notification_dicts
     })
     response.status_code = 200
     return response
@@ -742,6 +780,16 @@ def user_links_get() -> Response:
                 'link': '/v2/users/snapshot/<username>',
                 'verb': 'GET',
                 'description': 'Get a snapshot about a user and their exercise statistics with a given username.'
+            },
+            {
+                'link': '/v2/users/groups/<username>',
+                'verb': 'GET',
+                'description': 'Get a list of groups that a user with a given username is a member of.'
+            },
+            {
+                'link': '/v2/users/notifications/<username>',
+                'verb': 'GET',
+                'description': 'Get a list of notifications for a user with a given username.'
             },
             {
                 'link': '/v2/users/<username>/change_password',
