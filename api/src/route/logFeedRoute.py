@@ -51,15 +51,21 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
     :return: A response object for the GET API request.
     """
     logs: ResultProxy = None
+    count: int = 0
     limit = int(limit)
     offset = int(offset)
 
     if filter_by == 'group' or filter_by == 'groups' or filter_by == 'groupname':
         logs = LogDao.get_group_log_feed(group_name=bucket, limit=limit, offset=offset)
+        count = LogDao.get_group_log_feed_count(group_name=bucket).first()['count']
     elif filter_by == 'user' or filter_by == 'users' or filter_by == 'username':
         logs = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
+        count = LogDao.get_user_log_feed_count(username=bucket).first()['count']
     elif filter_by == 'all':
         logs = LogDao.get_log_feed(limit=limit, offset=offset)
+        count = LogDao.get_log_feed_count().first()['count']
+
+    pages = int(count - 1 / limit) + 1
 
     # Generate LogFeed API URLs
     self_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset}'
@@ -76,6 +82,7 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
             'next': None,
             'prev': prev_url,
             'logs': None,
+            'pages': 0,
             'error': 'no logs found in this feed'
         })
         response.status_code = 500
@@ -111,7 +118,8 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
             'self': self_url,
             'next': next_url,
             'prev': prev_url,
-            'logs': log_list
+            'logs': log_list,
+            'pages': pages,
         })
         response.status_code = 200
         return response

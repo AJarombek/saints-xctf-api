@@ -371,6 +371,18 @@ class LogDao:
         )
 
     @staticmethod
+    def get_log_feed_count() -> ResultProxy:
+        """
+        Calculate the number of logs in the log feed.
+        :return: The number of logs in existence.
+        """
+        return db.session.execute(
+            '''
+            SELECT COUNT(*) AS count FROM logs
+            '''
+        )
+
+    @staticmethod
     def get_user_log_feed(username: str, limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of logs by a user
@@ -387,6 +399,21 @@ class LogDao:
             LIMIT :limit OFFSET :offset
             ''',
             {'username': username, 'limit': limit, 'offset': offset}
+        )
+
+    @staticmethod
+    def get_user_log_feed_count(username: str) -> ResultProxy:
+        """
+        Calculate the number of logs in a users log collection.
+        :param username: The unique username for a user
+        :return: The number of logs in existence.
+        """
+        return db.session.execute(
+            '''
+            SELECT COUNT(*) AS count FROM logs
+            WHERE username=:username
+            ''',
+            {'username': username}
         )
 
     @staticmethod
@@ -410,6 +437,23 @@ class LogDao:
             LIMIT :limit OFFSET :offset
             ''',
             {'group_name': group_name, 'limit': limit, 'offset': offset}
+        )
+
+    @staticmethod
+    def get_group_log_feed_count(group_name: str) -> ResultProxy:
+        """
+        Calculate the number of logs in a groups log collection.
+        :param group_name: The unique name of a group
+        :return: The number of logs in existence.
+        """
+        return db.session.execute(
+            '''
+            SELECT COUNT(*) AS count FROM logs
+            INNER JOIN groupmembers ON logs.username=groupmembers.username 
+            WHERE group_name=:group_name 
+            AND status='accepted' 
+            ''',
+            {'group_name': group_name}
         )
 
     @staticmethod
