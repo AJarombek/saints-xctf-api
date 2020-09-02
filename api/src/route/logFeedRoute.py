@@ -65,7 +65,7 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
         logs = LogDao.get_log_feed(limit=limit, offset=offset)
         count = LogDao.get_log_feed_count().first()['count']
 
-    pages = int(count - 1 / limit) + 1
+    pages = int((count - 1) / limit) + 1
 
     # Generate LogFeed API URLs
     self_url = f'/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset}'

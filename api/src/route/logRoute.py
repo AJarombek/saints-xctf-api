@@ -11,6 +11,7 @@ from dao.commentDao import CommentDao
 from model.Log import Log
 from model.LogData import LogData
 from model.CommentData import CommentData
+from utils.logs import to_miles, calculate_mile_pace
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -157,16 +158,22 @@ def logs_post() -> Response:
     log_to_add: Log = Log(log_data)
 
     if None in [log_to_add.username, log_to_add.first, log_to_add.last, log_to_add.date,
-                log_to_add.type, log_to_add.feel, log_to_add.time_created]:
+                log_to_add.type, log_to_add.feel]:
         response = jsonify({
             'self': f'/v2/logs',
             'added': False,
             'log': None,
-            'error': "'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' are required fields"
+            'error': "'username', 'first', 'last', 'date', 'type', and 'feel' are required fields"
         })
         response.status_code = 400
         return response
 
+    # Compute pace and miles based on time, metric, and distance
+    if log_to_add.distance and log_to_add.metric:
+        log_to_add.miles = to_miles(log_to_add.metric, log_to_add.distance)
+        log_to_add.pace = calculate_mile_pace(log_to_add.miles, log_to_add.time)
+
+    log_to_add.time_created = datetime.now()
     log_to_add.created_date = datetime.now()
     log_to_add.created_app = 'api'
 
