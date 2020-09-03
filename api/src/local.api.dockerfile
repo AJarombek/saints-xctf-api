@@ -24,7 +24,7 @@ RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS '
 COPY . /src
 WORKDIR /src
 
-RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
+#RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
 RUN pipenv install
 

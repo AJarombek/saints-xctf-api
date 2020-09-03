@@ -6,6 +6,8 @@ Date: 6/22/2019
 
 from app import db
 from sqlalchemy import Column
+from model.Metric import Metric
+from model.Type import Type
 
 
 class Log(db.Model):
@@ -52,9 +54,9 @@ class Log(db.Model):
     name = Column(db.VARCHAR(40))
     location = Column(db.VARCHAR(50))
     date = Column(db.DATE, nullable=False, index=True)
-    type = Column(db.VARCHAR(40), db.ForeignKey('types.type'), nullable=False, index=True)
+    type = Column(db.VARCHAR(40), db.ForeignKey(Type.type), nullable=False, index=True)
     distance = Column(db.FLOAT)
-    metric = Column(db.VARCHAR(15), db.ForeignKey('metrics.metric'))
+    metric = Column(db.VARCHAR(15), db.ForeignKey(Metric.metric))
     miles = Column(db.FLOAT, index=True)
     time = Column(db.TIME, index=True)
     pace = Column(db.TIME)

@@ -47,7 +47,11 @@ def calculate_mile_pace(miles: float, time: str) -> str:
         second = match.group(1)
 
     total_seconds = (int(hour) * 60 * 60) + (int(minute) * 60) + int(second)
-    second_pace = total_seconds / miles
+
+    if miles == 0:
+        miles = 1
+
+    second_pace = int(total_seconds // miles)
 
     second_str = str(second_pace % 60)
     minute_str = str((second_pace // 60) % 60)
