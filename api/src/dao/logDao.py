@@ -545,7 +545,37 @@ class LogDao:
         :param log: Object representing an updated log.
         :return: True if the log is updated in the database, False otherwise.
         """
-        db.session.add(log)
+        db.session.execute(
+            '''
+            UPDATE logs SET 
+                name=:name, 
+                location=:location, 
+                date=:date,
+                type=:type, 
+                distance=:distance, 
+                metric=:metric,
+                time=:time,
+                miles=:miles,
+                pace=:pace,
+                feel=:feel, 
+                description=:description
+            WHERE log_id=:log_id
+            ''',
+            {
+                'name': log.name,
+                'location': log.location,
+                'date': log.date,
+                'type': log.type,
+                'distance': log.distance,
+                'metric': log.metric,
+                'time': log.time,
+                'miles': log.miles,
+                'pace': log.pace,
+                'feel': log.feel,
+                'description': log.description,
+                'log_id': log.log_id
+            }
+        )
         return BasicDao.safe_commit()
 
     @staticmethod

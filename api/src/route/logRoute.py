@@ -276,6 +276,10 @@ def log_by_id_put(log_id) -> Response:
     log_data: dict = request.get_json()
     new_log = Log(log_data)
 
+    if new_log.distance and new_log.metric:
+        new_log.miles = to_miles(new_log.metric, new_log.distance)
+        new_log.pace = calculate_mile_pace(new_log.miles, new_log.time)
+
     if old_log != new_log:
         new_log.modified_date = datetime.now()
         new_log.modified_app = 'api'
