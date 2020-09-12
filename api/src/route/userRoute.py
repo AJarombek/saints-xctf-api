@@ -5,6 +5,7 @@ Date: 6/16/2019
 """
 
 import re
+from typing import List
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
@@ -20,6 +21,7 @@ from dao.notificationDao import NotificationDao
 from dao.logDao import LogDao
 from model.Code import Code
 from model.FlairData import FlairData
+from model.Flair import Flair
 from model.User import User
 from model.UserData import UserData
 from dao.codeDao import CodeDao
@@ -124,6 +126,18 @@ def user_notifications(username) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/users/notifications/<username> '''
         return user_notifications_by_username_get(username)
+
+
+@user_route.route('/flair/<username>', methods=['GET'])
+def user_flair(username) -> Response:
+    """
+    Endpoint for retrieving a user's flair.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a list of flair objects
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/flair/<username> '''
+        return user_flair_by_username_get(username)
 
 
 @user_route.route('/<username>/change_password', methods=['PUT'])
@@ -555,7 +569,7 @@ def user_snapshot_by_username_get(username) -> Response:
 
         user_dict['forgotpassword'] = forgot_password_list
 
-        flairs: list = FlairDao.get_flair_by_username(username=username)
+        flairs: List[Flair] = FlairDao.get_flair_by_username(username=username)
         flair_dicts = []
 
         for flair in flairs:
@@ -664,6 +678,27 @@ def user_notifications_by_username_get(username) -> Response:
     response = jsonify({
         'self': f'/v2/users/notifications/{username}',
         'notifications': notification_dicts
+    })
+    response.status_code = 200
+    return response
+
+
+def user_flair_by_username_get(username) -> Response:
+    """
+    Get the flair for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    flairs: List[Flair] = FlairDao.get_flair_by_username(username=username)
+
+    flair_dicts = []
+
+    for flair in flairs:
+        flair_dicts.append(FlairData(flair).__dict__)
+
+    response = jsonify({
+        'self': f'/v2/users/flair/{username}',
+        'flair': flair_dicts
     })
     response.status_code = 200
     return response
@@ -790,6 +825,11 @@ def user_links_get() -> Response:
                 'link': '/v2/users/notifications/<username>',
                 'verb': 'GET',
                 'description': 'Get a list of notifications for a user with a given username.'
+            },
+            {
+                'link': '/v2/users/flair/<username>',
+                'verb': 'GET',
+                'description': 'Get a list of flair objects assigned to a user with a given username.'
             },
             {
                 'link': '/v2/users/<username>/change_password',
