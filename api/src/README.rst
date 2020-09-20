@@ -6,6 +6,15 @@ Overview
 
 Python Flask API source code for ``api.saintsxctf.com``.
 
+Commands
+--------
+
+.. code-block:: bash
+
+    # Build the Docker image used in production locally.
+    docker image build -t saints-xctf-api:latest -f aws.api.dockerfile .
+    docker container run --name saints-xctf-api -p 80:80 saints-xctf-api:latest
+
 Files
 -----
 
@@ -22,7 +31,9 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``utils``                   | Utility functions for AWS and MySQL.                                                         |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``app.py``                  | Entrypoint to the Flask application.                                                         |
+| ``main.py``                 | Entrypoint to the Flask application (production).                                            |
++-----------------------------+----------------------------------------------------------------------------------------------+
+| ``app.py``                  | Entrypoint to the Flask application (development).                                           |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``commands.py``             | Custom CLI commands for the Flask application.                                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
@@ -36,7 +47,9 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``setup.sh``                | Bash file with commands to setup the flask app and ``pipenv``.                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``aws.api.dockerfile``      | Dockerfile for the API in production.                                                        |
+| ``api.flask.dockerfile``    | Dockerfile for the Flask API in production.                                                  |
++-----------------------------+----------------------------------------------------------------------------------------------+
+| ``api.nginx.dockerfile``    | Dockerfile for the Nginx reverse proxy in production.                                        |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``local.api.dockerfile``    | Dockerfile for the API and MySQL dump in my local environment.                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
@@ -45,6 +58,10 @@ Files
 | ``local.test.dockerfile``   | Dockerfile for running unit tests for the API while connected to the local database.         |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``local.watch.dockerfile``  | Dockerfile for watching API source code changes.                                             |
++-----------------------------+----------------------------------------------------------------------------------------------+
+| ``nginx.conf``              | Nginx configuration file to server the Flask application in production.                      |
++-----------------------------+----------------------------------------------------------------------------------------------+
+| ``uwsgi.ini``               | uwsgi configuration for the Flask application.                                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 
 References
