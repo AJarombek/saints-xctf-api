@@ -17,6 +17,7 @@ flask-sqlalchemy = ">=2.4.0"
 flask-bcrypt = ">=0.7.1"
 pymysql = ">=0.9.3"
 coverage = ">=4.5.4"
+uwsgi = ">=2.0.19.1"
 
 [requires]
 python_version = "3.8"

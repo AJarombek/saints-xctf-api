@@ -1,0 +1,32 @@
+# Docker Compose configuration for the API.  Simulates the setup of the application in production.
+# Author: Andrew Jarombek
+# Date: 9/20/2020
+
+version: '3.7'
+services:
+  flask:
+    build:
+      context: ../../api/src/
+      dockerfile: api.flask.dockerfile
+      network: host
+    environment:
+      - ENV=prod
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
+    networks:
+      - saints-xctf-api-net
+  nginx:
+    build:
+      context: ../../api/src/
+      dockerfile: api.nginx.dockerfile
+      network: host
+    ports:
+    - 80:80
+    networks:
+      - saints-xctf-api-net
+    depends_on:
+      - flask
+
+networks:
+  saints-xctf-api-net:
+    driver: bridge

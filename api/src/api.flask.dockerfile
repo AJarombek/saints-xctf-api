@@ -2,15 +2,15 @@
 # Author: Andrew Jarombek
 # Date: 6/28/2019
 
-FROM python:3.8-alpine
+FROM python:3.8
 
 LABEL maintainer="andrew@jarombek.com" \
       version="1.0.0" \
       description="Dockerfile for the Flask SaintsXCTF API in Production"
 
-RUN apk update \
-    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
-    && pip install pipenv
+RUN apt-get update \
+    && pip install pipenv \
+    && pip install uwsgi
 
 RUN mkdir /src
 WORKDIR /src
@@ -21,7 +21,11 @@ COPY Pipfile.lock .
 RUN pipenv install --system
 
 COPY . .
-ENV ENV production
+ENV ENV prod
+
+COPY credentials .aws/
+ENV AWS_DEFAULT_REGION us-east-1
+ENV AWS_SHARED_CREDENTIALS_FILE .aws/credentials
 
 EXPOSE 5000
 CMD ["uwsgi", "--ini", "uwsgi.ini"]

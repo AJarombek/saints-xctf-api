@@ -12,6 +12,8 @@ Commands
     docker-compose -f docker-compose-api-local.yml up --build
     docker-compose -f docker-compose-test-local.yml up --build
 
+    docker-compose -f docker-compose-api.yml up --build
+
 Files
 -----
 

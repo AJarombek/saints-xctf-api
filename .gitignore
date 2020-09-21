@@ -3,3 +3,4 @@ __pycache__
 **/local-db.sql
 venv/*
 api/src/tmp/*
+api/src/credentials

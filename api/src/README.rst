@@ -11,9 +11,19 @@ Commands
 
 .. code-block:: bash
 
-    # Build the Docker image used in production locally.
-    docker image build -t saints-xctf-api:latest -f aws.api.dockerfile .
-    docker container run --name saints-xctf-api -p 80:80 saints-xctf-api:latest
+    # Build the Docker image for the flask application used in production locally.
+    docker container stop saints-xctf-api-flask
+    docker container rm saints-xctf-api-flask
+
+    docker image build -t saints-xctf-api-flask:latest -f api.flask.dockerfile .
+    docker container run --name saints-xctf-api-flask -p 5000:5000 saints-xctf-api-flask:latest
+
+    # Build the Docker image for the nginx reverse proxy used in production locally.
+    docker container stop saints-xctf-api-nginx
+    docker container rm saints-xctf-api-nginx
+
+    docker image build -t saints-xctf-api-nginx:latest -f api.nginx.dockerfile .
+    docker container run --name saints-xctf-api-nginx -p 80:80 saints-xctf-api-nginx:latest
 
 Files
 -----
@@ -75,3 +85,6 @@ References
 6) `After Request Callbacks <http://flask.pocoo.org/snippets/53/>`_
 7) `Python Code Coverage <https://coverage.readthedocs.io/en/v4.5.x/api_coverage.html>`_
 8) `@with_appcontext <https://stackoverflow.com/a/51824469>`_
+9) `Flask & Nginx Docker Config <https://medium.com/bitcraft/docker-composing-a-python-3-flask-app-line-by-line-93b721105777>`_
+10) `uWSGI HTTP Socket <https://stackoverflow.com/a/48256692>`_
+11) `uWSGI Socket <https://stackoverflow.com/a/54693460>`_
