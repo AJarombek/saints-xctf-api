@@ -9,6 +9,8 @@ Python Flask API source code for ``api.saintsxctf.com``.
 Commands
 --------
 
+**Build Dockerfiles locally**
+
 .. code-block:: bash
 
     # Build the Docker image for the flask application used in production locally.
@@ -24,6 +26,10 @@ Commands
 
     docker image build -t saints-xctf-api-nginx:latest -f api.nginx.dockerfile .
     docker container run --name saints-xctf-api-nginx -p 80:80 saints-xctf-api-nginx:latest
+
+**Build ECR Dockerfiles locally**
+
+To build the ECR dockerfiles, you must use docker compose.
 
 Files
 -----

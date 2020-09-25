@@ -1,15 +1,11 @@
-# Docker Compose configuration for the API.  Simulates the setup of the application in production.
+# Docker Compose configuration for the API using ECR images.  Simulates the setup of the application in production.
 # Author: Andrew Jarombek
-# Date: 9/20/2020
+# Date: 9/25/2020
 
 version: '3.7'
 services:
   saints-xctf-api-flask:
-    domainname: flask
-    build:
-      context: ../../api/src/
-      dockerfile: api.flask.dockerfile
-      network: host
+    image: 739088120071.dkr.ecr.us-east-1.amazonaws.com/saints-xctf-api-flask:1.0.0
     environment:
       - ENV=prod
       - AWS_DEFAULT_REGION=us-east-1
@@ -17,11 +13,7 @@ services:
     networks:
       - saints-xctf-api-net
   saints-xctf-api-nginx:
-    domainname: nginx
-    build:
-      context: ../../api/src/
-      dockerfile: api.nginx.dockerfile
-      network: host
+    image: 739088120071.dkr.ecr.us-east-1.amazonaws.com/saints-xctf-api-nginx:1.0.0
     ports:
     - 80:80
     networks:

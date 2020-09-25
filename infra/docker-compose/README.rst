@@ -8,11 +8,16 @@ Commands
 
 .. code-block:: bash
 
+    # Local Docker compose files.
     docker-compose -f docker-compose-db-local.yml up --build
     docker-compose -f docker-compose-api-local.yml up --build
     docker-compose -f docker-compose-test-local.yml up --build
 
+    # Prod/Dev simulation using local containers.
     docker-compose -f docker-compose-api.yml up --build
+
+    # Prod/Dev simulation using ECR containers.
+    docker-compose -f docker-compose-api-prod.yml up --build
 
 Files
 -----
@@ -20,7 +25,11 @@ Files
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | Filename                           | Description                                                                                  |
 +====================================+==============================================================================================+
+| ``docker-compose-api.yml``         | Docker compose file to build simulate the API in production using local containers.          |
++------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-api-local.yml``   | Docker compose file to build the Flask API locally.                                          |
++------------------------------------+----------------------------------------------------------------------------------------------+
+| ``docker-compose-api-prod.yml``    | Docker compose file to build simulate the API in production using ECR images.                |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-db-local.yml``    | Docker compose file to build a local MySQL database.                                         |
 +------------------------------------+----------------------------------------------------------------------------------------------+
