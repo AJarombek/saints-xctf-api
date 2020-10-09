@@ -5,13 +5,15 @@ Date: 6/16/2019
 """
 
 import re
+from datetime import datetime
 from typing import List
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
 from sqlalchemy.engine import ResultProxy
-from datetime import datetime
 from flaskBcrypt import flask_bcrypt
+
+from decorators import auth_required
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
@@ -30,6 +32,7 @@ user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
 
 @user_route.route('', methods=['GET', 'POST'])
+@auth_required()
 def users_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'users' to the user routes.
@@ -45,6 +48,7 @@ def users_redirect() -> Response:
 
 
 @user_route.route('/', methods=['GET', 'POST'])
+@auth_required()
 def users() -> Response:
     """
     Endpoints for searching all the users or creating a user
@@ -60,6 +64,7 @@ def users() -> Response:
 
 
 @user_route.route('/<username>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required()
 def user(username) -> Response:
     """
     Endpoints for specific users (searching, updating, or deleting)
@@ -80,6 +85,7 @@ def user(username) -> Response:
 
 
 @user_route.route('/soft/<username>', methods=['DELETE'])
+@auth_required()
 def user_soft_by_username(username) -> Response:
     """
     Endpoints for soft deleting a user.
@@ -92,6 +98,7 @@ def user_soft_by_username(username) -> Response:
 
 
 @user_route.route('/snapshot/<username>', methods=['GET'])
+@auth_required()
 def user_snapshot(username) -> Response:
     """
     Endpoint for a website snapshot for a specific user.  Provides more details than the base user route,
@@ -105,6 +112,7 @@ def user_snapshot(username) -> Response:
 
 
 @user_route.route('/groups/<username>', methods=['GET'])
+@auth_required()
 def user_groups(username) -> Response:
     """
     Endpoint for retrieving a user's group memberships.
@@ -117,6 +125,7 @@ def user_groups(username) -> Response:
 
 
 @user_route.route('/notifications/<username>', methods=['GET'])
+@auth_required()
 def user_notifications(username) -> Response:
     """
     Endpoint for retrieving a user's notifications.
@@ -129,6 +138,7 @@ def user_notifications(username) -> Response:
 
 
 @user_route.route('/flair/<username>', methods=['GET'])
+@auth_required()
 def user_flair(username) -> Response:
     """
     Endpoint for retrieving a user's flair.
@@ -141,6 +151,7 @@ def user_flair(username) -> Response:
 
 
 @user_route.route('/<username>/change_password', methods=['PUT'])
+@auth_required()
 def user_change_password(username) -> Response:
     """
     Endpoint for changing a users password.
@@ -153,6 +164,7 @@ def user_change_password(username) -> Response:
 
 
 @user_route.route('/<username>/update_last_login', methods=['PUT'])
+@auth_required()
 def user_update_last_login(username) -> Response:
     """
     Update the date of a users previous sign in.

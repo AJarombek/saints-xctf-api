@@ -4,10 +4,13 @@ Author: Andrew Jarombek
 Date: 7/7/2019
 """
 
+from datetime import datetime
+
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
+
+from decorators import auth_required
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy.schema import Column
-from datetime import datetime
 from model.Group import Group
 from model.GroupData import GroupData
 from dao.groupDao import GroupDao
@@ -18,6 +21,7 @@ group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
 
 
 @group_route.route('', methods=['GET'])
+@auth_required()
 def groups_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'groups' to the group routes.
@@ -29,6 +33,7 @@ def groups_redirect() -> Response:
 
 
 @group_route.route('/', methods=['GET'])
+@auth_required()
 def groups() -> Response:
     """
     Endpoints for retrieving all the groups.
@@ -40,6 +45,7 @@ def groups() -> Response:
 
 
 @group_route.route('/<group_name>', methods=['GET', 'PUT'])
+@auth_required()
 def group(group_name) -> Response:
     """
     Endpoints for retrieving a single group and updating an existing group.
@@ -56,6 +62,7 @@ def group(group_name) -> Response:
 
 
 @group_route.route('/members/<group_name>', methods=['GET'])
+@auth_required()
 def group_members(group_name) -> Response:
     """
     Endpoint for retrieving the members of a group.
@@ -68,6 +75,7 @@ def group_members(group_name) -> Response:
 
 
 @group_route.route('/snapshot/<group_name>', methods=['GET'])
+@auth_required()
 def group_snapshot(group_name) -> Response:
     """
     Endpoint for retrieving a group along with statistics and leaderboards.

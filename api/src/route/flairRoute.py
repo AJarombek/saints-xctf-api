@@ -4,8 +4,11 @@ Author: Andrew Jarombek
 Date: 7/5/2019
 """
 
-from flask import Blueprint, request, jsonify, redirect, url_for, Response
 from datetime import datetime
+
+from flask import Blueprint, request, jsonify, redirect, url_for, Response
+
+from decorators import auth_required
 from dao.flairDao import FlairDao
 from model.Flair import Flair
 from model.FlairData import FlairData
@@ -14,6 +17,7 @@ flair_route = Blueprint('flair_route', __name__, url_prefix='/v2/flair')
 
 
 @flair_route.route('', methods=['POST'])
+@auth_required()
 def flair_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'flair' to the flair routes.
@@ -25,6 +29,7 @@ def flair_redirect() -> Response:
 
 
 @flair_route.route('/', methods=['POST'])
+@auth_required()
 def flair():
     """
     Endpoint for creating flair.

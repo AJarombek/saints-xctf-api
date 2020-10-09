@@ -7,7 +7,7 @@ services:
   saints-xctf-api-flask:
     image: 739088120071.dkr.ecr.us-east-1.amazonaws.com/saints-xctf-api-flask:1.0.0
     environment:
-      - ENV=prod
+      - ENV=${ENV}
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
     networks:

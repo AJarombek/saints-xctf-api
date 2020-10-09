@@ -4,8 +4,11 @@ Author: Andrew Jarombek
 Date: 7/18/2019
 """
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from datetime import datetime
+
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
+
+from decorators import auth_required
 from dao.messageDao import MessageDao
 from model.Message import Message
 from model.MessageData import MessageData
@@ -14,6 +17,7 @@ message_route = Blueprint('message_route', __name__, url_prefix='/v2/messages')
 
 
 @message_route.route('', methods=['GET', 'POST'])
+@auth_required()
 def messages_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'messages' to the message routes.
@@ -29,6 +33,7 @@ def messages_redirect() -> Response:
 
 
 @message_route.route('/', methods=['GET', 'POST'])
+@auth_required()
 def messages() -> Response:
     """
     Endpoints for retrieving all the group messages and creating new messages.
@@ -44,6 +49,7 @@ def messages() -> Response:
 
 
 @message_route.route('/<message_id>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required()
 def messages_with_id(message_id) -> Response:
     """
     Endpoints for retrieving a single message, editing an existing message, and deleting a message.
@@ -64,6 +70,7 @@ def messages_with_id(message_id) -> Response:
 
 
 @message_route.route('/soft/<message_id>', methods=['DELETE'])
+@auth_required()
 def message_soft_with_id(message_id) -> Response:
     """
     Endpoints for soft deleting team/group messages.

@@ -5,8 +5,11 @@ Author: Andrew Jarombek
 Date: 8/6/2019
 """
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from datetime import datetime
+
+from flask import Blueprint, request, jsonify, Response, redirect, url_for
+
+from decorators import auth_required
 from model.Notification import Notification
 from model.NotificationData import NotificationData
 from dao.notificationDao import NotificationDao
@@ -15,6 +18,7 @@ notification_route = Blueprint('notification_route', __name__, url_prefix='/v2/n
 
 
 @notification_route.route('', methods=['GET', 'POST'])
+@auth_required()
 def notifications_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'notifications' to the notification routes.
@@ -30,6 +34,7 @@ def notifications_redirect() -> Response:
 
 
 @notification_route.route('/', methods=['GET', 'POST'])
+@auth_required()
 def notifications() -> Response:
     """
     Endpoints for retrieving all the notifications and creating new notifications.
@@ -45,6 +50,7 @@ def notifications() -> Response:
 
 
 @notification_route.route('/<notification_id>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required()
 def notification_by_id(notification_id) -> Response:
     """
     Endpoints for retrieving a single notification, updating existing notifications, and deleting notifications.
@@ -65,6 +71,7 @@ def notification_by_id(notification_id) -> Response:
 
 
 @notification_route.route('/soft/<notification_id>', methods=['DELETE'])
+@auth_required()
 def notification_soft_by_id(notification_id) -> Response:
     """
     Endpoints for soft deleting user notifications.

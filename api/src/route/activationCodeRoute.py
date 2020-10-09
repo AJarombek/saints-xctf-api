@@ -6,8 +6,11 @@ Date: 8/5/2019
 """
 
 from datetime import datetime
+
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from sqlalchemy.schema import Column
+
+from decorators import auth_required
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 from model.CodeData import CodeData
@@ -16,6 +19,7 @@ activation_code_route = Blueprint('activation_code_route', __name__, url_prefix=
 
 
 @activation_code_route.route('', methods=['POST'])
+@auth_required()
 def activation_code_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'activation_code' to the activation code routes.
@@ -27,6 +31,7 @@ def activation_code_redirect() -> Response:
 
 
 @activation_code_route.route('/', methods=['POST'])
+@auth_required()
 def activation_code() -> Response:
     """
     Endpoint for creating new activation codes.
@@ -38,6 +43,7 @@ def activation_code() -> Response:
 
 
 @activation_code_route.route('/<code>', methods=['GET', 'DELETE'])
+@auth_required()
 def activation_code_by_code(code) -> Response:
     """
     Endpoints for retrieving a single activation codes and deleting codes.
@@ -54,6 +60,7 @@ def activation_code_by_code(code) -> Response:
 
 
 @activation_code_route.route('/exists/<code>', methods=['GET'])
+@auth_required()
 def activation_code_exists_by_code(code) -> Response:
     """
     Endpoints determining if an activation code exists.
@@ -66,6 +73,7 @@ def activation_code_exists_by_code(code) -> Response:
 
 
 @activation_code_route.route('/soft/<code>', methods=['DELETE'])
+@auth_required()
 def activation_code_soft_by_code(code) -> Response:
     """
     Endpoints for soft deleting activation codes.

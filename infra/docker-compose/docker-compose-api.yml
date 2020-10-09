@@ -11,7 +11,7 @@ services:
       dockerfile: api.flask.dockerfile
       network: host
     environment:
-      - ENV=prod
+      - ENV=${ENV}
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
     networks:

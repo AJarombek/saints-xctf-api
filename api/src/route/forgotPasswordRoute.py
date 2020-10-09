@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify, Response
 from sqlalchemy.engine import ResultProxy
+
+from decorators import auth_required
 from utils.codes import generate_code
 from dao.forgotPasswordDao import ForgotPasswordDao
 from dao.userDao import UserDao
@@ -20,6 +22,7 @@ forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix=
 
 
 @forgot_password_route.route('/<username>', methods=['GET', 'POST'])
+@auth_required()
 def forgot_password(username) -> Response:
     """
     Endpoints for retrieving or creating a forgot password code

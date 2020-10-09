@@ -6,6 +6,8 @@ Date: 7/10/2019
 
 from flask import Blueprint, request, jsonify, Response
 from sqlalchemy.engine import ResultProxy
+
+from decorators import auth_required
 from model.CommentData import CommentData
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
@@ -14,6 +16,7 @@ log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/log_feed'
 
 
 @log_feed_route.route('/<filter_by>/<bucket>/<limit>/<offset>', methods=['GET'])
+@auth_required()
 def log_feed(filter_by, bucket, limit, offset):
     """
     Endpoints for retrieving exercise logs based on filters.

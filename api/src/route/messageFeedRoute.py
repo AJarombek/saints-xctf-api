@@ -6,12 +6,15 @@ Date: 7/27/2019
 
 from flask import Blueprint, request, jsonify, Response
 from sqlalchemy.engine import ResultProxy
+
+from decorators import auth_required
 from dao.messageDao import MessageDao
 
 message_feed_route = Blueprint('message_feed_route', __name__, url_prefix='/v2/message_feed')
 
 
 @message_feed_route.route('/<filter_by>/<bucket>/<limit>/<offset>', methods=['GET'])
+@auth_required()
 def message_feed(filter_by, bucket, limit, offset):
     """
     Endpoints for retrieving group messages based on filters.

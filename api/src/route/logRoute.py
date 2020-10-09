@@ -5,7 +5,10 @@ Date: 7/6/2019
 """
 
 from datetime import datetime
+
 from flask import Blueprint, request, jsonify, redirect, url_for, Response
+
+from decorators import auth_required
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 from model.Log import Log
@@ -17,6 +20,7 @@ log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
 
 @log_route.route('', methods=['GET', 'POST'])
+@auth_required()
 def logs_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'logs' to the log routes.
@@ -32,6 +36,7 @@ def logs_redirect() -> Response:
 
 
 @log_route.route('/', methods=['GET', 'POST'])
+@auth_required()
 def logs():
     """
     Endpoints for retrieving all the logs and creating new logs.
@@ -47,6 +52,7 @@ def logs():
 
 
 @log_route.route('/<log_id>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required()
 def logs_with_id(log_id):
     """
     Endpoints for retrieving a single log, editing an existing log, and deleting a log.
@@ -67,6 +73,7 @@ def logs_with_id(log_id):
 
 
 @log_route.route('/soft/<log_id>', methods=['DELETE'])
+@auth_required()
 def log_soft_with_id(log_id) -> Response:
     """
     Endpoints for soft deleting exercise logs.

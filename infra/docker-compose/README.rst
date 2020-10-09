@@ -14,10 +14,12 @@ Commands
     docker-compose -f docker-compose-test-local.yml up --build
 
     # Prod/Dev simulation using local containers.
-    docker-compose -f docker-compose-api.yml up --build
+    docker-compose -f docker-compose-api.yml up --build --env-file .env
+    docker-compose -f docker-compose-api.yml up --build --env-file .env.dev
 
     # Prod/Dev simulation using ECR containers.
-    docker-compose -f docker-compose-api-prod.yml up --build
+    docker-compose -f docker-compose-api-prod.yml up --build --env-file .env
+    docker-compose -f docker-compose-api-prod.yml up --build --env-file .env.dev
 
 Files
 -----

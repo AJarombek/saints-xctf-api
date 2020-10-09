@@ -5,7 +5,10 @@ Date: 7/12/2019
 """
 
 from datetime import datetime
+
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
+
+from decorators import auth_required
 from dao.commentDao import CommentDao
 from model.Comment import Comment
 from model.CommentData import CommentData
@@ -14,6 +17,7 @@ comment_route = Blueprint('comment_route', __name__, url_prefix='/v2/comments')
 
 
 @comment_route.route('', methods=['GET', 'POST'])
+@auth_required()
 def comments_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'comments' to the comment routes.
@@ -29,6 +33,7 @@ def comments_redirect() -> Response:
 
 
 @comment_route.route('/', methods=['GET', 'POST'])
+@auth_required()
 def comments() -> Response:
     """
     Endpoints for retrieving all the comments and creating new comments.
@@ -44,6 +49,7 @@ def comments() -> Response:
 
 
 @comment_route.route('/<comment_id>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required()
 def comment_with_id(comment_id) -> Response:
     """
     Endpoints for retrieving a single comments, editing an existing comment, and deleting a comment.
@@ -64,6 +70,7 @@ def comment_with_id(comment_id) -> Response:
 
 
 @comment_route.route('/soft/<comment_id>', methods=['DELETE'])
+@auth_required()
 def comment_soft_by_code(comment_id) -> Response:
     """
     Endpoints for soft deleting comments.

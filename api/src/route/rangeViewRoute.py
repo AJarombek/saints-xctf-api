@@ -5,6 +5,8 @@ Date: 8/3/2019
 """
 
 from flask import Blueprint, request, jsonify, Response
+
+from decorators import auth_required
 from dao.logDao import LogDao
 from utils import exerciseFilters
 
@@ -12,6 +14,7 @@ range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/range
 
 
 @range_view_route.route('/<filter_by>/<bucket>/<exercise_types>/<start>/<end>', methods=['GET'])
+@auth_required()
 def range_view(filter_by, bucket, exercise_types, start, end):
     """
     Endpoint for retrieving log information based on filters and a date range.

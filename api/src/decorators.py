@@ -8,7 +8,7 @@ Date: 10/7/2020
 import functools
 
 import aiohttp
-from flask import abort, current_app
+from flask import abort, current_app, request
 
 
 def auth_required():
@@ -18,12 +18,20 @@ def auth_required():
     def decorator(f):
         @functools.wraps(f)
         async def decorated_function(*args, **kwargs):
+            if 'Authorization' not in request.headers:
+                abort(401)
+
+            authorization_header: str = request.headers['Authorization']
+            token = authorization_header.replace('Bearer ', '')
+
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                     url=f"{current_app.config['AUTH_URL']}/authenticate",
-                    data={'token': ''}
+                    data={'token': token}
                 ) as response:
-                    if not response:
+                    response_body = await response.json()
+                    print(response_body)
+                    if not response_body.get('result'):
                         print('User Unauthorized')
                         abort(403)
                     else:
