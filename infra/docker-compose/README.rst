@@ -14,12 +14,12 @@ Commands
     docker-compose -f docker-compose-test-local.yml up --build
 
     # Prod/Dev simulation using local containers.
-    docker-compose -f docker-compose-api.yml up --build --env-file .env
-    docker-compose -f docker-compose-api.yml up --build --env-file .env.dev
+    docker-compose -f docker-compose-api.yml --env-file .env up --build
+    docker-compose -f docker-compose-api.yml --env-file .env.dev up --build
 
     # Prod/Dev simulation using ECR containers.
-    docker-compose -f docker-compose-api-prod.yml up --build --env-file .env
-    docker-compose -f docker-compose-api-prod.yml up --build --env-file .env.dev
+    docker-compose -f docker-compose-api-prod.yml --env-file .env up --build
+    docker-compose -f docker-compose-api-prod.yml --env-file .env.dev up --build
 
 Files
 -----
@@ -40,6 +40,10 @@ Files
 | ``docker-compose-watch-local.yml`` | Docker compose file to watch for code changes locally and refresh the API.                   |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``exec.sh``                        | Bash commands for executing Docker and Docker Compose.                                       |
++------------------------------------+----------------------------------------------------------------------------------------------+
+| ``.env``                           | Environment variable file for Docker Compose in the production environment.                  |
++------------------------------------+----------------------------------------------------------------------------------------------+
+| ``.env.dev``                       | Environment variable file for Docker Compose in the development environment.                 |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 
 References

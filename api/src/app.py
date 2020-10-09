@@ -62,6 +62,34 @@ def create_app(config_name) -> Flask:
     application.cli.add_command(test)
 
     # Custom Error Handling
+    @application.errorhandler(401)
+    def error_403(ex):
+        """
+        Custom error handler for when 401 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Unauthorized",
+            'exception': str(ex),
+            'contact': 'andrew@jarombek.com',
+            'api_index': '/versions'
+        }), 401
+
+    @application.errorhandler(403)
+    def error_403(ex):
+        """
+        Custom error handler for when 403 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Forbidden",
+            'exception': str(ex),
+            'contact': 'andrew@jarombek.com',
+            'api_index': '/versions'
+        }), 403
+
     @application.errorhandler(404)
     def error_404(ex):
         """
