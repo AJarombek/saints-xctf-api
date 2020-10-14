@@ -10,6 +10,7 @@ Commands
 
     # Local Docker compose files.
     docker-compose -f docker-compose-db-local.yml up --build
+    docker-compose -f docker-compose-auth-local.yml up --build
     docker-compose -f docker-compose-api-local.yml up --build
     docker-compose -f docker-compose-test-local.yml up --build
 
@@ -34,6 +35,8 @@ Files
 | ``docker-compose-api-prod.yml``    | Docker compose file to build simulate the API in production using ECR images.                |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-db-local.yml``    | Docker compose file to build a local MySQL database.                                         |
++------------------------------------+----------------------------------------------------------------------------------------------+
+| ``docker-compose-auth-local.yml``  | Docker compose file for a mocked implementation of the SaintsXCTF Auth API.                  |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-test-local.yml``  | Docker compose file to run the unit tests with a database connection.                        |
 +------------------------------------+----------------------------------------------------------------------------------------------+

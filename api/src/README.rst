@@ -75,8 +75,6 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``local.test.dockerfile``   | Dockerfile for running unit tests for the API while connected to the local database.         |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``local.watch.dockerfile``  | Dockerfile for watching API source code changes.                                             |
-+-----------------------------+----------------------------------------------------------------------------------------------+
 | ``nginx.conf``              | Nginx configuration file to server the Flask application in production.                      |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``uwsgi.ini``               | uwsgi configuration for the Flask application.                                               |

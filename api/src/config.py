@@ -7,24 +7,28 @@ Date: 6/23/2019
 
 class LocalConfig:
     ENV = 'local'
-    BASE_URL = 'localhost:8080'
     AUTH_URL = 'https://dev.auth.saintsxctf.com'
+
+
+class TestConfig:
+    ENV = 'test'
+    # AUTH_URL = 'http://saints-xctf-auth'
+    AUTH_URL = 'http://localhost:5001'
 
 
 class DevelopmentConfig:
     ENV = 'dev'
-    BASE_URL = 'https://dev.api.saintsxctf.com'
     AUTH_URL = 'https://dev.auth.saintsxctf.com'
 
 
 class ProductionConfig:
     ENV = 'prod'
-    BASE_URL = 'https://api.saintsxctf.com'
     AUTH_URL = 'https://auth.saintsxctf.com'
 
 
 config = {
     'local': LocalConfig,
+    'test': TestConfig,
     'development': DevelopmentConfig,
     'production': ProductionConfig
 }

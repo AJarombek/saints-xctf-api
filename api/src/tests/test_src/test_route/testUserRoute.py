@@ -17,7 +17,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/users' route. This route is redirected to
         '/v2/users/' by default.
         """
-        response: Response = self.client.get('/v2/users')
+        response: Response = self.client.get(
+            '/v2/users',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/users/', headers.get('Location'))
@@ -27,7 +30,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/users' route. This route is redirected to
         '/v2/users/' by default.
         """
-        response: Response = self.client.post('/v2/users')
+        response: Response = self.client.post(
+            '/v2/users',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/users/', headers.get('Location'))
@@ -37,7 +43,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/users/' route.  This test proves that the endpoint
         returns a list of users.
         """
-        response: Response = self.client.get('/v2/users/')
+        response: Response = self.client.get(
+            '/v2/users/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users')
@@ -85,7 +94,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/users/' route.  This test proves that calling this
         endpoint with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/users/')
+        response: Response = self.client.post(
+            '/v2/users/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/users')
@@ -112,7 +124,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/users/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -130,7 +143,10 @@ class TestUserRoute(TestSuite):
         this endpoint with a valid user object but an invalid activation code results in a 400 error.
         """
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy1')
+        self.client.delete(
+            '/v2/users/andy1',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({
             "username": "andy1",
@@ -148,7 +164,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/users/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -163,13 +180,17 @@ class TestUserRoute(TestSuite):
         this endpoint with a valid request JSON results in a 200 success code and a new user object.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete('/v2/activation_code/ABC123')
+        self.client.delete(
+            '/v2/activation_code/ABC123',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({'activation_code': 'ABC123'})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -179,7 +200,10 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'ABC123', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy2')
+        self.client.delete(
+            '/v2/users/andy2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({
             "username": "andy2",
@@ -197,7 +221,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/users/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
@@ -230,7 +255,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/users/<username>' route.  This test proves
         that trying to retrieve a user with a username that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/users/invalid_username')
+        response: Response = self.client.get(
+            '/v2/users/invalid_username',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/users/invalid_username')
@@ -242,7 +270,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/users/<username>' route.  This test proves that
         retrieving a user with a valid username results in the user and a 200 status.
         """
-        response: Response = self.client.get('/v2/users/andy')
+        response: Response = self.client.get(
+            '/v2/users/andy',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/andy')
@@ -253,7 +284,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
         trying to update a user that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/users/invalid_username')
+        response: Response = self.client.put(
+            '/v2/users/invalid_username',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/users/invalid_username')
@@ -266,7 +300,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
         if the updated user is the same as the original user, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/users/andy2')
+        response: Response = self.client.get(
+            '/v2/users/andy2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('user'))
@@ -276,7 +313,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy2',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -311,7 +349,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -332,7 +371,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/users/<username>' route.  This test proves
         that the endpoint should return a 204 success status, no matter if the user existed or not.
         """
-        response: Response = self.client.delete('/v2/users/invalid_user')
+        response: Response = self.client.delete(
+            '/v2/users/invalid_user',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
     def test_user_by_username_soft_delete_route_400_no_existing(self) -> None:
@@ -341,7 +383,10 @@ class TestUserRoute(TestSuite):
         proves that if the user doesn't exist, a 400 error is returned.
         """
         # Ensure that the user was already deleted before testing the DELETE endpoint
-        self.client.delete('/v2/users/invalid_user')
+        self.client.delete(
+            '/v2/users/invalid_user',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         response: Response = self.client.delete('/v2/users/soft/invalid_user')
         response_json: dict = response.get_json()
@@ -354,13 +399,17 @@ class TestUserRoute(TestSuite):
         proves that if the user was already soft deleted, a 400 error is returned.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete('/v2/activation_code/DEFGHI')
+        self.client.delete(
+            '/v2/activation_code/DEFGHI',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({'activation_code': 'DEFGHI'})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -370,7 +419,10 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy3')
+        self.client.delete(
+            '/v2/users/andy3',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({
             "username": "andy3",
@@ -381,14 +433,25 @@ class TestUserRoute(TestSuite):
             "activation_code": "DEFGHI"
         })
 
-        response: Response = self.client.post('/v2/users/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/users/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         username = response_json.get('user').get('username')
 
-        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        response: Response = self.client.delete(
+            f'/v2/users/soft/{username}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        response: Response = self.client.delete(
+            f'/v2/users/soft/{username}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_user_by_username_soft_delete_route_204(self) -> None:
@@ -397,13 +460,17 @@ class TestUserRoute(TestSuite):
         soft deleting an existing non-soft deleted user will execute successfully and return a valid 204 status.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete('/v2/activation_code/DEFGHI')
+        self.client.delete(
+            '/v2/activation_code/DEFGHI',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({'activation_code': 'DEFGHI'})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -413,7 +480,10 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
 
         # Delete the user to void a duplicate entry constraint error.
-        self.client.delete('/v2/users/andy3')
+        self.client.delete(
+            '/v2/users/andy3',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
         request_body = json.dumps({
             "username": "andy3",
@@ -424,11 +494,19 @@ class TestUserRoute(TestSuite):
             "activation_code": "DEFGHI"
         })
 
-        response: Response = self.client.post('/v2/users/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/users/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         username = response_json.get('user').get('username')
 
-        response: Response = self.client.delete(f'/v2/users/soft/{username}')
+        response: Response = self.client.delete(
+            f'/v2/users/soft/{username}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
     def test_user_snapshot_by_username_get_route_400_no_existing(self) -> None:
@@ -437,7 +515,10 @@ class TestUserRoute(TestSuite):
         trying to get a snapshot about a user that doesn't exist results in a 400 error.
         """
         # A very important song, but not a username used on the website.
-        response: Response = self.client.get('/v2/users/snapshot/bound2')
+        response: Response = self.client.get(
+            '/v2/users/snapshot/bound2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/users/snapshot/bound2')
@@ -450,7 +531,10 @@ class TestUserRoute(TestSuite):
         trying to get a snapshot about a user is successful if the user exists.
         """
         # A very important song, but not a username used on the website.
-        response: Response = self.client.get('/v2/users/snapshot/andy2')
+        response: Response = self.client.get(
+            '/v2/users/snapshot/andy2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy2')
@@ -547,7 +631,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -572,7 +657,8 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -585,7 +671,10 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>/update_last_login' route.  This test proves
         that calling this endpoint with the proper fields results in a 200 status code.
         """
-        response: Response = self.client.put('/v2/users/andy2/update_last_login')
+        response: Response = self.client.put(
+            '/v2/users/andy2/update_last_login',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/andy2/update_last_login')

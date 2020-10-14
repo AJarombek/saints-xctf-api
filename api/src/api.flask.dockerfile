@@ -27,5 +27,7 @@ COPY credentials .aws/
 ENV AWS_DEFAULT_REGION us-east-1
 ENV AWS_SHARED_CREDENTIALS_FILE .aws/credentials
 
+STOPSIGNAL SIGTERM
 EXPOSE 5000
+
 CMD ["uwsgi", "--ini", "uwsgi.ini"]

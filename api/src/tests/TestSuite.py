@@ -16,7 +16,7 @@ class TestSuite(unittest.TestCase):
         """
         Set up logic for the test suite.  Invoked before unit tests are run.
         """
-        self.app = create_app('local')
+        self.app = create_app('test')
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client: FlaskClient = self.app.test_client()

@@ -19,6 +19,6 @@ WORKDIR /src
 RUN pipenv install
 
 ENV FLASK_APP app.py
-ENV ENV local
+ENV ENV test
 
 ENTRYPOINT ["pipenv", "run", "flask", "test"]
