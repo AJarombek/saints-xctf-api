@@ -13,7 +13,7 @@ class LocalConfig:
 class TestConfig:
     ENV = 'test'
     # AUTH_URL = 'http://saints-xctf-auth'
-    AUTH_URL = 'http://localhost:5001'
+    AUTH_URL = 'http://saints-xctf-auth:5000'
 
 
 class DevelopmentConfig:

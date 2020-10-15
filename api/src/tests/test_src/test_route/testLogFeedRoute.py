@@ -15,7 +15,10 @@ class TestLogFeedRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/log_feed/' route.  This test proves that the endpoint returns
         a 500 error code if there are no logs that match the query.
         """
-        response: Response = self.client.get('/v2/log_feed/username/invalid_user/10/0')
+        response: Response = self.client.get(
+            '/v2/log_feed/username/invalid_user/10/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/log_feed/username/invalid_user/10/0')
@@ -30,7 +33,10 @@ class TestLogFeedRoute(TestSuite):
         a 500 error code if there are no logs that match the query.  If the offset is high enough, the 'prev' JSON
         property will still be populated.
         """
-        response: Response = self.client.get('/v2/log_feed/username/invalid_user/10/10')
+        response: Response = self.client.get(
+            '/v2/log_feed/username/invalid_user/10/10',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/log_feed/username/invalid_user/10/10')
@@ -44,7 +50,10 @@ class TestLogFeedRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/log_feed/' route.  This test proves that the endpoint returns
         a list of exercise logs that match the user query.
         """
-        response: Response = self.client.get('/v2/log_feed/username/andy/25/100')
+        response: Response = self.client.get(
+            '/v2/log_feed/username/andy/25/100',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/log_feed/username/andy/25/100')
@@ -57,7 +66,10 @@ class TestLogFeedRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/log_feed/' route.  This test proves that the endpoint returns
         a list of exercise logs that match the user query.
         """
-        response: Response = self.client.get('/v2/log_feed/group/mensxc/20/80')
+        response: Response = self.client.get(
+            '/v2/log_feed/group/mensxc/20/80',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/log_feed/group/mensxc/20/80')

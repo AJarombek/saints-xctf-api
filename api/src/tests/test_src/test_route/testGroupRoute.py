@@ -18,7 +18,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups' route. This route is redirected to
         '/v2/groups/' by default.
         """
-        response: Response = self.client.get('/v2/groups')
+        response: Response = self.client.get('/v2/groups', headers={'Authorization': 'Bearer j.w.t'})
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/groups/', headers.get('Location'))
@@ -28,7 +28,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/' route.  This test proves that the endpoint returns
         a list of groups.
         """
-        response: Response = self.client.get('/v2/groups/')
+        response: Response = self.client.get('/v2/groups/', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups')
@@ -39,7 +39,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/<group_name>' route.  This test proves that trying to
         retrieve a group with a name that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/invalid_group_name')
+        response: Response = self.client.get('/v2/groups/invalid_group_name', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/invalid_group_name')
@@ -51,7 +51,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/<group_name>' route.  This test proves that retrieving
         a group with a valid name results in the group and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/wmenstf')
+        response: Response = self.client.get('/v2/groups/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/wmenstf')
@@ -62,7 +62,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/groups/<group_name>' route.  This test proves that trying to
         update a group that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/groups/invalid_group_name')
+        response: Response = self.client.put('/v2/groups/invalid_group_name', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/invalid_group_name')
@@ -75,7 +75,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/groups/<group_name>' route.  This test proves that if the
         updated group is the same as the original group, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/groups/wmenstf')
+        response: Response = self.client.get('/v2/groups/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('group'))
@@ -85,7 +85,8 @@ class TestGroupRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/groups/wmenstf',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -116,7 +117,8 @@ class TestGroupRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/groups/alumni',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -129,7 +131,10 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/members/<group_name>' route.  This test proves that
         trying to retrieve group members from a group with a group name that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/members/invalid_group_name')
+        response: Response = self.client.get(
+            '/v2/groups/members/invalid_group_name',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/members/invalid_group_name')
@@ -142,7 +147,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/members/<group_name>' route.  This test proves that
         retrieving group members from a group with a valid group name results in the group and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/members/wmenstf')
+        response: Response = self.client.get('/v2/groups/members/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/members/wmenstf')
@@ -162,7 +167,10 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.  This test proves that
         trying to retrieve a snapshot about a group with a group name that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/snapshot/invalid_group_name')
+        response: Response = self.client.get(
+            '/v2/groups/snapshot/invalid_group_name',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/snapshot/invalid_group_name')
@@ -175,7 +183,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.  This test proves that
         retrieving a snapshot about a group with a valid group name results in the group and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/snapshot/wmenstf')
+        response: Response = self.client.get('/v2/groups/snapshot/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/snapshot/wmenstf')

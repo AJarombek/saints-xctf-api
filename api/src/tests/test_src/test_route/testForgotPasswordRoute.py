@@ -17,7 +17,7 @@ class TestForgotPasswordRoute(TestSuite):
         trying to retrieve a forgot password code for a user that doesn't exist results in a successful HTTP 200 code
         with an empty list returned.
         """
-        response: Response = self.client.get('/v2/forgot_password/fake_user')
+        response: Response = self.client.get('/v2/forgot_password/fake_user', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
@@ -30,9 +30,9 @@ class TestForgotPasswordRoute(TestSuite):
         or more forgot password codes and a successful HTTP 200 code.
         """
         # Ensure that at least one forgot password code exists for this user
-        self.client.post('/v2/forgot_password/andy')
+        self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.get('/v2/forgot_password/andy')
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
@@ -43,7 +43,10 @@ class TestForgotPasswordRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
         calling this endpoint with a invalid username results in a 500 error code.
         """
-        response: Response = self.client.post('/v2/forgot_password/fake_user')
+        response: Response = self.client.post(
+            '/v2/forgot_password/fake_user',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
@@ -55,7 +58,7 @@ class TestForgotPasswordRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
         calling this endpoint with a valid username results in a new forgot password code being created.
         """
-        response: Response = self.client.post('/v2/forgot_password/andy')
+        response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')

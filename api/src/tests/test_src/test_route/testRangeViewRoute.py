@@ -15,7 +15,10 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a 500 error code if there is no data that matches the query.
         """
-        response: Response = self.client.get('/v2/range_view/groups/invalid_group/r/2019-11-25/2020-01-05')
+        response: Response = self.client.get(
+            '/v2/range_view/groups/invalid_group/r/2019-11-25/2020-01-05',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/range_view/groups/invalid_group/r/2019-11-25/2020-01-05')
@@ -27,7 +30,10 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a 500 error code if there is no data that matches the query.
         """
-        response: Response = self.client.get('/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05')
+        response: Response = self.client.get(
+            '/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05')
@@ -39,7 +45,10 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a 500 error code if there is no data that matches the query.
         """
-        response: Response = self.client.get('/v2/range_view/all/_/rbso/2010-11-25/2011-01-05')
+        response: Response = self.client.get(
+            '/v2/range_view/all/_/rbso/2010-11-25/2011-01-05',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response_json.get('self'), '/v2/range_view/all/_/rbso/2010-11-25/2011-01-05')
@@ -51,7 +60,10 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a list of data that matches the user query.
         """
-        response: Response = self.client.get('/v2/range_view/users/andy/r/2016-12-01/2016-12-31')
+        response: Response = self.client.get(
+            '/v2/range_view/users/andy/r/2016-12-01/2016-12-31',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
 

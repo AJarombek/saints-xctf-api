@@ -17,7 +17,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/comments' route. This route is redirected to
         '/v2/comments/' by default.
         """
-        response: Response = self.client.get('/v2/comments')
+        response: Response = self.client.get('/v2/comments', headers={'Authorization': 'Bearer j.w.t'})
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/comments/', headers.get('Location'))
@@ -27,7 +27,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/comments' route. This route is redirected to
         '/v2/comments/' by default.
         """
-        response: Response = self.client.post('/v2/comments')
+        response: Response = self.client.post('/v2/comments', headers={'Authorization': 'Bearer j.w.t'})
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/comments/', headers.get('Location'))
@@ -37,7 +37,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/comments/' route.  This test proves that the endpoint returns
         a list of comments.
         """
-        response: Response = self.client.get('/v2/comments/')
+        response: Response = self.client.get('/v2/comments/', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/comments')
@@ -48,7 +48,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/comments/' route.  This test proves that calling this endpoint
         with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/comments/')
+        response: Response = self.client.post('/v2/comments/', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/comments')
@@ -66,7 +66,8 @@ class TestCommentRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/comments/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -95,7 +96,8 @@ class TestCommentRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/comments/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -108,7 +110,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/comments/<comment_id>' route.  This test proves that trying to
         retrieve a comment with an ID that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/comments/0')
+        response: Response = self.client.get('/v2/comments/0', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/comments/0')
@@ -121,7 +123,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/comments/<comment_id>' route.  This test proves that retrieving
         a comment with a valid ID results in the comment and a 200 status.
         """
-        response: Response = self.client.get('/v2/comments/1')
+        response: Response = self.client.get('/v2/comments/1', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/comments/1')
@@ -133,7 +135,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that trying to
         update a comment that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/comments/0')
+        response: Response = self.client.put('/v2/comments/0', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/comments/0')
@@ -146,7 +148,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that if the
         updated comment is the same as the original comment, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/comments/1')
+        response: Response = self.client.get('/v2/comments/1', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('comment'))
@@ -156,7 +158,8 @@ class TestCommentRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/comments/1',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -188,7 +191,8 @@ class TestCommentRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/comments/1',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -201,7 +205,7 @@ class TestCommentRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
         endpoint should return a 204 success status, no matter if the code existed or not.
         """
-        response: Response = self.client.delete('/v2/comments/0')
+        response: Response = self.client.delete('/v2/comments/0', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
 
     def test_comment_with_id_soft_delete_route_204(self) -> None:
@@ -219,11 +223,16 @@ class TestCommentRoute(TestSuite):
             "content": f"Comment to be soft deleted",
             "deleted": None
         })
-        response: Response = self.client.post('/v2/comments/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/comments/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         comment_id = response_json.get('comment').get('comment_id')
 
-        response = self.client.delete(f'/v2/comments/soft/{comment_id}')
+        response = self.client.delete(f'/v2/comments/soft/{comment_id}', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
 
     def test_comment_with_id_soft_delete_route_400_no_existing(self) -> None:
@@ -232,9 +241,9 @@ class TestCommentRoute(TestSuite):
         the comment doesn't exist, a 400 error is returned.
         """
         # Ensure that the comment was already deleted before testing the DELETE endpoint
-        self.client.delete('/v2/comments/0')
+        self.client.delete('/v2/comments/0', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.delete('/v2/comments/soft/0')
+        response: Response = self.client.delete('/v2/comments/soft/0', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
@@ -255,9 +264,14 @@ class TestCommentRoute(TestSuite):
             "content": f"First Comment! (Edited {datetime.now()})",
             "deleted": True
         })
-        self.client.put('/v2/comments/1', data=request_body, content_type='application/json')
+        self.client.put(
+            '/v2/comments/1',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
-        response: Response = self.client.delete('/v2/comments/soft/1')
+        response: Response = self.client.delete('/v2/comments/soft/1', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))

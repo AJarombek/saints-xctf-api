@@ -16,7 +16,7 @@ class TestFlairRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/flair' route. This route is redirected to
         '/v2/flair/' by default.
         """
-        response: Response = self.client.post('/v2/flair')
+        response: Response = self.client.post('/v2/flair', headers={'Authorization': 'Bearer j.w.t'})
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/flair/', headers.get('Location'))
@@ -26,7 +26,7 @@ class TestFlairRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/flair/' route.  This test proves that calling this endpoint
         with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/flair/')
+        response: Response = self.client.post('/v2/flair/', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/flair')
@@ -44,7 +44,8 @@ class TestFlairRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/flair/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -69,7 +70,8 @@ class TestFlairRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/flair/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)

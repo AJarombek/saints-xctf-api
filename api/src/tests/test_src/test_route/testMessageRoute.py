@@ -17,7 +17,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/messages' route. This route is redirected to
         '/v2/messages/' by default.
         """
-        response: Response = self.client.get('/v2/messages')
+        response: Response = self.client.get(
+            '/v2/messages',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/messages/', headers.get('Location'))
@@ -27,7 +30,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/messages' route. This route is redirected to
         '/v2/messages/' by default.
         """
-        response: Response = self.client.post('/v2/messages')
+        response: Response = self.client.post(
+            '/v2/messages',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/messages/', headers.get('Location'))
@@ -37,7 +43,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/messages/' route.  This test proves that the endpoint returns
         a list of messages.
         """
-        response: Response = self.client.get('/v2/messages/')
+        response: Response = self.client.get(
+            '/v2/messages/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/messages')
@@ -56,7 +65,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/messages/' route.  This test proves that calling this endpoint
         with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/messages/')
+        response: Response = self.client.post(
+            '/v2/messages/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/messages')
@@ -81,7 +93,8 @@ class TestMessageRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/messages/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -110,7 +123,8 @@ class TestMessageRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/messages/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -131,7 +145,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/messages/<message_id>' route.  This test proves that trying to
         retrieve a message with an ID that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/messages/0')
+        response: Response = self.client.get(
+            '/v2/messages/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/messages/0')
@@ -143,7 +160,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/messages/<message_id>' route.  This test proves that retrieving
         a message with a valid ID results in the message and a 200 status.
         """
-        response: Response = self.client.get('/v2/messages/2')
+        response: Response = self.client.get(
+            '/v2/messages/2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/messages/2')
@@ -154,7 +174,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/messages/<message_id>' route.  This test proves that trying to
         update a message that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/messages/0')
+        response: Response = self.client.put(
+            '/v2/messages/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/messages/0')
@@ -167,7 +190,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/messages/<message_id>' route.  This test proves that if the
         updated message is the same as the original message, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/messages/2')
+        response: Response = self.client.get(
+            '/v2/messages/2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('message'))
@@ -177,7 +203,8 @@ class TestMessageRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/messages/2',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -204,7 +231,8 @@ class TestMessageRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/messages/2',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -217,7 +245,10 @@ class TestMessageRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/messages/<message_id>' route.  This test proves that the
         endpoint should return a 204 success status, no matter if the message existed or not.
         """
-        response: Response = self.client.delete('/v2/messages/0')
+        response: Response = self.client.delete(
+            '/v2/messages/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
     def test_message_by_id_soft_delete_route_400_no_existing(self) -> None:
@@ -226,9 +257,15 @@ class TestMessageRoute(TestSuite):
         the message doesn't exist, a 400 error is returned.
         """
         # Ensure that the message was already deleted before testing the DELETE endpoint
-        self.client.delete('/v2/messages/0')
+        self.client.delete(
+            '/v2/messages/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
-        response: Response = self.client.delete('/v2/messages/soft/0')
+        response: Response = self.client.delete(
+            '/v2/messages/soft/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
@@ -248,11 +285,18 @@ class TestMessageRoute(TestSuite):
             "time": str(datetime.now()),
             "deleted": 'Y'
         })
-        response: Response = self.client.post('/v2/messages/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/messages/',
+            data=request_body,
+            content_type='application/json'
+        )
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')
 
-        response: Response = self.client.delete(f'/v2/messages/soft/{message_id}')
+        response: Response = self.client.delete(
+            f'/v2/messages/soft/{message_id}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_message_by_id_soft_delete_route_204(self) -> None:
@@ -270,14 +314,19 @@ class TestMessageRoute(TestSuite):
             "time": str(datetime.now()),
             "deleted": None
         })
-        response: Response = self.client.post('/v2/messages/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/messages/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')
 
-        response = self.client.delete(f'/v2/messages/soft/{message_id}')
+        response = self.client.delete(f'/v2/messages/soft/{message_id}', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.get(f'/v2/messages/{message_id}')
+        response: Response = self.client.get(f'/v2/messages/{message_id}', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('message'))

@@ -17,7 +17,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/notifications' route. This route is redirected to
         '/v2/notifications/' by default.
         """
-        response: Response = self.client.get('/v2/notifications')
+        response: Response = self.client.get(
+            '/v2/notifications',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/notifications/', headers.get('Location'))
@@ -27,7 +30,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/notifications' route. This route is redirected to
         '/v2/notifications/' by default.
         """
-        response: Response = self.client.post('/v2/notifications')
+        response: Response = self.client.post(
+            '/v2/notifications',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/notifications/', headers.get('Location'))
@@ -37,7 +43,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/notifications/' route.  This test proves that the endpoint
         returns a list of notifications.
         """
-        response: Response = self.client.get('/v2/notifications/')
+        response: Response = self.client.get(
+            '/v2/notifications/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/notifications')
@@ -65,7 +74,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/notifications/' route.  This test proves that calling this
         endpoint with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/notifications/')
+        response: Response = self.client.post(
+            '/v2/notifications/',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/notifications')
@@ -88,7 +100,8 @@ class TestNotificationRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/notifications/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -115,7 +128,8 @@ class TestNotificationRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/notifications/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -135,7 +149,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/notifications/<notification_id>' route.  This test proves
         that trying to retrieve a notification with an ID that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/notifications/0')
+        response: Response = self.client.get(
+            '/v2/notifications/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/notifications/0')
@@ -147,7 +164,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/notifications/<notification_id>' route.  This test proves that
         retrieving a message with a valid ID results in the message and a 200 status.
         """
-        response: Response = self.client.get('/v2/notifications/1')
+        response: Response = self.client.get(
+            '/v2/notifications/1',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/notifications/1')
@@ -158,7 +178,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/notifications/<notification_id>' route.  This test proves that
         trying to update a notification that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/notifications/0')
+        response: Response = self.client.put(
+            '/v2/notifications/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/notifications/0')
@@ -171,7 +194,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/notifications/<notification_id>' route.  This test proves that
         if the updated notification is the same as the original notification, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/notifications/1')
+        response: Response = self.client.get(
+            '/v2/notifications/1',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('notification'))
@@ -181,7 +207,8 @@ class TestNotificationRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/notifications/1',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -211,7 +238,8 @@ class TestNotificationRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/notifications/22',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -226,7 +254,10 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
         that the endpoint should return a 204 success status, no matter if the notification existed or not.
         """
-        response: Response = self.client.delete('/v2/notifications/0')
+        response: Response = self.client.delete(
+            '/v2/notifications/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
     def test_notification_by_id_soft_delete_route_400_no_existing(self) -> None:
@@ -235,9 +266,15 @@ class TestNotificationRoute(TestSuite):
         proves that if the notification doesn't exist, a 400 error is returned.
         """
         # Ensure that the notification was already deleted before testing the DELETE endpoint
-        self.client.delete('/v2/notifications/0')
+        self.client.delete(
+            '/v2/notifications/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
-        response: Response = self.client.delete('/v2/notifications/soft/0')
+        response: Response = self.client.delete(
+            '/v2/notifications/soft/0',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
@@ -256,11 +293,19 @@ class TestNotificationRoute(TestSuite):
             "description": "I hope you have a wonderful weekend.  This is our busiest two days selling Christmas Trees",
             "deleted": 'Y'
         })
-        response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/notifications/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         notification_id = response_json.get('notification').get('notification_id')
 
-        response: Response = self.client.delete(f'/v2/notifications/soft/{notification_id}')
+        response: Response = self.client.delete(
+            f'/v2/notifications/soft/{notification_id}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 400)
 
     def test_notification_by_id_soft_delete_route_204(self) -> None:
@@ -279,14 +324,23 @@ class TestNotificationRoute(TestSuite):
                            "to you.  You never have to worry about that.  Take your time and do what makes you happy.",
             "deleted": None
         })
-        response: Response = self.client.post('/v2/notifications/', data=request_body, content_type='application/json')
+        response: Response = self.client.post(
+            '/v2/notifications/', data=request_body, content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         notification_id = response_json.get('notification').get('notification_id')
 
-        response = self.client.delete(f'/v2/notifications/soft/{notification_id}')
+        response = self.client.delete(
+            f'/v2/notifications/soft/{notification_id}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.get(f'/v2/notifications/{notification_id}')
+        response: Response = self.client.get(
+            f'/v2/notifications/{notification_id}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('notification'))

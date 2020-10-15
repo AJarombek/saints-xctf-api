@@ -16,7 +16,7 @@ class TestActivationCodeRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/activation_code' route. This route is redirected to
         '/v2/activation_code/' by default.
         """
-        response: Response = self.client.post('/v2/activation_code')
+        response: Response = self.client.post('/v2/activation_code', headers={'Authorization': 'Bearer j.w.t'})
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/activation_code/', headers.get('Location'))
@@ -26,7 +26,7 @@ class TestActivationCodeRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/activation_code/' route. This test proves that an empty
         request body will result in a 400 status code response.
         """
-        response: Response = self.client.post('/v2/activation_code/')
+        response: Response = self.client.post('/v2/activation_code/', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
@@ -43,7 +43,8 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -62,7 +63,8 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -77,7 +79,7 @@ class TestActivationCodeRoute(TestSuite):
         with a proper activation code should succeed if the activation code does not already exist.
         """
         # First hard delete the existing code if it exists
-        self.client.delete('/v2/activation_code/60UN02')
+        self.client.delete('/v2/activation_code/60UN02', headers={'Authorization': 'Bearer j.w.t'})
 
         request_body = json.dumps({'activation_code': '60UN02'})
 
@@ -85,7 +87,8 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -99,7 +102,7 @@ class TestActivationCodeRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/activation_code' route. This test proves that a request body
         with a proper activation code should FAIL with a 500 error if the activation code already exists.
         """
-        self.client.delete('/v2/activation_code/AJAJAJ')
+        self.client.delete('/v2/activation_code/AJAJAJ', headers={'Authorization': 'Bearer j.w.t'})
 
         # The first request to create an activation code will succeed.
         request_body = json.dumps({'activation_code': 'AJAJAJ'})
@@ -107,7 +110,8 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -120,7 +124,8 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
 
         response_json: dict = response.get_json()
@@ -136,12 +141,20 @@ class TestActivationCodeRoute(TestSuite):
         if the code exists in the database a 200 success response will be returned.
         """
         # Ensure that the activation code exists prior to testing for existence.
-        self.client.delete('/v2/activation_code/60UN02')
+        self.client.delete('/v2/activation_code/60UN02', headers={'Authorization': 'Bearer j.w.t'})
         request_body = json.dumps({'activation_code': '60UN02'})
-        post_response = self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        post_response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(post_response.status_code, 200)
 
-        response: Response = self.client.get('/v2/activation_code/exists/60UN02')
+        response: Response = self.client.get(
+            '/v2/activation_code/exists/60UN02',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/exists/60UN02')
@@ -153,9 +166,12 @@ class TestActivationCodeRoute(TestSuite):
         if the code exists in the database a 400 failure response will be returned.
         """
         # Ensure that the code doesn't exist by hard deleting it.
-        self.client.delete('/v2/activation_code/60UN03')
+        self.client.delete('/v2/activation_code/60UN03', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.get('/v2/activation_code/exists/60UN03')
+        response: Response = self.client.get(
+            '/v2/activation_code/exists/60UN03',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/exists/60UN03')
@@ -168,12 +184,17 @@ class TestActivationCodeRoute(TestSuite):
         """
 
         # Ensure that the activation code exists prior to retrieval.
-        self.client.delete('/v2/activation_code/60UN02')
+        self.client.delete('/v2/activation_code/60UN02', headers={'Authorization': 'Bearer j.w.t'})
         request_body = json.dumps({'activation_code': '60UN02'})
-        post_response = self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        post_response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(post_response.status_code, 200)
 
-        response: Response = self.client.get('/v2/activation_code/60UN02')
+        response: Response = self.client.get('/v2/activation_code/60UN02', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/60UN02')
@@ -186,9 +207,9 @@ class TestActivationCodeRoute(TestSuite):
         """
 
         # Ensure that the code doesn't exist by hard deleting it.
-        self.client.delete('/v2/activation_code/60UN03')
+        self.client.delete('/v2/activation_code/60UN03', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.get('/v2/activation_code/60UN03')
+        response: Response = self.client.get('/v2/activation_code/60UN03', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/60UN03')
@@ -201,7 +222,7 @@ class TestActivationCodeRoute(TestSuite):
         endpoint should return a 204 success status, no matter if the code existed or not.
         """
 
-        response: Response = self.client.delete('/v2/activation_code/TESTCD')
+        response: Response = self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
 
     def test_activation_code_soft_delete_route_204(self) -> None:
@@ -211,12 +232,20 @@ class TestActivationCodeRoute(TestSuite):
         """
 
         # Ensure that the activation code exists before testing the DELETE endpoint
-        self.client.delete('/v2/activation_code/TESTCD')
+        self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
 
         request_body = json.dumps({'activation_code': 'TESTCD'})
-        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
+        self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
 
-        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        response: Response = self.client.delete(
+            '/v2/activation_code/soft/TESTCD',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         self.assertEqual(response.status_code, 204)
 
     def test_activation_code_soft_delete_route_400_does_not_exist(self) -> None:
@@ -226,9 +255,12 @@ class TestActivationCodeRoute(TestSuite):
         """
 
         # Ensure that the activation code was already deleted before testing the DELETE endpoint.
-        self.client.delete('/v2/activation_code/TESTCD')
+        self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        response: Response = self.client.delete(
+            '/v2/activation_code/soft/TESTCD',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/soft/TESTCD')
@@ -242,12 +274,20 @@ class TestActivationCodeRoute(TestSuite):
         """
 
         # Ensure that the activation code was already soft deleted before testing the DELETE endpoint
-        self.client.delete('/v2/activation_code/TESTCD')
+        self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
         request_body = json.dumps({'activation_code': 'TESTCD'})
-        self.client.post('/v2/activation_code/', data=request_body, content_type='application/json')
-        self.client.delete('/v2/activation_code/soft/TESTCD')
+        self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        self.client.delete('/v2/activation_code/soft/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
 
-        response: Response = self.client.delete('/v2/activation_code/soft/TESTCD')
+        response: Response = self.client.delete(
+            '/v2/activation_code/soft/TESTCD',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code/soft/TESTCD')
