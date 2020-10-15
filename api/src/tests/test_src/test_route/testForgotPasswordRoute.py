@@ -11,15 +11,15 @@ from tests.TestSuite import TestSuite
 
 class TestForgotPasswordRoute(TestSuite):
 
-    def test_forgot_password_get_route_200_empty(self) -> None:
+    def test_forgot_password_get_route_400_empty(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/forgot_password/<username>' route.  This test proves that
-        trying to retrieve a forgot password code for a user that doesn't exist results in a successful HTTP 200 code
+        trying to retrieve a forgot password code for a user that doesn't exist results in a HTTP 400 error code
         with an empty list returned.
         """
         response: Response = self.client.get('/v2/forgot_password/fake_user', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
         self.assertEqual(response_json.get('forgot_password_codes'), [])
 
@@ -38,20 +38,20 @@ class TestForgotPasswordRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
         self.assertGreaterEqual(len(response_json.get('forgot_password_codes')), 1)
 
-    def test_forgot_password_post_route_500(self) -> None:
+    def test_forgot_password_post_route_400(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
-        calling this endpoint with a invalid username results in a 500 error code.
+        calling this endpoint with a invalid username results in a 400 error code.
         """
         response: Response = self.client.post(
             '/v2/forgot_password/fake_user',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
         self.assertFalse(response_json.get('inserted'))
-        self.assertEquals(response_json.get('error'), 'the forgot password code creation failed')
+        self.assertEquals(response_json.get('error'), 'There is no user associated with this username/email.')
 
     def test_forgot_password_post_route_201(self) -> None:
         """
@@ -64,7 +64,6 @@ class TestForgotPasswordRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
         self.assertTrue(response_json.get('inserted'))
         self.assertIsNotNone(response_json.get('forgot_password_code'))
-        self.assertEquals(response_json.get('forgot_password_code').get('username'), 'andy')
 
     def test_forgot_password_get_links_route_200(self) -> None:
         """

@@ -64,7 +64,7 @@ def forgot_password_get(username) -> Response:
     if user is None:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'forgot_password_codes': None,
+            'forgot_password_codes': [],
             'error': 'There is no user associated with this username/email.'
         })
         response.status_code = 400
@@ -75,7 +75,7 @@ def forgot_password_get(username) -> Response:
     if forgot_password_codes is None:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'forgot_password_codes': None,
+            'forgot_password_codes': [],
             'error': 'This user has no forgot password codes.'
         })
         response.status_code = 400
@@ -136,11 +136,11 @@ def forgot_password_post(username) -> Response:
 
     if forgot_password_inserted:
         new_forgot_password = ForgotPasswordDao.get_forgot_password_code(code)
-        new_forgot_password_dict = ForgotPasswordData(new_forgot_password).__dict__
 
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'inserted': True
+            'inserted': True,
+            'forgot_password_code': new_forgot_password.forgot_code
         })
         response.status_code = 201
         return response

@@ -88,7 +88,7 @@ class TestLogRoute(TestSuite):
         self.assertIsNone(response_json.get('log'))
         self.assertEqual(
             response_json.get('error'),
-            "'username', 'first', 'last', 'date', 'type', 'feel', and 'time_created' are required fields"
+            "'username', 'first', 'last', 'date', 'type', and 'feel' are required fields"
         )
 
     def test_log_post_route_200(self) -> None:

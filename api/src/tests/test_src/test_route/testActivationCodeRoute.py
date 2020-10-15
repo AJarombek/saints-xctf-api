@@ -21,6 +21,22 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/activation_code/', headers.get('Location'))
 
+    def test_activation_code_post_route_redirect_invalid_auth(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/activation_code' route. This route is returned a 401 HTTP code
+        if an invalid JWT is provided for authorization.
+        """
+        response: Response = self.client.post('/v2/activation_code', headers={'Authorization': ''})
+        self.assertEqual(response.status_code, 403)
+
+    def test_activation_code_post_route_redirect_no_authorization(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/activation_code' route. This route is returned a 403 HTTP code
+        if no 'Authorization' header exists for the request.
+        """
+        response: Response = self.client.post('/v2/activation_code', headers={})
+        self.assertEqual(response.status_code, 401)
+
     def test_activation_code_post_route_400(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/activation_code/' route. This test proves that an empty

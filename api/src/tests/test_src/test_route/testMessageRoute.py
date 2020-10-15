@@ -288,7 +288,8 @@ class TestMessageRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/messages/',
             data=request_body,
-            content_type='application/json'
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')

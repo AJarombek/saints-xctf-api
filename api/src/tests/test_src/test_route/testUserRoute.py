@@ -301,7 +301,7 @@ class TestUserRoute(TestSuite):
         if the updated user is the same as the original user, a 400 error is returned.
         """
         response: Response = self.client.get(
-            '/v2/users/andy2',
+            '/v2/users/andy',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
@@ -311,14 +311,14 @@ class TestUserRoute(TestSuite):
         request_body = json.dumps(response_json.get('user'))
 
         response: Response = self.client.put(
-            '/v2/users/andy2',
+            '/v2/users/andy',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy2')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('user'))
         self.assertEqual(
@@ -366,7 +366,7 @@ class TestUserRoute(TestSuite):
         self.assertIn('email', response_json.get('user'))
         self.assertEqual(response_json.get('user').get('email'), 'andrew@jarombek.com')
 
-    def test_uer_by_username_delete_route_204(self) -> None:
+    def test_user_by_username_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/users/<username>' route.  This test proves
         that the endpoint should return a 204 success status, no matter if the user existed or not.
@@ -388,7 +388,10 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
 
-        response: Response = self.client.delete('/v2/users/soft/invalid_user')
+        response: Response = self.client.delete(
+            '/v2/users/soft/invalid_user',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
@@ -532,12 +535,12 @@ class TestUserRoute(TestSuite):
         """
         # A very important song, but not a username used on the website.
         response: Response = self.client.get(
-            '/v2/users/snapshot/andy2',
+            '/v2/users/snapshot/andy',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy2')
+        self.assertEqual(response_json.get('self'), '/v2/users/snapshot/andy')
         self.assertIsNotNone(response_json.get('user'))
 
         user = response_json.get('user')
@@ -689,4 +692,4 @@ class TestUserRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/links')
-        self.assertEqual(len(response_json.get('endpoints')), 9)
+        self.assertEqual(len(response_json.get('endpoints')), 12)
