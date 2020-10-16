@@ -32,12 +32,11 @@ def auth_required():
                         json={'token': token}
                     ) as response:
                         response_body = await response.json()
-                        print(response_body)
                         if not response_body.get('result'):
-                            print('User Unauthorized')
+                            current_app.logger.info('User Unauthorized')
                             abort(403)
                         else:
-                            print('User Authorized')
+                            current_app.logger.info('User Authorized')
 
             loop = asyncio.get_event_loop()
             loop.run_until_complete(authenticate())

@@ -6,7 +6,9 @@ Date: 10/11/2019
 
 import json
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestActivationCodeRoute(TestSuite):
@@ -21,21 +23,17 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/activation_code/', headers.get('Location'))
 
-    def test_activation_code_post_route_redirect_invalid_auth(self) -> None:
+    def test_activation_code_post_route_redirect_forbidden(self) -> None:
         """
-        Test performing an HTTP POST request on the '/v2/activation_code' route. This route is returned a 401 HTTP code
-        if an invalid JWT is provided for authorization.
+        Test performing a forbidden HTTP POST request on the '/v2/activation_code' route.
         """
-        response: Response = self.client.post('/v2/activation_code', headers={'Authorization': ''})
-        self.assertEqual(response.status_code, 403)
+        test_route_auth(self, self.client, 'POST', '/v2/activation_code', AuthVariant.FORBIDDEN)
 
-    def test_activation_code_post_route_redirect_no_authorization(self) -> None:
+    def test_activation_code_post_route_redirect_unauthorized(self) -> None:
         """
-        Test performing an HTTP POST request on the '/v2/activation_code' route. This route is returned a 403 HTTP code
-        if no 'Authorization' header exists for the request.
+        Test performing an unauthorized HTTP POST request on the '/v2/activation_code' route.
         """
-        response: Response = self.client.post('/v2/activation_code', headers={})
-        self.assertEqual(response.status_code, 401)
+        test_route_auth(self, self.client, 'POST', '/v2/activation_code', AuthVariant.UNAUTHORIZED)
 
     def test_activation_code_post_route_400(self) -> None:
         """
@@ -151,6 +149,18 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), None)
         self.assertEqual(response_json.get('error'), 'failed to create a new activation code')
 
+    def test_activation_code_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/activation_code/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/activation_code/', AuthVariant.FORBIDDEN)
+
+    def test_activation_code_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/activation_code/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/activation_code/', AuthVariant.UNAUTHORIZED)
+
     def test_activation_code_exists_get_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/activation_code/exists/<code>' route.  This test proves that
@@ -193,6 +203,19 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/activation_code/exists/60UN03')
         self.assertEqual(response_json.get('matching_code_exists'), False)
 
+    def test_activation_code_exists_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/activation_code/exists/<code>' route.
+        You are a great person.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/activation_code/exists/60UN02', AuthVariant.FORBIDDEN)
+
+    def test_activation_code_exists_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/activation_code/exists/<code>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/activation_code/exists/60UN02', AuthVariant.UNAUTHORIZED)
+
     def test_activation_code_get_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/activation_code/<code>' route.  This test proves that if the
@@ -232,6 +255,18 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('activation_code'), None)
         self.assertEqual(response_json.get('error'), 'there is no matching activation code')
 
+    def test_activation_code_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/activation_code/<code>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/activation_code/60UN02', AuthVariant.FORBIDDEN)
+
+    def test_activation_code_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/activation_code/<code>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/activation_code/60UN02', AuthVariant.UNAUTHORIZED)
+
     def test_activation_code_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that the
@@ -241,9 +276,21 @@ class TestActivationCodeRoute(TestSuite):
         response: Response = self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
 
+    def test_activation_code_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/activation_code/<code>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/activation_code/TESTCD', AuthVariant.FORBIDDEN)
+
+    def test_activation_code_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/activation_code/<code>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/activation_code/TESTCD', AuthVariant.UNAUTHORIZED)
+
     def test_activation_code_soft_delete_route_204(self) -> None:
         """
-        Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that if
+        Test performing an HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.  This test proves that if
         the activation code exists and wasn't already soft deleted, the endpoint will return a successful 204 status.
         """
 
@@ -309,6 +356,18 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/activation_code/soft/TESTCD')
         self.assertEqual(response_json.get('deleted'), False)
         self.assertEqual(response_json.get('error'), 'this activation code is already soft deleted')
+
+    def test_activation_code_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/activation_code/soft/TESTCD', AuthVariant.FORBIDDEN)
+
+    def test_activation_code_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/activation_code/soft/TESTCD', AuthVariant.UNAUTHORIZED)
 
     def test_activation_code_get_links_route_200(self) -> None:
         """

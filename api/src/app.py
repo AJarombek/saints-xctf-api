@@ -5,10 +5,12 @@ Date: 6/8/2019
 """
 
 import os
+
 from flask import Flask, jsonify
 from flask_sqlalchemy import get_debug_queries, current_app
 from database import db
 from flaskBcrypt import flask_bcrypt
+
 from commands import test
 from config import config
 from utils.db import get_connection_url
