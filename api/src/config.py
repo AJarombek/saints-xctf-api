@@ -10,10 +10,14 @@ class LocalConfig:
     AUTH_URL = 'https://dev.auth.saintsxctf.com'
 
 
+class LocalTestConfig:
+    ENV = 'localtest'
+    AUTH_URL = 'http://saints-xctf-auth:5000'
+
+
 class TestConfig:
     ENV = 'test'
-    # AUTH_URL = 'http://saints-xctf-auth'
-    AUTH_URL = 'http://saints-xctf-auth:5000'
+    AUTH_URL = 'http://localhost:5000'
 
 
 class DevelopmentConfig:
@@ -28,6 +32,7 @@ class ProductionConfig:
 
 config = {
     'local': LocalConfig,
+    'localtest': LocalTestConfig,
     'test': TestConfig,
     'development': DevelopmentConfig,
     'production': ProductionConfig

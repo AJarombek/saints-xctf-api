@@ -6,8 +6,11 @@ Date: 10/11/2019
 
 import json
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestCommentRoute(TestSuite):
@@ -22,6 +25,18 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/comments/', headers.get('Location'))
 
+    def test_comment_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/comments' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments', AuthVariant.FORBIDDEN)
+
+    def test_comment_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/comments' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments', AuthVariant.UNAUTHORIZED)
+
     def test_comment_post_route_redirect(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/comments' route. This route is redirected to
@@ -31,6 +46,18 @@ class TestCommentRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/comments/', headers.get('Location'))
+
+    def test_comment_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/comments' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/comments', AuthVariant.FORBIDDEN)
+
+    def test_comment_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/comments' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/comments', AuthVariant.UNAUTHORIZED)
 
     def test_comment_get_all_route_200(self) -> None:
         """
@@ -42,6 +69,18 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/comments')
         self.assertGreater(len(response_json.get('comments')), 1)
+
+    def test_comment_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/comments/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments/', AuthVariant.FORBIDDEN)
+
+    def test_comment_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/comments/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments/', AuthVariant.UNAUTHORIZED)
 
     def test_comment_post_route_400_empty_body(self) -> None:
         """
@@ -105,6 +144,18 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response_json.get('added'), True)
         self.assertIsNotNone(response_json.get('comment'))
 
+    def test_comment_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/comments/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/comments/', AuthVariant.FORBIDDEN)
+
+    def test_comment_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/comments/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/comments/', AuthVariant.UNAUTHORIZED)
+
     def test_comment_with_id_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/comments/<comment_id>' route.  This test proves that trying to
@@ -129,6 +180,18 @@ class TestCommentRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/comments/1')
         self.assertIsNotNone(response_json.get('comment'))
         self.assertEqual(response_json.get('log'), '/v2/logs/1')
+
+    def test_comment_with_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments/1', AuthVariant.FORBIDDEN)
+
+    def test_comment_with_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/comments/1', AuthVariant.UNAUTHORIZED)
 
     def test_comment_with_id_put_route_400_no_existing(self) -> None:
         """
@@ -200,6 +263,18 @@ class TestCommentRoute(TestSuite):
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('comment'))
 
+    def test_comment_with_id_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/comments/1', AuthVariant.FORBIDDEN)
+
+    def test_comment_with_id_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/comments/1', AuthVariant.UNAUTHORIZED)
+
     def test_comment_with_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
@@ -207,6 +282,18 @@ class TestCommentRoute(TestSuite):
         """
         response: Response = self.client.delete('/v2/comments/0', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
+
+    def test_comment_with_id_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/comments/1', AuthVariant.FORBIDDEN)
+
+    def test_comment_with_id_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/comments/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/comments/1', AuthVariant.UNAUTHORIZED)
 
     def test_comment_with_id_soft_delete_route_204(self) -> None:
         """
@@ -275,6 +362,18 @@ class TestCommentRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
+
+    def test_comment_with_id_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/comments/soft/1', AuthVariant.FORBIDDEN)
+
+    def test_comment_with_id_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/comments/soft/1', AuthVariant.UNAUTHORIZED)
 
     def test_comment_get_links_route_200(self) -> None:
         """

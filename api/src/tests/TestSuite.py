@@ -5,6 +5,8 @@ Date: 6/22/2019
 """
 
 import unittest
+import os
+
 from flask.testing import FlaskClient
 from app import create_app
 from database import db
@@ -16,7 +18,12 @@ class TestSuite(unittest.TestCase):
         """
         Set up logic for the test suite.  Invoked before unit tests are run.
         """
-        self.app = create_app('test')
+        if os.environ.get('ENV') == 'localtest':
+            env = 'localtest'
+        else:
+            env = 'test'
+
+        self.app = create_app(env)
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client: FlaskClient = self.app.test_client()
