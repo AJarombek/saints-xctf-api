@@ -5,7 +5,9 @@ Date: 11/25/2019
 """
 
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestMessageFeedRoute(TestSuite):
@@ -68,6 +70,18 @@ class TestMessageFeedRoute(TestSuite):
         self.assertIn('time', response_json.get('messages')[0])
         self.assertIn('content', response_json.get('messages')[0])
         self.assertIn('deleted', response_json.get('messages')[0])
+
+    def test_message_feed_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/message_feed/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/message_feed/group/mensxc/5/0', AuthVariant.FORBIDDEN)
+
+    def test_message_feed_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/message_feed/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/message_feed/group/mensxc/5/0', AuthVariant.UNAUTHORIZED)
 
     def test_message_feed_get_links_route_200(self) -> None:
         """

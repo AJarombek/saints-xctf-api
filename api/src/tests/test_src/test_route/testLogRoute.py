@@ -7,8 +7,11 @@ Date: 11/17/2019
 import json
 import unittest
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestLogRoute(TestSuite):
@@ -23,6 +26,18 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/logs/', headers.get('Location'))
 
+    def test_log_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/logs' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs', AuthVariant.FORBIDDEN)
+
+    def test_log_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/logs' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs', AuthVariant.UNAUTHORIZED)
+
     def test_log_post_route_redirect(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/logs' route. This route is redirected to
@@ -32,6 +47,18 @@ class TestLogRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/logs/', headers.get('Location'))
+
+    def test_log_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/logs' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/logs', AuthVariant.FORBIDDEN)
+
+    def test_log_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/logs' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/logs', AuthVariant.UNAUTHORIZED)
 
     @unittest.skip('Expensive Test')
     def test_log_get_all_route_200(self) -> None:
@@ -44,6 +71,18 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/logs')
         self.assertGreater(len(response_json.get('logs')), 1)
+
+    def test_log_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/logs/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs/', AuthVariant.FORBIDDEN)
+
+    def test_log_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/logs/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs/', AuthVariant.UNAUTHORIZED)
 
     def test_log_post_route_400_empty_body(self) -> None:
         """
@@ -119,6 +158,18 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response_json.get('added'), True)
         self.assertIsNotNone(response_json.get('log'))
 
+    def test_log_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/logs/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/logs/', AuthVariant.FORBIDDEN)
+
+    def test_log_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/logs/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/logs/', AuthVariant.UNAUTHORIZED)
+
     def test_log_by_id_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/logs/<log_id>' route.  This test proves that trying to
@@ -143,6 +194,18 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/logs/1')
         self.assertIsNotNone(response_json.get('log'))
         self.assertGreaterEqual(len(response_json.get('comments')), 1)
+
+    def test_log_by_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs/1', AuthVariant.FORBIDDEN)
+
+    def test_log_by_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/logs/1', AuthVariant.UNAUTHORIZED)
 
     def test_log_by_id_put_route_400_no_existing(self) -> None:
         """
@@ -212,16 +275,28 @@ class TestLogRoute(TestSuite):
         })
 
         response: Response = self.client.put(
-            '/v2/comments/1',
+            '/v2/logs/1',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/comments/1')
+        self.assertEqual(response_json.get('self'), '/v2/logs/1')
         self.assertTrue(response_json.get('updated'))
-        self.assertIsNotNone(response_json.get('comment'))
+        self.assertIsNotNone(response_json.get('log'))
+
+    def test_log_by_id_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/logs/1', AuthVariant.FORBIDDEN)
+
+    def test_log_by_id_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/logs/1', AuthVariant.UNAUTHORIZED)
 
     def test_log_by_id_delete_route_204(self) -> None:
         """
@@ -230,6 +305,18 @@ class TestLogRoute(TestSuite):
         """
         response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 204)
+
+    def test_log_by_id_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/logs/1', AuthVariant.FORBIDDEN)
+
+    def test_log_by_id_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/logs/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/logs/1', AuthVariant.UNAUTHORIZED)
 
     def test_log_by_id_soft_delete_route_400_no_existing(self) -> None:
         """
@@ -246,7 +333,7 @@ class TestLogRoute(TestSuite):
 
     def test_log_by_id_soft_delete_route_400_already_deleted(self) -> None:
         """
-        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that if
+        Test performing an HTTP DELETE request on the '/v2/logs/soft/<comment_id>' route.  This test proves that if
         the comment was already soft deleted, a 400 error is returned.
         """
         # Ensure that the log was already soft deleted before testing the DELETE endpoint
@@ -318,6 +405,18 @@ class TestLogRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('log'))
         self.assertTrue(response_json.get('log').get('deleted'))
+
+    def test_log_by_id_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/logs/soft/1', AuthVariant.FORBIDDEN)
+
+    def test_log_by_id_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/logs/soft/<log_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/logs/soft/1', AuthVariant.UNAUTHORIZED)
 
     def test_log_get_links_route_200(self) -> None:
         """

@@ -5,7 +5,9 @@ Date: 11/17/2019
 """
 
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestLogFeedRoute(TestSuite):
@@ -76,6 +78,18 @@ class TestLogFeedRoute(TestSuite):
         self.assertEqual(response_json.get('next'), '/v2/log_feed/group/mensxc/20/100')
         self.assertEqual(response_json.get('prev'), '/v2/log_feed/group/mensxc/20/60')
         self.assertEqual(len(response_json.get('logs')), 20)
+
+    def test_log_feed_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/log_feed/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/log_feed/username/andy/25/100', AuthVariant.FORBIDDEN)
+
+    def test_log_feed_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/log_feed/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/log_feed/username/andy/25/100', AuthVariant.UNAUTHORIZED)
 
     def test_log_feed_get_links_route_200(self) -> None:
         """
