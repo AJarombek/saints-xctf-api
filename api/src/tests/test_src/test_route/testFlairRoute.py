@@ -5,8 +5,11 @@ Date: 10/26/2019
 """
 
 import json
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestFlairRoute(TestSuite):
@@ -20,6 +23,18 @@ class TestFlairRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/flair/', headers.get('Location'))
+
+    def test_flair_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/flair' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/flair', AuthVariant.FORBIDDEN)
+
+    def test_flair_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/flair' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/flair', AuthVariant.UNAUTHORIZED)
 
     def test_flair_post_route_400_empty_body(self) -> None:
         """
@@ -78,6 +93,18 @@ class TestFlairRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/flair')
         self.assertEqual(response_json.get('added'), True)
         self.assertIsNotNone(response_json.get('flair'))
+
+    def test_flair_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/flair/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/flair/', AuthVariant.FORBIDDEN)
+
+    def test_flair_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/flair/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/flair/', AuthVariant.UNAUTHORIZED)
 
     def test_flair_get_links_route_200(self) -> None:
         """

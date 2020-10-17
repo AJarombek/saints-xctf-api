@@ -7,8 +7,11 @@ Date: 11/10/2019
 
 import json
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestGroupRoute(TestSuite):
@@ -23,6 +26,18 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/groups/', headers.get('Location'))
 
+    def test_group_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups', AuthVariant.FORBIDDEN)
+
+    def test_group_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups', AuthVariant.UNAUTHORIZED)
+
     def test_group_get_all_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/' route.  This test proves that the endpoint returns
@@ -33,6 +48,18 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups')
         self.assertGreater(len(response_json.get('groups')), 1)
+
+    def test_group_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/', AuthVariant.FORBIDDEN)
+
+    def test_group_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/', AuthVariant.UNAUTHORIZED)
 
     def test_group_by_group_name_get_route_400(self) -> None:
         """
@@ -56,6 +83,18 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/wmenstf')
         self.assertIsNotNone(response_json.get('group'))
+
+    def test_group_by_group_name_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/wmenstf', AuthVariant.FORBIDDEN)
+
+    def test_group_by_group_name_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/wmenstf', AuthVariant.UNAUTHORIZED)
 
     def test_group_by_group_name_put_route_400_no_existing(self) -> None:
         """
@@ -126,6 +165,18 @@ class TestGroupRoute(TestSuite):
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('group'))
 
+    def test_group_by_group_name_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/groups/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/alumni', AuthVariant.FORBIDDEN)
+
+    def test_group_by_group_name_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/groups/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/alumni', AuthVariant.UNAUTHORIZED)
+
     def test_group_members_by_group_name_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/members/<group_name>' route.  This test proves that
@@ -162,6 +213,18 @@ class TestGroupRoute(TestSuite):
         self.assertIn('deleted', response_json.get('group_members')[0])
         self.assertIsNotNone(response_json.get('group_members')[0]['username'])
 
+    def test_group_members_by_group_name_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/members/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/members/wmenstf', AuthVariant.FORBIDDEN)
+
+    def test_group_members_by_group_name_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/members/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/members/wmenstf', AuthVariant.UNAUTHORIZED)
+
     def test_group_snapshot_by_group_name_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.  This test proves that
@@ -194,6 +257,18 @@ class TestGroupRoute(TestSuite):
         self.assertGreater(response_json.get('group_snapshot')['statistics']['miles'], 0)
         self.assertGreater(response_json.get('group_snapshot')['statistics']['runmiles'], 0)
         self.assertGreater(response_json.get('group_snapshot')['statistics']['alltimefeel'], 0)
+
+    def test_group_snapshot_by_group_name_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/snapshot/wmenstf', AuthVariant.FORBIDDEN)
+
+    def test_group_snapshot_by_group_name_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/snapshot/<group_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/snapshot/wmenstf', AuthVariant.UNAUTHORIZED)
 
     def test_group_get_links_route_200(self) -> None:
         """

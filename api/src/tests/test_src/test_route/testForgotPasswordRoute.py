@@ -6,7 +6,9 @@ Date: 11/5/2019
 """
 
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestForgotPasswordRoute(TestSuite):
@@ -38,6 +40,18 @@ class TestForgotPasswordRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
         self.assertGreaterEqual(len(response_json.get('forgot_password_codes')), 1)
 
+    def test_forgot_password_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/forgot_password/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/forgot_password/andy', AuthVariant.FORBIDDEN)
+
+    def test_forgot_password_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/forgot_password/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/forgot_password/andy', AuthVariant.UNAUTHORIZED)
+
     def test_forgot_password_post_route_400(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
@@ -64,6 +78,18 @@ class TestForgotPasswordRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
         self.assertTrue(response_json.get('inserted'))
         self.assertIsNotNone(response_json.get('forgot_password_code'))
+
+    def test_forgot_password_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/forgot_password/<username>' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/forgot_password/andy', AuthVariant.FORBIDDEN)
+
+    def test_forgot_password_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/forgot_password/<username>' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/forgot_password/andy', AuthVariant.UNAUTHORIZED)
 
     def test_forgot_password_get_links_route_200(self) -> None:
         """
