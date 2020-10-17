@@ -266,7 +266,7 @@ class TestLogRoute(TestSuite):
             "distance": 8.5,
             "metric": "miles",
             "miles": 8.5,
-            "time": "60:00:00",
+            "time": "00:59:00",
             "pace": "00:07:04",
             "feel": 8,
             "description": f"Really nice run through the trails at night.  (Edited {datetime.now()})",

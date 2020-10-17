@@ -24,7 +24,7 @@ class TestLogData(TestSuite):
         Prove that the human readable string representation of a Log object is as expected.
         """
         log_str = 'LogData: [log_id: 1, username: andy, first: Andrew, last: Jarombek, ' \
-            'name: Van Cortlandt NYRR XC 5K, location: Bronx, NY, date: 2019-11-17 00:00:00, type: run ' \
+            'name: Van Cortlandt NYRR XC 5K, location: Bronx, NY, date: 2019-11-17 00:00:00, type: run, ' \
             'distance: 5, metric: kilometers, miles: 3.11, time: 17:35, ' \
             "pace: 5:40, feel: 5, " \
             "description: Didn't run very fast and felt tired, but it was nice to run a cross country race again., " \

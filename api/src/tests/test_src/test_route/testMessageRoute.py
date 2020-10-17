@@ -6,8 +6,11 @@ Date: 11/26/2019
 
 import json
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestMessageRoute(TestSuite):
@@ -25,6 +28,18 @@ class TestMessageRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/messages/', headers.get('Location'))
 
+    def test_message_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/messages' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages', AuthVariant.FORBIDDEN)
+
+    def test_message_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/messages' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages', AuthVariant.UNAUTHORIZED)
+
     def test_message_post_route_redirect(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/messages' route. This route is redirected to
@@ -37,6 +52,18 @@ class TestMessageRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/messages/', headers.get('Location'))
+
+    def test_message_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/messages' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/messages', AuthVariant.FORBIDDEN)
+
+    def test_message_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/messages' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/messages', AuthVariant.UNAUTHORIZED)
 
     def test_message_get_all_route_200(self) -> None:
         """
@@ -59,6 +86,18 @@ class TestMessageRoute(TestSuite):
         self.assertIn('time', response_json.get('messages')[0])
         self.assertIn('content', response_json.get('messages')[0])
         self.assertIn('deleted', response_json.get('messages')[0])
+
+    def test_message_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/messages/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages/', AuthVariant.FORBIDDEN)
+
+    def test_message_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/messages/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages/', AuthVariant.UNAUTHORIZED)
 
     def test_message_post_route_400_empty_body(self) -> None:
         """
@@ -140,6 +179,18 @@ class TestMessageRoute(TestSuite):
         self.assertIn('content', response_json.get('message'))
         self.assertIn('deleted', response_json.get('message'))
 
+    def test_message_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/messages/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/messages/', AuthVariant.FORBIDDEN)
+
+    def test_message_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/messages/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/messages/', AuthVariant.UNAUTHORIZED)
+
     def test_message_by_id_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/messages/<message_id>' route.  This test proves that trying to
@@ -168,6 +219,18 @@ class TestMessageRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/messages/2')
         self.assertIsNotNone(response_json.get('message'))
+
+    def test_message_by_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages/2', AuthVariant.FORBIDDEN)
+
+    def test_message_by_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/messages/2', AuthVariant.UNAUTHORIZED)
 
     def test_message_by_id_put_route_400_no_existing(self) -> None:
         """
@@ -240,6 +303,18 @@ class TestMessageRoute(TestSuite):
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('message'))
 
+    def test_message_by_id_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/messages/2', AuthVariant.FORBIDDEN)
+
+    def test_message_by_id_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/messages/2', AuthVariant.UNAUTHORIZED)
+
     def test_message_by_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/messages/<message_id>' route.  This test proves that the
@@ -250,6 +325,18 @@ class TestMessageRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         self.assertEqual(response.status_code, 204)
+
+    def test_message_by_id_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/messages/2', AuthVariant.FORBIDDEN)
+
+    def test_message_by_id_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/messages/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/messages/2', AuthVariant.UNAUTHORIZED)
 
     def test_message_by_id_soft_delete_route_400_no_existing(self) -> None:
         """
@@ -332,6 +419,18 @@ class TestMessageRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('message'))
         self.assertTrue(response_json.get('message').get('deleted'))
+
+    def test_message_by_id_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/messages/soft/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/messages/soft/2', AuthVariant.FORBIDDEN)
+
+    def test_message_by_id_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/messages/soft/<message_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/messages/soft/2', AuthVariant.UNAUTHORIZED)
 
     def test_message_get_links_route_200(self) -> None:
         """

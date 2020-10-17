@@ -38,7 +38,7 @@ class LogData:
         :return: The exercise log in string form.
         """
         return f'LogData: [log_id: {self.log_id}, username: {self.username}, first: {self.first}, last: {self.last}, ' \
-            f'name: {self.name}, location: {self.location}, date: {self.date}, type: {self.type} ' \
+            f'name: {self.name}, location: {self.location}, date: {self.date}, type: {self.type}, ' \
             f'distance: {self.distance}, metric: {self.metric}, miles: {self.miles}, time: {self.time}, ' \
             f'pace: {self.pace}, feel: {self.feel}, description: {self.description}, ' \
             f'time_created: {self.time_created}, deleted: {self.deleted}]'

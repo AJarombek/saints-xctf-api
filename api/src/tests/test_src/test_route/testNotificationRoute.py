@@ -6,8 +6,11 @@ Date: 12/2/2019
 
 import json
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestNotificationRoute(TestSuite):
@@ -25,6 +28,18 @@ class TestNotificationRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/notifications/', headers.get('Location'))
 
+    def test_notification_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/notifications' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications', AuthVariant.FORBIDDEN)
+
+    def test_notification_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/notifications' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications', AuthVariant.UNAUTHORIZED)
+
     def test_notification_post_route_redirect(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/notifications' route. This route is redirected to
@@ -37,6 +52,18 @@ class TestNotificationRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/notifications/', headers.get('Location'))
+
+    def test_notification_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/notifications' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/notifications', AuthVariant.FORBIDDEN)
+
+    def test_notification_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/notifications' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/notifications', AuthVariant.UNAUTHORIZED)
 
     def test_notification_get_all_route_200(self) -> None:
         """
@@ -68,6 +95,18 @@ class TestNotificationRoute(TestSuite):
         self.assertTrue(notification.get('description') is None or type(notification.get('description')) is str)
         self.assertIn('deleted', response_json.get('notifications')[0])
         self.assertTrue(notification.get('deleted') is None or type(notification.get('deleted')) is str)
+
+    def test_notification_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/notifications/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications/', AuthVariant.FORBIDDEN)
+
+    def test_notification_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/notifications/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications/', AuthVariant.UNAUTHORIZED)
 
     def test_notification_post_route_400_empty_body(self) -> None:
         """
@@ -144,6 +183,18 @@ class TestNotificationRoute(TestSuite):
         self.assertIn('description', response_json.get('notification'))
         self.assertIn('deleted', response_json.get('notification'))
 
+    def test_notification_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/notifications/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/notifications/', AuthVariant.FORBIDDEN)
+
+    def test_notification_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/notifications/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/notifications/', AuthVariant.UNAUTHORIZED)
+
     def test_notification_by_id_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/notifications/<notification_id>' route.  This test proves
@@ -172,6 +223,18 @@ class TestNotificationRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/notifications/1')
         self.assertIsNotNone(response_json.get('notification'))
+
+    def test_notification_by_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications/1', AuthVariant.FORBIDDEN)
+
+    def test_notification_by_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/notifications/1', AuthVariant.UNAUTHORIZED)
 
     def test_notification_by_id_put_route_400_no_existing(self) -> None:
         """
@@ -249,6 +312,18 @@ class TestNotificationRoute(TestSuite):
         self.assertIn('viewed', response_json.get('notification'))
         self.assertEqual(response_json.get('notification').get('viewed'), 'Y')
 
+    def test_notification_by_id_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/notifications/1', AuthVariant.FORBIDDEN)
+
+    def test_notification_by_id_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/notifications/1', AuthVariant.UNAUTHORIZED)
+
     def test_notification_by_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
@@ -259,6 +334,18 @@ class TestNotificationRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         self.assertEqual(response.status_code, 204)
+
+    def test_notification_by_id_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/notifications/1', AuthVariant.FORBIDDEN)
+
+    def test_notification_by_id_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/notifications/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/notifications/1', AuthVariant.UNAUTHORIZED)
 
     def test_notification_by_id_soft_delete_route_400_no_existing(self) -> None:
         """
@@ -345,6 +432,18 @@ class TestNotificationRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('notification'))
         self.assertTrue(response_json.get('notification').get('deleted'))
+
+    def test_notification_by_id_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/notifications/soft/1', AuthVariant.FORBIDDEN)
+
+    def test_notification_by_id_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/notifications/soft/1', AuthVariant.UNAUTHORIZED)
 
     def test_notification_get_links_route_200(self) -> None:
         """

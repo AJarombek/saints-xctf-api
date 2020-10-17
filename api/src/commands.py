@@ -30,7 +30,7 @@ def test():
     # Create a test runner an execute the test suite
     tests = unittest.TestLoader().discover('tests')
     runner = unittest.TextTestRunner(verbosity=3)
-    runner.run(tests)
+    result: unittest.TestResult = runner.run(tests)
 
     if cov:
         cov.stop()
@@ -42,3 +42,5 @@ def test():
         cov.html_report(directory=cov_dir)
         print('HTML version: file://%s/index.html' % cov_dir)
         cov.erase()
+
+    exit(len(result.errors))

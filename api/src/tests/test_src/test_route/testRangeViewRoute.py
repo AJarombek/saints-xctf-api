@@ -5,7 +5,9 @@ Date: 12/7/2019
 """
 
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestRangeViewRoute(TestSuite):
@@ -75,6 +77,22 @@ class TestRangeViewRoute(TestSuite):
         self.assertIsInstance(range_view[0].get('feel'), int)
         self.assertIn('miles', range_view[0])
         self.assertIsInstance(range_view[0].get('miles'), float)
+
+    def test_range_view_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/range_view/' route.
+        """
+        test_route_auth(
+            self, self.client, 'GET', '/v2/range_view/users/andy/r/2016-12-01/2016-12-31', AuthVariant.FORBIDDEN
+        )
+
+    def test_range_view_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/range_view/' route.
+        """
+        test_route_auth(
+            self, self.client, 'GET', '/v2/range_view/users/andy/r/2016-12-01/2016-12-31', AuthVariant.UNAUTHORIZED
+        )
 
     def test_range_view_get_links_route_200(self) -> None:
         """
