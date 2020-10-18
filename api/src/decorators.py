@@ -38,8 +38,7 @@ def auth_required():
                         else:
                             current_app.logger.info('User Authorized')
 
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(authenticate())
+            asyncio.run(authenticate())
 
             return f(*args, **kwargs)
         return decorated_function

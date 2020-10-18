@@ -288,8 +288,6 @@ def log_by_id_put(log_id) -> Response:
         new_log.pace = calculate_mile_pace(new_log.miles, new_log.time)
 
     if old_log != new_log:
-        print(old_log)
-        print(new_log)
         new_log.modified_date = datetime.now()
         new_log.modified_app = 'api'
 

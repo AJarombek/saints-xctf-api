@@ -7,7 +7,7 @@ Date: 6/23/2019
 
 class LocalConfig:
     ENV = 'local'
-    AUTH_URL = 'https://dev.auth.saintsxctf.com'
+    AUTH_URL = 'http://saints-xctf-auth:5000'
 
 
 class LocalTestConfig:

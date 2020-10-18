@@ -6,8 +6,11 @@ Date: 12/10/2019
 
 import json
 from datetime import datetime
+
 from flask import Response
+
 from tests.TestSuite import TestSuite
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 
 class TestUserRoute(TestSuite):
@@ -25,6 +28,18 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/users/', headers.get('Location'))
 
+    def test_user_get_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users', AuthVariant.FORBIDDEN)
+
+    def test_user_get_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users', AuthVariant.UNAUTHORIZED)
+
     def test_user_post_route_redirect(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/users' route. This route is redirected to
@@ -37,6 +52,18 @@ class TestUserRoute(TestSuite):
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/users/', headers.get('Location'))
+
+    def test_user_post_route_redirect_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/users' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/users', AuthVariant.FORBIDDEN)
+
+    def test_user_post_route_redirect_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/users' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/users', AuthVariant.UNAUTHORIZED)
 
     def test_user_get_all_route_200(self) -> None:
         """
@@ -88,6 +115,18 @@ class TestUserRoute(TestSuite):
         self.assertTrue(user.get('subscribed') is None or type(user.get('subscribed')) is str)
         self.assertIn('deleted', user)
         self.assertTrue(user.get('deleted') is None or type(user.get('deleted')) is str)
+
+    def test_user_get_all_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/', AuthVariant.FORBIDDEN)
+
+    def test_user_get_all_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/', AuthVariant.UNAUTHORIZED)
 
     def test_user_post_route_400_empty_body(self) -> None:
         """
@@ -250,6 +289,18 @@ class TestUserRoute(TestSuite):
         self.assertIn('subscribed', user)
         self.assertIn('deleted', user)
 
+    def test_user_post_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP POST request on the '/v2/users/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/users/', AuthVariant.FORBIDDEN)
+
+    def test_user_post_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP POST request on the '/v2/users/' route.
+        """
+        test_route_auth(self, self.client, 'POST', '/v2/users/', AuthVariant.UNAUTHORIZED)
+
     def test_user_by_username_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/<username>' route.  This test proves
@@ -278,6 +329,18 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/andy')
         self.assertIsNotNone(response_json.get('user'))
+
+    def test_user_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/andy', AuthVariant.UNAUTHORIZED)
 
     def test_user_by_username_put_route_400_no_existing(self) -> None:
         """
@@ -366,6 +429,18 @@ class TestUserRoute(TestSuite):
         self.assertIn('email', response_json.get('user'))
         self.assertEqual(response_json.get('user').get('email'), 'andrew@jarombek.com')
 
+    def test_user_by_username_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_by_username_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy', AuthVariant.UNAUTHORIZED)
+
     def test_user_by_username_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/users/<username>' route.  This test proves
@@ -376,6 +451,18 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         self.assertEqual(response.status_code, 204)
+
+    def test_user_by_username_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/users/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_by_username_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/users/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/users/andy', AuthVariant.UNAUTHORIZED)
 
     def test_user_by_username_soft_delete_route_400_no_existing(self) -> None:
         """
@@ -512,6 +599,18 @@ class TestUserRoute(TestSuite):
         )
         self.assertEqual(response.status_code, 204)
 
+    def test_user_by_username_soft_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/users/soft/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/users/soft/andy3', AuthVariant.FORBIDDEN)
+
+    def test_user_by_username_soft_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/users/soft/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/users/soft/andy3', AuthVariant.UNAUTHORIZED)
+
     def test_user_snapshot_by_username_get_route_400_no_existing(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/snapshot/<username>' route.  This test proves that
@@ -621,6 +720,18 @@ class TestUserRoute(TestSuite):
         self.assertIn('weekfeel', statistics)
         self.assertTrue(statistics.get('weekfeel') is None or type(statistics.get('weekfeel')) is float)
 
+    def test_user_snapshot_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/snapshot/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/snapshot/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_snapshot_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/snapshot/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/snapshot/andy', AuthVariant.UNAUTHORIZED)
+
     def test_user_change_password_by_username_put_route_400_missing_required_field(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/users/<username>/change_password' route.  This test proves that
@@ -669,6 +780,18 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('password_updated'), True)
         self.assertEqual(response_json.get('forgot_password_code_deleted'), True)
 
+    def test_user_change_password_by_username_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/users/<username>/change_password' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy/change_password', AuthVariant.FORBIDDEN)
+
+    def test_user_change_password_by_username_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/users/<username>/change_password' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy/change_password', AuthVariant.UNAUTHORIZED)
+
     def test_user_update_last_login_by_username_put_route_200(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/users/<username>/update_last_login' route.  This test proves
@@ -682,6 +805,18 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/andy2/update_last_login')
         self.assertEqual(response_json.get('last_login_updated'), True)
+
+    def test_user_update_last_login_by_username_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/users/<username>/update_last_login' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy/update_last_login', AuthVariant.FORBIDDEN)
+
+    def test_user_update_last_login_by_username_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/users/<username>/update_last_login' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/andy/update_last_login', AuthVariant.UNAUTHORIZED)
 
     def test_user_get_links_route_200(self) -> None:
         """

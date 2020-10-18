@@ -106,6 +106,20 @@ def create_app(config_name) -> Flask:
             'api_index': '/versions'
         }), 404
 
+    @application.errorhandler(409)
+    def error_409(ex):
+        """
+        Custom error handler for when 409 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Conflict",
+            'exception': str(ex),
+            'message': 'You do not have permission to make this request.',
+            'api_index': '/versions'
+        }), 403
+
     @application.errorhandler(500)
     def error_500(ex):
         """
