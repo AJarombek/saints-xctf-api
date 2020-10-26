@@ -40,8 +40,6 @@ Files
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``docker-compose-test-local.yml``  | Docker compose file to run the unit tests with a database connection.                        |
 +------------------------------------+----------------------------------------------------------------------------------------------+
-| ``docker-compose-watch-local.yml`` | Docker compose file to watch for code changes locally and refresh the API.                   |
-+------------------------------------+----------------------------------------------------------------------------------------------+
 | ``exec.sh``                        | Bash commands for executing Docker and Docker Compose.                                       |
 +------------------------------------+----------------------------------------------------------------------------------------------+
 | ``.env``                           | Environment variable file for Docker Compose in the production environment.                  |

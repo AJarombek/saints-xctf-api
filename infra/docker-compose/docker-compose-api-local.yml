@@ -4,12 +4,15 @@
 
 version: '3.7'
 services:
-  api:
+  saints-xctf-api:
+    domainname: saints-xctf-api
     build:
       context: ../../api/src/
       dockerfile: local.api.dockerfile
       # Needed to connect to the running MySQL database - https://stackoverflow.com/a/47068162
       network: host
+    environment:
+      - ENV=local
     ports:
       - 5000:5000
     networks:

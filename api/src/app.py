@@ -118,7 +118,7 @@ def create_app(config_name) -> Flask:
             'exception': str(ex),
             'message': 'You do not have permission to make this request.',
             'api_index': '/versions'
-        }), 403
+        }), 409
 
     @application.errorhandler(500)
     def error_500(ex):

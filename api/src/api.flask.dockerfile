@@ -21,6 +21,7 @@ COPY Pipfile.lock .
 RUN pipenv install --system
 
 COPY . .
+ENV FLASK_ENV production
 ENV ENV prod
 
 COPY credentials .aws/

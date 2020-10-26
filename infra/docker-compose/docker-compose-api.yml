@@ -5,25 +5,26 @@
 version: '3.7'
 services:
   saints-xctf-api-flask:
-    domainname: flask
+    domainname: saints-xctf-api-flask
     build:
       context: ../../api/src/
       dockerfile: api.flask.dockerfile
       network: host
     environment:
+      - FLASK_ENV=${FLASK_ENV}
       - ENV=${ENV}
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
     networks:
       - saints-xctf-api-net
-  saints-xctf-api-nginx:
-    domainname: nginx
+  saints-xctf-api:
+    domainname: saints-xctf-api
     build:
       context: ../../api/src/
       dockerfile: api.nginx.dockerfile
       network: host
     ports:
-    - 80:80
+      - 5002:80
     networks:
       - saints-xctf-api-net
     depends_on:
