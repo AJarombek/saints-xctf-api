@@ -827,4 +827,4 @@ class TestUserRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/links')
-        self.assertEqual(len(response_json.get('endpoints')), 12)
+        self.assertEqual(len(response_json.get('endpoints')), 13)

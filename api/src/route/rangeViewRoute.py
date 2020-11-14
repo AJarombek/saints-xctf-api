@@ -81,10 +81,10 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
     if range_view is None or range_view.rowcount == 0:
         response = jsonify({
             'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
-            'range_view': None,
-            'error': 'no logs found in this date range with the selected filters'
+            'range_view': [],
+            'message': 'no logs found in this date range with the selected filters'
         })
-        response.status_code = 500
+        response.status_code = 200
         return response
     else:
         range_view_list = []

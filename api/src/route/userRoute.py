@@ -150,6 +150,18 @@ def user_flair(username) -> Response:
         return user_flair_by_username_get(username)
 
 
+@user_route.route('/statistics/<username>', methods=['GET'])
+@auth_required()
+def user_statistics(username) -> Response:
+    """
+    Endpoint for retrieving a user's statistics.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a users exercise statistics.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/statistics/<username> '''
+        return user_statistics_by_username_get(username)
+
 @user_route.route('/<username>/change_password', methods=['PUT'])
 @auth_required()
 def user_change_password(username) -> Response:
@@ -604,35 +616,7 @@ def user_snapshot_by_username_get(username) -> Response:
 
         user_dict['notifications'] = notification_dicts
 
-        # All user statistics are queried separately but combined into a single map
-        miles: Column = LogDao.get_user_miles(username)
-        miles_past_year: Column = LogDao.get_user_miles_interval(username, 'year')
-        miles_past_month: Column = LogDao.get_user_miles_interval(username, 'month')
-        miles_past_week: Column = LogDao.get_user_miles_interval(username, 'week', week_start=user.week_start)
-        run_miles: Column = LogDao.get_user_miles_interval_by_type(username, 'run')
-        run_miles_past_year: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
-        run_miles_past_month: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
-        run_miles_past_week: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
-        all_time_feel: Column = LogDao.get_user_avg_feel(username)
-        year_feel: Column = LogDao.get_user_avg_feel_interval(username, 'year')
-        month_feel: Column = LogDao.get_user_avg_feel_interval(username, 'month')
-        week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
-
-        stats = {
-            'miles': float(miles['total']),
-            'milespastyear': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
-            'milespastmonth': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
-            'milespastweek': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
-            'runmiles': float(0 if run_miles['total'] is None else run_miles['total']),
-            'runmilespastyear': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
-            'runmilespastmonth': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
-            'runmilespastweek': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
-            'alltimefeel': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
-            'yearfeel': float(0 if year_feel['average'] is None else year_feel['average']),
-            'monthfeel': float(0 if month_feel['average'] is None else month_feel['average']),
-            'weekfeel': float(0 if week_feel['average'] is None else week_feel['average'])
-        }
-
+        stats = compile_user_statistics(user, username)
         user_dict['statistics'] = stats
 
         response = jsonify({
@@ -711,6 +695,37 @@ def user_flair_by_username_get(username) -> Response:
     response = jsonify({
         'self': f'/v2/users/flair/{username}',
         'flair': flair_dicts
+    })
+    response.status_code = 200
+    return response
+
+
+def user_statistics_by_username_get(username) -> Response:
+    """
+    Get exercise statistics for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    user: User = UserDao.get_user_by_username(username=username)
+
+    # If the user cant be found, try searching the email column in the database
+    if user is None:
+        email = username
+        user: User = UserDao.get_user_by_email(email=email)
+
+    # If the user still can't be found, return with an error code
+    if user is None:
+        response = jsonify({
+            'self': f'/v2/users/snapshot/{username}',
+            'user': None,
+            'error': 'there is no user with this username'
+        })
+        response.status_code = 400
+        return response
+
+    response = jsonify({
+        'self': f'/v2/users/statistics/{username}',
+        'stats': compile_user_statistics(user, username)
     })
     response.status_code = 200
     return response
@@ -844,6 +859,11 @@ def user_links_get() -> Response:
                 'description': 'Get a list of flair objects assigned to a user with a given username.'
             },
             {
+                'link': '/v2/users/statistics/<username>',
+                'verb': 'GET',
+                'description': 'Get exercise statistics for a user with a given username.'
+            },
+            {
                 'link': '/v2/users/<username>/change_password',
                 'verb': 'PUT',
                 'description': 'Update a user with a given username.  Specifically, alter the users password.'
@@ -857,3 +877,44 @@ def user_links_get() -> Response:
     })
     response.status_code = 200
     return response
+
+
+"""
+Helper Methods
+"""
+
+
+def compile_user_statistics(user: UserData, username: str) -> dict:
+    """
+    Query user statistics and combine them into a single map.
+    :param user: A user object containing information such as their preferred week start date.
+    :param username: The username of the user to get statistics for.
+    """
+    miles: Column = LogDao.get_user_miles(username)
+    miles_past_year: Column = LogDao.get_user_miles_interval(username, 'year')
+    miles_past_month: Column = LogDao.get_user_miles_interval(username, 'month')
+    miles_past_week: Column = LogDao.get_user_miles_interval(username, 'week', week_start=user.week_start)
+    run_miles: Column = LogDao.get_user_miles_interval_by_type(username, 'run')
+    run_miles_past_year: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
+    run_miles_past_month: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
+    run_miles_past_week: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
+    all_time_feel: Column = LogDao.get_user_avg_feel(username)
+    year_feel: Column = LogDao.get_user_avg_feel_interval(username, 'year')
+    month_feel: Column = LogDao.get_user_avg_feel_interval(username, 'month')
+    week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
+
+    return {
+        'miles': float(miles['total']),
+        'milespastyear': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
+        'milespastmonth': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
+        'milespastweek': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
+        'runmiles': float(0 if run_miles['total'] is None else run_miles['total']),
+        'runmilespastyear': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
+        'runmilespastmonth': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
+        'runmilespastweek': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
+        'alltimefeel': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
+        'yearfeel': float(0 if year_feel['average'] is None else year_feel['average']),
+        'monthfeel': float(0 if month_feel['average'] is None else month_feel['average']),
+        'weekfeel': float(0 if week_feel['average'] is None else week_feel['average'])
+    }
+
