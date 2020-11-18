@@ -716,7 +716,7 @@ def user_statistics_by_username_get(username) -> Response:
     # If the user still can't be found, return with an error code
     if user is None:
         response = jsonify({
-            'self': f'/v2/users/snapshot/{username}',
+            'self': f'/v2/users/statistics/{username}',
             'user': None,
             'error': 'there is no user with this username'
         })
@@ -904,17 +904,17 @@ def compile_user_statistics(user: UserData, username: str) -> dict:
     week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
 
     return {
-        'miles': float(miles['total']),
-        'milespastyear': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
-        'milespastmonth': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
-        'milespastweek': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
-        'runmiles': float(0 if run_miles['total'] is None else run_miles['total']),
-        'runmilespastyear': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
-        'runmilespastmonth': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
-        'runmilespastweek': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
-        'alltimefeel': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
-        'yearfeel': float(0 if year_feel['average'] is None else year_feel['average']),
-        'monthfeel': float(0 if month_feel['average'] is None else month_feel['average']),
-        'weekfeel': float(0 if week_feel['average'] is None else week_feel['average'])
+        'miles_all_time': float(miles['total']),
+        'miles_past_year': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
+        'miles_past_month': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
+        'miles_past_week': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
+        'run_miles_all_time': float(0 if run_miles['total'] is None else run_miles['total']),
+        'run_miles_past_year': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
+        'run_miles_past_month': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
+        'run_miles_past_week': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
+        'feel_all_time': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
+        'feel_past_year': float(0 if year_feel['average'] is None else year_feel['average']),
+        'feel_past_month': float(0 if month_feel['average'] is None else month_feel['average']),
+        'feel_past_week': float(0 if week_feel['average'] is None else week_feel['average'])
     }
 

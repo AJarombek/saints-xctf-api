@@ -12,50 +12,50 @@ from tests.test_src.test_route.utils import test_route_auth, AuthVariant
 
 class TestRangeViewRoute(TestSuite):
 
-    def test_range_view_get_route_500_groups(self) -> None:
+    def test_range_view_get_route_200_groups_empty(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
-        returns a 500 error code if there is no data that matches the query.
+        returns a 200 code and a custom message if there is no data that matches the query.
         """
         response: Response = self.client.get(
             '/v2/range_view/groups/invalid_group/r/2019-11-25/2020-01-05',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/range_view/groups/invalid_group/r/2019-11-25/2020-01-05')
-        self.assertIsNone(response_json.get('range_view'))
-        self.assertEqual(response_json.get('error'), 'no logs found in this date range with the selected filters')
+        self.assertListEqual(response_json.get('range_view'), [])
+        self.assertEqual(response_json.get('message'), 'no logs found in this date range with the selected filters')
 
-    def test_range_view_get_route_500_users(self) -> None:
+    def test_range_view_get_route_200_users_empty(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
-        returns a 500 error code if there is no data that matches the query.
+        returns a 200 code and a custom message if there is no data that matches the query.
         """
         response: Response = self.client.get(
             '/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05')
-        self.assertIsNone(response_json.get('range_view'))
-        self.assertEqual(response_json.get('error'), 'no logs found in this date range with the selected filters')
+        self.assertListEqual(response_json.get('range_view'), [])
+        self.assertEqual(response_json.get('message'), 'no logs found in this date range with the selected filters')
 
-    def test_range_view_get_route_500_all(self) -> None:
+    def test_range_view_get_route_200_all_empty(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
-        returns a 500 error code if there is no data that matches the query.
+        returns a 200 code and a custom message if there is no data that matches the query.
         """
         response: Response = self.client.get(
             '/v2/range_view/all/_/rbso/2010-11-25/2011-01-05',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/range_view/all/_/rbso/2010-11-25/2011-01-05')
-        self.assertIsNone(response_json.get('range_view'))
-        self.assertEqual(response_json.get('error'), 'no logs found in this date range with the selected filters')
+        self.assertListEqual(response_json.get('range_view'), [])
+        self.assertEqual(response_json.get('message'), 'no logs found in this date range with the selected filters')
 
     def test_range_view_get_route_200_user(self) -> None:
         """

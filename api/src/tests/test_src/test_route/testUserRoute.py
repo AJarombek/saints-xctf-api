@@ -695,30 +695,30 @@ class TestUserRoute(TestSuite):
         # I just finished knitting a blanket for my Mom.  I knitted one for Lisa's wedding as well.  If I'm lucky
         # one day I'll get to ask you if you want one as well.
         statistics = user.get('statistics')
-        self.assertIn('miles', statistics)
-        self.assertTrue(statistics.get('miles') is None or type(statistics.get('miles')) is float)
-        self.assertIn('milespastmonth', statistics)
-        self.assertTrue(statistics.get('milespastmonth') is None or type(statistics.get('milespastmonth')) is float)
-        self.assertIn('milespastweek', statistics)
-        self.assertTrue(statistics.get('milespastweek') is None or type(statistics.get('milespastweek')) is float)
-        self.assertIn('milespastyear', statistics)
-        self.assertTrue(statistics.get('milespastyear') is None or type(statistics.get('milespastyear')) is float)
-        self.assertIn('runmiles', statistics)
-        self.assertTrue(statistics.get('runmiles') is None or type(statistics.get('runmiles')) is float)
-        self.assertIn('runmilespastyear', statistics)
-        self.assertTrue(statistics.get('runmilespastyear') is None or type(statistics.get('runmilespastyear')) is float)
-        self.assertIn('runmilespastmonth', statistics)
-        self.assertTrue(statistics.get('runmilespastmonth') is None or type(statistics.get('runmilespastmonth')) is float)
-        self.assertIn('runmilespastweek', statistics)
-        self.assertTrue(statistics.get('runmilespastweek') is None or type(statistics.get('runmilespastweek')) is float)
-        self.assertIn('alltimefeel', statistics)
-        self.assertTrue(statistics.get('alltimefeel') is None or type(statistics.get('alltimefeel')) is float)
-        self.assertIn('yearfeel', statistics)
-        self.assertTrue(statistics.get('yearfeel') is None or type(statistics.get('yearfeel')) is float)
-        self.assertIn('monthfeel', statistics)
-        self.assertTrue(statistics.get('monthfeel') is None or type(statistics.get('monthfeel')) is float)
-        self.assertIn('weekfeel', statistics)
-        self.assertTrue(statistics.get('weekfeel') is None or type(statistics.get('weekfeel')) is float)
+        self.assertIn('miles_all_time', statistics)
+        self.assertTrue(statistics.get('miles_all_time') is None or type(statistics.get('miles_all_time')) is float)
+        self.assertIn('miles_past_month', statistics)
+        self.assertTrue(statistics.get('miles_past_month') is None or type(statistics.get('miles_past_month')) is float)
+        self.assertIn('miles_past_week', statistics)
+        self.assertTrue(statistics.get('miles_past_week') is None or type(statistics.get('miles_past_week')) is float)
+        self.assertIn('miles_past_year', statistics)
+        self.assertTrue(statistics.get('miles_past_year') is None or type(statistics.get('miles_past_year')) is float)
+        self.assertIn('run_miles_all_time', statistics)
+        self.assertTrue(statistics.get('run_miles_all_time') is None or type(statistics.get('run_miles_all_time')) is float)
+        self.assertIn('run_miles_past_year', statistics)
+        self.assertTrue(statistics.get('run_miles_past_year') is None or type(statistics.get('run_miles_past_year')) is float)
+        self.assertIn('run_miles_past_month', statistics)
+        self.assertTrue(statistics.get('run_miles_past_month') is None or type(statistics.get('run_miles_past_month')) is float)
+        self.assertIn('run_miles_past_week', statistics)
+        self.assertTrue(statistics.get('run_miles_past_week') is None or type(statistics.get('run_miles_past_week')) is float)
+        self.assertIn('feel_all_time', statistics)
+        self.assertTrue(statistics.get('feel_all_time') is None or type(statistics.get('feel_all_time')) is float)
+        self.assertIn('feel_past_year', statistics)
+        self.assertTrue(statistics.get('feel_past_year') is None or type(statistics.get('feel_past_year')) is float)
+        self.assertIn('feel_past_month', statistics)
+        self.assertTrue(statistics.get('feel_past_month') is None or type(statistics.get('feel_past_month')) is float)
+        self.assertIn('feel_past_week', statistics)
+        self.assertTrue(statistics.get('feel_past_week') is None or type(statistics.get('feel_past_week')) is float)
 
     def test_user_snapshot_by_username_get_route_forbidden(self) -> None:
         """
@@ -731,6 +731,75 @@ class TestUserRoute(TestSuite):
         Test performing an unauthorized HTTP GET request on the '/v2/users/snapshot/<username>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/users/snapshot/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_user_statistics_by_username_get_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/statistics/<username>' route.  This test proves that
+        trying to get statistics for a user that doesn't exist results in a 400 error.
+        """
+        # So. Much. Salad.
+        response: Response = self.client.get(
+            '/v2/users/statistics/bound2',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/statistics/bound2')
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), 'there is no user with this username')
+
+    def test_user_statistics_by_username_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/statistics/<username>' route.  This test proves that
+        trying to get a user's statistics is successful if the user exists.
+        """
+        response: Response = self.client.get(
+            '/v2/users/statistics/andy',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/statistics/andy')
+        self.assertIsNotNone(response_json.get('stats'))
+
+        statistics = response_json.get('stats')
+
+        self.assertIn('miles_all_time', statistics)
+        self.assertTrue(statistics.get('miles_all_time') is None or type(statistics.get('miles_all_time')) is float)
+        self.assertIn('miles_past_month', statistics)
+        self.assertTrue(statistics.get('miles_past_month') is None or type(statistics.get('miles_past_month')) is float)
+        self.assertIn('miles_past_week', statistics)
+        self.assertTrue(statistics.get('miles_past_week') is None or type(statistics.get('miles_past_week')) is float)
+        self.assertIn('miles_past_year', statistics)
+        self.assertTrue(statistics.get('miles_past_year') is None or type(statistics.get('miles_past_year')) is float)
+        self.assertIn('run_miles_all_time', statistics)
+        self.assertTrue(statistics.get('run_miles_all_time') is None or type(statistics.get('run_miles_all_time')) is float)
+        self.assertIn('run_miles_past_year', statistics)
+        self.assertTrue(statistics.get('run_miles_past_year') is None or type(statistics.get('run_miles_past_year')) is float)
+        self.assertIn('run_miles_past_month', statistics)
+        self.assertTrue(statistics.get('run_miles_past_month') is None or type(statistics.get('run_miles_past_month')) is float)
+        self.assertIn('run_miles_past_week', statistics)
+        self.assertTrue(statistics.get('run_miles_past_week') is None or type(statistics.get('run_miles_past_week')) is float)
+        self.assertIn('feel_all_time', statistics)
+        self.assertTrue(statistics.get('feel_all_time') is None or type(statistics.get('feel_all_time')) is float)
+        self.assertIn('feel_past_year', statistics)
+        self.assertTrue(statistics.get('feel_past_year') is None or type(statistics.get('feel_past_year')) is float)
+        self.assertIn('feel_past_month', statistics)
+        self.assertTrue(statistics.get('feel_past_month') is None or type(statistics.get('feel_past_month')) is float)
+        self.assertIn('feel_past_week', statistics)
+        self.assertTrue(statistics.get('feel_past_week') is None or type(statistics.get('feel_past_week')) is float)
+
+    def test_user_statistics_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/statistics/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/statistics/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_statistics_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/statistics/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/statistics/andy', AuthVariant.UNAUTHORIZED)
 
     def test_user_change_password_by_username_put_route_400_missing_required_field(self) -> None:
         """
