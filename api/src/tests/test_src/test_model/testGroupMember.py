@@ -12,6 +12,7 @@ class TestGroupMember(TestSuite):
     group_member1 = GroupMember({
         'id': 1,
         'group_name': "mensxc",
+        'group_id': 3,
         'username': 'andy',
         'status': 'accepted',
         'user': 'user',
@@ -21,6 +22,7 @@ class TestGroupMember(TestSuite):
     group_member2 = GroupMember({
         'id': 2,
         'group_name': "alumni",
+        'group_id': 1,
         'username': 'andy',
         'status': 'accepted',
         'user': 'admin',
@@ -31,7 +33,7 @@ class TestGroupMember(TestSuite):
         """
         Prove that the human readable string representation of an GroupMember object is as expected.
         """
-        group_member_str = "GroupMember: [id: 1, group_name: mensxc, username: andy, " \
+        group_member_str = "GroupMember: [id: 1, group_name: mensxc, group_id: 3, username: andy, " \
             'status: accepted, user: user, deleted: False]'
 
         self.assertEquals(str(self.group_member1), group_member_str)

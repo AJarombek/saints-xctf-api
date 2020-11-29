@@ -11,6 +11,7 @@ from model.GroupData import GroupData
 
 class TestGroup(TestSuite):
     group1 = GroupData(Group({
+        'id': 2,
         'group_name': 'mensxc',
         'group_title': "Men's Cross Country",
         'grouppic': None,
@@ -21,6 +22,7 @@ class TestGroup(TestSuite):
     }))
 
     group2 = GroupData(Group({
+        'id': 1,
         'group_name': 'wmenstf',
         'group_title': "Women's Track & Field",
         'grouppic': None,
@@ -34,7 +36,7 @@ class TestGroup(TestSuite):
         """
         Prove that the human readable string representation of an Group object is as expected.
         """
-        group_str = "GroupData: [group_name: mensxc, group_title: Men's Cross Country, grouppic: None, " \
+        group_str = "GroupData: [id: 2, group_name: mensxc, group_title: Men's Cross Country, grouppic: None, " \
             'grouppic_name: None, week_start: monday, description: , deleted: False]'
 
         self.assertEquals(str(self.group1), group_str)
@@ -44,8 +46,8 @@ class TestGroup(TestSuite):
         """
         Prove that the machine readable string representation of an GroupData object is as expected.
         """
-        self.assertEquals(repr(self.group1), "<GroupData 'mensxc'>")
-        self.assertEquals(self.group1.__repr__(), "<GroupData 'mensxc'>")
+        self.assertEquals(repr(self.group1), "<GroupData 2, 'mensxc'>")
+        self.assertEquals(self.group1.__repr__(), "<GroupData 2, 'mensxc'>")
 
     def test_group_data_eq(self) -> None:
         """

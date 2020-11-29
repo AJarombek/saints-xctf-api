@@ -37,7 +37,7 @@ class GroupData:
         String representation of a group within a team.  This representation is meant to be machine readable.
         :return: The group in string form.
         """
-        return '<GroupData %r>' % self.id, self.group_name
+        return '<GroupData %r, %r>' % (self.id, self.group_name)
 
     def __eq__(self, other):
         """

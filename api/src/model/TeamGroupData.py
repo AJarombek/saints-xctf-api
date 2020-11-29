@@ -14,6 +14,7 @@ class TeamGroupData:
         :param team_group: The original TeamGroup object with auditing fields.
         """
         if team_group is not None:
+            self.id = team_group.id
             self.team_name = team_group.team_name
             self.group_id = team_group.group_id
             self.group_name = team_group.group_name
@@ -32,7 +33,7 @@ class TeamGroupData:
         String representation of a team/group binding.  This representation is meant to be machine readable.
         :return: The team/group binding in string form.
         """
-        return '<TeamGroupData %r, %r>' % self.team_name, self.group_name
+        return '<TeamGroupData %r, %r>' % (self.team_name, self.group_name)
 
     def __eq__(self, other):
         """

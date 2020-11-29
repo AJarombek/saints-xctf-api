@@ -10,6 +10,7 @@ from model.Group import Group
 
 class TestGroup(TestSuite):
     group1 = Group({
+        'id': 2,
         'group_name': 'mensxc',
         'group_title': "Men's Cross Country",
         'grouppic': None,
@@ -20,6 +21,7 @@ class TestGroup(TestSuite):
     })
 
     group2 = Group({
+        'id': 1,
         'group_name': 'wmenstf',
         'group_title': "Women's Track & Field",
         'grouppic': None,
@@ -33,7 +35,7 @@ class TestGroup(TestSuite):
         """
         Prove that the human readable string representation of an Group object is as expected.
         """
-        group_str = "Group: [group_name: mensxc, group_title: Men's Cross Country, grouppic: None, " \
+        group_str = "Group: [id: 2, group_name: mensxc, group_title: Men's Cross Country, grouppic: None, " \
             'grouppic_name: None, week_start: monday, description: , deleted: False]'
 
         self.assertEquals(str(self.group1), group_str)
@@ -43,8 +45,8 @@ class TestGroup(TestSuite):
         """
         Prove that the machine readable string representation of an Group object is as expected.
         """
-        self.assertEquals(repr(self.group1), "<Group 'mensxc'>")
-        self.assertEquals(self.group1.__repr__(), "<Group 'mensxc'>")
+        self.assertEquals(repr(self.group1), "<Group 2, 'mensxc'>")
+        self.assertEquals(self.group1.__repr__(), "<Group 2, 'mensxc'>")
 
     def test_group_eq(self) -> None:
         """

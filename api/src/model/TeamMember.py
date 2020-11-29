@@ -15,6 +15,7 @@ class TeamMember(db.Model):
         Initialize a TeamMember object by passing in a dictionary.
         :param team: A dictionary with fields matching the TeamMember fields
         """
+        self.id = team.get('id')
         self.team_name = team.get('team_name')
         self.username = team.get('username')
         self.status = team.get('status')
@@ -33,6 +34,7 @@ class TeamMember(db.Model):
     __tablename__ = 'teammembers'
 
     # Data Columns
+    id = Column(db.INTEGER, primary_key=True)
     team_name = Column(db.VARCHAR(31), db.ForeignKey('teams.name'))
     username = Column(db.VARCHAR(20), db.ForeignKey('users.username'))
     status = Column(db.VARCHAR(10))
@@ -63,7 +65,7 @@ class TeamMember(db.Model):
         String representation of a team membership.  This representation is meant to be machine readable.
         :return: The team membership in string form.
         """
-        return '<TeamMember %r, %r>' % self.team_name, self.username
+        return '<TeamMember %r, %r>' % (self.team_name, self.username)
 
     def __eq__(self, other):
         """

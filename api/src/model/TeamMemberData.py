@@ -14,6 +14,7 @@ class TeamMemberData:
         :param team_member: The original TeamMember object with auditing fields.
         """
         if team_member is not None:
+            self.id = team_member.id
             self.team_name = team_member.team_name
             self.username = team_member.username
             self.status = team_member.status
@@ -33,7 +34,7 @@ class TeamMemberData:
         String representation of a team membership.  This representation is meant to be machine readable.
         :return: The team membership in string form.
         """
-        return '<TeamMemberData %r, %r>' % self.team_name, self.username
+        return '<TeamMemberData %r, %r>' % (self.team_name, self.username)
 
     def __eq__(self, other):
         """

@@ -15,6 +15,7 @@ class TeamGroup(db.Model):
         Initialize a TeamGroup object by passing in a dictionary.
         :param team: A dictionary with fields matching the TeamGroup fields
         """
+        self.id = team.get('id')
         self.team_name = team.get('team_name')
         self.group_id = team.get('group_id')
         self.group_name = team.get('group_name')
@@ -32,6 +33,7 @@ class TeamGroup(db.Model):
     __tablename__ = 'teamgroups'
 
     # Data Columns
+    id = Column(db.INTEGER, primary_key=True)
     team_name = Column(db.VARCHAR(31), db.ForeignKey('teams.name'))
     group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     group_name = Column(db.INTEGER, db.ForeignKey('groups.name'))
@@ -61,7 +63,7 @@ class TeamGroup(db.Model):
         String representation of a team and group binding.  This representation is meant to be machine readable.
         :return: The team/group binding in string form.
         """
-        return '<TeamGroup %r, %r>' % self.team_name, self.group_name
+        return '<TeamGroup %r, %r>' % (self.team_name, self.group_name)
 
     def __eq__(self, other):
         """
