@@ -16,6 +16,7 @@ class GroupMemberData:
         if group_member is not None:
             self.id = group_member.id
             self.group_name = group_member.group_name
+            self.group_id = group_member.group_id
             self.username = group_member.username
             self.status = group_member.status
             self.user = group_member.user
@@ -27,8 +28,8 @@ class GroupMemberData:
         to be human readable.
         :return: The group member in string form.
         """
-        return f'GroupMemberData: [id: {self.id}, group_name: {self.group_name}, username: {self.username}, ' \
-            f'status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
+        return f'GroupMemberData: [id: {self.id}, group_name: {self.group_name}, group_id: {self.group_id}, ' \
+            f'username: {self.username}, status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """

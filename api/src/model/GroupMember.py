@@ -17,6 +17,7 @@ class GroupMember(db.Model):
         """
         self.id = group_member.get('id')
         self.group_name = group_member.get('group_name')
+        self.group_id = group_member.get('group_id')
         self.username = group_member.get('username')
         self.status = group_member.get('status')
         self.user = group_member.get('user')
@@ -36,6 +37,7 @@ class GroupMember(db.Model):
     # Data Columns
     id = Column(db.INTEGER, primary_key=True)
     group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), index=True)
+    group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     username = Column(db.VARCHAR(20), index=True)
     status = Column(db.VARCHAR(10), db.ForeignKey('status.status'))
     user = Column(db.VARCHAR(10), db.ForeignKey('admins.user'))
@@ -58,8 +60,8 @@ class GroupMember(db.Model):
         to be human readable.
         :return: The group member in string form.
         """
-        return f'GroupMember: [id: {self.id}, group_name: {self.group_name}, username: {self.username}, ' \
-            f'status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
+        return f'GroupMember: [id: {self.id}, group_name: {self.group_name}, group_id: {self.group_id}, ' \
+            f'username: {self.username}, status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """
@@ -88,6 +90,7 @@ class GroupMember(db.Model):
         return all([
             group_member_1.id == group_member_2.id,
             group_member_1.group_name == group_member_2.group_name,
+            group_member_1.group_id == group_member_2.group_id,
             group_member_1.username == group_member_2.username,
             group_member_1.status == group_member_2.status,
             group_member_1.user == group_member_2.user,

@@ -16,6 +16,7 @@ class Group(db.Model):
         Initialize a Group object by passing in a dictionary.
         :param group: A dictionary with fields matching the Group fields
         """
+        self.id = group.get('id')
         self.group_name = group.get('group_name')
         self.group_title = group.get('group_title')
         self.grouppic = group.get('grouppic')
@@ -36,7 +37,8 @@ class Group(db.Model):
     __tablename__ = 'groups'
 
     # Data Columns
-    group_name = Column(db.VARCHAR(20), primary_key=True)
+    id = Column(db.INT, autoincrement=True, primary_key=True)
+    group_name = Column(db.VARCHAR(20), index=True)
     group_title = Column(db.VARCHAR(50), index=True)
     grouppic = Column(LONGBLOB)
     grouppic_name = Column(db.VARCHAR(50))
@@ -60,9 +62,9 @@ class Group(db.Model):
     def __str__(self):
         """
         String representation of a group within a team.  This representation is meant to be human readable.
-        :return: The forgot password code in string form.
+        :return: The group in string form.
         """
-        return f'Group: [group_name: {self.group_name}, group_title: {self.group_title}, ' \
+        return f'Group: [id: {self.id}, group_name: {self.group_name}, group_title: {self.group_title}, ' \
             f'grouppic: {self.grouppic}, grouppic_name: {self.grouppic_name}, week_start: {self.week_start}, ' \
             f'description: {self.description}, deleted: {self.deleted}]'
 
@@ -71,7 +73,7 @@ class Group(db.Model):
         String representation of a group within a team.  This representation is meant to be machine readable.
         :return: The group in string form.
         """
-        return '<Group %r>' % self.group_name
+        return '<Group %r, %r>' % self.id, self.group_name
 
     def __eq__(self, other):
         """
@@ -108,6 +110,7 @@ class Group(db.Model):
                 pass
 
         return all([
+            group_1.id == group_2.id,
             group_1.group_name == group_2.group_name,
             group_1.group_title == group_2.group_title,
             self_grouppic == other_grouppic,
