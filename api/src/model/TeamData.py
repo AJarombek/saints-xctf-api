@@ -25,7 +25,7 @@ class TeamData:
         String representation of a team.  This representation is meant to be human readable.
         :return: The team in string form.
         """
-        return f'Team: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, ' \
+        return f'TeamData: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, ' \
                f'description: {self.description}, deleted: {self.deleted}]'
 
     def __repr__(self):
