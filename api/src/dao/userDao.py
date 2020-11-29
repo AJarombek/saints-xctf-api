@@ -122,6 +122,10 @@ class UserDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
+            'DELETE FROM teammembers WHERE username=:username',
+            {'username': username}
+        )
+        db.session.execute(
             'DELETE FROM users WHERE username=:username',
             {'username': username}
         )
