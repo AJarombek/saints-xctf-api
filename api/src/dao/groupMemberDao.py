@@ -22,8 +22,10 @@ class GroupMemberDao:
             '''
             SELECT groupmembers.group_name,group_title,status,user 
             FROM groupmembers 
-            INNER JOIN groups ON groups.group_name=groupmembers.group_name 
+            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             WHERE username=:username
+            AND groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y'
+            AND `groups`.deleted IS NULL OR `groups`.deleted <> 'Y'
             ''',
             {'username': username}
         )
@@ -39,9 +41,12 @@ class GroupMemberDao:
             '''
             SELECT users.username,first,last,member_since,user,status,groupmembers.deleted 
             FROM groupmembers 
-            INNER JOIN groups ON groups.group_name=groupmembers.group_name 
+            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             INNER JOIN users ON groupmembers.username=users.username 
             WHERE groupmembers.group_name=:group_name
+            AND groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y'
+            AND `groups`.deleted IS NULL OR `groups`.deleted <> 'Y'
+            AND users.deleted IS NULL OR users.deleted <> 'Y'
             ''',
             {'group_name': group_name}
         )

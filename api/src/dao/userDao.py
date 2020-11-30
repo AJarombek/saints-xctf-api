@@ -5,6 +5,7 @@ Date: 6/16/2019
 """
 
 from sqlalchemy.orm import defer
+
 from database import db
 from dao.basicDao import BasicDao
 from model.User import User
