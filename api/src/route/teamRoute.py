@@ -5,9 +5,12 @@ Date: 11/29/2020
 """
 
 from flask import Blueprint, Response, request, redirect, url_for, jsonify
+from sqlalchemy.engine import ResultProxy
 
 from decorators import auth_required
 from dao.teamDao import TeamDao
+from dao.teamMemberDao import TeamMemberDao
+from dao.teamGroupDao import TeamGroupDao
 from model.Team import Team
 from model.TeamData import TeamData
 
@@ -147,7 +150,36 @@ def team_members_by_team_name_get(team_name) -> Response:
     :param team_name: Unique name of a team.
     :return: A response object for the GET API request.
     """
-    pass
+    team_members_result: ResultProxy = TeamMemberDao.get_team_members(team_name=team_name)
+
+    if team_members_result is None or team_members_result.rowcount == 0:
+        response = jsonify({
+            'self': f'/v2/teams/members/{team_name}',
+            'team': f'/v2/teams/{team_name}',
+            'team_members': None,
+            'error': 'the team does not exist or it has no members'
+        })
+        response.status_code = 400
+        return response
+    else:
+        team_members_list = [{
+            'username': member.username,
+            'first': member.first,
+            'last': member.last,
+            'member_since': member.member_since,
+            'user': member.user,
+            'status': member.status,
+            'deleted': member.deleted
+        }
+            for member in team_members_result]
+
+        response = jsonify({
+            'self': f'/v2/teams/members/{team_name}',
+            'group': f'/v2/teams/{team_name}',
+            'team_members': team_members_list
+        })
+        response.status_code = 200
+        return response
 
 
 def team_groups_by_team_name_get(team_name) -> Response:
@@ -156,7 +188,36 @@ def team_groups_by_team_name_get(team_name) -> Response:
     :param team_name: Unique name of a team.
     :return: A response object for the GET API request.
     """
-    pass
+    team_groups_result: ResultProxy = TeamGroupDao.get_team_groups(team_name=team_name)
+
+    if team_groups_result is None or team_groups_result.rowcount == 0:
+        response = jsonify({
+            'self': f'/v2/teams/groups/{team_name}',
+            'team': f'/v2/teams/{team_name}',
+            'team_groups': None,
+            'error': 'the team does not exist or it has no groups'
+        })
+        response.status_code = 400
+        return response
+    else:
+        team_groups_list = [{
+            'id': member.id,
+            'group_name': member.group_name,
+            'group_title': member.group_title,
+            'grouppic_name': member.grouppic_name,
+            'description': member.description,
+            'week_start': member.week_start,
+            'deleted': member.deleted
+        }
+            for member in team_groups_result]
+
+        response = jsonify({
+            'self': f'/v2/teams/groups/{team_name}',
+            'group': f'/v2/teams/{team_name}',
+            'team_groups': team_groups_list
+        })
+        response.status_code = 200
+        return response
 
 
 def team_links_get() -> Response:

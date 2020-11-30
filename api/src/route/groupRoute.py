@@ -7,10 +7,10 @@ Date: 7/7/2019
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
-
-from decorators import auth_required
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy.schema import Column
+
+from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
 from dao.groupDao import GroupDao
