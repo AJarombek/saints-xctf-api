@@ -23,13 +23,24 @@ class GroupDao:
         return Group.query.all()
 
     @staticmethod
-    def get_group(group_name: str) -> Group:
+    def get_group(team_name: str, group_name: str) -> Column:
         """
         Retrieve a group with a given name from the database.
-        :param group_name: A name which uniquely identifies a group.
+        :param team_name: Unique name which identifies a team.
+        :param group_name: Unique name which identifies a group within a team.
         :return: The result of the query.
         """
-        return Group.query.filter_by(group_name=group_name).first()
+        result: ResultProxy = db.session.execute(
+            '''
+            SELECT `groups`.*
+            FROM `groups` 
+            INNER JOIN teamgroups ON `groups`.group_name = teamgroups.group_name
+            WHERE `groups`.group_name=:group_name
+            AND team_name=:team_name
+            ''',
+            {'team_name': team_name, 'group_name': group_name}
+        )
+        return result.first()
 
     @staticmethod
     def get_newest_log_date(group_name: str) -> Column:

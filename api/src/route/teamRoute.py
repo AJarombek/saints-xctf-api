@@ -242,6 +242,11 @@ def team_links_get() -> Response:
                 'link': '/v2/teams/members/<name>',
                 'verb': 'GET',
                 'description': 'Retrieve the members of a team with a given name.'
+            },
+            {
+                'link': '/v2/teams/groups/<name>',
+                'verb': 'GET',
+                'description': 'Retrieve the groups in a team based on the team name.'
             }
         ],
     })
