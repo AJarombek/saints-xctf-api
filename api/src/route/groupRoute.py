@@ -167,13 +167,6 @@ def group_by_group_name_get(team_name: str, group_name: str) -> Response:
         return response
     else:
         group_dict = {key: value for key, value in group_row.items()}
-
-        if group_dict['grouppic'] is not None:
-            try:
-                group_dict['grouppic'] = group_dict['grouppic'].decode('utf-8')
-            except AttributeError:
-                pass
-
         response = jsonify({
             'self': f'/v2/groups/{team_name}/{group_name}',
             'group': group_dict
@@ -218,14 +211,8 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
                 team_name=team_name,
                 group_name=new_group.group_name
             )
+
             updated_group_dict = {key: value for key, value in updated_group_row.items()}
-
-            if updated_group_dict['grouppic'] is not None:
-                try:
-                    updated_group_dict['grouppic'] = updated_group_dict['grouppic'].decode('utf-8')
-                except AttributeError:
-                    pass
-
             response = jsonify({
                 'self': f'/v2/groups/{team_name}/{group_name}',
                 'updated': True,
