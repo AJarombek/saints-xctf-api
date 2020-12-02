@@ -5,8 +5,11 @@ Author: Andrew Jarombek
 Date: 7/2/2019
 """
 
-from sqlalchemy.engine import ResultProxy
+from typing import Optional
+
+from sqlalchemy.engine import ResultProxy, RowProxy
 from sqlalchemy.schema import Column
+
 from database import db
 from dao.basicDao import BasicDao
 from model.Group import Group
@@ -23,7 +26,16 @@ class GroupDao:
         return Group.query.all()
 
     @staticmethod
-    def get_group(team_name: str, group_name: str) -> Column:
+    def get_group_by_id(group_id: int) -> Group:
+        """
+       Retrieve a group with a given id from the database.
+       :param group_id: Unique id which identifies a group.
+       :return: A Group object which is the result of the query.
+       """
+        return Group.query.filter_by(id=group_id).first()
+
+    @staticmethod
+    def get_group(team_name: str, group_name: str) -> Optional[RowProxy]:
         """
         Retrieve a group with a given name from the database.
         :param team_name: Unique name which identifies a team.
@@ -32,7 +44,7 @@ class GroupDao:
         """
         result: ResultProxy = db.session.execute(
             '''
-            SELECT `groups`.*
+            SELECT `groups`.id, `groups`.group_name, group_title, grouppic_name, description, week_start
             FROM `groups` 
             INNER JOIN teamgroups ON `groups`.group_name = teamgroups.group_name
             WHERE `groups`.group_name=:group_name

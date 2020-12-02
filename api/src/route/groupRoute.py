@@ -5,9 +5,10 @@ Date: 7/7/2019
 """
 
 from datetime import datetime
+from typing import Optional
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine import ResultProxy, RowProxy
 from sqlalchemy.schema import Column
 
 from decorators import auth_required
@@ -60,6 +61,19 @@ def group(team_name, group_name) -> Response:
     elif request.method == 'PUT':
         ''' [PUT] /v2/groups/<group_name> '''
         return group_by_group_name_put(team_name, group_name)
+
+
+@group_route.route('/<group_id>', methods=['GET', 'PUT'])
+@auth_required()
+def group_by_id(group_id) -> Response:
+    """
+    Endpoints for retrieving a single group based on its id.
+    :param group_id: Unique id which identifies a group.
+    :return: JSON representation of a group and relevant metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/<id> '''
+        return group_by_id_get(group_id)
 
 
 @group_route.route('/members/<team_name>/<group_name>', methods=['GET'])
@@ -141,9 +155,9 @@ def group_by_group_name_get(team_name: str, group_name: str) -> Response:
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the GET API request.
     """
-    group_column: Column = GroupDao.get_group(team_name=team_name, group_name=group_name)
+    group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
 
-    if group_column is None:
+    if group_row is None:
         response = jsonify({
             'self': f'/v2/groups/{team_name}/{group_name}',
             'group': None,
@@ -152,8 +166,7 @@ def group_by_group_name_get(team_name: str, group_name: str) -> Response:
         response.status_code = 400
         return response
     else:
-        group = Group(group_column.__dict__)
-        group_dict = GroupData(group).__dict__
+        group_dict = {key: value for key, value in group_row.items()}
 
         if group_dict['grouppic'] is not None:
             try:
@@ -176,9 +189,9 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the PUT API request.
     """
-    old_group_column: Column = GroupDao.get_group(team_name=team_name, group_name=group_name)
+    old_group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
 
-    if old_group_column is None:
+    if old_group_row is None:
         response = jsonify({
             'self': f'/v2/groups/{team_name}/{group_name}',
             'updated': False,
@@ -188,7 +201,8 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
         response.status_code = 400
         return response
 
-    old_group = Group(old_group_column.__dict__)
+    old_group_dict = {key: value for key, value in old_group_row.items()}
+    old_group = Group(old_group_dict)
     group_data: dict = request.get_json()
     new_group = Group(group_data)
 
@@ -200,9 +214,11 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
         is_updated = GroupDao.update_group(group=new_group)
 
         if is_updated:
-            updated_group_column: Column = GroupDao.get_group(team_name=team_name, group_name=new_group.group_name)
-            updated_group = Group(updated_group_column.__dict__)
-            updated_group_dict: dict = GroupData(updated_group).__dict__
+            updated_group_row: Optional[RowProxy] = GroupDao.get_group(
+                team_name=team_name,
+                group_name=new_group.group_name
+            )
+            updated_group_dict = {key: value for key, value in updated_group_row.items()}
 
             if updated_group_dict['grouppic'] is not None:
                 try:
@@ -234,6 +250,39 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
             'error': 'the group submitted is equal to the existing group with the same name'
         })
         response.status_code = 400
+        return response
+
+
+def group_by_id_get(group_id: str) -> Response:
+    """
+    Get a group based on the unique group id.
+    :param group_id: Unique id which identifies a group.
+    :return: A response object for the GET API request.
+    """
+    group_row: Group = GroupDao.get_group_by_id(group_id=int(group_id))
+
+    if group_row is None:
+        response = jsonify({
+            'self': f'/v2/groups/{group_id}',
+            'group': None,
+            'error': 'there is no group with this id'
+        })
+        response.status_code = 400
+        return response
+    else:
+        group_dict = GroupData(group_row).__dict__
+
+        if group_dict['grouppic'] is not None:
+            try:
+                group_dict['grouppic'] = group_dict['grouppic'].decode('utf-8')
+            except AttributeError:
+                pass
+
+        response = jsonify({
+            'self': f'/v2/groups/{group_id}',
+            'group': group_dict
+        })
+        response.status_code = 200
         return response
 
 
@@ -283,9 +332,9 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the GET API request.
     """
-    group_column: Column = GroupDao.get_group(team_name=team_name, group_name=group_name)
+    group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
 
-    if group_column is None:
+    if group_row is None:
         response = jsonify({
             'self': f'/v2/groups/snapshot/{team_name}/{group_name}',
             'group': f'/v2/groups/{team_name}/{group_name}',
@@ -295,7 +344,8 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
         response.status_code = 400
         return response
 
-    group = Group(group_column.__dict__)
+    group_dict = {key: value for key, value in group_row.items()}
+    group = Group(group_dict)
 
     group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name)
     group_members_list = [{
@@ -387,7 +437,6 @@ def group_links_get() -> Response:
                 'verb': 'GET',
                 'description': 'Retrieve a single group based on the group name and team name.'
             },
-
             {
                 'link': '/v2/groups/<id>',
                 'verb': 'GET',
