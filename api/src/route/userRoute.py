@@ -124,6 +124,32 @@ def user_groups(username) -> Response:
         return user_groups_by_username_get(username)
 
 
+@user_route.route('/teams/<username>', methods=['GET'])
+@auth_required()
+def user_teams(username) -> Response:
+    """
+    Endpoint for retrieving a user's team memberships.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a list of team memberships
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/teams/<username> '''
+        return user_teams_by_username_get(username)
+
+
+@user_route.route('/memberships/<username>', methods=['GET'])
+@auth_required()
+def user_memberships(username) -> Response:
+    """
+    Endpoint for retrieving a user's team and group memberships.
+    :param username: Username (or email) of a User
+    :return: JSON representation of a list of team memberships with nested group memberships
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/memberships/<username> '''
+        return user_memberships_by_username_get(username)
+
+
 @user_route.route('/notifications/<username>', methods=['GET'])
 @auth_required()
 def user_notifications(username) -> Response:
@@ -652,6 +678,24 @@ def user_groups_by_username_get(username) -> Response:
     return response
 
 
+def user_teams_by_username_get(username) -> Response:
+    """
+    Get the team memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    pass
+
+
+def user_memberships_by_username_get(username) -> Response:
+    """
+    Get the team and group memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    pass
+
+
 def user_notifications_by_username_get(username) -> Response:
     """
     Get the notifications for a user.
@@ -847,6 +891,16 @@ def user_links_get() -> Response:
                 'link': '/v2/users/groups/<username>',
                 'verb': 'GET',
                 'description': 'Get a list of groups that a user with a given username is a member of.'
+            },
+            {
+                'link': '/v2/users/teams/<username>',
+                'verb': 'GET',
+                'description': 'Get a list of teams that a user with a given username is a member of.'
+            },
+            {
+                'link': '/v2/users/memberships/<username>',
+                'verb': 'GET',
+                'description': 'Get a list of teams with nested lists of groups that a user is a member of.'
             },
             {
                 'link': '/v2/users/notifications/<username>',

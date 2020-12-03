@@ -24,8 +24,8 @@ class TeamMemberDao:
             FROM teammembers 
             INNER JOIN teams ON teams.name=teammembers.team_name 
             WHERE username=:username
-            AND teammembers.deleted IS NULL OR teammembers.deleted <> 'Y'
-            AND teams.deleted IS NULL OR teams.deleted <> 'Y'
+            AND (teammembers.deleted IS NULL OR teammembers.deleted <> 'Y')
+            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
             ''',
             {'username': username}
         )
@@ -43,10 +43,10 @@ class TeamMemberDao:
             FROM teammembers 
             INNER JOIN teams ON teams.name=teammembers.team_name 
             INNER JOIN users ON teammembers.username=users.username 
-            WHERE teammembers.group_name=:team_name
-            AND teammembers.deleted IS NULL OR teammembers.deleted <> 'Y'
-            AND teams.deleted IS NULL OR teams.deleted <> 'Y'
-            AND users.deleted IS NULL OR users.deleted <> 'Y'
+            WHERE teammembers.team_name=:team_name
+            AND (teammembers.deleted IS NULL OR teammembers.deleted <> 'Y')
+            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
+            AND (users.deleted IS NULL OR users.deleted <> 'Y')
             ''',
             {'team_name': team_name}
         )

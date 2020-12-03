@@ -91,3 +91,75 @@ class TestTeamRoute(TestSuite):
         Test performing an unauthorized HTTP GET request on the '/v2/teams/<name>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/teams/saintsxctf', AuthVariant.UNAUTHORIZED)
+
+    def test_team_members_by_team_name_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/members/<team_name>' route.  This test proves that
+        trying to retrieve the members of a team that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/teams/members/invalid', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/teams/members/invalid')
+        self.assertIsNone(response_json.get('team_members'))
+        self.assertEqual(response_json.get('error'), 'the team does not exist or it has no members')
+
+    def test_team_members_by_team_name_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/members/<team_name>' route.  This test proves that
+        retrieving the members of a valid team results in the members and a 200 status.
+        """
+        response: Response = self.client.get('/v2/teams/members/saintsxctf', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/teams/members/saintsxctf')
+        self.assertIsNotNone(response_json.get('team_members'))
+        self.assertGreater(len(response_json.get('team_members')), 0)
+
+    def test_team_members_by_team_name_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/teams/members/<team_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/members/saintsxctf', AuthVariant.FORBIDDEN)
+
+    def test_team_members_by_team_name_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/teams/members/<team_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/members/saintsxctf', AuthVariant.UNAUTHORIZED)
+
+    def test_team_groups_by_team_name_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/groups/<team_name>' route.  This test proves that
+        trying to retrieve the groups that are in a team which doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/teams/groups/invalid', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/teams/groups/invalid')
+        self.assertIsNone(response_json.get('team_groups'))
+        self.assertEqual(response_json.get('error'), 'the team does not exist or it has no groups')
+
+    def test_team_groups_by_team_name_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/groups/<team_name>' route.  This test proves that
+        retrieving the groups in a valid team results in the group objects and a 200 status.
+        """
+        response: Response = self.client.get('/v2/teams/groups/saintsxctf', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/teams/groups/saintsxctf')
+        self.assertIsNotNone(response_json.get('team_groups'))
+        self.assertGreater(len(response_json.get('team_groups')), 0)
+
+    def test_team_groups_by_team_name_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/teams/groups/<team_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/groups/saintsxctf', AuthVariant.FORBIDDEN)
+
+    def test_team_groups_by_team_name_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/teams/groups/<team_name>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/groups/saintsxctf', AuthVariant.UNAUTHORIZED)

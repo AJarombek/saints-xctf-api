@@ -18,14 +18,15 @@ class TeamGroupDao:
         :param team_name: Unique name for the team
         :return: A list of teams
         """
+        print(team_name)
         return db.session.execute(
             '''
             SELECT id,`groups`.group_name,group_title,grouppic_name,description,week_start,`groups`.deleted
             FROM teamgroups 
             INNER JOIN `groups` ON teamgroups.group_name=`groups`.group_name 
             WHERE team_name=:team_name
-            AND teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y'
-            AND `groups`.deleted IS NULL OR `groups`.deleted <> 'Y'
+            AND (teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y')
+            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
             ''',
             {'team_name': team_name}
         )
