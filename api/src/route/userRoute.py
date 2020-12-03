@@ -21,6 +21,7 @@ from dao.forgotPasswordDao import ForgotPasswordDao
 from dao.flairDao import FlairDao
 from dao.notificationDao import NotificationDao
 from dao.logDao import LogDao
+from dao.teamMemberDao import TeamMemberDao
 from model.Code import Code
 from model.FlairData import FlairData
 from model.Flair import Flair
@@ -684,7 +685,23 @@ def user_teams_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    pass
+    teams: ResultProxy = TeamMemberDao.get_user_teams(username=username)
+    team_list = []
+
+    for team in teams:
+        team_list.append({
+            'team_name': team['team_name'],
+            'title': team['title'],
+            'status': team['status'],
+            'user': team['user']
+        })
+
+    response = jsonify({
+        'self': f'/v2/users/teams/{username}',
+        'teams': team_list
+    })
+    response.status_code = 200
+    return response
 
 
 def user_memberships_by_username_get(username) -> Response:
@@ -693,7 +710,33 @@ def user_memberships_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    pass
+    teams: ResultProxy = TeamMemberDao.get_user_teams(username=username)
+    membership_list = []
+
+    for team in teams:
+        groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
+        membership_list.append({
+            'team_name': team['team_name'],
+            'title': team['title'],
+            'status': team['status'],
+            'user': team['user'],
+            'groups': [
+                {
+                    'group_name': group['group_name'],
+                    'group_title': group['group_title'],
+                    'status': group['status'],
+                    'user': group['user']
+                }
+                for group in groups
+            ]
+        })
+
+    response = jsonify({
+        'self': f'/v2/users/memberships/{username}',
+        'memberships': membership_list
+    })
+    response.status_code = 200
+    return response
 
 
 def user_notifications_by_username_get(username) -> Response:

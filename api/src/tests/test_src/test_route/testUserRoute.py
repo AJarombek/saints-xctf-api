@@ -732,6 +732,123 @@ class TestUserRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/users/snapshot/andy', AuthVariant.UNAUTHORIZED)
 
+    def test_user_groups_by_username_get_route_200(self) -> None:
+        """
+        Test performing a successful HTTP GET request on the '/v2/users/groups/<username>' route.
+        """
+        response: Response = self.client.get('/v2/users/groups/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/groups/andy')
+
+        groups = response_json.get('groups')
+        self.assertGreater(len(groups), 0)
+
+        group = groups[0]
+        self.assertIn('group_name', group)
+        self.assertTrue(group.get('group_name') is None or type(group.get('group_name')) is str)
+        self.assertIn('group_title', group)
+        self.assertTrue(group.get('group_title') is None or type(group.get('group_title')) is str)
+        self.assertIn('status', group)
+        self.assertTrue(group.get('status') is None or type(group.get('status')) is str)
+        self.assertIn('user', group)
+        self.assertTrue(group.get('user') is None or type(group.get('user')) is str)
+
+    def test_user_groups_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/groups/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/groups/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_groups_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/groups/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/groups/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_user_teams_by_username_get_route_200(self) -> None:
+        """
+        Test performing a successful HTTP GET request on the '/v2/users/teams/<username>' route.
+        """
+        response: Response = self.client.get('/v2/users/teams/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/teams/andy')
+
+        teams = response_json.get('teams')
+        self.assertGreater(len(teams), 0)
+
+        team = teams[0]
+        self.assertIn('team_name', team)
+        self.assertTrue(team.get('team_name') is None or type(team.get('team_name')) is str)
+        self.assertIn('title', team)
+        self.assertTrue(team.get('title') is None or type(team.get('title')) is str)
+        self.assertIn('status', team)
+        self.assertTrue(team.get('status') is None or type(team.get('status')) is str)
+        self.assertIn('user', team)
+        self.assertTrue(team.get('user') is None or type(team.get('user')) is str)
+
+    def test_user_teams_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/teams/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/teams/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_teams_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/teams/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/teams/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_user_memberships_by_username_get_route_200(self) -> None:
+        """
+        Test performing a successful HTTP GET request on the '/v2/users/memberships/<username>' route.
+        """
+        response: Response = self.client.get('/v2/users/memberships/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+
+        memberships = response_json.get('memberships')
+        self.assertGreater(len(memberships), 0)
+
+        team_membership = memberships[0]
+        self.assertIn('team_name', team_membership)
+        self.assertTrue(team_membership.get('team_name') is None or type(team_membership.get('team_name')) is str)
+        self.assertIn('title', team_membership)
+        self.assertTrue(team_membership.get('title') is None or type(team_membership.get('title')) is str)
+        self.assertIn('status', team_membership)
+        self.assertTrue(team_membership.get('status') is None or type(team_membership.get('status')) is str)
+        self.assertIn('user', team_membership)
+        self.assertTrue(team_membership.get('user') is None or type(team_membership.get('user')) is str)
+        self.assertIn('groups', team_membership)
+        self.assertTrue(team_membership.get('groups') is None or type(team_membership.get('groups')) is list)
+
+        groups = team_membership.get('groups')
+        self.assertGreater(len(groups), 0)
+
+        group_membership = groups[0]
+        self.assertIn('group_name', group_membership)
+        self.assertTrue(group_membership.get('group_name') is None or type(group_membership.get('group_name')) is str)
+        self.assertIn('group_title', group_membership)
+        self.assertTrue(group_membership.get('group_title') is None or type(group_membership.get('group_title')) is str)
+        self.assertIn('status', group_membership)
+        self.assertTrue(group_membership.get('status') is None or type(group_membership.get('status')) is str)
+        self.assertIn('user', group_membership)
+        self.assertTrue(group_membership.get('user') is None or type(group_membership.get('user')) is str)
+
+    def test_user_memberships_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/memberships/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/memberships/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_memberships_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/memberships/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/memberships/andy', AuthVariant.UNAUTHORIZED)
+
     def test_user_statistics_by_username_get_route_400_no_existing(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/statistics/<username>' route.  This test proves that
@@ -896,4 +1013,4 @@ class TestUserRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/links')
-        self.assertEqual(len(response_json.get('endpoints')), 13)
+        self.assertEqual(len(response_json.get('endpoints')), 15)
