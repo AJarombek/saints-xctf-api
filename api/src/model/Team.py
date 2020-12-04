@@ -18,6 +18,7 @@ class Team(db.Model):
         self.name = team.get('name')
         self.title = team.get('title')
         self.picture_name = team.get('picture_name')
+        self.week_start = team.get('week_start')
         self.description = team.get('description')
         self.deleted = team.get('deleted')
         self.created_date = team.get('created_date')
@@ -36,6 +37,7 @@ class Team(db.Model):
     name = Column(db.VARCHAR(31), primary_key=True)
     title = Column(db.VARCHAR(127), index=True)
     picture_name = Column(db.VARCHAR(255))
+    week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
     description = Column(db.VARCHAR(255))
     deleted = Column(db.CHAR(1))
 
@@ -56,7 +58,7 @@ class Team(db.Model):
         :return: The team in string form.
         """
         return f'Team: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, ' \
-            f'description: {self.description}, deleted: {self.deleted}]'
+            f'week_start: {self.week_start}, description: {self.description}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """
@@ -85,6 +87,7 @@ class Team(db.Model):
             team_1.name == team_2.name,
             team_1.title == team_2.title,
             team_1.picture_name == team_2.picture_name,
+            team_1.week_start == team_2.week_start,
             team_1.description == team_2.description,
             team_1.deleted == team_2.deleted
         ])

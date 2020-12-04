@@ -14,6 +14,7 @@ class TestTeamData(TestSuite):
         'name': 'saintsxctf',
         'title': 'St. Lawrence Cross Country and Track & Field',
         'picture_name': None,
+        'week_start': None,
         'description': None,
         'deleted': 'N'
     }))
@@ -22,6 +23,7 @@ class TestTeamData(TestSuite):
         'name': 'friends',
         'title': 'Andy & Friends',
         'picture_name': None,
+        'week_start': None,
         'description': None,
         'deleted': 'N'
     }))
@@ -31,7 +33,7 @@ class TestTeamData(TestSuite):
         Prove that the human readable string representation of a TeamData object is as expected.
         """
         team_str = "TeamData: [name: saintsxctf, title: St. Lawrence Cross Country and Track & Field, " \
-            "picture_name: None, description: None, deleted: N]"
+            "picture_name: None, week_start: None, description: None, deleted: N]"
 
         self.assertEquals(str(self.team1), team_str)
         self.assertEquals(self.team1.__str__(), team_str)

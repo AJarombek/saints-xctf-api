@@ -17,6 +17,7 @@ class TeamData:
             self.name = team.name
             self.title = team.title
             self.picture_name = team.picture_name
+            self.week_start = team.week_start
             self.description = team.description
             self.deleted = team.deleted
 
@@ -26,7 +27,7 @@ class TeamData:
         :return: The team in string form.
         """
         return f'TeamData: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, ' \
-               f'description: {self.description}, deleted: {self.deleted}]'
+               f'week_start: {self.week_start}, description: {self.description}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """

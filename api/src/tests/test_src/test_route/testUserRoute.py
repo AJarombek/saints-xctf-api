@@ -849,6 +849,76 @@ class TestUserRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/users/memberships/andy', AuthVariant.UNAUTHORIZED)
 
+    def test_user_notifications_by_username_get_route_200(self) -> None:
+        """
+        Test performing a successful HTTP GET request on the '/v2/users/notifications/<username>' route.
+        """
+        response: Response = self.client.get('/v2/users/notifications/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/notifications/andy')
+
+        notifications = response_json.get('notifications')
+        self.assertGreater(len(notifications), 0)
+
+        notification = notifications[0]
+        self.assertIn('notification_id', notification)
+        self.assertTrue(notification.get('notification_id') is None or type(notification.get('notification_id')) is int)
+        self.assertIn('username', notification)
+        self.assertTrue(notification.get('username') is None or type(notification.get('username')) is str)
+        self.assertIn('time', notification)
+        self.assertTrue(notification.get('time') is None or type(notification.get('time')) is str)
+        self.assertIn('link', notification)
+        self.assertTrue(notification.get('link') is None or type(notification.get('link')) is str)
+        self.assertIn('viewed', notification)
+        self.assertTrue(notification.get('viewed') is None or type(notification.get('viewed')) is str)
+        self.assertIn('description', notification)
+        self.assertTrue(notification.get('description') is None or type(notification.get('description')) is str)
+
+    def test_user_notifications_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/notifications/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/notifications/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_notifications_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/notifications/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/notifications/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_user_flair_by_username_get_route_200(self) -> None:
+        """
+        Test performing a successful HTTP GET request on the '/v2/users/flair/<username>' route.
+        """
+        response: Response = self.client.get('/v2/users/flair/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/flair/andy')
+
+        flair_list = response_json.get('flair')
+        self.assertGreater(len(flair_list), 0)
+
+        flair = flair_list[0]
+        self.assertIn('flair_id', flair)
+        self.assertTrue(flair.get('flair_id') is None or type(flair.get('flair_id')) is int)
+        self.assertIn('username', flair)
+        self.assertTrue(flair.get('username') is None or type(flair.get('username')) is str)
+        self.assertIn('flair', flair)
+        self.assertTrue(flair.get('flair') is None or type(flair.get('flair')) is str)
+
+    def test_user_flair_by_username_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/users/flair/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/flair/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_flair_by_username_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/users/flair/<username>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/users/flair/andy', AuthVariant.UNAUTHORIZED)
+
     def test_user_statistics_by_username_get_route_400_no_existing(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/statistics/<username>' route.  This test proves that
