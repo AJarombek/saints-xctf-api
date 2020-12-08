@@ -31,6 +31,31 @@ class GroupMemberDao:
         )
 
     @staticmethod
+    def get_user_groups_in_team(username: str, team_name: str) -> ResultProxy:
+        """
+        Get information about all the groups a user is a member of within a team
+        :param username: Unique identifier for the user
+        :param team_name: Unique name for a team
+        :return: A list of groups
+        """
+        return db.session.execute(
+            '''
+            SELECT groupmembers.group_name,group_title,status,user 
+            FROM groupmembers 
+            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
+            INNER JOIN teamgroups ON teamgroups.group_id=`groups`.id
+            INNER JOIN teams ON teams.name=teamgroups.team_name 
+            WHERE username=:username
+            AND teams.name=:team_name
+            AND (groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y')
+            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
+            AND (teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y')
+            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
+            ''',
+            {'username': username, 'team_name': team_name}
+        )
+
+    @staticmethod
     def get_group_members(group_name: str) -> ResultProxy:
         """
         Get the users who are members of a group.

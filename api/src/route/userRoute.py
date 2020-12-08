@@ -714,7 +714,7 @@ def user_memberships_by_username_get(username) -> Response:
     membership_list = []
 
     for team in teams:
-        groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
+        groups: ResultProxy = GroupMemberDao.get_user_groups_in_team(username=username, team_name=team['team_name'])
         membership_list.append({
             'team_name': team['team_name'],
             'title': team['title'],
