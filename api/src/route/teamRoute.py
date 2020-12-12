@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 11/29/2020
 """
 
+from typing import List
+
 from flask import Blueprint, Response, request, redirect, url_for, jsonify
 from sqlalchemy.engine import ResultProxy
 
@@ -80,6 +82,20 @@ def team_groups(team_name) -> Response:
         return team_groups_by_team_name_get(team_name)
 
 
+@team_route.route('/search/<text>/<limit>', methods=['GET'])
+@auth_required()
+def search_teams(text, limit) -> Response:
+    """
+    Endpoint that performs a text search for teams.
+    :param text: A string of text that was searched for.
+    :param limit: The maximum number of teams to return.
+    :return: JSON representation of a list of teams and their related metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/teams/search/<text>/<limit> '''
+        return search_teams_by_text_get(text, limit)
+
+
 @team_route.route('/links', methods=['GET'])
 def team_links() -> Response:
     """
@@ -96,7 +112,7 @@ def teams_get() -> Response:
     Retrieve all the teams in the database.
     :return: A response object for the GET API request.
     """
-    all_teams: list = TeamDao.get_teams()
+    all_teams: List[Team] = TeamDao.get_teams()
 
     if all_teams is None:
         response = jsonify({
@@ -220,6 +236,34 @@ def team_groups_by_team_name_get(team_name) -> Response:
         return response
 
 
+def search_teams_by_text_get(text: str, limit: int) -> Response:
+    """
+    Search for teams based on a string of text.  Limit the number of teams returned.
+    :param text: A string of text that was searched for.
+    :param limit: The maximum number of teams to return.
+    :return: A response object for the GET API request
+    """
+    searched_teams: List[Team] = TeamDao.search_teams(text, limit)
+
+    if searched_teams is None:
+        response = jsonify({
+            'self': f'/v2/teams/search/{text}/{limit}',
+            'teams': None,
+            'error': 'an unexpected error occurred retrieving teams'
+        })
+        response.status_code = 200
+        return response
+    else:
+        team_dicts = [TeamData(team_info).__dict__ for team_info in searched_teams]
+
+        response = jsonify({
+            'self': f'/v2/teams/search/{text}/{limit}',
+            'teams': team_dicts
+        })
+        response.status_code = 200
+        return response
+
+
 def team_links_get() -> Response:
     """
     Get all the other team API endpoints.
@@ -247,6 +291,11 @@ def team_links_get() -> Response:
                 'link': '/v2/teams/groups/<name>',
                 'verb': 'GET',
                 'description': 'Retrieve the groups in a team based on the team name.'
+            },
+            {
+                'link': '/v2/teams/search/<text>/<limit>',
+                'verb': 'GET',
+                'description': 'Text search for teams.'
             }
         ],
     })
