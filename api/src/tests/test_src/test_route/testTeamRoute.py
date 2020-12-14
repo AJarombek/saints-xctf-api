@@ -163,3 +163,40 @@ class TestTeamRoute(TestSuite):
         Test performing an unauthorized HTTP GET request on the '/v2/teams/groups/<team_name>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/teams/groups/saintsxctf', AuthVariant.UNAUTHORIZED)
+
+    def test_search_teams_by_team_name_get_route_200_no_matches(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/search/<text>/<limit>' route.  This test proves that
+        when the search returns an empty result set, there is an additional message field on the JSON response.  The
+        response status code is 200.
+        """
+        response: Response = self.client.get('/v2/teams/search/invalid/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/teams/search/invalid/1')
+        self.assertEqual(len(response_json.get('teams')), 0)
+        self.assertEqual(response_json.get('message'), 'no teams were found with the provided text')
+
+    def test_search_teams_by_team_name_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/search/<text>/<limit>' route.  This test proves that
+        a search which matches teams returns a list of team objects and a 200 status.
+        """
+        response: Response = self.client.get('/v2/teams/search/saintsxctf/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/teams/search/saintsxctf/1')
+        self.assertIsNotNone(response_json.get('teams'))
+        self.assertEqual(len(response_json.get('teams')), 1)
+
+    def test_search_teams_by_text_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/teams/search/<text>/<limit>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/search/St/5', AuthVariant.FORBIDDEN)
+
+    def test_search_teams_by_text_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/teams/search/<text>/<limit>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/teams/search/St/5', AuthVariant.UNAUTHORIZED)

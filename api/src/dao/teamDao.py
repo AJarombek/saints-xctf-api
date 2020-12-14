@@ -19,7 +19,7 @@ class TeamDao:
         :return: A list containing Team model objects.
         """
         return Team.query\
-            .filter(or_(Team.deleted.is_(None), Team.deleted.isnot('Y')))\
+            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
             .all()
 
     @staticmethod
@@ -31,7 +31,7 @@ class TeamDao:
         """
         return Team.query\
             .filter_by(name=name)\
-            .filter(or_(Team.deleted.is_(None), Team.deleted.isnot('Y')))\
+            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
             .first()
 
     @staticmethod
@@ -43,8 +43,7 @@ class TeamDao:
         :return: The result of the database query.
         """
         return Team.query\
-            .filter(Team.name.like(f'%{text}%'))\
-            .filter(Team.title.like(f'%{text}%'))\
-            .filter(or_(Team.deleted.is_(None), Team.deleted.isnot('Y')))\
+            .filter(or_(Team.name.like(f'%{text}%'), Team.title.like(f'%{text}%')))\
+            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
             .limit(limit)\
             .all()

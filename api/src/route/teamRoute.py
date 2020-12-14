@@ -245,11 +245,11 @@ def search_teams_by_text_get(text: str, limit: int) -> Response:
     """
     searched_teams: List[Team] = TeamDao.search_teams(text, limit)
 
-    if searched_teams is None:
+    if searched_teams is None or len(searched_teams) == 0:
         response = jsonify({
             'self': f'/v2/teams/search/{text}/{limit}',
-            'teams': None,
-            'error': 'an unexpected error occurred retrieving teams'
+            'teams': [],
+            'message': 'no teams were found with the provided text'
         })
         response.status_code = 200
         return response
