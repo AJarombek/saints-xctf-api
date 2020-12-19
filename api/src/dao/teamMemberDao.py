@@ -5,7 +5,7 @@ Author: Andrew Jarombek
 Date: 11/29/2020
 """
 
-from typing import List, Tuple
+from typing import List, Dict
 from datetime import datetime
 
 from sqlalchemy.engine import ResultProxy
@@ -13,6 +13,7 @@ from sqlalchemy.engine import ResultProxy
 from database import db
 from dao.basicDao import BasicDao
 from model.TeamMember import TeamMember
+from model.GroupMember import GroupMember
 
 
 class TeamMemberDao:
@@ -59,16 +60,17 @@ class TeamMemberDao:
 
     @staticmethod
     def update_user_memberships(username: str, teams_joined: List[str], teams_left: List[str],
-                                groups_joined: List[Tuple[str, str]], groups_left: List[Tuple[str, str]]):
+                                groups_joined: List[Dict[str, str]], groups_left: List[Dict[str, str]]) -> bool:
         """
         Update the team and group memberships of a user.
         :param username: The username of the user who is updating their team memberships.
         :param teams_joined: A list of team names that the user is requesting to join.
         :param teams_left: A list of team names that the user is requesting to leave.
-        :param groups_joined: A list tuples containing a team name and a group name.  Each tuple represents a group that
-        the user is requesting to join.
-        :param groups_left: A list tuples containing a team name and a group name.  Each tuple represents a group that
-        the user is requesting to leave.
+        :param groups_joined: A list dictionaries containing a team name and a group name.  Each tuple represents a
+        group that the user is requesting to join.
+        :param groups_left: A list dictionaries containing a team name and a group name.  Each tuple represents a group
+        that the user is requesting to leave.
+        :return: True if the transaction is completed successfully, False otherwise.
         """
         teams_joined_dict = [TeamMember({
             'team_name': team_name,
@@ -83,6 +85,10 @@ class TeamMemberDao:
 
         teams_left_dict = [{'username': username, 'team_name': team_name} for team_name in teams_left]
 
+        groups_joined_dict = [{**group_joined, 'username': username} for group_joined in groups_joined]
+
+        groups_left_dict = [{**group_left, 'username': username} for group_left in groups_left]
+
         if len(teams_joined_dict) > 0:
             for team_membership in teams_joined_dict:
                 db.session.add(team_membership)
@@ -96,8 +102,63 @@ class TeamMemberDao:
                     deleted_user=:username,
                     deleted_app='saints-xctf-api'
                 WHERE username=:username
-                AND team_name=:team_name;
+                AND team_name=:team_name
                 ''',
                 teams_left_dict
             )
+
+        if len(groups_joined_dict) > 0:
+            db.session.execute(
+                '''
+                INSERT INTO groupmembers (
+                    group_id, 
+                    group_name, 
+                    username, 
+                    status, 
+                    user, 
+                    deleted, 
+                    created_date, 
+                    created_user, 
+                    created_app
+                ) VALUES (
+                    (
+                        SELECT g.id
+                        FROM `groups` g
+                        INNER JOIN teamgroups tg ON g.group_name = tg.group_name
+                        WHERE tg.team_name = :team_name
+                        AND tg.group_name = :group_name
+                    ), 
+                    :group_name,
+                    :username, 
+                    'pending', 
+                    'user', 
+                    'N', 
+                    CURRENT_TIMESTAMP(), 
+                    :username, 
+                    'saints-xctf-api'
+                )
+                ''',
+                teams_left_dict
+            )
+
+        if len(groups_left_dict) > 0:
+            db.session.execute(
+                '''
+                UPDATE groupmembers SET
+                    deleted = 'Y',
+                    deleted_date=CURRENT_TIMESTAMP(),
+                    deleted_user=:username,
+                    deleted_app='saints-xctf-api'
+                WHERE username=:username
+                AND group_id = (
+                    SELECT g.id
+                    FROM `groups` g
+                    INNER JOIN teamgroups tg ON g.group_name = tg.group_name
+                    WHERE tg.team_name = :team_name
+                    AND tg.group_name = :group_name
+                );
+                ''',
+                groups_left_dict
+            )
+
         return BasicDao.safe_commit()

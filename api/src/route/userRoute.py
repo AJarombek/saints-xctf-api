@@ -754,6 +754,26 @@ def user_memberships_by_username_put(username) -> Response:
     groups_joined = membership_data.get('groups_joined')
     groups_left = membership_data.get('groups_left')
 
+    committed: bool = TeamMemberDao.update_user_memberships(
+        username, teams_joined, teams_left, groups_joined, groups_left
+    )
+
+    if committed:
+        response = jsonify({
+            'self': f'/v2/users/memberships/{username}',
+            'updated': True,
+        })
+        response.status_code = 201
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/memberships/{username}',
+            'updated': False,
+            'error': "failed to update the user's memberships"
+        })
+        response.status_code = 500
+        return response
+
 
 def user_notifications_by_username_get(username) -> Response:
     """
