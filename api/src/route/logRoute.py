@@ -182,7 +182,7 @@ def logs_post() -> Response:
 
     log_to_add.time_created = datetime.now()
     log_to_add.created_date = datetime.now()
-    log_to_add.created_app = 'api'
+    log_to_add.created_app = 'saints-xctf-api'
 
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
 
@@ -289,7 +289,7 @@ def log_by_id_put(log_id) -> Response:
 
     if old_log != new_log:
         new_log.modified_date = datetime.now()
-        new_log.modified_app = 'api'
+        new_log.modified_app = 'saints-xctf-api'
 
         is_updated: bool = LogDao.update_log(new_log)
 
@@ -398,9 +398,9 @@ def log_by_id_soft_delete(log_id) -> Response:
     # Update the comment model to reflect the soft delete
     existing_log.deleted = 'Y'
     existing_log.deleted_date = datetime.now()
-    existing_log.deleted_app = 'api'
+    existing_log.deleted_app = 'saints-xctf-api'
     existing_log.modified_date = datetime.now()
-    existing_log.modified_app = 'api'
+    existing_log.modified_app = 'saints-xctf-api'
 
     is_deleted: bool = LogDao.soft_delete_log(existing_log)
 

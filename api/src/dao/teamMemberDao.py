@@ -5,8 +5,14 @@ Author: Andrew Jarombek
 Date: 11/29/2020
 """
 
+from typing import List, Tuple
+from datetime import datetime
+
 from sqlalchemy.engine import ResultProxy
+
 from database import db
+from dao.basicDao import BasicDao
+from model.TeamMember import TeamMember
 
 
 class TeamMemberDao:
@@ -50,3 +56,48 @@ class TeamMemberDao:
             ''',
             {'team_name': team_name}
         )
+
+    @staticmethod
+    def update_user_memberships(username: str, teams_joined: List[str], teams_left: List[str],
+                                groups_joined: List[Tuple[str, str]], groups_left: List[Tuple[str, str]]):
+        """
+        Update the team and group memberships of a user.
+        :param username: The username of the user who is updating their team memberships.
+        :param teams_joined: A list of team names that the user is requesting to join.
+        :param teams_left: A list of team names that the user is requesting to leave.
+        :param groups_joined: A list tuples containing a team name and a group name.  Each tuple represents a group that
+        the user is requesting to join.
+        :param groups_left: A list tuples containing a team name and a group name.  Each tuple represents a group that
+        the user is requesting to leave.
+        """
+        teams_joined_dict = [TeamMember({
+            'team_name': team_name,
+            'username': username,
+            'status': 'pending',
+            'user': 'user',
+            'deleted': 'N',
+            'created_date': datetime.now(),
+            'created_user': username,
+            'created_app': 'saints-xctf-api'
+        }) for team_name in teams_joined]
+
+        teams_left_dict = [{'username': username, 'team_name': team_name} for team_name in teams_left]
+
+        if len(teams_joined_dict) > 0:
+            for team_membership in teams_joined_dict:
+                db.session.add(team_membership)
+
+        if len(teams_left_dict) > 0:
+            db.session.execute(
+                '''
+                UPDATE teammembers SET 
+                    deleted = 'Y',
+                    deleted_date=CURRENT_TIMESTAMP(),
+                    deleted_user=:username,
+                    deleted_app='saints-xctf-api'
+                WHERE username=:username
+                AND team_name=:team_name;
+                ''',
+                teams_left_dict
+            )
+        return BasicDao.safe_commit()

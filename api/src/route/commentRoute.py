@@ -151,7 +151,7 @@ def comment_post():
         return response
 
     comment_to_add.created_date = datetime.now()
-    comment_to_add.created_app = 'api'
+    comment_to_add.created_app = 'saints-xctf-api'
 
     comment_added_successfully: bool = CommentDao.add_comment(new_comment=comment_to_add)
 
@@ -231,7 +231,7 @@ def comment_with_id_put(comment_id):
     if old_comment != new_comment:
 
         new_comment.modified_date = datetime.now()
-        new_comment.modified_app = 'api'
+        new_comment.modified_app = 'saints-xctf-api'
 
         is_updated = CommentDao.update_comment(comment=new_comment)
 
@@ -320,9 +320,9 @@ def comment_with_id_soft_delete(comment_id):
     # Update the comment model to reflect the soft delete
     existing_comment.deleted = 'Y'
     existing_comment.deleted_date = datetime.now()
-    existing_comment.deleted_app = 'api'
+    existing_comment.deleted_app = 'saints-xctf-api'
     existing_comment.modified_date = datetime.now()
-    existing_comment.modified_app = 'api'
+    existing_comment.modified_app = 'saints-xctf-api'
 
     is_deleted: bool = CommentDao.soft_delete_comment(existing_comment)
 

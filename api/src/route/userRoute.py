@@ -149,6 +149,9 @@ def user_memberships(username) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/users/memberships/<username> '''
         return user_memberships_by_username_get(username)
+    elif request.method == 'PUT':
+        ''' [PUT] /v2/users/memberships/<username> '''
+        return user_memberships_by_username_put(username)
 
 
 @user_route.route('/notifications/<username>', methods=['GET'])
@@ -327,7 +330,7 @@ def user_post() -> Response:
         user_to_add.member_since = now.date()
         user_to_add.created_date = now
         user_to_add.last_signin = now
-        user_to_add.created_app = 'api'
+        user_to_add.created_app = 'saints-xctf-api'
 
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)
@@ -527,9 +530,9 @@ def user_by_username_soft_delete(username) -> Response:
     # Update the user model to reflect the soft delete
     existing_user.deleted = 'Y'
     existing_user.deleted_date = datetime.now()
-    existing_user.deleted_app = 'api'
+    existing_user.deleted_app = 'saints-xctf-api'
     existing_user.modified_date = datetime.now()
-    existing_user.modified_app = 'api'
+    existing_user.modified_app = 'saints-xctf-api'
 
     is_deleted: bool = UserDao.soft_delete_user(existing_user)
 
@@ -737,6 +740,19 @@ def user_memberships_by_username_get(username) -> Response:
     })
     response.status_code = 200
     return response
+
+
+def user_memberships_by_username_put(username) -> Response:
+    """
+    Update the team and group memberships of a user.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the PUT API request.
+    """
+    membership_data: dict = request.get_json()
+    teams_joined = membership_data.get('teams_joined')
+    teams_left = membership_data.get('teams_left')
+    groups_joined = membership_data.get('groups_joined')
+    groups_left = membership_data.get('groups_left')
 
 
 def user_notifications_by_username_get(username) -> Response:

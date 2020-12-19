@@ -135,7 +135,7 @@ def activation_code_post() -> Response:
 
     # The created date must be accurate, don't trust the date coming from the client.
     code_to_add.created_date = datetime.now()
-    code_to_add.created_app = 'api'
+    code_to_add.created_app = 'saints-xctf-api'
 
     code_added_successfully: bool = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 
@@ -268,9 +268,9 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
     # Update the activation code model to reflect the soft delete
     existing_code.deleted = 'Y'
     existing_code.deleted_date = datetime.now()
-    existing_code.deleted_app = 'api'
+    existing_code.deleted_app = 'saints-xctf-api'
     existing_code.modified_date = datetime.now()
-    existing_code.modified_app = 'api'
+    existing_code.modified_app = 'saints-xctf-api'
 
     is_deleted = ActivationCodeDao.soft_delete_code(existing_code)
 

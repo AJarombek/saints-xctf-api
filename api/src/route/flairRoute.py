@@ -85,7 +85,7 @@ def flair_post():
     })
 
     flair.created_date = datetime.now()
-    flair.created_app = 'api'
+    flair.created_app = 'saints-xctf-api'
 
     flair_added: bool = FlairDao.add_flair(flair)
 

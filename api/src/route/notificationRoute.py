@@ -154,7 +154,7 @@ def notification_post() -> Response:
         return response
 
     notification_to_add.created_date = datetime.now()
-    notification_to_add.created_app = 'api'
+    notification_to_add.created_app = 'saints-xctf-api'
 
     notification_added_successfully = NotificationDao.add_notification(new_notification=notification_to_add)
 
@@ -234,7 +234,7 @@ def notification_by_id_put(notification_id) -> Response:
 
     if old_notification != new_notification:
         new_notification.modified_date = datetime.now()
-        new_notification.modified_app = 'api'
+        new_notification.modified_app = 'saints-xctf-api'
 
         is_updated = NotificationDao.update_notification(notification=new_notification)
 
@@ -324,9 +324,9 @@ def notification_by_id_soft_delete(notification_id) -> Response:
     # Update the notification model to reflect the soft delete
     existing_notification.deleted = 'Y'
     existing_notification.deleted_date = datetime.now()
-    existing_notification.deleted_app = 'api'
+    existing_notification.deleted_app = 'saints-xctf-api'
     existing_notification.modified_date = datetime.now()
-    existing_notification.modified_app = 'api'
+    existing_notification.modified_app = 'saints-xctf-api'
 
     is_deleted: bool = NotificationDao.soft_delete_notification(existing_notification)
 

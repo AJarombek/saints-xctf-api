@@ -130,7 +130,7 @@ def forgot_password_post(username) -> Response:
     })
 
     new_forgot_password.created_date = datetime.now()
-    new_forgot_password.created_app = 'api'
+    new_forgot_password.created_app = 'saints-xctf-api'
 
     forgot_password_inserted = ForgotPasswordDao.add_forgot_password_code(new_forgot_password)
 

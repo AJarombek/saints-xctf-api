@@ -158,7 +158,7 @@ def message_post() -> Response:
         return response
 
     message_to_add.created_date = datetime.now()
-    message_to_add.created_app = 'api'
+    message_to_add.created_app = 'saints-xctf-api'
 
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
 
@@ -241,7 +241,7 @@ def messages_by_id_put(message_id) -> Response:
 
     if old_message != new_message:
         new_message.modified_date = datetime.now()
-        new_message.modified_app = 'api'
+        new_message.modified_app = 'saints-xctf-api'
 
         is_updated = MessageDao.update_message(new_message)
 
@@ -335,9 +335,9 @@ def message_by_id_soft_delete(message_id) -> Response:
     # Update the message model to reflect the soft delete
     existing_message.deleted = 'Y'
     existing_message.deleted_date = datetime.now()
-    existing_message.deleted_app = 'api'
+    existing_message.deleted_app = 'saints-xctf-api'
     existing_message.modified_date = datetime.now()
-    existing_message.modified_app = 'api'
+    existing_message.modified_app = 'saints-xctf-api'
 
     is_deleted: bool = MessageDao.soft_delete_message(existing_message)
 
