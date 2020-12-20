@@ -11,6 +11,7 @@ from typing import List
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
 from sqlalchemy.engine import ResultProxy
+from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
 
 from decorators import auth_required
@@ -754,9 +755,14 @@ def user_memberships_by_username_put(username) -> Response:
     groups_joined = membership_data.get('groups_joined')
     groups_left = membership_data.get('groups_left')
 
-    committed: bool = TeamMemberDao.update_user_memberships(
-        username, teams_joined, teams_left, groups_joined, groups_left
-    )
+    committed: bool = False
+
+    try:
+        committed = TeamMemberDao.update_user_memberships(
+            username, teams_joined, teams_left, groups_joined, groups_left
+        )
+    except SQLAlchemyError as e:
+        current_app.logger.error(str(e))
 
     if committed:
         response = jsonify({

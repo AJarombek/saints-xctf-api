@@ -935,6 +935,56 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
         self.assertTrue(response_json.get('updated'))
 
+    def test_user_memberships_by_username_put_route_500_invalid_team(self) -> None:
+        """
+        Test performing an unsuccessful HTTP PUT request on the '/v2/users/memberships/<username>' route by joining a
+        team that doesnt exist.
+        """
+        request_body = json.dumps({
+            'teams_joined': ['invalid'],
+            'teams_left': [],
+            'groups_joined': [],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertFalse(response_json.get('updated'))
+        self.assertEqual(response_json.get('error'), "failed to update the user's memberships")
+
+    def test_user_memberships_by_username_put_route_500_invalid_group(self) -> None:
+        """
+        Test performing an unsuccessful HTTP PUT request on the '/v2/users/memberships/<username>' route by joining a
+        group that doesnt exist.
+        """
+        request_body = json.dumps({
+            'teams_joined': [],
+            'teams_left': [],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'invalid'}],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertFalse(response_json.get('updated'))
+        self.assertEqual(response_json.get('error'), "failed to update the user's memberships")
+
     def test_user_memberships_by_username_put_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP PUT request on the '/v2/users/memberships/<username>' route.

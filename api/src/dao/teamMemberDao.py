@@ -154,14 +154,14 @@ class TeamMemberDao:
                 )
 
                 if existing_memberships.rowcount > 0:
-                    current_app.logger.info(
+                    current_app.logger.warning(
                         f'The user already has a membership to group {group_joined_dict.get("group_name")} '
                         f'in team {group_joined_dict.get("team_name")}.'
                     )
                     continue
 
-                if already_team_member.rowcount != 1:
-                    current_app.logger.info(
+                if already_team_member.rowcount == 0 and group_joined_dict.get("team_name") not in teams_joined:
+                    current_app.logger.warning(
                         f'The user is not a member of the team {group_joined_dict.get("team_name")}, which the '
                         f'group {group_joined_dict.get("group_name")} is in.'
                     )
