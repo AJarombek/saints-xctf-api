@@ -9,11 +9,11 @@ from typing import List, Dict
 from datetime import datetime
 
 from sqlalchemy.engine import ResultProxy
+from flask import current_app
 
 from database import db
 from dao.basicDao import BasicDao
 from model.TeamMember import TeamMember
-from model.GroupMember import GroupMember
 
 
 class TeamMemberDao:
@@ -103,43 +103,104 @@ class TeamMemberDao:
                     deleted_app='saints-xctf-api'
                 WHERE username=:username
                 AND team_name=:team_name
+                AND (deleted IS NULL OR deleted <> 'Y')
+                ''',
+                teams_left_dict
+            )
+
+            db.session.execute(
+                '''
+                UPDATE groupmembers SET
+                    deleted = 'Y',
+                    deleted_date=CURRENT_TIMESTAMP(),
+                    deleted_user=:username,
+                    deleted_app='saints-xctf-api'
+                WHERE username=:username
+                AND group_id IN (
+                    SELECT g.id
+                    FROM `groups` g
+                    INNER JOIN teamgroups tg ON g.id = tg.group_id
+                    WHERE tg.team_name = :team_name
+                    AND (g.deleted IS NULL OR g.deleted <> 'Y')
+                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                );
                 ''',
                 teams_left_dict
             )
 
         if len(groups_joined_dict) > 0:
-            db.session.execute(
-                '''
-                INSERT INTO groupmembers (
-                    group_id, 
-                    group_name, 
-                    username, 
-                    status, 
-                    user, 
-                    deleted, 
-                    created_date, 
-                    created_user, 
-                    created_app
-                ) VALUES (
-                    (
-                        SELECT g.id
-                        FROM `groups` g
-                        INNER JOIN teamgroups tg ON g.group_name = tg.group_name
-                        WHERE tg.team_name = :team_name
-                        AND tg.group_name = :group_name
-                    ), 
-                    :group_name,
-                    :username, 
-                    'pending', 
-                    'user', 
-                    'N', 
-                    CURRENT_TIMESTAMP(), 
-                    :username, 
-                    'saints-xctf-api'
+            for group_joined_dict in groups_joined_dict:
+                existing_memberships: ResultProxy = db.session.execute(
+                    '''
+                    SELECT gm.* FROM groupmembers gm
+                    INNER JOIN teamgroups tg on gm.group_id = tg.group_id
+                    WHERE username = :username
+                    AND gm.group_name = :group_name
+                    AND tg.team_name = :team_name
+                    AND (gm.deleted IS NULL OR gm.deleted <> 'Y')
+                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                    ''',
+                    group_joined_dict
                 )
-                ''',
-                teams_left_dict
-            )
+
+                already_team_member: ResultProxy = db.session.execute(
+                    '''
+                    SELECT * FROM teammembers
+                    WHERE username = :username
+                    AND team_name = :team_name
+                    AND (deleted IS NULL OR deleted <> 'Y')
+                    ''',
+                    group_joined_dict
+                )
+
+                if existing_memberships.rowcount > 0:
+                    current_app.logger.info(
+                        f'The user already has a membership to group {group_joined_dict.get("group_name")} '
+                        f'in team {group_joined_dict.get("team_name")}.'
+                    )
+                    continue
+
+                if already_team_member.rowcount != 1:
+                    current_app.logger.info(
+                        f'The user is not a member of the team {group_joined_dict.get("team_name")}, which the '
+                        f'group {group_joined_dict.get("group_name")} is in.'
+                    )
+                    continue
+
+                db.session.execute(
+                    '''
+                    INSERT INTO groupmembers (
+                        group_id, 
+                        group_name, 
+                        username, 
+                        status, 
+                        user, 
+                        deleted, 
+                        created_date, 
+                        created_user, 
+                        created_app
+                    ) VALUES (
+                        (
+                            SELECT g.id
+                            FROM `groups` g
+                            INNER JOIN teamgroups tg ON g.id = tg.group_id
+                            WHERE tg.team_name = :team_name
+                            AND tg.group_name = :group_name
+                            AND (g.deleted IS NULL OR g.deleted <> 'Y')
+                            AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                        ), 
+                        :group_name,
+                        :username, 
+                        'pending', 
+                        'user', 
+                        'N', 
+                        CURRENT_TIMESTAMP(), 
+                        :username, 
+                        'saints-xctf-api'
+                    )
+                    ''',
+                    group_joined_dict
+                )
 
         if len(groups_left_dict) > 0:
             db.session.execute(
@@ -153,9 +214,11 @@ class TeamMemberDao:
                 AND group_id = (
                     SELECT g.id
                     FROM `groups` g
-                    INNER JOIN teamgroups tg ON g.group_name = tg.group_name
+                    INNER JOIN teamgroups tg ON g.id = tg.group_id
                     WHERE tg.team_name = :team_name
                     AND tg.group_name = :group_name
+                    AND (g.deleted IS NULL OR g.deleted <> 'Y')
+                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
                 );
                 ''',
                 groups_left_dict

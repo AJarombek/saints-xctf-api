@@ -138,7 +138,7 @@ def user_teams(username) -> Response:
         return user_teams_by_username_get(username)
 
 
-@user_route.route('/memberships/<username>', methods=['GET'])
+@user_route.route('/memberships/<username>', methods=['GET', 'PUT'])
 @auth_required()
 def user_memberships(username) -> Response:
     """
@@ -980,6 +980,11 @@ def user_links_get() -> Response:
                 'link': '/v2/users/memberships/<username>',
                 'verb': 'GET',
                 'description': 'Get a list of teams with nested lists of groups that a user is a member of.'
+            },
+            {
+                'link': '/v2/users/memberships/<username>',
+                'verb': 'PUT',
+                'description': "Update a user's group and team memberships."
             },
             {
                 'link': '/v2/users/notifications/<username>',

@@ -849,6 +849,104 @@ class TestUserRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/users/memberships/andy', AuthVariant.UNAUTHORIZED)
 
+    def test_user_memberships_by_username_put_route_leave_join_groups_201(self) -> None:
+        """
+        Test performing a successful HTTP PUT request on the '/v2/users/memberships/<username>' route by leaving and
+        joining groups.
+        """
+        request_body = json.dumps({
+            'teams_joined': [],
+            'teams_left': [],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'mensxc'}],
+            'groups_left': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}]
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertTrue(response_json.get('updated'))
+
+        request_body = json.dumps({
+            'teams_joined': [],
+            'teams_left': [],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_left': [{'team_name': 'saintsxctf', 'group_name': 'mensxc'}]
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertTrue(response_json.get('updated'))
+
+    def test_user_memberships_by_username_put_route_leave_join_teams_201(self) -> None:
+        """
+        Test performing a successful HTTP PUT request on the '/v2/users/memberships/<username>' route by leaving and
+        joining teams.
+        """
+        request_body = json.dumps({
+            'teams_joined': ['saintsxctf_alumni'],
+            'teams_left': ['saintsxctf'],
+            'groups_joined': [],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertTrue(response_json.get('updated'))
+
+        request_body = json.dumps({
+            'teams_joined': ['saintsxctf'],
+            'teams_left': ['saintsxctf_alumni'],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertTrue(response_json.get('updated'))
+
+    def test_user_memberships_by_username_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/users/memberships/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/memberships/andy', AuthVariant.FORBIDDEN)
+
+    def test_user_memberships_by_username_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/users/memberships/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/users/memberships/andy', AuthVariant.UNAUTHORIZED)
+
     def test_user_notifications_by_username_get_route_200(self) -> None:
         """
         Test performing a successful HTTP GET request on the '/v2/users/notifications/<username>' route.
@@ -1083,4 +1181,4 @@ class TestUserRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/links')
-        self.assertEqual(len(response_json.get('endpoints')), 15)
+        self.assertEqual(len(response_json.get('endpoints')), 16)

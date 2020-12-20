@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 6/16/2019
 """
 
+from typing import List
+
 from sqlalchemy.orm import defer
 
 from database import db
@@ -14,7 +16,7 @@ from model.User import User
 class UserDao:
 
     @staticmethod
-    def get_users() -> list:
+    def get_users() -> List[User]:
         """
         Get a list of all the users in the database.
         :return: A list containing User model objects.
