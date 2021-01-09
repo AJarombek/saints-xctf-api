@@ -237,7 +237,8 @@ class TestGroupRoute(TestSuite):
     def test_group_members_by_group_name_get_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/members/<team_name>/<group_name>' route.  This test
-        proves that retrieving group members from a group with a valid group name results in the group and a 200 status.
+        proves that retrieving group members from a group with a valid group name results in the members and a 200
+        status.
         """
         response: Response = self.client.get(
             '/v2/groups/members/saintsxctf/wmenstf',
@@ -254,7 +255,7 @@ class TestGroupRoute(TestSuite):
         self.assertIn('last', response_json.get('group_members')[0])
         self.assertIn('member_since', response_json.get('group_members')[0])
         self.assertIn('user', response_json.get('group_members')[0])
-        self.assertIn('deleted', response_json.get('group_members')[0])
+        self.assertNotIn('deleted', response_json.get('group_members')[0])
         self.assertIsNotNone(response_json.get('group_members')[0]['username'])
 
     def test_group_members_by_group_name_get_route_forbidden(self) -> None:
@@ -268,6 +269,55 @@ class TestGroupRoute(TestSuite):
         Test performing an unauthorized HTTP GET request on the '/v2/groups/members/<team_name>/<group_name>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/members/saintsxctf/wmenstf', AuthVariant.UNAUTHORIZED)
+
+    def test_group_members_by_id_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/members/<group_id>' route.  This test
+        proves that trying to retrieve group members from a group with an id that doesn't exist results in a HTTP
+        400 error.
+        """
+        response: Response = self.client.get('/v2/groups/members/0', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/0')
+        self.assertEqual(response_json.get('group'), '/v2/groups/0')
+        self.assertIsNone(response_json.get('group_members'))
+        self.assertEqual(response_json.get('error'), 'a group does not exist with this id or the group has no members')
+
+    def test_group_members_by_id_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/members/<group_id>' route.  This test
+        proves that retrieving group members from a group with a valid id results in the members and a 200 status.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/members/1',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/1')
+        self.assertEqual(response_json.get('group'), '/v2/groups/1')
+        self.assertIsNotNone(response_json.get('group_members'))
+        self.assertGreaterEqual(len(response_json.get('group_members')), 1)
+        self.assertIn('username', response_json.get('group_members')[0])
+        self.assertIn('first', response_json.get('group_members')[0])
+        self.assertIn('last', response_json.get('group_members')[0])
+        self.assertIn('member_since', response_json.get('group_members')[0])
+        self.assertIn('user', response_json.get('group_members')[0])
+        self.assertNotIn('deleted', response_json.get('group_members')[0])
+        self.assertIsNotNone(response_json.get('group_members')[0]['username'])
+
+    def test_group_members_by_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/members/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/members/1', AuthVariant.FORBIDDEN)
+
+    def test_group_members_by_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/members/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/members/1', AuthVariant.UNAUTHORIZED)
 
     def test_group_snapshot_by_group_name_get_route_400(self) -> None:
         """
@@ -327,4 +377,4 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/links')
-        self.assertEqual(len(response_json.get('endpoints')), 6)
+        self.assertEqual(len(response_json.get('endpoints')), 7)

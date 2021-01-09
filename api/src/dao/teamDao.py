@@ -6,8 +6,9 @@ Date: 11/29/2020
 
 from typing import List
 
-from model.Team import Team
 from sqlalchemy import or_
+
+from model.Team import Team
 
 
 class TeamDao:

@@ -14,6 +14,7 @@ from sqlalchemy.schema import Column
 from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
+from model.GroupMemberData import GroupMemberData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
@@ -88,6 +89,19 @@ def group_members(team_name, group_name) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/groups/members/<team_name>/<group_name> '''
         return group_members_by_group_name_get(team_name, group_name)
+
+
+@group_route.route('/members/<group_id>', methods=['GET'])
+@auth_required()
+def group_members_by_id(group_id) -> Response:
+    """
+    Endpoint for retrieving the members of a group based on the group id.
+    :param group_id: Unique id which identifies a group within a team.
+    :return: JSON representation of the members of a group and related metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/members/<group_id> '''
+        return group_members_by_id_get(group_id)
 
 
 @group_route.route('/snapshot/<team_name>/<group_name>', methods=['GET'])
@@ -280,7 +294,7 @@ def group_members_by_group_name_get(team_name: str, group_name: str) -> Response
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the GET API request.
     """
-    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name)
+    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name, team_name=team_name)
 
     if group_members is None or group_members.rowcount == 0:
         response = jsonify({
@@ -298,14 +312,45 @@ def group_members_by_group_name_get(team_name: str, group_name: str) -> Response
                 'last': member.last,
                 'member_since': member.member_since,
                 'user': member.user,
-                'status': member.status,
-                'deleted': member.deleted
+                'status': member.status
             }
             for member in group_members]
 
         response = jsonify({
             'self': f'/v2/groups/members/{team_name}/{group_name}',
             'group': f'/v2/groups/{team_name}/{group_name}',
+            'group_members': group_members_list
+        })
+        response.status_code = 200
+        return response
+
+
+def group_members_by_id_get(group_id: str) -> Response:
+    group_members: ResultProxy = GroupMemberDao.get_group_members_by_id(group_id=group_id)
+
+    if group_members is None or group_members.rowcount == 0:
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}',
+            'group': f'/v2/groups/{group_id}',
+            'group_members': None,
+            'error': 'a group does not exist with this id or the group has no members'
+        })
+        response.status_code = 400
+        return response
+    else:
+        group_members_list = [{
+                'username': member.username,
+                'first': member.first,
+                'last': member.last,
+                'member_since': member.member_since,
+                'user': member.user,
+                'status': member.status
+            }
+            for member in group_members]
+
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}',
+            'group': f'/v2/groups/{group_id}',
             'group_members': group_members_list
         })
         response.status_code = 200
@@ -334,15 +379,14 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
     group_dict = {key: value for key, value in group_row.items()}
     group = Group(group_dict)
 
-    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name)
+    group_members: ResultProxy = GroupMemberDao.get_group_members(group_name=group_name, team_name=team_name)
     group_members_list = [{
             'username': member.username,
             'first': member.first,
             'last': member.last,
             'member_since': member.member_since,
             'user': member.user,
-            'status': member.status,
-            'deleted': member.deleted
+            'status': member.status
         }
         for member in group_members]
 
@@ -438,6 +482,11 @@ def group_links_get() -> Response:
                 'link': '/v2/groups/members/<team_name>/<group_name>',
                 'verb': 'GET',
                 'description': 'Get the members of a group based on the group name and team name.'
+            },
+            {
+                'link': '/v2/groups/members/<group_id>',
+                'verb': 'GET',
+                'description': 'Get the members of a group based on the group id.'
             },
             {
                 'link': '/v2/groups/snapshot/<team_name>/<group_name>',

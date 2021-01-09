@@ -19,6 +19,7 @@ class UserData:
             self.last = user.last
             self.salt = user.salt
             self.password = user.password
+            self.profilepic_name = user.profilepic_name
             self.description = user.description
             self.member_since = user.member_since
             self.class_year = user.class_year
@@ -41,10 +42,11 @@ class UserData:
         :return: The user in string form.
         """
         return f'UserData: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}, ' \
-            f'password: {self.password}, description: {self.description}, member_since: {self.member_since}, ' \
-            f'class_year: {self.class_year}, location: {self.location}, favorite_event: {self.favorite_event}, ' \
-            f'activation_code: {self.activation_code}, email: {self.email}, subscribed: {self.subscribed}, ' \
-            f'last_signin: {self.last_signin}, week_start: {self.week_start}, deleted: {self.deleted}]'
+            f'password: {self.password}, profilepic_name: {self.profilepic_name}, description: {self.description}, ' \
+            f'member_since: {self.member_since}, class_year: {self.class_year}, location: {self.location}, ' \
+            f'favorite_event: {self.favorite_event}, activation_code: {self.activation_code}, email: {self.email}, ' \
+            f'subscribed: {self.subscribed}, last_signin: {self.last_signin}, week_start: {self.week_start}, ' \
+            f'deleted: {self.deleted}]'
 
     def __repr__(self):
         """

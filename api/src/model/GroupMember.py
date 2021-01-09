@@ -88,7 +88,6 @@ class GroupMember(db.Model):
         :return: True if the objects are equal, False otherwise.
         """
         return all([
-            group_member_1.id == group_member_2.id,
             group_member_1.group_name == group_member_2.group_name,
             group_member_1.group_id == group_member_2.group_id,
             group_member_1.username == group_member_2.username,
