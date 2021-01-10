@@ -319,6 +319,76 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/members/1', AuthVariant.UNAUTHORIZED)
 
+    def test_group_statistics_by_id_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/statistics/<group_id>' route.  This test
+        proves that trying to retrieve group statistics from a group with an id that doesn't exist results in an HTTP
+        400 error.
+        """
+        response: Response = self.client.get('/v2/groups/statistics/0', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/statistics/0')
+        self.assertIsNone(response_json.get('stats'))
+        self.assertEqual(response_json.get('error'), 'there is no group with this id')
+
+    def test_group_statistics_by_id_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/statistics/<group_id>' route.  This test
+        proves that retrieving group statistics from a group with a valid id results in the stats and a 200 status.
+        """
+        response: Response = self.client.get('/v2/groups/statistics/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/statistics/1')
+        self.assertIsNotNone(response_json.get('stats'))
+
+        statistics = response_json.get('stats')
+        self.assertIn('miles_all_time', statistics)
+        self.assertTrue(statistics.get('miles_all_time') is None or type(statistics.get('miles_all_time')) is float)
+        self.assertIn('miles_past_month', statistics)
+        self.assertTrue(statistics.get('miles_past_month') is None or type(statistics.get('miles_past_month')) is float)
+        self.assertIn('miles_past_week', statistics)
+        self.assertTrue(statistics.get('miles_past_week') is None or type(statistics.get('miles_past_week')) is float)
+        self.assertIn('miles_past_year', statistics)
+        self.assertTrue(statistics.get('miles_past_year') is None or type(statistics.get('miles_past_year')) is float)
+        self.assertIn('run_miles_all_time', statistics)
+        self.assertTrue(
+            statistics.get('run_miles_all_time') is None or type(statistics.get('run_miles_all_time')) is float
+        )
+        self.assertIn('run_miles_past_year', statistics)
+        self.assertTrue(
+            statistics.get('run_miles_past_year') is None or type(statistics.get('run_miles_past_year')) is float
+        )
+        self.assertIn('run_miles_past_month', statistics)
+        self.assertTrue(
+            statistics.get('run_miles_past_month') is None or type(statistics.get('run_miles_past_month')) is float
+        )
+        self.assertIn('run_miles_past_week', statistics)
+        self.assertTrue(
+            statistics.get('run_miles_past_week') is None or type(statistics.get('run_miles_past_week')) is float
+        )
+        self.assertIn('feel_all_time', statistics)
+        self.assertTrue(statistics.get('feel_all_time') is None or type(statistics.get('feel_all_time')) is float)
+        self.assertIn('feel_past_year', statistics)
+        self.assertTrue(statistics.get('feel_past_year') is None or type(statistics.get('feel_past_year')) is float)
+        self.assertIn('feel_past_month', statistics)
+        self.assertTrue(statistics.get('feel_past_month') is None or type(statistics.get('feel_past_month')) is float)
+        self.assertIn('feel_past_week', statistics)
+        self.assertTrue(statistics.get('feel_past_week') is None or type(statistics.get('feel_past_week')) is float)
+
+    def test_group_statistics_by_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/statistics/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/statistics/1', AuthVariant.FORBIDDEN)
+
+    def test_group_statistics_by_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/statistics/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/statistics/1', AuthVariant.UNAUTHORIZED)
+
     def test_group_snapshot_by_group_name_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/snapshot/<team_name>/<group_name>' route.  This test

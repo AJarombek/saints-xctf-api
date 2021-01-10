@@ -385,7 +385,7 @@ def group_statistics_by_id_get(group_id: str) -> Response:
     if group_object is None:
         response = jsonify({
             'self': f'/v2/groups/statistics/{group_id}',
-            'user': None,
+            'stats': None,
             'error': 'there is no group with this id'
         })
         response.status_code = 400
