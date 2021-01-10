@@ -14,7 +14,6 @@ from sqlalchemy.schema import Column
 from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
-from model.GroupMemberData import GroupMemberData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
@@ -102,6 +101,19 @@ def group_members_by_id(group_id) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/groups/members/<group_id> '''
         return group_members_by_id_get(group_id)
+
+
+@group_route.route('/statistics/<group_id>', methods=['GET'])
+@auth_required()
+def group_statistics(group_id) -> Response:
+    """
+    Endpoint for retrieving statistics about group members.
+    :param group_id: Unique id which identifies a group within a team.
+    :return: JSON representation of group statistics and additional data.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/statistics/<group_id> '''
+        return group_statistics_by_id_get(group_id)
 
 
 @group_route.route('/snapshot/<team_name>/<group_name>', methods=['GET'])
@@ -326,6 +338,11 @@ def group_members_by_group_name_get(team_name: str, group_name: str) -> Response
 
 
 def group_members_by_id_get(group_id: str) -> Response:
+    """
+    Get the members of a group based on the group id.
+    :param group_id: Unique id which identifies a group.
+    :return: A response object for the GET API request.
+    """
     group_members: ResultProxy = GroupMemberDao.get_group_members_by_id(group_id=group_id)
 
     if group_members is None or group_members.rowcount == 0:
@@ -355,6 +372,31 @@ def group_members_by_id_get(group_id: str) -> Response:
         })
         response.status_code = 200
         return response
+
+
+def group_statistics_by_id_get(group_id: str) -> Response:
+    """
+    Get statistics of a group based on the group id.
+    :param group_id: Unique id which identifies a group.
+    :return: A response object for the GET API request.
+    """
+    group_object: Group = GroupDao.get_group_by_id(group_id=int(group_id))
+
+    if group_object is None:
+        response = jsonify({
+            'self': f'/v2/groups/statistics/{group_id}',
+            'user': None,
+            'error': 'there is no group with this id'
+        })
+        response.status_code = 400
+        return response
+
+    response = jsonify({
+        'self': f'/v2/groups/statistics/{group_id}',
+        'stats': compile_group_statistics(group_object)
+    })
+    response.status_code = 200
+    return response
 
 
 def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Response:
@@ -391,45 +433,7 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
         for member in group_members]
 
     # All group statistics are queried separately but combined into a single map
-    miles: Column = LogDao.get_group_miles(group_name)
-    miles_past_year: Column = LogDao.get_group_miles_interval(group_name, 'year')
-    miles_past_month: Column = LogDao.get_group_miles_interval(group_name, 'month')
-    miles_past_week: Column = LogDao.get_group_miles_interval(group_name, 'week', week_start=group.week_start)
-    run_miles: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run')
-    run_miles_past_year: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
-    run_miles_past_month: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
-    run_miles_past_week: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'week')
-    all_time_feel: Column = LogDao.get_group_avg_feel(group_name)
-    year_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'year')
-    month_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'month')
-    week_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group.week_start)
-
-    statistics = {
-        'miles': miles['total'],
-        'milespastyear': miles_past_year['total'],
-        'milespastmonth': miles_past_month['total'],
-        'milespastweek': miles_past_week['total'],
-        'runmiles': run_miles['total'],
-        'runmilespastyear': run_miles_past_year['total'],
-        'runmilespastmonth': run_miles_past_month['total'],
-        'runmilespastweek': run_miles_past_week['total'],
-        'alltimefeel': all_time_feel['average'],
-        'yearfeel': year_feel['average'],
-        'monthfeel': month_feel['average'],
-        'weekfeel': week_feel['average']
-    }
-
-    if statistics.get('alltimefeel') is not None:
-        statistics['alltimefeel'] = int(statistics.get('alltimefeel'))
-
-    if statistics.get('yearfeel') is not None:
-        statistics['yearfeel'] = int(statistics.get('yearfeel'))
-
-    if statistics.get('monthfeel') is not None:
-        statistics['monthfeel'] = int(statistics.get('monthfeel'))
-
-    if statistics.get('weekfeel') is not None:
-        statistics['weekfeel'] = int(statistics.get('weekfeel'))
+    statistics = compile_group_statistics(group_object=group)
 
     group_dict: dict = GroupData(group).__dict__
 
@@ -489,6 +493,11 @@ def group_links_get() -> Response:
                 'description': 'Get the members of a group based on the group id.'
             },
             {
+                'link': '/v2/groups/statistics/<group_id>',
+                'verb': 'GET',
+                'description': 'Get the statistics of a group based on the group id.'
+            },
+            {
                 'link': '/v2/groups/snapshot/<team_name>/<group_name>',
                 'verb': 'GET',
                 'description': 'Get a snapshot about a group based on the group name and team name.'
@@ -497,3 +506,44 @@ def group_links_get() -> Response:
     })
     response.status_code = 200
     return response
+
+
+"""
+Helper Methods
+"""
+
+
+def compile_group_statistics(group_object: Group):
+    """
+    Query group statistics and combine them into a single map.
+    :param group_object: A group object containing information such as the preferred week start date.
+    """
+    group_name = group_object.group_name
+
+    miles: Column = LogDao.get_group_miles(group_name)
+    miles_past_year: Column = LogDao.get_group_miles_interval(group_name, 'year')
+    miles_past_month: Column = LogDao.get_group_miles_interval(group_name, 'month')
+    miles_past_week: Column = LogDao.get_group_miles_interval(group_name, 'week', week_start=group_object.week_start)
+    run_miles: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run')
+    run_miles_past_year: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'year')
+    run_miles_past_month: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'month')
+    run_miles_past_week: Column = LogDao.get_group_miles_interval_by_type(group_name, 'run', 'week')
+    all_time_feel: Column = LogDao.get_group_avg_feel(group_name)
+    year_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'year')
+    month_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'month')
+    week_feel: Column = LogDao.get_group_avg_feel_interval(group_name, 'week', week_start=group_object.week_start)
+
+    return {
+        'miles_all_time': float(miles['total']),
+        'miles_past_year': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
+        'miles_past_month': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
+        'miles_past_week': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
+        'run_miles_all_time': float(0 if run_miles['total'] is None else run_miles['total']),
+        'run_miles_past_year': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
+        'run_miles_past_month': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
+        'run_miles_past_week': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
+        'feel_all_time': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
+        'feel_past_year': float(0 if year_feel['average'] is None else year_feel['average']),
+        'feel_past_month': float(0 if month_feel['average'] is None else month_feel['average']),
+        'feel_past_week': float(0 if week_feel['average'] is None else week_feel['average'])
+    }

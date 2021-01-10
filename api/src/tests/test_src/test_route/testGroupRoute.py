@@ -352,9 +352,9 @@ class TestGroupRoute(TestSuite):
         self.assertIsNotNone(response_json.get('group_snapshot'))
         self.assertIn('members', response_json.get('group_snapshot'))
         self.assertIn('statistics', response_json.get('group_snapshot'))
-        self.assertGreater(response_json.get('group_snapshot')['statistics']['miles'], 0)
-        self.assertGreater(response_json.get('group_snapshot')['statistics']['runmiles'], 0)
-        self.assertGreater(response_json.get('group_snapshot')['statistics']['alltimefeel'], 0)
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['miles_all_time'], 0)
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['run_miles_all_time'], 0)
+        self.assertGreater(response_json.get('group_snapshot')['statistics']['feel_all_time'], 0)
 
     def test_group_snapshot_by_group_name_get_route_forbidden(self) -> None:
         """
@@ -377,4 +377,4 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/links')
-        self.assertEqual(len(response_json.get('endpoints')), 7)
+        self.assertEqual(len(response_json.get('endpoints')), 8)
