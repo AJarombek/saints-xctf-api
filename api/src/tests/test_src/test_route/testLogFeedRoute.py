@@ -66,17 +66,17 @@ class TestLogFeedRoute(TestSuite):
     def test_log_feed_get_route_200_group(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/log_feed/' route.  This test proves that the endpoint returns
-        a list of exercise logs that match the user query.
+        a list of exercise logs that match the group query.
         """
         response: Response = self.client.get(
-            '/v2/log_feed/group/mensxc/20/80',
+            '/v2/log_feed/group/3/20/80',
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/log_feed/group/mensxc/20/80')
-        self.assertEqual(response_json.get('next'), '/v2/log_feed/group/mensxc/20/100')
-        self.assertEqual(response_json.get('prev'), '/v2/log_feed/group/mensxc/20/60')
+        self.assertEqual(response_json.get('self'), '/v2/log_feed/group/3/20/80')
+        self.assertEqual(response_json.get('next'), '/v2/log_feed/group/3/20/100')
+        self.assertEqual(response_json.get('prev'), '/v2/log_feed/group/3/20/60')
         self.assertEqual(len(response_json.get('logs')), 20)
 
     def test_log_feed_get_route_forbidden(self) -> None:

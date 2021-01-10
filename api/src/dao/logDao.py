@@ -417,10 +417,10 @@ class LogDao:
         )
 
     @staticmethod
-    def get_group_log_feed(group_name: str, limit: int, offset: int) -> ResultProxy:
+    def get_group_log_feed(group_id: int, limit: int, offset: int) -> ResultProxy:
         """
         Retrieve a collection of logs by a group
-        :param group_name: The unique name of a group
+        :param group_id: The unique id of a group
         :param limit: The maximum number of logs to return
         :param offset: The number of logs to skip before returning
         :return: A list of logs
@@ -431,29 +431,29 @@ class LogDao:
                     distance,metric,miles,time,pace,feel,description 
             FROM logs 
             INNER JOIN groupmembers ON logs.username=groupmembers.username 
-            WHERE group_name=:group_name 
+            WHERE group_id=:group_id 
             AND status='accepted' 
             ORDER BY date DESC, log_id DESC 
             LIMIT :limit OFFSET :offset
             ''',
-            {'group_name': group_name, 'limit': limit, 'offset': offset}
+            {'group_id': group_id, 'limit': limit, 'offset': offset}
         )
 
     @staticmethod
-    def get_group_log_feed_count(group_name: str) -> ResultProxy:
+    def get_group_log_feed_count(group_id: int) -> ResultProxy:
         """
         Calculate the number of logs in a groups log collection.
-        :param group_name: The unique name of a group
+        :param group_id: The unique id of a group
         :return: The number of logs in existence.
         """
         return db.session.execute(
             '''
             SELECT COUNT(*) AS count FROM logs
             INNER JOIN groupmembers ON logs.username=groupmembers.username 
-            WHERE group_name=:group_name 
+            WHERE group_id=:group_id 
             AND status='accepted' 
             ''',
-            {'group_name': group_name}
+            {'group_id': group_id}
         )
 
     @staticmethod
@@ -503,10 +503,10 @@ class LogDao:
         )
 
     @staticmethod
-    def get_group_range_view(group_name: str, types: list, start: str, end: str) -> ResultProxy:
+    def get_group_range_view(group_id: int, types: list, start: str, end: str) -> ResultProxy:
         """
         Get exercise log statistics for a group over a date range.
-        :param group_name: Unique identifier for a group.
+        :param group_id: Unique identifier for a group.
         :param types: Types of exercise logs to filter by.
         :param start: The first date to include in the range.
         :param end: The last date to include in the range.
@@ -519,13 +519,13 @@ class LogDao:
             FROM logs 
             INNER JOIN groupmembers 
             ON logs.username=groupmembers.username 
-            WHERE group_name=:group_name
+            WHERE group_id=:group_id
             AND date >= :start 
             AND date <= :end
             AND {type_query}
             GROUP BY date
             ''',
-            {'group_name': group_name, 'start': start, 'end': end}
+            {'group_id': group_id, 'start': start, 'end': end}
         )
 
     @staticmethod

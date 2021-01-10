@@ -57,7 +57,7 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
 
     if filter_by == 'group' or filter_by == 'groups':
         range_view = LogDao.get_group_range_view(
-            group_name=bucket,
+            group_id=int(bucket),
             types=exercise_type_filter_list,
             start=start,
             end=end
