@@ -4,10 +4,21 @@ Author: Andrew Jarombek
 Date: 7/4/2019
 """
 
+from typing import Literal, Optional
 from datetime import datetime, timedelta, date
 
 
-def get_start_date_interval(interval: str, week_start: str) -> date:
+Interval = Literal['year', 'month', 'week']
+WeekStart = Literal['monday', 'sunday']
+
+
+def get_start_date_interval(interval: Optional[Interval], week_start: WeekStart) -> date:
+    """
+    Get the start date of a time interval, whether it be the past week, year, or month.
+    :param interval: A string representing the interval (week, month, or year).
+    :param week_start: Day of the week that is used to signify the start of the week.
+    :return: The first date of the time interval.  None if no interval is passed as an argument.
+    """
     start_date = None
     if interval == 'year':
         start_date = get_first_day_of_year()
@@ -34,7 +45,7 @@ def get_first_day_of_month() -> date:
     return datetime.today().date().replace(day=1)
 
 
-def get_first_day_of_week(week_start: str = 'monday') -> date:
+def get_first_day_of_week(week_start: WeekStart = 'monday') -> date:
     """
     Retreive either last Sunday or Monday
     :param week_start: Either 'monday' or 'sunday'

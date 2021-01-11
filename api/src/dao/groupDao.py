@@ -5,7 +5,7 @@ Author: Andrew Jarombek
 Date: 7/2/2019
 """
 
-from typing import Optional
+from typing import Optional, Literal
 
 from sqlalchemy.engine import ResultProxy, RowProxy
 from sqlalchemy.schema import Column
@@ -13,6 +13,9 @@ from sqlalchemy.schema import Column
 from database import db
 from dao.basicDao import BasicDao
 from model.Group import Group
+from utils import dates
+
+WeekStart = Literal['monday', 'sunday']
 
 
 class GroupDao:
@@ -88,6 +91,62 @@ class GroupDao:
             {'group_name': group_name}
         )
         return result.first()
+
+    @staticmethod
+    def get_group_leaderboard(group_id: int, interval: str = None, week_start: WeekStart = 'monday') -> ResultProxy:
+        """
+        Get exercise statistics from users in a specific group.  These statistics are used to build a leaderboard in the
+        application.
+        :param group_id: The unique id for the group.
+        :param interval: A string representing a time interval (week, month, or year).
+        :param week_start: Day of the week that is used to signify the start of the week.
+        :return: Records with a users exercise statistics over an interval.
+        """
+        date = dates.get_start_date_interval(interval=interval, week_start=week_start)
+
+        if date is None:
+            return db.session.execute(
+                """
+                SELECT 
+                    groupmembers.username,
+                    first,
+                    last,
+                    COALESCE(SUM(miles), 0) AS miles, 
+                    COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
+                    COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
+                    COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
+                    COALESCE(SUM(CASE WHEN type = 'other' THEN miles END), 0) AS miles_other 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_id = :group_id 
+                AND status = 'accepted' 
+                GROUP BY groupmembers.username 
+                ORDER BY miles DESC
+                """,
+                {'group_id': group_id}
+            )
+        else:
+            return db.session.execute(
+                """
+                SELECT 
+                    groupmembers.username,
+                    first,
+                    last,
+                    COALESCE(SUM(miles), 0) AS miles, 
+                    COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
+                    COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
+                    COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
+                    COALESCE(SUM(CASE WHEN type = 'other' THEN miles END), 0) AS miles_other 
+                FROM logs 
+                INNER JOIN groupmembers ON logs.username = groupmembers.username 
+                WHERE group_id = :group_id 
+                AND date >= :date 
+                AND status = 'accepted' 
+                GROUP BY groupmembers.username 
+                ORDER BY miles DESC
+                """,
+                {'group_id': group_id, 'date': date}
+            )
 
     @staticmethod
     def update_group(group: Group) -> bool:
