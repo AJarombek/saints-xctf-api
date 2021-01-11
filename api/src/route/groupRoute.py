@@ -116,6 +116,22 @@ def group_statistics(group_id) -> Response:
         return group_statistics_by_id_get(group_id)
 
 
+@group_route.route('/leaderboard/<group_id>', methods=['GET'])
+@group_route.route('/leaderboard/<group_id>/<interval>', methods=['GET'])
+@auth_required()
+def group_leaderboard(group_id, interval = None) -> Response:
+    """
+    Endpoint for retrieving leaderboard information about a group.
+    You are so caring, it is beautiful.  My love for you is forever.
+    :param group_id: Unique id which identifies a group within a team.
+    :param interval: Time interval to get leaderboard info within.
+    :return: JSON representation of group leaderboard info and additional data.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/leaderboard/<group_id>/<interval> '''
+        return group_leaderboard_get(group_id, interval)
+
+
 @group_route.route('/snapshot/<team_name>/<group_name>', methods=['GET'])
 @auth_required()
 def group_snapshot(team_name, group_name) -> Response:
@@ -397,6 +413,55 @@ def group_statistics_by_id_get(group_id: str) -> Response:
     })
     response.status_code = 200
     return response
+
+
+def group_leaderboard_get(group_id: str, interval: str) -> Response:
+    """
+    Get stats of users in a group based on the group id.  These stats are used to build a leaderboard.
+    :param group_id: Unique id which identifies a group.
+    :param interval: Time interval to get leaderboard info within.
+    :return: A response object for the GET API request.
+    """
+    group_object: Group = GroupDao.get_group_by_id(group_id=int(group_id))
+
+    if group_object is None:
+        response = jsonify({
+            'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
+            'stats': None,
+            'error': 'there is no group with this id'
+        })
+        response.status_code = 400
+        return response
+
+    leaderboard: ResultProxy = GroupDao.get_group_leaderboard(group_id=group_object.id)
+
+    if leaderboard is None or leaderboard.rowcount == 0:
+        response = jsonify({
+            'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
+            'leaderboard': None,
+            'error': 'an unexpected error occurred retrieving leaderboard data'
+        })
+        response.status_code = 500
+        return response
+    else:
+        leaderboard_list = [{
+                'username': entry.username,
+                'first': entry.first,
+                'last': entry.last,
+                'miles': entry.miles,
+                'miles_run': entry.miles_run,
+                'miles_biked': entry.miles_biked,
+                'miles_swam': entry.miles_swam,
+                'miles_other': entry.miles_other
+            }
+            for entry in leaderboard]
+
+        response = jsonify({
+            'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
+            'leaderboard': leaderboard_list
+        })
+        response.status_code = 200
+        return response
 
 
 def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Response:
