@@ -427,7 +427,7 @@ def group_leaderboard_get(group_id: str, interval: str) -> Response:
     if group_object is None:
         response = jsonify({
             'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
-            'stats': None,
+            'leaderboard': None,
             'error': 'there is no group with this id'
         })
         response.status_code = 400
@@ -561,6 +561,16 @@ def group_links_get() -> Response:
                 'link': '/v2/groups/statistics/<group_id>',
                 'verb': 'GET',
                 'description': 'Get the statistics of a group based on the group id.'
+            },
+            {
+                'link': '/v2/groups/leaderboard/<group_id>',
+                'verb': 'GET',
+                'description': 'Get group leaderboard information.  There is no time constraint on this data.'
+            },
+            {
+                'link': '/v2/groups/leaderboard/<group_id>/<interval>',
+                'verb': 'GET',
+                'description': 'Get group leaderboard information during a certain time interval.'
             },
             {
                 'link': '/v2/groups/snapshot/<team_name>/<group_name>',

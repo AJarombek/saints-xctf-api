@@ -389,6 +389,125 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/statistics/1', AuthVariant.UNAUTHORIZED)
 
+    def test_group_leaderboard_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.  This test
+        proves that trying to retrieve leaderboard information from a group with an id that doesn't exist results in an
+        HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/groups/leaderboard/0', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/0')
+        self.assertIsNone(response_json.get('leaderboard'))
+        self.assertEqual(response_json.get('error'), 'there is no group with this id')
+
+    def test_group_leaderboard_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.  This test
+        proves that trying to retrieve leaderboard information from a valid group results in leaderboard items and an
+        HTTP 200 response code.
+        """
+        response: Response = self.client.get('/v2/groups/leaderboard/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/1')
+        self.assertIsNotNone(response_json.get('leaderboard'))
+
+        leaderboard_items = response_json.get('leaderboard')
+        self.assertGreater(len(leaderboard_items), 0)
+
+        leaderboard_item = leaderboard_items[0]
+        self.assertIn('username', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('username')) is str)
+        self.assertIn('first', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('first')) is str)
+        self.assertIn('last', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('last')) is str)
+        self.assertIn('miles', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles')) is float)
+        self.assertIn('miles_run', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_run')) is float)
+        self.assertIn('miles_biked', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_biked')) is float)
+        self.assertIn('miles_swam', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_swam')) is float)
+        self.assertIn('miles_other', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_other')) is float)
+
+    def test_group_leaderboard_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/leaderboard/1', AuthVariant.FORBIDDEN)
+
+    def test_group_leaderboard_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/leaderboard/1', AuthVariant.UNAUTHORIZED)
+
+    def test_group_leaderboard_with_interval_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard/<group_id>/<interval>' route.  This test
+        proves that trying to retrieve leaderboard information from a group with an id that doesn't exist results in an
+        HTTP 400 error.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/leaderboard/0/week',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/0/week')
+        self.assertIsNone(response_json.get('leaderboard'))
+        self.assertEqual(response_json.get('error'), 'there is no group with this id')
+
+    def test_group_leaderboard_with_interval_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.  This test
+        proves that trying to retrieve leaderboard information during an interval from a valid group results in
+        leaderboard items and an HTTP 200 response code.
+        """
+        response: Response = self.client.get('/v2/groups/leaderboard/1/year', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/1/year')
+        self.assertIsNotNone(response_json.get('leaderboard'))
+
+        leaderboard_items = response_json.get('leaderboard')
+        self.assertGreater(len(leaderboard_items), 0)
+
+        leaderboard_item = leaderboard_items[0]
+        self.assertIn('username', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('username')) is str)
+        self.assertIn('first', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('first')) is str)
+        self.assertIn('last', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('last')) is str)
+        self.assertIn('miles', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles')) is float)
+        self.assertIn('miles_run', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_run')) is float)
+        self.assertIn('miles_biked', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_biked')) is float)
+        self.assertIn('miles_swam', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_swam')) is float)
+        self.assertIn('miles_other', leaderboard_item)
+        self.assertTrue(type(leaderboard_item.get('miles_other')) is float)
+
+    def test_group_leaderboard_with_interval_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/leaderboard/<group_id>/<interval>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/leaderboard/1/month', AuthVariant.FORBIDDEN)
+
+    def test_group_leaderboard_with_interval_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/leaderboard/<group_id>/<interval>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/leaderboard/1/month', AuthVariant.UNAUTHORIZED)
+
     def test_group_snapshot_by_group_name_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/snapshot/<team_name>/<group_name>' route.  This test
@@ -447,4 +566,4 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/links')
-        self.assertEqual(len(response_json.get('endpoints')), 8)
+        self.assertEqual(len(response_json.get('endpoints')), 10)

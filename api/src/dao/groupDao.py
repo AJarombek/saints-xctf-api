@@ -109,8 +109,8 @@ class GroupDao:
                 """
                 SELECT 
                     groupmembers.username,
-                    first,
-                    last,
+                    MAX(logs.first) AS first,
+                    MAX(logs.last) AS last,
                     COALESCE(SUM(miles), 0) AS miles, 
                     COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
                     COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
@@ -130,8 +130,8 @@ class GroupDao:
                 """
                 SELECT 
                     groupmembers.username,
-                    first,
-                    last,
+                    MAX(logs.first) AS first,
+                    MAX(logs.last) AS last,
                     COALESCE(SUM(miles), 0) AS miles, 
                     COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
                     COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
