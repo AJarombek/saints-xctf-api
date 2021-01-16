@@ -728,6 +728,7 @@ def user_memberships_by_username_get(username) -> Response:
                 {
                     'group_name': group['group_name'],
                     'group_title': group['group_title'],
+                    'group_id': group['group_id'],
                     'status': group['status'],
                     'user': group['user']
                 }

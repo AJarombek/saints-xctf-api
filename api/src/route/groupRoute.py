@@ -14,9 +14,12 @@ from sqlalchemy.schema import Column
 from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
+from model.Team import Team
+from model.TeamData import TeamData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.logDao import LogDao
+from dao.teamDao import TeamDao
 
 group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
 
@@ -74,6 +77,19 @@ def group_by_id(group_id) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/groups/<id> '''
         return group_by_id_get(group_id)
+
+
+@group_route.route('/team/<group_id>', methods=['GET', 'PUT'])
+@auth_required()
+def team_by_group_id(group_id) -> Response:
+    """
+    Endpoint for retrieving team information for a group.
+    :param group_id: Unique id which identifies a group.
+    :return: JSON representation of a team and relevant metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/team/<id> '''
+        return team_by_group_id_get(group_id)
 
 
 @group_route.route('/members/<team_name>/<group_name>', methods=['GET'])
@@ -315,6 +331,33 @@ def group_by_id_get(group_id: str) -> Response:
         return response
 
 
+def team_by_group_id_get(group_id: str) -> Response:
+    """
+    Get a team based on a unique group id.
+    :param group_id: Unique id which identifies a group.
+    :return: A response object for the GET API request.
+    """
+    team_row: Team = TeamDao.get_team_by_group_id(int(group_id))
+
+    if team_row is None:
+        response = jsonify({
+            'self': f'/v2/groups/team/{group_id}',
+            'team': None,
+            'error': 'No team exists that has a group with this id.'
+        })
+        response.status_code = 400
+        return response
+    else:
+        team_dict = TeamData(team_row).__dict__
+
+        response = jsonify({
+            'self': f'/v2/groups/team/{group_id}',
+            'team': team_dict
+        })
+        response.status_code = 200
+        return response
+
+
 def group_members_by_group_name_get(team_name: str, group_name: str) -> Response:
     """
     Get the members of a group based on the group name.
@@ -433,15 +476,23 @@ def group_leaderboard_get(group_id: str, interval: str) -> Response:
         response.status_code = 400
         return response
 
-    leaderboard: ResultProxy = GroupDao.get_group_leaderboard(group_id=group_object.id)
+    leaderboard: ResultProxy = GroupDao.get_group_leaderboard(group_id=group_object.id, interval=interval)
 
-    if leaderboard is None or leaderboard.rowcount == 0:
+    if leaderboard is None:
         response = jsonify({
             'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
             'leaderboard': None,
-            'error': 'an unexpected error occurred retrieving leaderboard data'
+            'error': 'An unexpected error occurred retrieving leaderboard data.'
         })
         response.status_code = 500
+        return response
+    elif leaderboard.rowcount == 0:
+        response = jsonify({
+            'self': f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
+            'leaderboard': [],
+            'warning': 'No leaderboard data was found within this group and time interval.'
+        })
+        response.status_code = 200
         return response
     else:
         leaderboard_list = [{
@@ -541,6 +592,11 @@ def group_links_get() -> Response:
                 'link': '/v2/groups/<id>',
                 'verb': 'GET',
                 'description': 'Retrieve a single group based on its id.'
+            },
+            {
+                'link': '/v2/groups/team/<id>',
+                'verb': 'GET',
+                'description': 'Retrieve team information about a group.'
             },
             {
                 'link': '/v2/groups/<team_name>/<group_name>',

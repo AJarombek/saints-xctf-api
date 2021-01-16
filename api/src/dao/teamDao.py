@@ -9,6 +9,8 @@ from typing import List
 from sqlalchemy import or_
 
 from model.Team import Team
+from model.TeamGroup import TeamGroup
+from model.Group import Group
 
 
 class TeamDao:
@@ -33,6 +35,22 @@ class TeamDao:
         return Team.query\
             .filter_by(name=name)\
             .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
+            .first()
+
+    @staticmethod
+    def get_team_by_group_id(group_id: int) -> Team:
+        """
+        Get a single team from the database based on a group id.  This group will be part of the team.
+        :param group_id: Unique identifier for a group.
+        :return: A Team object which is the result of the database query.
+        """
+        return Team.query \
+            .filter(Team.name == TeamGroup.team_name) \
+            .filter(TeamGroup.group_id == Group.id) \
+            .filter(Group.id == group_id) \
+            .filter(or_(Group.deleted.is_(None), Group.deleted != 'Y')) \
+            .filter(or_(TeamGroup.deleted.is_(None), TeamGroup.deleted != 'Y')) \
+            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y')) \
             .first()
 
     @staticmethod
