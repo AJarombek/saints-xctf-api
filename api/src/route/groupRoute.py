@@ -119,6 +119,20 @@ def group_members_by_id(group_id) -> Response:
         return group_members_by_id_get(group_id)
 
 
+@group_route.route('/members/<group_id>/<username>', methods=['PUT', 'DELETE'])
+@auth_required()
+def group_members_by_group_id_and_username(group_id, username) -> Response:
+    """
+    Endpoint for updating and deleting group memberships.
+    :param group_id: Unique id which identifies a group within a team.
+    :param username: Unique name for a user.
+    :return: JSON representation of the members of a group and related metadata.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/groups/members/<group_id> '''
+        return group_members_by_group_id_and_username_get(group_id, username)
+
+
 @group_route.route('/statistics/<group_id>', methods=['GET'])
 @auth_required()
 def group_statistics(group_id) -> Response:
@@ -433,6 +447,10 @@ def group_members_by_id_get(group_id: str) -> Response:
         return response
 
 
+def group_members_by_group_id_and_username_get(group_id: str, username: str) -> Response:
+    pass
+
+
 def group_statistics_by_id_get(group_id: str) -> Response:
     """
     Get statistics of a group based on the group id.
@@ -612,6 +630,16 @@ def group_links_get() -> Response:
                 'link': '/v2/groups/members/<group_id>',
                 'verb': 'GET',
                 'description': 'Get the members of a group based on the group id.'
+            },
+            {
+                'link': '/v2/groups/members/<group_id>/<username>',
+                'verb': 'PUT',
+                'description': 'Update a group membership for a user.'
+            },
+            {
+                'link': '/v2/groups/members/<group_id>/<username>',
+                'verb': 'DELETE',
+                'description': 'Delete a users group membership.'
             },
             {
                 'link': '/v2/groups/statistics/<group_id>',

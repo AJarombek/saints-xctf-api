@@ -6,6 +6,7 @@ Date: 7/3/2019
 
 from sqlalchemy.engine import ResultProxy
 from sqlalchemy.schema import Column
+
 import utils.dates as dates
 from dao.basicDao import BasicDao
 from database import db
