@@ -14,6 +14,8 @@ from sqlalchemy.schema import Column
 from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
+from model.GroupMember import GroupMember
+from model.GroupMemberData import GroupMemberData
 from model.Team import Team
 from model.TeamData import TeamData
 from dao.groupDao import GroupDao
@@ -128,9 +130,13 @@ def group_members_by_group_id_and_username(group_id, username) -> Response:
     :param username: Unique name for a user.
     :return: JSON representation of the members of a group and related metadata.
     """
-    if request.method == 'GET':
-        ''' [GET] /v2/groups/members/<group_id> '''
-        return group_members_by_group_id_and_username_get(group_id, username)
+    if request.method == 'PUT':
+        ''' [PUT] /v2/groups/members/<group_id>/<username> '''
+        return group_members_by_group_id_and_username_put(group_id, username)
+
+    elif request.method == 'DELETE':
+        ''' [DELETE] /v2/groups/members/<group_id>/<username> '''
+        return group_members_by_group_id_and_username_delete(group_id, username)
 
 
 @group_route.route('/statistics/<group_id>', methods=['GET'])
@@ -447,8 +453,64 @@ def group_members_by_id_get(group_id: str) -> Response:
         return response
 
 
-def group_members_by_group_id_and_username_get(group_id: str, username: str) -> Response:
-    pass
+def group_members_by_group_id_and_username_put(group_id: str, username: str) -> Response:
+    """
+    Update a group membership.  The membership is identified by a group's identifier and a user's username.
+    :param group_id: Unique id which identifies a group within a team.
+    :param username: Unique name for a user.
+    :return: A response object for the PUT API request.
+    """
+    group_member_data: dict = request.get_json()
+    new_group_member = GroupMember(group_member_data)
+
+    is_updated = GroupMemberDao.update_group_member(int(group_id), username, new_group_member)
+
+    if is_updated:
+        updated_group_member = GroupMemberDao.get_group_member(int(group_id), username)
+        updated_group_member_dict: dict = GroupMemberData(updated_group_member).__dict__
+
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'updated': True,
+            'group_member': updated_group_member_dict
+        })
+        response.status_code = 200
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'updated': True,
+            'group_member': None,
+            'error': 'The group membership failed to update.'
+        })
+        response.status_code = 500
+        return response
+
+
+def group_members_by_group_id_and_username_delete(group_id: str, username: str) -> Response:
+    """
+    Soft delete a group membership.  The membership is identified by a group's identifier and a user's username.
+    :param group_id: Unique id which identifies a group within a team.
+    :param username: Unique name for a user.
+    :return: A response object for the DELETE API request.
+    """
+    membership_deleted = GroupMemberDao.soft_delete_group_member(int(group_id), username)
+
+    if membership_deleted:
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'deleted': True,
+        })
+        response.status_code = 204
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'deleted': False,
+            'error': 'Failed to delete the group membership.'
+        })
+        response.status_code = 500
+        return response
 
 
 def group_statistics_by_id_get(group_id: str) -> Response:

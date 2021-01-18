@@ -8,6 +8,7 @@ Date: 7/2/2019
 from datetime import datetime
 
 from sqlalchemy.engine import ResultProxy
+from sqlalchemy import and_, or_
 
 from database import db
 from model.GroupMember import GroupMember
@@ -15,6 +16,19 @@ from dao.basicDao import BasicDao
 
 
 class GroupMemberDao:
+
+    @staticmethod
+    def get_group_member(group_id: int, username: str) -> GroupMember:
+        """
+        Get a group membership based on the group id and username of the user.
+        :param group_id: Unique id of a group.
+        :param username: Unique identifier for the user
+        :return: A group membership object.
+        """
+        return GroupMember.query\
+            .filter(and_(GroupMember.group_id == group_id, GroupMember.username == username))\
+            .filter(or_(GroupMember.deleted.is_(None), GroupMember.deleted != 'Y'))\
+            .first()
 
     @staticmethod
     def get_user_groups(username: str) -> ResultProxy:
