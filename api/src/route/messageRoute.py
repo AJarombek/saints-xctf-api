@@ -159,6 +159,14 @@ def message_post() -> Response:
 
     message_to_add.created_date = datetime.now()
     message_to_add.created_app = 'saints-xctf-api'
+    message_to_add.created_user = None
+    message_to_add.modified_date = None
+    message_to_add.modified_app = None
+    message_to_add.modified_user = None
+    message_to_add.deleted_date = None
+    message_to_add.deleted_app = None
+    message_to_add.deleted_user = None
+    message_to_add.deleted = 'N'
 
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
 

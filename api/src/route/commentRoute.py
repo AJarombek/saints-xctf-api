@@ -152,6 +152,14 @@ def comment_post():
 
     comment_to_add.created_date = datetime.now()
     comment_to_add.created_app = 'saints-xctf-api'
+    comment_to_add.created_user = None
+    comment_to_add.modified_date = None
+    comment_to_add.modified_app = None
+    comment_to_add.modified_user = None
+    comment_to_add.deleted_date = None
+    comment_to_add.deleted_app = None
+    comment_to_add.deleted_user = None
+    comment_to_add.deleted = 'N'
 
     comment_added_successfully: bool = CommentDao.add_comment(new_comment=comment_to_add)
 

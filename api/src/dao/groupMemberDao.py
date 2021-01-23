@@ -119,27 +119,32 @@ class GroupMemberDao:
         )
 
     @staticmethod
-    def update_group_member(group_id: int, username: str, group_member: GroupMember) -> bool:
+    def update_group_member(group_id: int, username: str, status: str, user: str) -> bool:
         """
         Update a group membership for a user.
         :param group_id: Unique id of a group.
         :param username: Unique name for a user.
-        :param group_member: Group member object with details such as the membership status and user type.
+        :param status: Status of a group membership - whether it is accepted or pending.
+        :param user: User type of a group membership - whether the user is an admin or a regular user.
         :return: True if the group membership was updated, False otherwise.
         """
         db.session.execute(
             '''
             UPDATE groupmembers SET 
                 status=:status, 
-                user=:user
+                user=:user,
+                modified_date=:modified_date,
+                modified_app=:modified_app
             WHERE group_id=:group_id 
             AND username=:username
             ''',
             {
                 'group_id': group_id,
                 'username': username,
-                'status': group_member.status,
-                'user': group_member.user
+                'modified_date': datetime.now(),
+                'modified_app': 'saints-xctf-api',
+                'status': status,
+                'user': user
             }
         )
         return BasicDao.safe_commit()
@@ -156,8 +161,6 @@ class GroupMemberDao:
             '''
             UPDATE groupmembers SET 
                 deleted=:deleted,
-                modified_date=:modified_date,
-                modified_app=:modified_app,
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE group_id=:group_id 
@@ -167,8 +170,6 @@ class GroupMemberDao:
                 'group_id': group_id,
                 'username': username,
                 'deleted': 'Y',
-                'modified_date': datetime.now(),
-                'modified_app': 'saints-xctf-api',
                 'deleted_date': datetime.now(),
                 'deleted_app': 'saints-xctf-api'
             }

@@ -16,6 +16,9 @@ class Code(db.Model):
         :param code: A dictionary with fields matching the Code fields
         """
         self.activation_code = code.get('activation_code')
+        self.email = code.get('email')
+        self.group_id = code.get('group_id')
+        self.expiration_date = code.get('expiration_date')
         self.deleted = code.get('deleted')
         self.created_date = code.get('created_date')
         self.created_user = code.get('created_user')
@@ -31,6 +34,9 @@ class Code(db.Model):
 
     # Data Columns
     activation_code = Column(db.VARCHAR(8), primary_key=True)
+    email = Column(db.VARCHAR(50), index=True)
+    group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
+    expiration_date = Column(db.DATETIME)
     deleted = Column(db.CHAR(1))
 
     # Audit Columns
@@ -49,7 +55,8 @@ class Code(db.Model):
         String representation of an activation code.  This representation is meant to be human readable.
         :return: The activation code string.
         """
-        return f'Code: [activation_code: {self.activation_code}, deleted: {self.deleted}]'
+        return f'Code: [activation_code: {self.activation_code}, email: {self.email}, group_id: {self.group_id}, ' \
+               f'expiration_date: {self.expiration_date}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """
@@ -77,5 +84,8 @@ class Code(db.Model):
         """
         return all([
             code1.activation_code == code2.activation_code,
+            code1.email == code2.email,
+            code1.group_id == code2.group_id,
+            code1.expiration_date == code2.expiration_date,
             code1.deleted == code2.deleted
         ])

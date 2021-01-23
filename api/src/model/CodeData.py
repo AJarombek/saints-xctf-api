@@ -15,6 +15,9 @@ class CodeData:
         """
         if code is not None:
             self.activation_code = code.activation_code
+            self.email = code.email
+            self.group_id = code.group_id
+            self.expiration_date = code.expiration_date
             self.deleted = code.deleted
 
     def __str__(self):
@@ -22,7 +25,8 @@ class CodeData:
         String representation of an activation code.  This representation is meant to be human readable.
         :return: The activation code string.
         """
-        return f'CodeData: [activation_code: {self.activation_code}, deleted: {self.deleted}]'
+        return f'CodeData: [activation_code: {self.activation_code}, email: {self.email}, group_id: {self.group_id}, ' \
+               f'expiration_date: {self.expiration_date}, deleted: {self.deleted}]'
 
     def __repr__(self):
         """

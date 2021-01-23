@@ -461,9 +461,10 @@ def group_members_by_group_id_and_username_put(group_id: str, username: str) -> 
     :return: A response object for the PUT API request.
     """
     group_member_data: dict = request.get_json()
-    new_group_member = GroupMember(group_member_data)
+    status = group_member_data.get('status')
+    user = group_member_data.get('user')
 
-    is_updated = GroupMemberDao.update_group_member(int(group_id), username, new_group_member)
+    is_updated = GroupMemberDao.update_group_member(int(group_id), username, status, user)
 
     if is_updated:
         updated_group_member = GroupMemberDao.get_group_member(int(group_id), username)

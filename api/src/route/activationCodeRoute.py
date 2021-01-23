@@ -5,12 +5,13 @@ Author: Andrew Jarombek
 Date: 8/5/2019
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from sqlalchemy.schema import Column
 
 from decorators import auth_required
+from utils.codes import generate_code
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 from model.CodeData import CodeData
@@ -113,22 +114,15 @@ def activation_code_post() -> Response:
         return response
 
     code_to_add: Code = Code(code_data)
+    code_to_add.activation_code = generate_code(length=6)
+    code_to_add.expiration_date = datetime.now() + timedelta(weeks=2)
 
-    # Perform some validation on the JSON object coming from the client.
-    if code_to_add.activation_code is None:
+    if None in [code_to_add.group_id, code_to_add.email]:
         response = jsonify({
-            'self': f'/v2/activation_code',
+            'self': f'/v2/logs',
             'added': False,
-            'error': "'activation_code' is a required field"
-        })
-        response.status_code = 400
-        return response
-
-    if len(code_to_add.activation_code) != 6 or type(code_to_add.activation_code) is not str:
-        response = jsonify({
-            'self': f'/v2/activation_code',
-            'added': False,
-            'error': "'activation_code' must be a string of length 6"
+            'log': None,
+            'error': "'group_id' and 'email' are required fields"
         })
         response.status_code = 400
         return response
@@ -136,6 +130,14 @@ def activation_code_post() -> Response:
     # The created date must be accurate, don't trust the date coming from the client.
     code_to_add.created_date = datetime.now()
     code_to_add.created_app = 'saints-xctf-api'
+    code_to_add.created_user = None
+    code_to_add.modified_date = None
+    code_to_add.modified_app = None
+    code_to_add.modified_user = None
+    code_to_add.deleted_date = None
+    code_to_add.deleted_app = None
+    code_to_add.deleted_user = None
+    code_to_add.deleted = 'N'
 
     code_added_successfully: bool = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 

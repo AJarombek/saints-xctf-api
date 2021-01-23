@@ -155,6 +155,14 @@ def notification_post() -> Response:
 
     notification_to_add.created_date = datetime.now()
     notification_to_add.created_app = 'saints-xctf-api'
+    notification_to_add.created_user = None
+    notification_to_add.modified_date = None
+    notification_to_add.modified_app = None
+    notification_to_add.modified_user = None
+    notification_to_add.deleted_date = None
+    notification_to_add.deleted_app = None
+    notification_to_add.deleted_user = None
+    notification_to_add.deleted = 'N'
 
     notification_added_successfully = NotificationDao.add_notification(new_notification=notification_to_add)
 

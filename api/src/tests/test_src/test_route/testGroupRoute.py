@@ -476,25 +476,30 @@ class TestGroupRoute(TestSuite):
         self.assertIsNotNone(response_json.get('leaderboard'))
 
         leaderboard_items = response_json.get('leaderboard')
-        self.assertGreater(len(leaderboard_items), 0)
 
-        leaderboard_item = leaderboard_items[0]
-        self.assertIn('username', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('username')) is str)
-        self.assertIn('first', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('first')) is str)
-        self.assertIn('last', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('last')) is str)
-        self.assertIn('miles', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('miles')) is float)
-        self.assertIn('miles_run', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('miles_run')) is float)
-        self.assertIn('miles_biked', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('miles_biked')) is float)
-        self.assertIn('miles_swam', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('miles_swam')) is float)
-        self.assertIn('miles_other', leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get('miles_other')) is float)
+        if len(leaderboard_items) > 0:
+            leaderboard_item = leaderboard_items[0]
+            self.assertIn('username', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('username')) is str)
+            self.assertIn('first', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('first')) is str)
+            self.assertIn('last', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('last')) is str)
+            self.assertIn('miles', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('miles')) is float)
+            self.assertIn('miles_run', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('miles_run')) is float)
+            self.assertIn('miles_biked', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('miles_biked')) is float)
+            self.assertIn('miles_swam', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('miles_swam')) is float)
+            self.assertIn('miles_other', leaderboard_item)
+            self.assertTrue(type(leaderboard_item.get('miles_other')) is float)
+        else:
+            self.assertEqual(
+                'No leaderboard data was found within this group and time interval.',
+                response_json.get('warning')
+            )
 
     def test_group_leaderboard_with_interval_get_route_forbidden(self) -> None:
         """

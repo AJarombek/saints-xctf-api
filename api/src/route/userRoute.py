@@ -332,6 +332,14 @@ def user_post() -> Response:
         user_to_add.created_date = now
         user_to_add.last_signin = now
         user_to_add.created_app = 'saints-xctf-api'
+        user_to_add.created_user = None
+        user_to_add.modified_date = None
+        user_to_add.modified_app = None
+        user_to_add.modified_user = None
+        user_to_add.deleted_date = None
+        user_to_add.deleted_app = None
+        user_to_add.deleted_user = None
+        user_to_add.deleted = 'N'
 
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)

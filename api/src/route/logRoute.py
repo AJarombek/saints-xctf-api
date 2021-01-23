@@ -183,6 +183,14 @@ def logs_post() -> Response:
     log_to_add.time_created = datetime.now()
     log_to_add.created_date = datetime.now()
     log_to_add.created_app = 'saints-xctf-api'
+    log_to_add.created_user = None
+    log_to_add.modified_date = None
+    log_to_add.modified_app = None
+    log_to_add.modified_user = None
+    log_to_add.deleted_date = None
+    log_to_add.deleted_app = None
+    log_to_add.deleted_user = None
+    log_to_add.deleted = 'N'
 
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
 
