@@ -19,7 +19,10 @@ class NotificationDao:
         Retrieve all the notifications in the database.
         :return: The result of the query.
         """
-        return Notification.query.order_by(Notification.time).all()
+        return Notification.query\
+            .order_by(Notification.time)\
+            .filter(Notification.deleted.is_(False))\
+            .all()
 
     @staticmethod
     def get_notification_by_id(notification_id: int) -> Notification:
@@ -28,7 +31,10 @@ class NotificationDao:
         :param notification_id: The unique identifier for a notification.
         :return: The result of the query.
         """
-        return Notification.query.filter_by(notification_id=notification_id).first()
+        return Notification.query\
+            .filter_by(notification_id=notification_id)\
+            .filter(Notification.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def get_notification_by_username(username: str) -> ResultProxy:
@@ -42,7 +48,7 @@ class NotificationDao:
             SELECT * FROM notifications 
             WHERE username=:username 
             AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
-            AND deleted IS NULL OR deleted <> 'Y'
+            AND deleted IS FALSE
             ORDER BY time DESC
             ''',
             {'username': username}
@@ -71,6 +77,7 @@ class NotificationDao:
             UPDATE notifications 
             SET viewed=:viewed
             WHERE notification_id=:notification_id
+            AND deleted IS FALSE
             ''',
             {
                 'notification_id': notification.notification_id,
@@ -87,7 +94,7 @@ class NotificationDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM notifications WHERE notification_id=:notification_id',
+            'DELETE FROM notifications WHERE notification_id=:notification_id AND deleted IS FALSE',
             {'notification_id': notification_id}
         )
         return BasicDao.safe_commit()
@@ -108,6 +115,7 @@ class NotificationDao:
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE notification_id=:notification_id
+            AND deleted IS FALSE
             ''',
             {
                 'notification_id': notification.notification_id,

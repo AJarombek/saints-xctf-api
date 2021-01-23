@@ -22,7 +22,7 @@ class TeamDao:
         :return: A list containing Team model objects.
         """
         return Team.query\
-            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
+            .filter(Team.deleted.is_(False))\
             .all()
 
     @staticmethod
@@ -34,7 +34,7 @@ class TeamDao:
         """
         return Team.query\
             .filter_by(name=name)\
-            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
+            .filter(Team.deleted.is_(False))\
             .first()
 
     @staticmethod
@@ -48,9 +48,9 @@ class TeamDao:
             .filter(Team.name == TeamGroup.team_name) \
             .filter(TeamGroup.group_id == Group.id) \
             .filter(Group.id == group_id) \
-            .filter(or_(Group.deleted.is_(None), Group.deleted != 'Y')) \
-            .filter(or_(TeamGroup.deleted.is_(None), TeamGroup.deleted != 'Y')) \
-            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y')) \
+            .filter(Group.deleted.is_(False)) \
+            .filter(TeamGroup.deleted.is_(False)) \
+            .filter(Team.deleted.is_(False)) \
             .first()
 
     @staticmethod
@@ -63,6 +63,6 @@ class TeamDao:
         """
         return Team.query\
             .filter(or_(Team.name.like(f'%{text}%'), Team.title.like(f'%{text}%')))\
-            .filter(or_(Team.deleted.is_(None), Team.deleted != 'Y'))\
+            .filter(Team.deleted.is_(False))\
             .limit(limit)\
             .all()

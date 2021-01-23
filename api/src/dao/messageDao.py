@@ -18,7 +18,7 @@ class MessageDao:
         Retrieve all the group messages in the database
         :return: The result of the query.
         """
-        return Message.query.order_by(Message.time).all()
+        return Message.query.filter(Message.deleted.is_(False)).order_by(Message.time).all()
 
     @staticmethod
     def get_message_by_id(message_id: int) -> Message:
@@ -27,7 +27,10 @@ class MessageDao:
         :param message_id: The unique identifier for a message.
         :return: The result of the query.
         """
-        return Message.query.filter_by(message_id=message_id).first()
+        return Message.query\
+            .filter_by(message_id=message_id)\
+            .filter(Message.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def get_message_feed(group_name: str, limit: int, offset: int) -> ResultProxy:
@@ -42,6 +45,7 @@ class MessageDao:
             '''
             SELECT * FROM messages 
             WHERE group_name=:group_name 
+            AND deleted IS FALSE
             ORDER BY time DESC 
             LIMIT :limit OFFSET :offset
             ''',
@@ -73,6 +77,7 @@ class MessageDao:
                 modified_date=:modified_date,
                 modified_app=:modified_app
             WHERE message_id=:message_id
+            AND deleted IS FALSE
             ''',
             {
                 'message_id': message.message_id,
@@ -91,7 +96,7 @@ class MessageDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM messages WHERE message_id=:message_id',
+            'DELETE FROM messages WHERE message_id=:message_id AND deleted IS FALSE',
             {'message_id': message_id}
         )
         return BasicDao.safe_commit()
@@ -112,6 +117,7 @@ class MessageDao:
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE message_id=:message_id
+            AND deleted IS FALSE
             ''',
             {
                 'message_id': message.message_id,

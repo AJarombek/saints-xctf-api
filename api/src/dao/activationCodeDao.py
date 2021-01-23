@@ -20,7 +20,10 @@ class ActivationCodeDao:
         :param code: An activation code.
         :return: The result of the query.
         """
-        return Code.query.filter_by(activation_code=code).first()
+        return Code.query\
+            .filter_by(activation_code=code)\
+            .filter(Code.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def activation_code_exists(activation_code: str) -> Column:
@@ -34,7 +37,7 @@ class ActivationCodeDao:
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
             WHERE activation_code=:activation_code 
-            AND deleted IS NULL OR deleted <> 'Y'
+            AND deleted IS FALSE 
             ''',
             {'activation_code': activation_code}
         )
@@ -58,7 +61,7 @@ class ActivationCodeDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM codes WHERE activation_code=:activation_code',
+            'DELETE FROM codes WHERE activation_code=:activation_code AND deleted IS FALSE',
             {'activation_code': activation_code}
         )
         return BasicDao.safe_commit()
@@ -79,6 +82,7 @@ class ActivationCodeDao:
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE activation_code=:activation_code
+            AND deleted IS FALSE
             ''',
             {
                 'activation_code': code.activation_code,

@@ -22,7 +22,10 @@ class LogDao:
         Retrieve all the exercise logs in the database
         :return: The result of the query.
         """
-        return Log.query.order_by(Log.date).all()
+        return Log.query\
+            .filter(Log.deleted.is_(False))\
+            .order_by(Log.date)\
+            .all()
 
     @staticmethod
     def get_log_by_id(log_id: int) -> Log:
@@ -31,7 +34,10 @@ class LogDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return Log.query.filter_by(log_id=log_id).first()
+        return Log.query\
+            .filter_by(log_id=log_id)\
+            .filter(Log.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def get_user_miles(username: str) -> Column:
@@ -45,6 +51,7 @@ class LogDao:
             SELECT SUM(miles) AS total 
             FROM logs 
             WHERE username=:username
+            AND deleted IS FALSE
             ''',
             {'username': username}
         )
@@ -64,6 +71,7 @@ class LogDao:
             FROM logs 
             WHERE username=:username
             AND type=:exercise_type
+            AND deleted IS FALSE
             ''',
             {'username': username, 'exercise_type': exercise_type}
         )
@@ -88,6 +96,7 @@ class LogDao:
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 WHERE username=:username
+                AND deleted IS FALSE
                 ''',
                 {'username': username}
             )
@@ -98,6 +107,7 @@ class LogDao:
                 FROM logs 
                 WHERE username=:username 
                 AND date >= :date
+                AND deleted IS FALSE
                 ''',
                 {'username': username, 'date': date}
             )
@@ -127,6 +137,7 @@ class LogDao:
                 FROM logs 
                 WHERE username=:username
                 AND type=:exercise_type
+                AND deleted IS FALSE
                 ''',
                 {'username': username, 'exercise_type': exercise_type}
             )
@@ -138,6 +149,7 @@ class LogDao:
                 WHERE username=:username 
                 AND type=:exercise_type
                 AND date >= :date
+                AND deleted IS FALSE
                 ''',
                 {'username': username, 'date': date, 'exercise_type': exercise_type}
             )
@@ -156,6 +168,7 @@ class LogDao:
             SELECT AVG(feel) AS average 
             FROM logs 
             WHERE username=:username
+            AND deleted IS FALSE
             ''',
             {'username': username}
         )
@@ -179,6 +192,7 @@ class LogDao:
                 SELECT AVG(feel) AS average 
                 FROM logs 
                 WHERE username=:username
+                AND deleted IS FALSE
                 ''',
                 {'username': username}
             )
@@ -189,6 +203,7 @@ class LogDao:
                 FROM logs 
                 WHERE username=:username
                 AND date >= :date
+                AND deleted IS FALSE
                 ''',
                 {'username': username, 'date': date}
             )
@@ -209,6 +224,8 @@ class LogDao:
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
             WHERE group_name=:group_name 
             AND status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             ''',
             {'group_name': group_name}
         )
@@ -235,6 +252,8 @@ class LogDao:
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
                 WHERE group_name=:group_name
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name}
             )
@@ -248,6 +267,8 @@ class LogDao:
                 WHERE group_name=:group_name 
                 AND date >= :date 
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name, 'date': date}
             )
@@ -278,6 +299,8 @@ class LogDao:
                 WHERE group_name=:group_name 
                 AND type=:exercise_type
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name, 'exercise_type': exercise_type}
             )
@@ -292,6 +315,8 @@ class LogDao:
                 AND type=:exercise_type
                 AND date >= :date 
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name, 'exercise_type': exercise_type, 'date': date}
             )
@@ -311,6 +336,8 @@ class LogDao:
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
             WHERE group_name=:group_name 
             AND status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             ''',
             {'group_name': group_name}
         )
@@ -336,6 +363,8 @@ class LogDao:
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
                 WHERE group_name=:group_name 
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name}
             )
@@ -349,6 +378,8 @@ class LogDao:
                 WHERE group_name=:group_name 
                 AND date >= :date
                 AND status='accepted'
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 ''',
                 {'group_name': group_name, 'date': date}
             )
@@ -365,6 +396,7 @@ class LogDao:
         return db.session.execute(
             '''
             SELECT * FROM logs 
+            WHERE deleted IS FALSE
             ORDER BY date DESC, log_id DESC
             LIMIT :limit OFFSET :offset
             ''',
@@ -379,7 +411,7 @@ class LogDao:
         """
         return db.session.execute(
             '''
-            SELECT COUNT(*) AS count FROM logs
+            SELECT COUNT(*) AS count FROM logs WHERE deleted IS FALSE
             '''
         )
 
@@ -396,6 +428,7 @@ class LogDao:
             '''
             SELECT * FROM logs 
             WHERE username=:username
+            AND deleted IS FALSE
             ORDER BY date DESC, log_id DESC
             LIMIT :limit OFFSET :offset
             ''',
@@ -413,6 +446,7 @@ class LogDao:
             '''
             SELECT COUNT(*) AS count FROM logs
             WHERE username=:username
+            AND deleted IS FALSE
             ''',
             {'username': username}
         )
@@ -434,6 +468,8 @@ class LogDao:
             INNER JOIN groupmembers ON logs.username=groupmembers.username 
             WHERE group_id=:group_id 
             AND status='accepted' 
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             ORDER BY date DESC, log_id DESC 
             LIMIT :limit OFFSET :offset
             ''',
@@ -453,6 +489,8 @@ class LogDao:
             INNER JOIN groupmembers ON logs.username=groupmembers.username 
             WHERE group_id=:group_id 
             AND status='accepted' 
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             ''',
             {'group_id': group_id}
         )
@@ -473,6 +511,7 @@ class LogDao:
             FROM logs 
             WHERE date >= :start 
             AND date <= :end
+            AND deleted IS FALSE
             AND {type_query}
             GROUP BY date
             ''',
@@ -495,6 +534,7 @@ class LogDao:
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
             FROM logs 
             WHERE username=:username 
+            AND deleted IS FALSE
             AND date >= :start 
             AND date <= :end
             AND {type_query}
@@ -521,6 +561,7 @@ class LogDao:
             INNER JOIN groupmembers 
             ON logs.username=groupmembers.username 
             WHERE group_id=:group_id
+            AND deleted IS FALSE
             AND date >= :start 
             AND date <= :end
             AND {type_query}
@@ -561,6 +602,7 @@ class LogDao:
                 feel=:feel, 
                 description=:description
             WHERE log_id=:log_id
+            AND deleted IS FALSE
             ''',
             {
                 'name': log.name,
@@ -587,7 +629,7 @@ class LogDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM logs WHERE log_id=:log_id',
+            'DELETE FROM logs WHERE log_id=:log_id AND deleted IS FALSE',
             {'log_id': log_id}
         )
         return BasicDao.safe_commit()
@@ -608,6 +650,7 @@ class LogDao:
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE log_id=:log_id
+            AND deleted IS FALSE
             ''',
             {
                 'log_id': log.log_id,

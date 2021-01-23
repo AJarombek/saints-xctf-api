@@ -31,8 +31,8 @@ class TeamMemberDao:
             FROM teammembers 
             INNER JOIN teams ON teams.name=teammembers.team_name 
             WHERE username=:username
-            AND (teammembers.deleted IS NULL OR teammembers.deleted <> 'Y')
-            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
+            AND teammembers.deleted IS FALSE
+            AND teams.deleted IS FALSE
             ''',
             {'username': username}
         )
@@ -51,9 +51,9 @@ class TeamMemberDao:
             INNER JOIN teams ON teams.name=teammembers.team_name 
             INNER JOIN users ON teammembers.username=users.username 
             WHERE teammembers.team_name=:team_name
-            AND (teammembers.deleted IS NULL OR teammembers.deleted <> 'Y')
-            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
-            AND (users.deleted IS NULL OR users.deleted <> 'Y')
+            AND teammembers.deleted IS FALSE 
+            AND teams.deleted IS FALSE 
+            AND users.deleted IS FALSE 
             ''',
             {'team_name': team_name}
         )
@@ -103,7 +103,7 @@ class TeamMemberDao:
                     deleted_app='saints-xctf-api'
                 WHERE username=:username
                 AND team_name=:team_name
-                AND (deleted IS NULL OR deleted <> 'Y')
+                AND deleted IS FALSE
                 ''',
                 teams_left_dict
             )
@@ -121,8 +121,8 @@ class TeamMemberDao:
                     FROM `groups` g
                     INNER JOIN teamgroups tg ON g.id = tg.group_id
                     WHERE tg.team_name = :team_name
-                    AND (g.deleted IS NULL OR g.deleted <> 'Y')
-                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                    AND g.deleted IS FALSE
+                    AND tg.deleted IS FALSE 
                 );
                 ''',
                 teams_left_dict
@@ -137,8 +137,8 @@ class TeamMemberDao:
                     WHERE username = :username
                     AND gm.group_name = :group_name
                     AND tg.team_name = :team_name
-                    AND (gm.deleted IS NULL OR gm.deleted <> 'Y')
-                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                    AND gm.deleted IS FALSE
+                    AND tg.deleted IS FALSE
                     ''',
                     group_joined_dict
                 )
@@ -148,7 +148,7 @@ class TeamMemberDao:
                     SELECT * FROM teammembers
                     WHERE username = :username
                     AND team_name = :team_name
-                    AND (deleted IS NULL OR deleted <> 'Y')
+                    AND deleted IS FALSE
                     ''',
                     group_joined_dict
                 )
@@ -186,8 +186,8 @@ class TeamMemberDao:
                             INNER JOIN teamgroups tg ON g.id = tg.group_id
                             WHERE tg.team_name = :team_name
                             AND tg.group_name = :group_name
-                            AND (g.deleted IS NULL OR g.deleted <> 'Y')
-                            AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                            AND g.deleted IS FALSE
+                            AND tg.deleted IS FALSE
                         ), 
                         :group_name,
                         :username, 
@@ -217,8 +217,8 @@ class TeamMemberDao:
                     INNER JOIN teamgroups tg ON g.id = tg.group_id
                     WHERE tg.team_name = :team_name
                     AND tg.group_name = :group_name
-                    AND (g.deleted IS NULL OR g.deleted <> 'Y')
-                    AND (tg.deleted IS NULL OR tg.deleted <> 'Y')
+                    AND g.deleted IS FALSE
+                    AND tg.deleted IS FALSE
                 );
                 ''',
                 groups_left_dict

@@ -571,4 +571,4 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/links')
-        self.assertEqual(len(response_json.get('endpoints')), 10)
+        self.assertEqual(len(response_json.get('endpoints')), 13)

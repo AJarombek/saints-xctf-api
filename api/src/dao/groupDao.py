@@ -26,7 +26,9 @@ class GroupDao:
         Retrieve all the groups in the database
         :return: The result of the query.
         """
-        return Group.query.all()
+        return Group.query\
+            .filter(Group.deleted.is_(False))\
+            .all()
 
     @staticmethod
     def get_group_by_id(group_id: int) -> Group:
@@ -35,7 +37,10 @@ class GroupDao:
        :param group_id: Unique id which identifies a group.
        :return: A Group object which is the result of the query.
        """
-        return Group.query.filter_by(id=group_id).first()
+        return Group.query\
+            .filter_by(id=group_id)\
+            .filter(Group.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def get_group(team_name: str, group_name: str) -> Optional[RowProxy]:
@@ -52,6 +57,8 @@ class GroupDao:
             INNER JOIN teamgroups ON `groups`.group_name = teamgroups.group_name
             WHERE `groups`.group_name=:group_name
             AND team_name=:team_name
+            AND `groups`.deleted IS FALSE
+            AND teamgroups.deleted IS FALSE
             ''',
             {'team_name': team_name, 'group_name': group_name}
         )
@@ -70,6 +77,8 @@ class GroupDao:
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
             WHERE group_name=:group_name and status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             ''',
             {'group_name': group_name}
         )
@@ -87,6 +96,7 @@ class GroupDao:
             SELECT MAX(time) AS newest 
             FROM messages 
             WHERE group_name=:group_name
+            AND deleted IS FALSE
             ''',
             {'group_name': group_name}
         )
@@ -120,6 +130,8 @@ class GroupDao:
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
                 WHERE group_id = :group_id 
                 AND status = 'accepted' 
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
@@ -142,6 +154,8 @@ class GroupDao:
                 WHERE group_id = :group_id 
                 AND date >= :date 
                 AND status = 'accepted' 
+                AND logs.deleted IS FALSE
+                AND groupmembers.deleted IS FALSE
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
@@ -166,6 +180,7 @@ class GroupDao:
                 modified_date=:modified_date,
                 modified_app=:modified_app
             WHERE group_name=:group_name
+            AND deleted IS FALSE
             ''',
             {
                 'grouppic': group.grouppic,

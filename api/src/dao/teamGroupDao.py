@@ -24,8 +24,8 @@ class TeamGroupDao:
             FROM teamgroups 
             INNER JOIN `groups` ON teamgroups.group_name=`groups`.group_name 
             WHERE team_name=:team_name
-            AND (teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y')
-            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
+            AND teamgroups.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
             ''',
             {'team_name': team_name}
         )

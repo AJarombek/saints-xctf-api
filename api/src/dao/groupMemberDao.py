@@ -27,7 +27,7 @@ class GroupMemberDao:
         """
         return GroupMember.query\
             .filter(and_(GroupMember.group_id == group_id, GroupMember.username == username))\
-            .filter(or_(GroupMember.deleted.is_(None), GroupMember.deleted != 'Y'))\
+            .filter(GroupMember.deleted.is_(False))\
             .first()
 
     @staticmethod
@@ -43,8 +43,8 @@ class GroupMemberDao:
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             WHERE username=:username
-            AND (groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y')
-            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
+            AND groupmembers.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
             ''',
             {'username': username}
         )
@@ -66,10 +66,10 @@ class GroupMemberDao:
             INNER JOIN teams ON teams.name=teamgroups.team_name 
             WHERE username=:username
             AND teams.name=:team_name
-            AND (groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y')
-            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
-            AND (teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y')
-            AND (teams.deleted IS NULL OR teams.deleted <> 'Y')
+            AND groupmembers.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
+            AND teamgroups.deleted IS FALSE 
+            AND teams.deleted IS FALSE 
             ''',
             {'username': username, 'team_name': team_name}
         )
@@ -91,10 +91,10 @@ class GroupMemberDao:
             INNER JOIN users ON groupmembers.username=users.username 
             WHERE groupmembers.group_name=:group_name
             AND teamgroups.team_name=:team_name
-            AND (groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y')
-            AND (`groups`.deleted IS NULL OR `groups`.deleted <> 'Y')
-            AND (teamgroups.deleted IS NULL OR teamgroups.deleted <> 'Y')
-            AND (users.deleted IS NULL OR users.deleted <> 'Y')
+            AND groupmembers.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
+            AND teamgroups.deleted IS FALSE 
+            AND teams.deleted IS FALSE 
             ''',
             {'group_name': group_name, 'team_name': team_name}
         )
@@ -112,8 +112,8 @@ class GroupMemberDao:
             FROM groupmembers 
             INNER JOIN users ON groupmembers.username=users.username 
             WHERE groupmembers.group_id=:group_id
-            AND (groupmembers.deleted IS NULL OR groupmembers.deleted <> 'Y')
-            AND (users.deleted IS NULL OR users.deleted <> 'Y')
+            AND groupmembers.deleted IS FALSE 
+            AND users.deleted IS FALSE 
             ''',
             {'group_id': group_id}
         )
@@ -137,6 +137,7 @@ class GroupMemberDao:
                 modified_app=:modified_app
             WHERE group_id=:group_id 
             AND username=:username
+            AND deleted IS FALSE
             ''',
             {
                 'group_id': group_id,
@@ -165,6 +166,7 @@ class GroupMemberDao:
                 deleted_app=:deleted_app
             WHERE group_id=:group_id 
             AND username=:username
+            AND deleted IS FALSE
             ''',
             {
                 'group_id': group_id,

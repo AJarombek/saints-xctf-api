@@ -21,7 +21,7 @@ class UserDao:
         Get a list of all the users in the database.
         :return: A list containing User model objects.
         """
-        return User.query.all()
+        return User.query.filter(User.deleted.is_(False)).all()
 
     @staticmethod
     def get_user_by_username(username: str) -> User:
@@ -30,7 +30,11 @@ class UserDao:
         :param username: Username which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query.filter_by(username=username).options(defer('profilepic'), defer('profilepic_name')).first()
+        return User.query\
+            .filter_by(username=username)\
+            .filter(User.deleted.is_(False))\
+            .options(defer('profilepic'), defer('profilepic_name'))\
+            .first()
 
     @staticmethod
     def get_user_by_email(email: str) -> User:
@@ -39,7 +43,11 @@ class UserDao:
         :param email: Email which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query.filter_by(email=email).options(defer('profilepic'), defer('profilepic_name')).first()
+        return User.query\
+            .filter_by(email=email)\
+            .filter(User.deleted.is_(False))\
+            .options(defer('profilepic'), defer('profilepic_name'))\
+            .first()
 
     @staticmethod
     def add_user(user: User) -> bool:
@@ -73,6 +81,7 @@ class UserDao:
                 favorite_event=:favorite_event, 
                 week_start=:week_start 
             WHERE username=:username
+            AND deleted IS FALSE
             ''',
             {
                 'first': user.first,
@@ -99,7 +108,12 @@ class UserDao:
         :return: True if the update was successful, False otherwise
         """
         db.session.execute(
-            'UPDATE users SET password=:password WHERE username=:username',
+            '''
+            UPDATE users 
+            SET password=:password 
+            WHERE username=:username 
+            AND deleted IS FALSE
+            ''',
             {'username': username, 'password': password}
         )
         return BasicDao.safe_commit()
@@ -112,7 +126,12 @@ class UserDao:
         :return: True if the update was successful, False otherwise
         """
         db.session.execute(
-            'UPDATE users SET last_signin=SYSDATE() WHERE username=:username',
+            '''
+            UPDATE users 
+            SET last_signin=SYSDATE() 
+            WHERE username=:username
+            AND deleted IS FALSE
+            ''',
             {'username': username}
         )
         return BasicDao.safe_commit()
@@ -125,11 +144,11 @@ class UserDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM teammembers WHERE username=:username',
+            'DELETE FROM teammembers WHERE username=:username AND deleted IS FALSE',
             {'username': username}
         )
         db.session.execute(
-            'DELETE FROM users WHERE username=:username',
+            'DELETE FROM users WHERE username=:username AND deleted IS FALSE',
             {'username': username}
         )
         return BasicDao.safe_commit()
@@ -150,6 +169,7 @@ class UserDao:
                 deleted_date=:deleted_date,
                 deleted_app=:deleted_app
             WHERE username=:username
+            AND deleted IS FALSE
             ''',
             {
                 'username': user.username,

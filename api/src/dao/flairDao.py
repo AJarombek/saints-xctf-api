@@ -20,7 +20,10 @@ class FlairDao:
         :param username: Unique identifier for the user
         :return: A list of strings representing flairs.
         """
-        return Flair.query.filter_by(username=username).all()
+        return Flair.query\
+            .filter_by(username=username)\
+            .filter(Flair.deleted.is_(False))\
+            .all()
 
     @staticmethod
     def get_flair_by_content(username: str, flair: str) -> Flair:
@@ -30,7 +33,10 @@ class FlairDao:
         :param flair: Content of the flair which is displayed on the users profile.
         :return: The result of the database query
         """
-        return Flair.query.filter_by(username=username, flair=flair).first()
+        return Flair.query\
+            .filter_by(username=username, flair=flair)\
+            .filter(Flair.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def add_flair(flair: Flair) -> bool:

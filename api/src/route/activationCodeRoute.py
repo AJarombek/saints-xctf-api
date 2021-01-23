@@ -119,7 +119,7 @@ def activation_code_post() -> Response:
 
     if None in [code_to_add.group_id, code_to_add.email]:
         response = jsonify({
-            'self': f'/v2/logs',
+            'self': f'/v2/activation_code',
             'added': False,
             'log': None,
             'error': "'group_id' and 'email' are required fields"

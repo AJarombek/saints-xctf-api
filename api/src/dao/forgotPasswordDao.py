@@ -20,7 +20,10 @@ class ForgotPasswordDao:
         :param code: Value of the secret forgot password code
         :return: A dictionary representing the forgotten password code and metadata.
         """
-        return ForgotPassword.query.filter_by(forgot_code=code).first()
+        return ForgotPassword.query\
+            .filter_by(forgot_code=code)\
+            .filter(ForgotPassword.deleted.is_(False))\
+            .first()
 
     @staticmethod
     def get_forgot_password_codes(username: str) -> ResultProxy:
@@ -35,6 +38,7 @@ class ForgotPasswordDao:
             FROM forgotpassword 
             WHERE username=:username 
             AND expires >= NOW()
+            AND deleted IS FALSE
             ''',
             {'username': username}
         )
@@ -57,7 +61,11 @@ class ForgotPasswordDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM forgotpassword WHERE forgot_code=:forgot_code',
+            '''
+            DELETE FROM forgotpassword 
+            WHERE forgot_code=:forgot_code 
+            AND deleted IS FALSE
+            ''',
             {'forgot_code': code}
         )
         return BasicDao.safe_commit()
