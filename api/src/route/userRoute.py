@@ -339,7 +339,7 @@ def user_post() -> Response:
         user_to_add.deleted_date = None
         user_to_add.deleted_app = None
         user_to_add.deleted_user = None
-        user_to_add.deleted = 'N'
+        user_to_add.deleted = False
 
         # First add the user since its activation code is valid
         UserDao.add_user(user_to_add)
@@ -527,7 +527,7 @@ def user_by_username_soft_delete(username) -> Response:
         response.status_code = 400
         return response
 
-    if existing_user.deleted == 'Y':
+    if existing_user.deleted:
         response = jsonify({
             'self': f'/v2/users/soft/{username}',
             'deleted': False,
@@ -537,7 +537,7 @@ def user_by_username_soft_delete(username) -> Response:
         return response
 
     # Update the user model to reflect the soft delete
-    existing_user.deleted = 'Y'
+    existing_user.deleted = True
     existing_user.deleted_date = datetime.now()
     existing_user.deleted_app = 'saints-xctf-api'
     existing_user.modified_date = datetime.now()

@@ -35,13 +35,13 @@ class GroupMember(db.Model):
     __tablename__ = 'groupmembers'
 
     # Data Columns
-    id = Column(db.INTEGER, primary_key=True)
+    id = Column(db.INTEGER, primary_key=True, autoincrement=True)
     group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), index=True)
     group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     username = Column(db.VARCHAR(20), index=True)
     status = Column(db.VARCHAR(10), db.ForeignKey('status.status'))
     user = Column(db.VARCHAR(10), db.ForeignKey('admins.user'))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

@@ -77,7 +77,7 @@ class TeamMemberDao:
             'username': username,
             'status': 'pending',
             'user': 'user',
-            'deleted': 'N',
+            'deleted': False,
             'created_date': datetime.now(),
             'created_user': username,
             'created_app': 'saints-xctf-api'
@@ -97,7 +97,7 @@ class TeamMemberDao:
             db.session.execute(
                 '''
                 UPDATE teammembers SET 
-                    deleted = 'Y',
+                    deleted = True,
                     deleted_date=CURRENT_TIMESTAMP(),
                     deleted_user=:username,
                     deleted_app='saints-xctf-api'
@@ -111,7 +111,7 @@ class TeamMemberDao:
             db.session.execute(
                 '''
                 UPDATE groupmembers SET
-                    deleted = 'Y',
+                    deleted = TRUE,
                     deleted_date=CURRENT_TIMESTAMP(),
                     deleted_user=:username,
                     deleted_app='saints-xctf-api'
@@ -193,7 +193,7 @@ class TeamMemberDao:
                         :username, 
                         'pending', 
                         'user', 
-                        'N', 
+                        FALSE, 
                         CURRENT_TIMESTAMP(), 
                         :username, 
                         'saints-xctf-api'
@@ -206,7 +206,7 @@ class TeamMemberDao:
             db.session.execute(
                 '''
                 UPDATE groupmembers SET
-                    deleted = 'Y',
+                    deleted = TRUE,
                     deleted_date=CURRENT_TIMESTAMP(),
                     deleted_user=:username,
                     deleted_app='saints-xctf-api'

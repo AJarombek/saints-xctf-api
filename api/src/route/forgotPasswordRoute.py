@@ -138,7 +138,7 @@ def forgot_password_post(username) -> Response:
     new_forgot_password.deleted_date = None
     new_forgot_password.deleted_app = None
     new_forgot_password.deleted_user = None
-    new_forgot_password.deleted = 'N'
+    new_forgot_password.deleted = False
 
     forgot_password_inserted = ForgotPasswordDao.add_forgot_password_code(new_forgot_password)
 

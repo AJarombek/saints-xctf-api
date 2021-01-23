@@ -16,8 +16,14 @@ class TestCodeData(TestSuite):
         Prove that the human readable string representation of an CodeData object is as expected.
         """
         code = CodeData(Code({'activation_code': '80UN02', 'deleted': False}))
-        self.assertEquals(str(code), 'CodeData: [activation_code: 80UN02, deleted: False]')
-        self.assertEquals(code.__str__(), 'CodeData: [activation_code: 80UN02, deleted: False]')
+        self.assertEquals(
+            str(code),
+            'CodeData: [activation_code: 80UN02, email: None, group_id: None, expiration_date: None, deleted: False]'
+        )
+        self.assertEquals(
+            code.__str__(),
+            'CodeData: [activation_code: 80UN02, email: None, group_id: None, expiration_date: None, deleted: False]'
+        )
 
     def test_code_data_repr(self) -> None:
         """

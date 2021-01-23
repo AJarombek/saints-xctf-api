@@ -190,7 +190,7 @@ def logs_post() -> Response:
     log_to_add.deleted_date = None
     log_to_add.deleted_app = None
     log_to_add.deleted_user = None
-    log_to_add.deleted = 'N'
+    log_to_add.deleted = False
 
     log_added_successfully = LogDao.add_log(new_log=log_to_add)
 
@@ -394,7 +394,7 @@ def log_by_id_soft_delete(log_id) -> Response:
         response.status_code = 400
         return response
 
-    if existing_log.deleted == 'Y':
+    if existing_log.deleted:
         response = jsonify({
             'self': f'/v2/logs/soft/{log_id}',
             'deleted': False,
@@ -404,7 +404,7 @@ def log_by_id_soft_delete(log_id) -> Response:
         return response
 
     # Update the comment model to reflect the soft delete
-    existing_log.deleted = 'Y'
+    existing_log.deleted = True
     existing_log.deleted_date = datetime.now()
     existing_log.deleted_app = 'saints-xctf-api'
     existing_log.modified_date = datetime.now()

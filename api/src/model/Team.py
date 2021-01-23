@@ -39,7 +39,7 @@ class Team(db.Model):
     picture_name = Column(db.VARCHAR(255))
     week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
     description = Column(db.VARCHAR(255))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

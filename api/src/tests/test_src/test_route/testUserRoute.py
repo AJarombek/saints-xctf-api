@@ -115,7 +115,7 @@ class TestUserRoute(TestSuite):
         self.assertIn('subscribed', user)
         self.assertTrue(user.get('subscribed') is None or type(user.get('subscribed')) is str)
         self.assertIn('deleted', user)
-        self.assertTrue(user.get('deleted') is None or type(user.get('deleted')) is str)
+        self.assertIsInstance(user.get('deleted'), bool)
 
     def test_user_get_all_route_forbidden(self) -> None:
         """
@@ -225,7 +225,7 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
 
-        request_body = json.dumps({'activation_code': 'ABC123'})
+        request_body = json.dumps({'group_id': 1, 'email': 'andrew@jarombek.com'})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
@@ -237,7 +237,13 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), True)
-        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'ABC123', 'deleted': None})
+
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+        self.assertEqual(6, len(activation_code_json.get('activation_code')))
+        self.assertEqual(1, activation_code_json.get('group_id'))
+        self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
+        self.assertIn('expiration_date', activation_code_json)
 
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
@@ -254,7 +260,7 @@ class TestUserRoute(TestSuite):
             "description": "If it's me, you know that just saying hi to me makes me happy.  Please don't be hard on "
                            "yourself if you can't or aren't ready yet.  It's okay, I'm still always here for you.",
             "member_since": str(datetime.fromisoformat('2019-12-13')),
-            "activation_code": "ABC123",
+            "activation_code": activation_code,
             "last_signin": str(datetime.fromisoformat('2019-12-14'))
         })
 
@@ -265,7 +271,12 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 201)
+
+        self.assertEqual(
+            201,
+            response.status_code,
+            msg=f"Unexpected status code.  Response: {response_json.get('error')}"
+        )
         self.assertEqual(response_json.get('self'), '/v2/users')
         self.assertEqual(response_json.get('added'), True)
         self.assertIsNotNone(response_json.get('user'))
@@ -680,7 +691,7 @@ class TestUserRoute(TestSuite):
         self.assertIn('subscribed', user)
         self.assertTrue(user.get('subscribed') is None or type(user.get('subscribed')) is str)
         self.assertIn('deleted', user)
-        self.assertTrue(user.get('deleted') is None or type(user.get('deleted')) is str)
+        self.assertIsInstance(user.get('deleted'), bool)
 
         # ... along with additional fields
         self.assertIn('flair', user)
@@ -920,7 +931,7 @@ class TestUserRoute(TestSuite):
 
         request_body = json.dumps({
             'teams_joined': ['saintsxctf'],
-            'teams_left': ['saintsxctf_alumni'],
+            'teams_left': ['xc_alumni'],
             'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
             'groups_left': []
         })

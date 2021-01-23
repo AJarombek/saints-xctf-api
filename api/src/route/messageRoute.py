@@ -166,7 +166,7 @@ def message_post() -> Response:
     message_to_add.deleted_date = None
     message_to_add.deleted_app = None
     message_to_add.deleted_user = None
-    message_to_add.deleted = 'N'
+    message_to_add.deleted = False
 
     message_added_successfully = MessageDao.add_message(new_message=message_to_add)
 
@@ -331,7 +331,7 @@ def message_by_id_soft_delete(message_id) -> Response:
         response.status_code = 400
         return response
 
-    if existing_message.deleted == 'Y':
+    if existing_message.deleted:
         response = jsonify({
             'self': f'/v2/messages/soft/{message_id}',
             'deleted': False,
@@ -341,7 +341,7 @@ def message_by_id_soft_delete(message_id) -> Response:
         return response
 
     # Update the message model to reflect the soft delete
-    existing_message.deleted = 'Y'
+    existing_message.deleted = True
     existing_message.deleted_date = datetime.now()
     existing_message.deleted_app = 'saints-xctf-api'
     existing_message.modified_date = datetime.now()

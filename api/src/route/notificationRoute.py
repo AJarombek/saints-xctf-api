@@ -162,7 +162,7 @@ def notification_post() -> Response:
     notification_to_add.deleted_date = None
     notification_to_add.deleted_app = None
     notification_to_add.deleted_user = None
-    notification_to_add.deleted = 'N'
+    notification_to_add.deleted = False
 
     notification_added_successfully = NotificationDao.add_notification(new_notification=notification_to_add)
 
@@ -320,7 +320,7 @@ def notification_by_id_soft_delete(notification_id) -> Response:
         response.status_code = 400
         return response
 
-    if existing_notification.deleted == 'Y':
+    if existing_notification.deleted:
         response = jsonify({
             'self': f'/v2/notifications/soft/{notification_id}',
             'deleted': False,
@@ -330,7 +330,7 @@ def notification_by_id_soft_delete(notification_id) -> Response:
         return response
 
     # Update the notification model to reflect the soft delete
-    existing_notification.deleted = 'Y'
+    existing_notification.deleted = True
     existing_notification.deleted_date = datetime.now()
     existing_notification.deleted_app = 'saints-xctf-api'
     existing_notification.modified_date = datetime.now()

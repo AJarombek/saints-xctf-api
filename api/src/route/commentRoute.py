@@ -159,7 +159,7 @@ def comment_post():
     comment_to_add.deleted_date = None
     comment_to_add.deleted_app = None
     comment_to_add.deleted_user = None
-    comment_to_add.deleted = 'N'
+    comment_to_add.deleted = False
 
     comment_added_successfully: bool = CommentDao.add_comment(new_comment=comment_to_add)
 
@@ -316,7 +316,7 @@ def comment_with_id_soft_delete(comment_id):
         response.status_code = 400
         return response
 
-    if existing_comment.deleted == 'Y':
+    if existing_comment.deleted:
         response = jsonify({
             'self': f'/v2/comments/soft/{comment_id}',
             'deleted': False,
@@ -326,7 +326,7 @@ def comment_with_id_soft_delete(comment_id):
         return response
 
     # Update the comment model to reflect the soft delete
-    existing_comment.deleted = 'Y'
+    existing_comment.deleted = True
     existing_comment.deleted_date = datetime.now()
     existing_comment.deleted_app = 'saints-xctf-api'
     existing_comment.modified_date = datetime.now()

@@ -43,7 +43,7 @@ class Message(db.Model):
     group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), nullable=False)
     time = Column(db.DATETIME, nullable=False)
     content = Column(db.VARCHAR(1000))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

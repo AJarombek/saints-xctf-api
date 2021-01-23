@@ -561,7 +561,8 @@ class LogDao:
             INNER JOIN groupmembers 
             ON logs.username=groupmembers.username 
             WHERE group_id=:group_id
-            AND deleted IS FALSE
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
             AND date >= :start 
             AND date <= :end
             AND {type_query}

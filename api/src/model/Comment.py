@@ -43,7 +43,7 @@ class Comment(db.Model):
     log_id = Column(db.INT, db.ForeignKey('logs.log_id'), nullable=False)
     time = Column(db.DATETIME, nullable=False)
     content = Column(db.VARCHAR(1000))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

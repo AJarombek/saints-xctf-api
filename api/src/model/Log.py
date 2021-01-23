@@ -63,7 +63,7 @@ class Log(db.Model):
     feel = Column(db.INT, nullable=False, index=True)
     description = Column(db.VARCHAR(1000))
     time_created = Column(db.DATETIME, nullable=False)
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

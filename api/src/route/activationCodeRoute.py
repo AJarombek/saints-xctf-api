@@ -137,7 +137,7 @@ def activation_code_post() -> Response:
     code_to_add.deleted_date = None
     code_to_add.deleted_app = None
     code_to_add.deleted_user = None
-    code_to_add.deleted = 'N'
+    code_to_add.deleted = False
 
     code_added_successfully: bool = ActivationCodeDao.add_activation_code(new_code=code_to_add)
 
@@ -258,7 +258,7 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
         response.status_code = 400
         return response
 
-    if existing_code.deleted == 'Y':
+    if existing_code.deleted:
         response = jsonify({
             'self': f'/v2/activation_code/soft/{code}',
             'deleted': False,
@@ -268,7 +268,7 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
         return response
 
     # Update the activation code model to reflect the soft delete
-    existing_code.deleted = 'Y'
+    existing_code.deleted = True
     existing_code.deleted_date = datetime.now()
     existing_code.deleted_app = 'saints-xctf-api'
     existing_code.modified_date = datetime.now()

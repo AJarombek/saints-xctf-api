@@ -6,6 +6,7 @@ Date: 10/11/2019
 
 import json
 from flask import Response
+import unittest
 
 from tests.TestSuite import TestSuite
 from tests.test_src.test_route.utils import test_route_auth, AuthVariant
@@ -65,12 +66,12 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), False)
-        self.assertEqual(response_json.get('error'), "'activation_code' is a required field")
+        self.assertEqual(response_json.get('error'), "'group_id' and 'email' are required fields")
 
-    def test_activation_code_post_route_400_invalid_code(self) -> None:
+    def test_activation_code_post_route_400_missing_fields(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/activation_code' route. This test proves that a request body
-        with an activation code of the incorrect length results in a 400 status code response.
+        with missing email or group_id fields results in a 400 status code response.
         """
         request_body = json.dumps({'activation_code': 'invalid'})
 
@@ -85,7 +86,7 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), False)
-        self.assertEqual(response_json.get('error'), "'activation_code' must be a string of length 6")
+        self.assertEqual(response_json.get('error'), "'group_id' and 'email' are required fields")
 
     def test_activation_code_post_route_200(self) -> None:
         """
@@ -330,6 +331,7 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response_json.get('deleted'), False)
         self.assertEqual(response_json.get('error'), 'there is no existing activation code with this code')
 
+    @unittest.skip('There activation code is no longer supplied by the user, instead dynaically created by the server.')
     def test_activation_code_soft_delete_route_400_already_deleted(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/activation_code/soft/<code>' route.  This test proves that

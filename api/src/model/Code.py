@@ -37,7 +37,7 @@ class Code(db.Model):
     email = Column(db.VARCHAR(50), index=True)
     group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     expiration_date = Column(db.DATETIME)
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

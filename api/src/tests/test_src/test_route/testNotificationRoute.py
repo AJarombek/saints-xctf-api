@@ -94,7 +94,7 @@ class TestNotificationRoute(TestSuite):
         self.assertIn('description', response_json.get('notifications')[0])
         self.assertTrue(notification.get('description') is None or type(notification.get('description')) is str)
         self.assertIn('deleted', response_json.get('notifications')[0])
-        self.assertTrue(notification.get('deleted') is None or type(notification.get('deleted')) is str)
+        self.assertIsInstance(notification.get('deleted'), bool)
 
     def test_notification_get_all_route_forbidden(self) -> None:
         """

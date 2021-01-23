@@ -45,7 +45,7 @@ class Event(db.Model):
     start_time = Column(db.TIME)
     end_time = Column(db.TIME)
     description = Column(db.VARCHAR(1000))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

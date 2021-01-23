@@ -35,7 +35,7 @@ class Flair(db.Model):
     flair_id = Column(db.INT, autoincrement=True, primary_key=True)
     username = Column(db.VARCHAR(20), db.ForeignKey('users.username'))
     flair = Column(db.VARCHAR(50))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

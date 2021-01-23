@@ -35,7 +35,7 @@ class ForgotPassword(db.Model):
     forgot_code = Column(db.VARCHAR(8), primary_key=True)
     username = Column(db.VARCHAR(20), db.ForeignKey('users.username'), nullable=False, index=True)
     expires = Column(db.DATETIME, nullable=False)
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

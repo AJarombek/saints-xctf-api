@@ -55,7 +55,7 @@ class User(db.Model):
     subscribed = Column(db.CHAR(1))
     last_signin = Column(db.DATETIME, nullable=False)
     week_start = Column(db.VARCHAR(15))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

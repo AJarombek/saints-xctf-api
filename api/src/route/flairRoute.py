@@ -93,7 +93,7 @@ def flair_post():
     flair.deleted_date = None
     flair.deleted_app = None
     flair.deleted_user = None
-    flair.deleted = 'N'
+    flair.deleted = False
 
     flair_added: bool = FlairDao.add_flair(flair)
 

@@ -37,7 +37,7 @@ class TeamGroup(db.Model):
     team_name = Column(db.VARCHAR(31), db.ForeignKey('teams.name'))
     group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     group_name = Column(db.INTEGER, db.ForeignKey('groups.name'))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)

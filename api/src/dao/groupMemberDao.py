@@ -171,7 +171,7 @@ class GroupMemberDao:
             {
                 'group_id': group_id,
                 'username': username,
-                'deleted': 'Y',
+                'deleted': True,
                 'deleted_date': datetime.now(),
                 'deleted_app': 'saints-xctf-api'
             }

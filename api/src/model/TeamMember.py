@@ -39,7 +39,7 @@ class TeamMember(db.Model):
     username = Column(db.VARCHAR(20), db.ForeignKey('users.username'))
     status = Column(db.VARCHAR(10))
     user = Column(db.VARCHAR(10))
-    deleted = Column(db.CHAR(1))
+    deleted = Column(db.BOOLEAN)
 
     # Audit Columns
     created_date = Column(db.DATETIME)
