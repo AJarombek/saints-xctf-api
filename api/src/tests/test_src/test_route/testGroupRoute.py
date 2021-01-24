@@ -217,6 +217,41 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/1', AuthVariant.UNAUTHORIZED)
 
+    def test_team_by_group_id_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/team/<group_id>' route.  This test proves that
+        trying to retrieve a team via a group id that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/groups/team/0', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/team/0')
+        self.assertIsNone(response_json.get('team'))
+        self.assertEqual(response_json.get('error'), 'No team exists that has a group with this id.')
+
+    def test_team_by_group_id_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/team/<group_id>' route.  This test proves that
+        retrieving a team via a valid group id results in the team and a 200 status.
+        """
+        response: Response = self.client.get('/v2/groups/team/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/team/1')
+        self.assertIsNotNone(response_json.get('team'))
+
+    def test_team_by_group_id_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/groups/team/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/team/1', AuthVariant.FORBIDDEN)
+
+    def test_team_by_group_id_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/groups/team/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/groups/team/1', AuthVariant.UNAUTHORIZED)
+
     def test_group_members_by_group_name_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/members/<team_name>/<group_name>' route.  This test

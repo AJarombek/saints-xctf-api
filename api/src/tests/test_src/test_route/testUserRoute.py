@@ -606,6 +606,8 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201, msg=f'Error creating user: {response_json.get("error")}')
         username = response_json.get('user').get('username')
 
         response: Response = self.client.delete(

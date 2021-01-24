@@ -350,7 +350,7 @@ class TestLogRoute(TestSuite):
             "description": f"Loosen up my legs before running this morning, my knee hurt a little bit yesterday and I"
             f"want it to be healthy for the Manchester Road Race on Thursday.",
             "time_created": "2019-11-23 16:00:00",
-            "deleted": True
+            "deleted": False
         })
         response: Response = self.client.post(
             '/v2/logs/',
@@ -360,6 +360,9 @@ class TestLogRoute(TestSuite):
         )
         response_json: dict = response.get_json()
         log_id = response_json.get('log').get('log_id')
+
+        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
+        self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
         self.assertEqual(response.status_code, 400)
@@ -402,9 +405,9 @@ class TestLogRoute(TestSuite):
 
         response: Response = self.client.get(f'/v2/logs/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response_json.get('log'))
-        self.assertTrue(response_json.get('log').get('deleted'))
+        self.assertEqual(response.status_code, 400)
+        self.assertIsNone(response_json.get('log'))
+        self.assertEqual('there is no log with this identifier', response_json.get('error'))
 
     def test_log_by_id_soft_delete_route_forbidden(self) -> None:
         """
