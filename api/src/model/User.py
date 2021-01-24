@@ -143,7 +143,6 @@ class User(db.Model):
             user_1.last == user_2.last,
             user_1.salt == user_2.salt,
             user_1.password == user_2.password,
-            self_profilepic == other_profilepic,
             self_profilepic_name == other_profilepic_name,
             user_1.description == user_2.description,
             str(user_1.member_since) == str(user_2.member_since),

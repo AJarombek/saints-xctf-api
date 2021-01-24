@@ -342,23 +342,34 @@ class TestCommentRoute(TestSuite):
         """
         # Ensure that the comment was already soft deleted before testing the DELETE endpoint
         request_body = json.dumps({
-            "comment_id": 1,
             "username": "andy",
             "first": "Andrew",
             "last": "Jarombek",
             "log_id": 1,
-            "time": "2016-12-23 21:32:42",
-            "content": f"First Comment! (Edited {datetime.now()})",
-            "deleted": True
+            "time": "2021-01-24 13:10:50",
+            "content": "Hi"
         })
-        self.client.put(
-            '/v2/comments/1',
+
+        response: Response = self.client.post(
+            '/v2/comments/',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': 'Bearer j.w.t'}
         )
 
-        response: Response = self.client.delete('/v2/comments/soft/1', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/comments')
+        self.assertEqual(response_json.get('added'), True)
+
+        comment_response: dict = response_json.get('comment')
+        self.assertIsNotNone(comment_response)
+        comment_id = comment_response.get('comment_id')
+
+        response = self.client.delete(f'/v2/comments/soft/{comment_id}', headers={'Authorization': 'Bearer j.w.t'})
+        self.assertEqual(response.status_code, 204)
+
+        response: Response = self.client.delete(f'/v2/comments/soft/{comment_id}', headers={'Authorization': 'Bearer j.w.t'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
