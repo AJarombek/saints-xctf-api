@@ -305,6 +305,85 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/members/saintsxctf/wmenstf', AuthVariant.UNAUTHORIZED)
 
+    def test_members_by_group_id_and_username_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
+        if the request results in an HTTP 200 response.
+        """
+
+        # You know I'm always here for you no matter what.  Will always give you my best if you ask for it.
+        request_body = json.dumps({
+            "status": "accepted",
+            "user": "user"
+        })
+        response: Response = self.client.put(
+            '/v2/groups/members/1/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/1/andy')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('group_member'))
+
+        group_member: dict = response_json.get('group_member')
+
+        self.assertEqual(1, group_member.get('group_id'))
+        self.assertEqual('alumni', group_member.get('group_name'))
+        self.assertEqual('accepted', group_member.get('status'))
+        self.assertEqual('user', group_member.get('user'))
+        self.assertEqual('andy', group_member.get('username'))
+
+        request_body = json.dumps({
+            "status": "accepted",
+            "user": "admin"
+        })
+        response: Response = self.client.put(
+            '/v2/groups/members/1/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/groups/members/1/andy')
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('group_member'))
+
+        group_member: dict = response_json.get('group_member')
+
+        self.assertEqual(1, group_member.get('group_id'))
+        self.assertEqual('alumni', group_member.get('group_name'))
+        self.assertEqual('accepted', group_member.get('status'))
+        self.assertEqual('admin', group_member.get('user'))
+        self.assertEqual('andy', group_member.get('username'))
+
+    def test_group_members_by_group_id_and_username_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/groups/members/<group_id>/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/members/1/andy', AuthVariant.FORBIDDEN)
+
+    def test_group_members_by_group_id_and_username_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/groups/members/<group_id>/<username>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/members/1/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_group_members_by_group_id_and_username_delete_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP DELETE request on the '/v2/groups/members/<group_id>/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/groups/members/1/andy', AuthVariant.FORBIDDEN)
+
+    def test_group_members_by_group_id_and_username_delete_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP DELETE request on the '/v2/groups/members/<group_id>/<username>' route.
+        """
+        test_route_auth(self, self.client, 'DELETE', '/v2/groups/members/1/andy', AuthVariant.UNAUTHORIZED)
+
     def test_group_members_by_id_get_route_400(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/groups/members/<group_id>' route.  This test

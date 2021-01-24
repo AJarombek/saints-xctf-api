@@ -344,7 +344,7 @@ class TestActivationCodeRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), f'/v2/activation_code/soft/{activation_code}')
         self.assertEqual(response_json.get('deleted'), False)
-        self.assertEqual(response_json.get('error'), 'this activation code is already soft deleted')
+        self.assertEqual(response_json.get('error'), 'there is no existing activation code with this code')
 
     def test_activation_code_soft_delete_route_forbidden(self) -> None:
         """
