@@ -271,7 +271,7 @@ class TestLogRoute(TestSuite):
             "feel": 8,
             "description": f"Really nice run through the trails at night.  (Edited {datetime.now()})",
             "time_created": "0000-00-00 00:00:00",
-            "deleted": None
+            "deleted": False
         })
 
         response: Response = self.client.put(
@@ -350,7 +350,7 @@ class TestLogRoute(TestSuite):
             "description": f"Loosen up my legs before running this morning, my knee hurt a little bit yesterday and I"
             f"want it to be healthy for the Manchester Road Race on Thursday.",
             "time_created": "2019-11-23 16:00:00",
-            "deleted": 'Y'
+            "deleted": True
         })
         response: Response = self.client.post(
             '/v2/logs/',
@@ -386,7 +386,7 @@ class TestLogRoute(TestSuite):
             "feel": 5,
             "description": f"Short run around the neighborhood after unloading Christmas trees this morning.",
             "time_created": "2019-11-23 15:00:00",
-            "deleted": None
+            "deleted": False
         })
         response: Response = self.client.post(
             '/v2/logs/',

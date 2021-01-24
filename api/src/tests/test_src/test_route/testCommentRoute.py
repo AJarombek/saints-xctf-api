@@ -248,7 +248,7 @@ class TestCommentRoute(TestSuite):
             "log_id": 1,
             "time": "2016-12-23 21:32:42",
             "content": f"First Comment! (Edited {datetime.now()})",
-            "deleted": None
+            "deleted": False
         })
 
         response: Response = self.client.put(
@@ -308,7 +308,7 @@ class TestCommentRoute(TestSuite):
             "log_id": 1,
             "time": "2019-10-26 20:00:00",
             "content": f"Comment to be soft deleted",
-            "deleted": None
+            "deleted": False
         })
         response: Response = self.client.post(
             '/v2/comments/',

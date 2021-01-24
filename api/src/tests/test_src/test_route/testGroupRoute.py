@@ -155,7 +155,7 @@ class TestGroupRoute(TestSuite):
             "grouppic_name": "picture.png",
             "week_start": "sunday",
             "description": f"Updated: {datetime.now()}",
-            "deleted": None
+            "deleted": False
         })
 
         response: Response = self.client.put(

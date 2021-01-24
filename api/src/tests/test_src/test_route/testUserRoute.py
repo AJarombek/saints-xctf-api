@@ -501,12 +501,7 @@ class TestUserRoute(TestSuite):
         proves that if the user was already soft deleted, a 400 error is returned.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete(
-            '/v2/activation_code/DEFGHI',
-            headers={'Authorization': 'Bearer j.w.t'}
-        )
-
-        request_body = json.dumps({'activation_code': 'DEFGHI'})
+        request_body = json.dumps({'email': 'andrew@jarombek.com', 'group_id': 1})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
@@ -518,7 +513,13 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), True)
-        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
+
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+        self.assertEqual(6, len(activation_code_json.get('activation_code')))
+        self.assertEqual(1, activation_code_json.get('group_id'))
+        self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
+        self.assertIn('expiration_date', activation_code_json)
 
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
@@ -532,7 +533,7 @@ class TestUserRoute(TestSuite):
             "first": "Andrew",
             "last": "Jarombek",
             "password": "password",
-            "activation_code": "DEFGHI"
+            "activation_code": activation_code
         })
 
         response: Response = self.client.post(
@@ -562,12 +563,8 @@ class TestUserRoute(TestSuite):
         soft deleting an existing non-soft deleted user will execute successfully and return a valid 204 status.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete(
-            '/v2/activation_code/DEFGHI',
-            headers={'Authorization': 'Bearer j.w.t'}
-        )
+        request_body = json.dumps({'email': 'andrew@jarombek.com', 'group_id': 1})
 
-        request_body = json.dumps({'activation_code': 'DEFGHI'})
         response: Response = self.client.post(
             '/v2/activation_code/',
             data=request_body,
@@ -579,7 +576,13 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/activation_code')
         self.assertEqual(response_json.get('added'), True)
-        self.assertEqual(response_json.get('activation_code'), {'activation_code': 'DEFGHI', 'deleted': None})
+
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+        self.assertEqual(6, len(activation_code_json.get('activation_code')))
+        self.assertEqual(1, activation_code_json.get('group_id'))
+        self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
+        self.assertIn('expiration_date', activation_code_json)
 
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
@@ -593,7 +596,7 @@ class TestUserRoute(TestSuite):
             "first": "Andrew",
             "last": "Jarombek",
             "password": "password",
-            "activation_code": "DEFGHI"
+            "activation_code": activation_code
         })
 
         response: Response = self.client.post(
@@ -838,17 +841,18 @@ class TestUserRoute(TestSuite):
         self.assertTrue(team_membership.get('groups') is None or type(team_membership.get('groups')) is list)
 
         groups = team_membership.get('groups')
-        self.assertGreater(len(groups), 0)
+        self.assertGreaterEqual(len(groups), 0)
 
-        group_membership = groups[0]
-        self.assertIn('group_name', group_membership)
-        self.assertTrue(group_membership.get('group_name') is None or type(group_membership.get('group_name')) is str)
-        self.assertIn('group_title', group_membership)
-        self.assertTrue(group_membership.get('group_title') is None or type(group_membership.get('group_title')) is str)
-        self.assertIn('status', group_membership)
-        self.assertTrue(group_membership.get('status') is None or type(group_membership.get('status')) is str)
-        self.assertIn('user', group_membership)
-        self.assertTrue(group_membership.get('user') is None or type(group_membership.get('user')) is str)
+        if len(groups) > 0:
+            group_membership = groups[0]
+            self.assertIn('group_name', group_membership)
+            self.assertTrue(group_membership.get('group_name') is None or type(group_membership.get('group_name')) is str)
+            self.assertIn('group_title', group_membership)
+            self.assertTrue(group_membership.get('group_title') is None or type(group_membership.get('group_title')) is str)
+            self.assertIn('status', group_membership)
+            self.assertTrue(group_membership.get('status') is None or type(group_membership.get('status')) is str)
+            self.assertIn('user', group_membership)
+            self.assertTrue(group_membership.get('user') is None or type(group_membership.get('user')) is str)
 
     def test_user_memberships_by_username_get_route_forbidden(self) -> None:
         """

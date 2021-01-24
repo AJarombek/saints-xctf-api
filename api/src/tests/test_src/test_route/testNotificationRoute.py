@@ -378,7 +378,7 @@ class TestNotificationRoute(TestSuite):
             "link": "https://www.saintsxctf.com/",
             "viewed": "N",
             "description": "I hope you have a wonderful weekend.  This is our busiest two days selling Christmas Trees",
-            "deleted": 'Y'
+            "deleted": False
         })
         response: Response = self.client.post(
             '/v2/notifications/',
@@ -388,6 +388,12 @@ class TestNotificationRoute(TestSuite):
         )
         response_json: dict = response.get_json()
         notification_id = response_json.get('notification').get('notification_id')
+
+        response: Response = self.client.delete(
+            f'/v2/notifications/soft/{notification_id}',
+            headers={'Authorization': 'Bearer j.w.t'}
+        )
+        self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
             f'/v2/notifications/soft/{notification_id}',
@@ -409,7 +415,7 @@ class TestNotificationRoute(TestSuite):
             "viewed": "N",
             "description": "You mean so much to me, so of course whatever you are capable of I will reciprocate back " +
                            "to you.  You never have to worry about that.  Take your time and do what makes you happy.",
-            "deleted": None
+            "deleted": False
         })
         response: Response = self.client.post(
             '/v2/notifications/', data=request_body, content_type='application/json',
@@ -429,9 +435,9 @@ class TestNotificationRoute(TestSuite):
             headers={'Authorization': 'Bearer j.w.t'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response_json.get('notification'))
-        self.assertTrue(response_json.get('notification').get('deleted'))
+        self.assertEqual(response.status_code, 400)
+        self.assertIsNone(response_json.get('notification'))
+        self.assertEqual('there is no notification with this identifier', response_json.get('error'))
 
     def test_notification_by_id_soft_delete_route_forbidden(self) -> None:
         """

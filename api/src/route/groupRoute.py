@@ -14,7 +14,6 @@ from sqlalchemy.schema import Column
 from decorators import auth_required
 from model.Group import Group
 from model.GroupData import GroupData
-from model.GroupMember import GroupMember
 from model.GroupMemberData import GroupMemberData
 from model.Team import Team
 from model.TeamData import TeamData

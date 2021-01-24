@@ -94,7 +94,7 @@ class GroupMemberDao:
             AND groupmembers.deleted IS FALSE 
             AND `groups`.deleted IS FALSE 
             AND teamgroups.deleted IS FALSE 
-            AND teams.deleted IS FALSE 
+            AND users.deleted IS FALSE 
             ''',
             {'group_name': group_name, 'team_name': team_name}
         )
