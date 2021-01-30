@@ -308,7 +308,7 @@ class TestGroupRoute(TestSuite):
     def test_members_by_group_id_and_username_put_route_200(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
-        if the request results in an HTTP 200 response.
+        the request results in an HTTP 200 response.
         """
 
         # You know I'm always here for you no matter what.  Will always give you my best if you ask for it.
@@ -371,6 +371,14 @@ class TestGroupRoute(TestSuite):
         Test performing an unauthorized HTTP PUT request on the '/v2/groups/members/<group_id>/<username>' route.
         """
         test_route_auth(self, self.client, 'PUT', '/v2/groups/members/1/andy', AuthVariant.UNAUTHORIZED)
+
+    def test_group_members_by_group_id_and_username_delete_route_200(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves
+        that the request results in an HTTP 204 response.
+        """
+        response: Response = self.client.delete('/v2/groups/members/7/andy', headers={'Authorization': 'Bearer j.w.t'})
+        self.assertEqual(response.status_code, 204)
 
     def test_group_members_by_group_id_and_username_delete_route_forbidden(self) -> None:
         """
@@ -685,4 +693,4 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/links')
-        self.assertEqual(len(response_json.get('endpoints')), 13)
+        self.assertEqual(len(response_json.get('endpoints')), 14)

@@ -63,7 +63,7 @@ def group(team_name, group_name) -> Response:
         return group_by_group_name_get(team_name, group_name)
 
     elif request.method == 'PUT':
-        ''' [PUT] /v2/groups/<group_name> '''
+        ''' [PUT] /v2/groups/<team_name>/<group_name> '''
         return group_by_group_name_put(team_name, group_name)
 
 
@@ -78,6 +78,10 @@ def group_by_id(group_id) -> Response:
     if request.method == 'GET':
         ''' [GET] /v2/groups/<id> '''
         return group_by_id_get(group_id)
+
+    elif request.method == 'PUT':
+        ''' [PUT] /v2/groups/<id> '''
+        return group_by_id_put(group_id)
 
 
 @group_route.route('/team/<group_id>', methods=['GET', 'PUT'])
@@ -347,6 +351,64 @@ def group_by_id_get(group_id: str) -> Response:
             'group': group_dict
         })
         response.status_code = 200
+        return response
+
+
+def group_by_id_put(group_id: str) -> Response:
+    """
+    Update a group based on the unique group id.
+    :param group_id: Unique id which identifies a group.
+    :return: A response object for the PUT API request.
+    """
+    old_group = GroupDao.get_group_by_id(int(group_id))
+
+    if old_group is None:
+        response = jsonify({
+            'self': f'/v2/groups/{group_id}',
+            'updated': False,
+            'group': None,
+            'error': 'There is no existing group with this id.'
+        })
+        response.status_code = 400
+        return response
+
+    group_data: dict = request.get_json()
+    new_group = Group(group_data)
+
+    if new_group != old_group:
+        new_group.modified_date = datetime.now()
+        new_group.modified_app = 'saints-xctf-api'
+
+        is_updated = GroupDao.update_group(group=new_group)
+
+        if is_updated:
+            updated_group = GroupDao.get_group_by_id(int(group_id))
+            updated_group_dict: dict = GroupData(updated_group).__dict__
+
+            response = jsonify({
+                'self': f'/v2/groups/{group_id}',
+                'updated': True,
+                'group': updated_group_dict
+            })
+            response.status_code = 200
+            return response
+        else:
+            response = jsonify({
+                'self': f'/v2/groups/{group_id}',
+                'updated': False,
+                'group': None,
+                'error': 'The group failed to update.'
+            })
+            response.status_code = 500
+            return response
+    else:
+        response = jsonify({
+            'self': f'/v2/groups/{group_id}',
+            'updated': False,
+            'group': None,
+            'error': 'The group submitted is equal to the existing group with the same id.'
+        })
+        response.status_code = 400
         return response
 
 
@@ -672,6 +734,11 @@ def group_links_get() -> Response:
                 'link': '/v2/groups/<id>',
                 'verb': 'GET',
                 'description': 'Retrieve a single group based on its id.'
+            },
+            {
+                'link': '/v2/groups/<id>',
+                'verb': 'PUT',
+                'description': 'Update a group based on its id.'
             },
             {
                 'link': '/v2/groups/team/<id>',

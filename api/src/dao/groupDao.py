@@ -176,7 +176,6 @@ class GroupDao:
                 grouppic_name=:grouppic_name, 
                 description=:description, 
                 week_start=:week_start,
-                deleted=:deleted,
                 modified_date=:modified_date,
                 modified_app=:modified_app
             WHERE group_name=:group_name
@@ -187,7 +186,6 @@ class GroupDao:
                 'grouppic_name': group.grouppic_name,
                 'description': group.description,
                 'week_start': group.week_start,
-                'deleted': group.deleted,
                 'group_name': group.group_name,
                 'modified_date': group.modified_date,
                 'modified_app': group.modified_app
