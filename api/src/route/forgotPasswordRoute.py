@@ -37,6 +37,19 @@ def forgot_password(username) -> Response:
         return forgot_password_post(username)
 
 
+@forgot_password_route.route('/validate/<code>', methods=['GET'])
+@auth_required()
+def forgot_password_code_validation(code) -> Response:
+    """
+    Endpoints for validating whether or not a forgot password code exists.
+    :param code: Forgot password code which will be validated
+    :return: JSON representation of validation results and relevant metadata
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/forgot_password/validate/<code> '''
+        return forgot_password_validate_code_get(code)
+
+
 @forgot_password_route.route('/links', methods=['GET'])
 def forgot_password_links() -> Response:
     """
@@ -148,7 +161,10 @@ def forgot_password_post(username) -> Response:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
             'inserted': True,
-            'forgot_password_code': new_forgot_password.forgot_code
+            'forgot_password_code': new_forgot_password.forgot_code,
+            'username': user.username,
+            'first_name': user.first,
+            'last_name': user.last
         })
         response.status_code = 201
         return response
@@ -156,10 +172,26 @@ def forgot_password_post(username) -> Response:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
             'inserted': False,
-            'error': 'The forgot password code creation failed.'
+            'error': 'An unexpected error occurred.'
         })
         response.status_code = 500
         return response
+
+
+def forgot_password_validate_code_get(code: str) -> Response:
+    """
+    Validate a forgot password code.
+    :param code: Forgot password code which will be validated.
+    :return: JSON with the validation results and relevant metadata.
+    """
+    forgot_password_code = ForgotPasswordDao.get_forgot_password_code(code)
+
+    response = jsonify({
+        'self': f'/v2/forgot_password/validate/{code}',
+        'is_valid': forgot_password_code is not None
+    })
+    response.status_code = 200
+    return response
 
 
 def forgot_password_links_get() -> Response:
@@ -179,6 +211,11 @@ def forgot_password_links_get() -> Response:
                 'link': '/v2/forgot_password/<username>',
                 'verb': 'POST',
                 'description': 'Create a new forgot password code.'
+            },
+            {
+                'link': '/v2/forgot_password/validate/<code>',
+                'verb': 'GET',
+                'description': 'Validate if a forgot password code exists.'
             }
         ],
     })
