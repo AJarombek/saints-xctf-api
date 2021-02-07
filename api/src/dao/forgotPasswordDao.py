@@ -5,8 +5,12 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
-from database import db
+from datetime import datetime
+
 from sqlalchemy.engine import ResultProxy
+from sqlalchemy import and_
+
+from database import db
 from dao.basicDao import BasicDao
 from model.ForgotPassword import ForgotPassword
 
@@ -22,7 +26,7 @@ class ForgotPasswordDao:
         """
         return ForgotPassword.query\
             .filter_by(forgot_code=code)\
-            .filter(ForgotPassword.deleted.is_(False))\
+            .filter(and_(ForgotPassword.deleted.is_(False), ForgotPassword.expires >= datetime.now()))\
             .first()
 
     @staticmethod

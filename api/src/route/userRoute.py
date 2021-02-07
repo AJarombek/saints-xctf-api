@@ -28,6 +28,7 @@ from model.FlairData import FlairData
 from model.Flair import Flair
 from model.User import User
 from model.UserData import UserData
+from model.ForgotPassword import ForgotPassword
 from dao.codeDao import CodeDao
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
@@ -877,18 +878,41 @@ def user_change_password_by_username_put(username) -> Response:
     """
     # Request should use the following pattern: {"forgot_password_code": "...", "new_password": "..."}
     request_dict: dict = request.get_json()
-    forgot_password_code = request_dict.get('forgot_password_code')
-    new_password = request_dict.get('new_password')
+    forgot_password_code: str = request_dict.get('forgot_password_code')
+    new_password: str = request_dict.get('new_password')
 
     if forgot_password_code is None or new_password is None:
         response = jsonify({
             'self': f'/v2/users/{username}/change_password',
             'password_updated': False,
             'forgot_password_code_deleted': False,
-            'error': "'forgot_password_code' and 'new_password' are required fields"
+            'error': "'forgot_password_code' and 'new_password' are required fields."
         })
         response.status_code = 500
         return response
+
+    forgot_password_code_info: ForgotPassword = ForgotPasswordDao.get_forgot_password_code(forgot_password_code)
+
+    if not forgot_password_code_info:
+        response = jsonify({
+            'self': f'/v2/users/{username}/change_password',
+            'password_updated': False,
+            'forgot_password_code_deleted': False,
+            'error': "This forgot password code is invalid."
+        })
+        response.status_code = 500
+        return response
+
+    if forgot_password_code_info.username != username:
+        response = jsonify({
+            'self': f'/v2/users/{username}/change_password',
+            'password_updated': False,
+            'forgot_password_code_deleted': False,
+            'error': "This forgot password code does not belong to the specified user."
+        })
+        response.status_code = 500
+        return response
+
 
     hashed_password = flask_bcrypt.generate_password_hash(new_password).decode('utf-8')
 

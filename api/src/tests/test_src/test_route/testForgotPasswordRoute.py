@@ -5,6 +5,8 @@ Author: Andrew Jarombek
 Date: 11/5/2019
 """
 
+import unittest
+
 from flask import Response
 
 from tests.TestSuite import TestSuite
@@ -57,10 +59,7 @@ class TestForgotPasswordRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
         calling this endpoint with a invalid username results in a 400 error code.
         """
-        response: Response = self.client.post(
-            '/v2/forgot_password/fake_user',
-            headers={'Authorization': 'Bearer j.w.t'}
-        )
+        response: Response = self.client.post('/v2/forgot_password/fake_user')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
@@ -72,19 +71,21 @@ class TestForgotPasswordRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
         calling this endpoint with a valid username results in a new forgot password code being created.
         """
-        response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.post('/v2/forgot_password/andy')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
         self.assertTrue(response_json.get('inserted'))
         self.assertIsNotNone(response_json.get('forgot_password_code'))
 
+    @unittest.skip('Forgot Password Code Creation Does Not Require Authorization')
     def test_forgot_password_post_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP POST request on the '/v2/forgot_password/<username>' route.
         """
         test_route_auth(self, self.client, 'POST', '/v2/forgot_password/andy', AuthVariant.FORBIDDEN)
 
+    @unittest.skip('Forgot Password Code Creation Does Not Require Authorization')
     def test_forgot_password_post_route_unauthorized(self) -> None:
         """
         Test performing an unauthorized HTTP POST request on the '/v2/forgot_password/<username>' route.
@@ -117,20 +118,20 @@ class TestForgotPasswordRoute(TestSuite):
         forgot_password_code = response_json.get('forgot_password_code')
         self.assertIsNotNone(forgot_password_code)
 
-        response: Response = self.client.get(
-            f'/v2/forgot_password/validate/{forgot_password_code}', headers={'Authorization': 'Bearer j.w.t'}
-        )
+        response: Response = self.client.get(f'/v2/forgot_password/validate/{forgot_password_code}')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), f'/v2/forgot_password/validate/{forgot_password_code}')
         self.assertEqual(response_json.get('is_valid'), True)
 
+    @unittest.skip('Forgot Password Code Validation Does Not Require Authorization')
     def test_forgot_password_code_validation_get_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP GET request on the '/v2/forgot_password/validate/<code>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/forgot_password/validate/abc123', AuthVariant.FORBIDDEN)
 
+    @unittest.skip('Forgot Password Code Validation Does Not Require Authorization')
     def test_forgot_password_code_validation_get_route_unauthorized(self) -> None:
         """
         Test performing an unauthorized HTTP GET request on the '/v2/forgot_password/validate/<code>' route.

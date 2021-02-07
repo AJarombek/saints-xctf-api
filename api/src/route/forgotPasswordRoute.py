@@ -6,6 +6,7 @@ Date: 7/4/2019
 """
 
 from datetime import datetime, timedelta
+from typing import List
 
 from flask import Blueprint, request, jsonify, Response
 from sqlalchemy.engine import ResultProxy
@@ -17,12 +18,13 @@ from dao.userDao import UserDao
 from model.ForgotPassword import ForgotPassword
 from model.ForgotPasswordData import ForgotPasswordData
 from model.User import User
+from decorators import GET
 
 forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix='/v2/forgot_password')
 
 
 @forgot_password_route.route('/<username>', methods=['GET', 'POST'])
-@auth_required()
+@auth_required(enabled_methods=[GET])
 def forgot_password(username) -> Response:
     """
     Endpoints for retrieving or creating a forgot password code
@@ -38,7 +40,6 @@ def forgot_password(username) -> Response:
 
 
 @forgot_password_route.route('/validate/<code>', methods=['GET'])
-@auth_required()
 def forgot_password_code_validation(code) -> Response:
     """
     Endpoints for validating whether or not a forgot password code exists.
