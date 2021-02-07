@@ -91,6 +91,52 @@ class TestForgotPasswordRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'POST', '/v2/forgot_password/andy', AuthVariant.UNAUTHORIZED)
 
+    def test_forgot_password_code_validation_get_route_200_invalid(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/forgot_password/validate/<code>' route.  This test proves that
+        validating a forgot password code that doesnt exist still results in a 200 HTTP code but has the is_valid field
+        set to false.
+        """
+        response: Response = self.client.get(
+            '/v2/forgot_password/validate/abc123', headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/forgot_password/validate/abc123')
+        self.assertEqual(response_json.get('is_valid'), False)
+
+    def test_forgot_password_code_validation_get_route_200_valid(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/forgot_password/validate/<code>' route.  This test proves that
+        validating a forgot password code that exists results in a 200 HTTP code response.
+        """
+        response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 201)
+
+        forgot_password_code = response_json.get('forgot_password_code')
+        self.assertIsNotNone(forgot_password_code)
+
+        response: Response = self.client.get(
+            f'/v2/forgot_password/validate/{forgot_password_code}', headers={'Authorization': 'Bearer j.w.t'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), f'/v2/forgot_password/validate/{forgot_password_code}')
+        self.assertEqual(response_json.get('is_valid'), True)
+
+    def test_forgot_password_code_validation_get_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP GET request on the '/v2/forgot_password/validate/<code>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/forgot_password/validate/abc123', AuthVariant.FORBIDDEN)
+
+    def test_forgot_password_code_validation_get_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP GET request on the '/v2/forgot_password/validate/<code>' route.
+        """
+        test_route_auth(self, self.client, 'GET', '/v2/forgot_password/validate/abc123', AuthVariant.UNAUTHORIZED)
+
     def test_forgot_password_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/forgot_password/links' route.  This test proves that calling
@@ -100,4 +146,4 @@ class TestForgotPasswordRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/links')
-        self.assertEqual(len(response_json.get('endpoints')), 2)
+        self.assertEqual(len(response_json.get('endpoints')), 3)
