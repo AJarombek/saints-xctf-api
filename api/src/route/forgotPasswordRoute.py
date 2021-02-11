@@ -6,10 +6,11 @@ Date: 7/4/2019
 """
 
 from datetime import datetime, timedelta
-from typing import List
+import asyncio
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, request, jsonify, Response, current_app, abort
 from sqlalchemy.engine import ResultProxy
+import aiohttp
 
 from decorators import auth_required
 from utils.codes import generate_code
@@ -128,7 +129,7 @@ def forgot_password_post(username) -> Response:
     if user is None:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'inserted': False,
+            'created': False,
             'error': 'There is no user associated with this username/email.'
         })
         response.status_code = 400
@@ -159,21 +160,36 @@ def forgot_password_post(username) -> Response:
     if forgot_password_inserted:
         new_forgot_password = ForgotPasswordDao.get_forgot_password_code(code)
 
+        async def send_forgot_password_email():
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                        url=f"{current_app.config['FUNCTION_URL']}/email/forgot-password",
+                        json={
+                            'to': user.email,
+                            'code': new_forgot_password.forgot_code,
+                            'username': user.username,
+                            'firstName': user.first,
+                            'lastName': user.last
+                        }
+                ) as response:
+                    response_body = await response.json()
+                    if not response_body.get('result'):
+                        current_app.logger.error('Failed to send the activation code to the user')
+                        abort(424)
+
+        asyncio.run(send_forgot_password_email())
+
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'inserted': True,
-            'forgot_password_code': new_forgot_password.forgot_code,
-            'username': user.username,
-            'first_name': user.first,
-            'last_name': user.last
+            'created': True
         })
         response.status_code = 201
         return response
     else:
         response = jsonify({
             'self': f'/v2/forgot_password/{username}',
-            'inserted': False,
-            'error': 'An unexpected error occurred.'
+            'created': False,
+            'error': 'An unexpected error occurred while creating the new forgot password code.'
         })
         response.status_code = 500
         return response
@@ -189,7 +205,8 @@ def forgot_password_validate_code_get(code: str) -> Response:
 
     response = jsonify({
         'self': f'/v2/forgot_password/validate/{code}',
-        'is_valid': forgot_password_code is not None
+        'is_valid': forgot_password_code is not None,
+        'username': forgot_password_code.username if forgot_password_code is not None else None
     })
     response.status_code = 200
     return response

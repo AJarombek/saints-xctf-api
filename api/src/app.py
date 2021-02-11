@@ -122,6 +122,21 @@ def create_app(config_name) -> Flask:
             'api_index': '/versions'
         }), 409
 
+    @application.errorhandler(424)
+    def error_424(ex):
+        """
+        Custom error handler for when 424 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return jsonify({
+            'error_description': "Failed Dependency",
+            'exception': str(ex),
+            'contact': 'andrew@jarombek.com',
+            'message': 'An internal API call failed.',
+            'api_index': '/versions'
+        }), 424
+
     @application.errorhandler(500)
     def error_500(ex):
         """

@@ -6,6 +6,7 @@ Date: 12/10/2019
 
 import json
 from datetime import datetime
+import unittest
 
 from flask import Response
 
@@ -1271,12 +1272,14 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response_json.get('password_updated'), True)
         self.assertEqual(response_json.get('forgot_password_code_deleted'), True)
 
+    @unittest.skip('Password Change Does Not Require Authorization')
     def test_user_change_password_by_username_put_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP PUT request on the '/v2/users/<username>/change_password' route.
         """
         test_route_auth(self, self.client, 'PUT', '/v2/users/andy/change_password', AuthVariant.FORBIDDEN)
 
+    @unittest.skip('Password Change Does Not Require Authorization')
     def test_user_change_password_by_username_put_route_unauthorized(self) -> None:
         """
         Test performing an unauthorized HTTP PUT request on the '/v2/users/<username>/change_password' route.

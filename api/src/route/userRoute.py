@@ -195,7 +195,6 @@ def user_statistics(username) -> Response:
         return user_statistics_by_username_get(username)
 
 @user_route.route('/<username>/change_password', methods=['PUT'])
-@auth_required()
 def user_change_password(username) -> Response:
     """
     Endpoint for changing a users password.
