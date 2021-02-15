@@ -194,6 +194,7 @@ def user_statistics(username) -> Response:
         ''' [GET] /v2/users/statistics/<username> '''
         return user_statistics_by_username_get(username)
 
+
 @user_route.route('/<username>/change_password', methods=['PUT'])
 def user_change_password(username) -> Response:
     """

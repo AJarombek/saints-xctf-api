@@ -1216,13 +1216,16 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post('/v2/forgot_password/andy')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(response_json.get('inserted'))
+        self.assertTrue(response_json.get('created'))
 
-        forgot_password_code = response_json.get('forgot_password_code')
-        self.assertIsNotNone(forgot_password_code)
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        forgot_password_codes = response_json.get('forgot_password_codes')
+        self.assertGreaterEqual(len(forgot_password_codes), 1)
 
         request_body = json.dumps({
-            "forgot_password_code": forgot_password_code,
+            "forgot_password_code": forgot_password_codes[0],
             "new_password": "abcd1234"
         })
 
@@ -1250,13 +1253,16 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post('/v2/forgot_password/andy2')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(response_json.get('inserted'))
+        self.assertTrue(response_json.get('created'))
 
-        forgot_password_code = response_json.get('forgot_password_code')
-        self.assertIsNotNone(forgot_password_code)
+        response: Response = self.client.get('/v2/forgot_password/andy2', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        forgot_password_codes = response_json.get('forgot_password_codes')
+        self.assertGreaterEqual(len(forgot_password_codes), 1)
 
         request_body = json.dumps({
-            "forgot_password_code": forgot_password_code,
+            "forgot_password_code": forgot_password_codes[0],
             "new_password": "B0unDTw0"
         })
 

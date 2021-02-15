@@ -75,8 +75,7 @@ class TestForgotPasswordRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
-        self.assertTrue(response_json.get('inserted'))
-        self.assertIsNotNone(response_json.get('forgot_password_code'))
+        self.assertTrue(response_json.get('created'))
 
     @unittest.skip('Forgot Password Code Creation Does Not Require Authorization')
     def test_forgot_password_post_route_forbidden(self) -> None:
@@ -112,11 +111,15 @@ class TestForgotPasswordRoute(TestSuite):
         validating a forgot password code that exists results in a 200 HTTP code response.
         """
         response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)
 
-        forgot_password_code = response_json.get('forgot_password_code')
-        self.assertIsNotNone(forgot_password_code)
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        forgot_password_codes = response_json.get('forgot_password_codes')
+        self.assertGreaterEqual(len(forgot_password_codes), 1)
+
+        forgot_password_code = forgot_password_codes[0].get('forgot_code')
 
         response: Response = self.client.get(f'/v2/forgot_password/validate/{forgot_password_code}')
         response_json: dict = response.get_json()

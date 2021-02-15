@@ -91,7 +91,25 @@ class TeamMemberDao:
 
         if len(teams_joined_dict) > 0:
             for team_membership in teams_joined_dict:
-                db.session.add(team_membership)
+                existing_team_memberships = db.session.execute(
+                    '''
+                    SELECT team_name
+                    FROM teammembers 
+                    INNER JOIN teams ON teams.name=teammembers.team_name 
+                    WHERE username=:username
+                    AND teams.name=:team_name
+                    AND teammembers.deleted IS FALSE
+                    AND teams.deleted IS FALSE
+                    ''',
+                    {'username': username, 'team_name': team_membership.team_name}
+                )
+
+                if existing_team_memberships.rowcount > 0:
+                    current_app.logger.warning(
+                        f'The user {username} already has a membership to team {team_membership.team_name}.'
+                    )
+                else:
+                    db.session.add(team_membership)
 
         if len(teams_left_dict) > 0:
             db.session.execute(
@@ -155,15 +173,15 @@ class TeamMemberDao:
 
                 if existing_memberships.rowcount > 0:
                     current_app.logger.warning(
-                        f'The user already has a membership to group {group_joined_dict.get("group_name")} '
+                        f'The user {username} already has a membership to group {group_joined_dict.get("group_name")} '
                         f'in team {group_joined_dict.get("team_name")}.'
                     )
                     continue
 
                 if already_team_member.rowcount == 0 and group_joined_dict.get("team_name") not in teams_joined:
                     current_app.logger.warning(
-                        f'The user is not a member of the team {group_joined_dict.get("team_name")}, which the '
-                        f'group {group_joined_dict.get("group_name")} is in.'
+                        f'The user {username} is not a member of the team {group_joined_dict.get("team_name")}, which '
+                        f'the group {group_joined_dict.get("group_name")} is in.'
                     )
                     continue
 
