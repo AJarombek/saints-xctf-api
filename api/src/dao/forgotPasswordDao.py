@@ -8,7 +8,6 @@ Date: 7/3/2019
 from datetime import datetime
 
 from sqlalchemy.engine import ResultProxy
-from sqlalchemy import and_
 
 from database import db
 from dao.basicDao import BasicDao
@@ -26,7 +25,8 @@ class ForgotPasswordDao:
         """
         return ForgotPassword.query\
             .filter_by(forgot_code=code)\
-            .filter(and_(ForgotPassword.deleted.is_(False), ForgotPassword.expires >= datetime.now()))\
+            .filter(ForgotPassword.deleted.is_(False))\
+            .filter(ForgotPassword.expires > datetime.utcnow())\
             .first()
 
     @staticmethod

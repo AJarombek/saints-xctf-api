@@ -143,15 +143,18 @@ def notification_post() -> Response:
 
     notification_to_add = Notification(notification_data)
 
-    if None in [notification_to_add.username, notification_to_add.time, notification_to_add.viewed]:
+    if None in [notification_to_add.username, notification_to_add.description]:
         response = jsonify({
             'self': f'/v2/notifications',
             'added': False,
             'notification': None,
-            'error': "'username', 'time', and 'viewed' are required fields"
+            'error': "'username' and 'description' are required fields"
         })
         response.status_code = 400
         return response
+
+    notification_to_add.time = datetime.now()
+    notification_to_add.viewed = 'N'
 
     notification_to_add.created_date = datetime.now()
     notification_to_add.created_app = 'saints-xctf-api'

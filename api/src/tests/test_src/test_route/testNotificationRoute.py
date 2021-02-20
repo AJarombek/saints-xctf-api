@@ -131,9 +131,7 @@ class TestNotificationRoute(TestSuite):
         """
         # Missing the required 'time' field
         request_body = json.dumps({
-            "username": "andy",
-            "viewed": "N",
-            "description": "Dec 4"
+            "username": "andy"
         })
 
         response: Response = self.client.post(
@@ -149,7 +147,7 @@ class TestNotificationRoute(TestSuite):
         self.assertIsNone(response_json.get('notification'))
         self.assertEqual(
             response_json.get('error'),
-            "'username', 'time', and 'viewed' are required fields"
+            "'username' and 'description' are required fields"
         )
 
     def test_notification_post_route_200(self) -> None:

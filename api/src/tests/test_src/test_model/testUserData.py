@@ -25,7 +25,7 @@ class TestUserData(TestSuite):
                   "description: Andy's Profile, member_since: 2016-12-23 00:00:00, class_year: 2017, " \
                   'location: Riverside, CT, favorite_event: 8K, 5000m, activation_code: ABC123, ' \
                   'email: andrew@jarombek.com, subscribed: 1, last_signin: 2019-12-10 00:00:00, week_start: monday, ' \
-                  'deleted: None]'
+                  'deleted: False]'
 
         self.maxDiff = None
         self.assertEquals(str(self.user1), log_str)

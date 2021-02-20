@@ -1169,8 +1169,7 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -1195,8 +1194,7 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -1225,15 +1223,14 @@ class TestUserRoute(TestSuite):
         self.assertGreaterEqual(len(forgot_password_codes), 1)
 
         request_body = json.dumps({
-            "forgot_password_code": forgot_password_codes[0],
+            "forgot_password_code": forgot_password_codes[0].get('forgot_code'),
             "new_password": "abcd1234"
         })
 
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -1262,15 +1259,14 @@ class TestUserRoute(TestSuite):
         self.assertGreaterEqual(len(forgot_password_codes), 1)
 
         request_body = json.dumps({
-            "forgot_password_code": forgot_password_codes[0],
+            "forgot_password_code": forgot_password_codes[0].get('forgot_code'),
             "new_password": "B0unDTw0"
         })
 
         response: Response = self.client.put(
             '/v2/users/andy2/change_password',
             data=request_body,
-            content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)

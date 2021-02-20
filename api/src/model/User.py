@@ -34,6 +34,16 @@ class User(db.Model):
         self.subscribed = user.get('subscribed')
         self.last_signin = user.get('last_signin')
         self.week_start = user.get('week_start', 'monday')
+        self.deleted = user.get('deleted')
+        self.created_date = user.get('created_date')
+        self.created_user = user.get('created_user')
+        self.created_app = user.get('created_app')
+        self.modified_date = user.get('modified_date')
+        self.modified_user = user.get('modified_user')
+        self.modified_app = user.get('modified_app')
+        self.deleted_date = user.get('deleted_date')
+        self.deleted_user = user.get('deleted_user')
+        self.deleted_app = user.get('deleted_app')
 
     __tablename__ = 'users'
 
@@ -109,41 +119,13 @@ class User(db.Model):
         :param user_2: The second user object.
         :return: True if the objects are equal, False otherwise.
         """
-        if not hasattr(user_1, 'profilepic') or user_1.profilepic is None:
-            self_profilepic = bytes()
-        else:
-            self_profilepic = user_1.profilepic
-            try:
-                self_profilepic = self_profilepic.decode('utf-8')
-            except AttributeError:
-                pass
-
-        if not hasattr(user_2, 'profilepic') or user_2.profilepic is None:
-            other_profilepic = bytes()
-        else:
-            other_profilepic = user_2.profilepic
-            try:
-                other_profilepic = other_profilepic.decode('utf-8')
-            except AttributeError:
-                pass
-
-        if not hasattr(user_1, 'profilepic_name'):
-            self_profilepic_name = None
-        else:
-            self_profilepic_name = user_1.profilepic_name
-
-        if not hasattr(user_2, 'profilepic_name'):
-            other_profilepic_name = None
-        else:
-            other_profilepic_name = user_2.profilepic_name
-
         return all([
             user_1.username == user_2.username,
             user_1.first == user_2.first,
             user_1.last == user_2.last,
             user_1.salt == user_2.salt,
             user_1.password == user_2.password,
-            self_profilepic_name == other_profilepic_name,
+            user_1.profilepic_name == user_2.profilepic_name,
             user_1.description == user_2.description,
             str(user_1.member_since) == str(user_2.member_since),
             user_1.class_year == user_2.class_year,
