@@ -7,9 +7,10 @@ Date: 8/6/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
 
 from decorators import auth_required
+from utils.jwt import get_claims
 from model.Notification import Notification
 from model.NotificationData import NotificationData
 from dao.notificationDao import NotificationDao
@@ -243,6 +244,27 @@ def notification_by_id_put(notification_id) -> Response:
     new_notification = Notification(notification_data)
     new_notification.notification_id = notification_id
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if old_notification.username == jwt_username:
+        current_app.logger.info(
+            f'User {jwt_username} is updating their notification with id {new_notification.notification_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update a notification sent to {old_notification.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/notifications/{notification_id}',
+            'updated': False,
+            'notification': None,
+            'error': f'User {jwt_username} is not authorized to update a notification sent to '
+                     f'{old_notification.username}.'
+        })
+        response.status_code = 400
+        return response
+
     if old_notification != new_notification:
         new_notification.modified_date = datetime.now()
         new_notification.modified_app = 'saints-xctf-api'
@@ -287,6 +309,37 @@ def notification_by_id_delete(notification_id) -> Response:
     :param notification_id: Unique identifier for a user's notification.
     :return: A response object for the DELETE API request.
     """
+    existing_notification: Notification = NotificationDao.get_notification_by_id(notification_id=notification_id)
+
+    if existing_notification is None:
+        response = jsonify({
+            'self': f'/v2/notifications/{notification_id}',
+            'deleted': False,
+            'error': 'there is no existing notification with this id'
+        })
+        response.status_code = 400
+        return response
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_notification.username == jwt_username:
+        current_app.logger.info(
+            f'User {jwt_username} is deleting their notification with id {existing_notification.notification_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to delete a notification sent to {existing_notification.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/notifications/{notification_id}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to delete a notification sent to '
+                     f'{existing_notification.username}.'
+        })
+        response.status_code = 400
+        return response
+
     is_deleted = NotificationDao.delete_notification_by_id(notification_id=notification_id)
 
     if is_deleted:
@@ -323,11 +376,23 @@ def notification_by_id_soft_delete(notification_id) -> Response:
         response.status_code = 400
         return response
 
-    if existing_notification.deleted:
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_notification.username == jwt_username:
+        current_app.logger.info(
+            f'User {jwt_username} is soft deleting their notification with id {existing_notification.notification_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to soft delete a notification sent to '
+            f'{existing_notification.username}.'
+        )
         response = jsonify({
-            'self': f'/v2/notifications/soft/{notification_id}',
+            'self': f'/v2/notifications/{notification_id}',
             'deleted': False,
-            'error': 'this notification is already soft deleted'
+            'error': f'User {jwt_username} is not authorized to soft delete a notification sent to '
+                     f'{existing_notification.username}.'
         })
         response.status_code = 400
         return response

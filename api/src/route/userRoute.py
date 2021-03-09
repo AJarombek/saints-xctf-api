@@ -535,6 +535,21 @@ def user_by_username_soft_delete(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the DELETE API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is soft deleting their user.')
+    else:
+        current_app.logger.info(f'User {jwt_username} is not authorized to soft delete user {username}.')
+        response = jsonify({
+            'self': f'/v2/users/soft/{username}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to soft delete user {username}.'
+        })
+        response.status_code = 400
+        return response
+
     existing_user: User = UserDao.get_user_by_username(username=username)
 
     if existing_user is None:
@@ -777,6 +792,21 @@ def user_memberships_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is updating their memberships.')
+    else:
+        current_app.logger.info(f'User {jwt_username} is not authorized to update the memberships of user {username}.')
+        response = jsonify({
+            'self': f'/v2/users/memberships/{username}',
+            'updated': False,
+            'error': f'User {jwt_username} is not authorized to update the memberships of user {username}.'
+        })
+        response.status_code = 400
+        return response
+
     membership_data: dict = request.get_json()
     teams_joined = membership_data.get('teams_joined')
     teams_left = membership_data.get('teams_left')
@@ -962,6 +992,23 @@ def user_update_last_login_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} logged in.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update the last login date of user {username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/users/{username}/update_last_login',
+            'last_login_updated': False,
+            'error': f'User {jwt_username} is not authorized to update the last login date of user {username}.'
+        })
+        response.status_code = 400
+        return response
+
     last_login_updated: bool = UserDao.update_user_last_login(username)
     if last_login_updated:
         response = jsonify({
