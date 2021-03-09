@@ -14,7 +14,8 @@ from sqlalchemy.engine import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
 
-from decorators import auth_required
+from decorators import auth_required, disabled, DELETE
+from utils.jwt import get_claims
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
@@ -68,6 +69,7 @@ def users() -> Response:
 
 @user_route.route('/<username>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required()
+@disabled(disabled_methods=[DELETE])
 def user(username) -> Response:
     """
     Endpoints for specific users (searching, updating, or deleting)
@@ -430,6 +432,22 @@ def user_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is updating their user details.')
+    else:
+        current_app.logger.info(f'User {jwt_username} is not authorized to update user {username}.')
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'updated': False,
+            'user': None,
+            'error': f'User {jwt_username} is not authorized to update user {username}.'
+        })
+        response.status_code = 400
+        return response
+
     old_user: User = UserDao.get_user_by_username(username=username)
 
     if old_user is None:

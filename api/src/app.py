@@ -16,7 +16,6 @@ from config import config
 from utils.db import get_connection_url
 from route.activationCodeRoute import activation_code_route
 from route.apiRoute import api_route
-from route.mailRoute import mail_route
 from route.userRoute import user_route
 from route.forgotPasswordRoute import forgot_password_route
 from route.flairRoute import flair_route
@@ -41,7 +40,6 @@ def create_app(config_name) -> Flask:
 
     application.register_blueprint(activation_code_route)
     application.register_blueprint(api_route)
-    application.register_blueprint(mail_route)
     application.register_blueprint(user_route)
     application.register_blueprint(forgot_password_route)
     application.register_blueprint(flair_route)

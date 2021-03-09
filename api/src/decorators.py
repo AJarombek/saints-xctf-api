@@ -23,6 +23,7 @@ DELETE: HTTPMethod = 'DELETE'
 def auth_required(enabled_methods: Optional[List[HTTPMethod]] = None):
     """
     Make a custom decorator for endpoints, indicating that authentication is required.
+    :param enabled_methods: HTTP methods (verbs) that require authentication for an endpoint.
     """
     def decorator(f):
         @functools.wraps(f)
@@ -50,6 +51,25 @@ def auth_required(enabled_methods: Optional[List[HTTPMethod]] = None):
                                 current_app.logger.info('User Authorized')
 
                 asyncio.run(authenticate())
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+def disabled(disabled_methods: Optional[List[HTTPMethod]] = None):
+    """
+    Make a custom decorator for endpoints that are currently disabled and should not be invoked.
+    :param disabled_methods: HTTP methods (verbs) that are disabled and follow the rules of this annotation.
+    """
+    def decorator(f):
+        @functools.wraps(f)
+        def decorated_function(*args, **kwargs):
+            if disabled_methods and request.method not in disabled_methods:
+                current_app.logger.info(f'{request.method} requests to {request.url} are not disabled.')
+            else:
+                current_app.logger.info('This endpoint is disabled.')
+                abort(403)
 
             return f(*args, **kwargs)
         return decorated_function
