@@ -14,6 +14,7 @@ import aiohttp
 
 from decorators import auth_required
 from utils.codes import generate_code
+from utils.jwt import get_claims
 from dao.forgotPasswordDao import ForgotPasswordDao
 from dao.userDao import UserDao
 from model.ForgotPassword import ForgotPassword
@@ -131,6 +132,24 @@ def forgot_password_post(username) -> Response:
             'self': f'/v2/forgot_password/{username}',
             'created': False,
             'error': 'There is no user associated with this username/email.'
+        })
+        response.status_code = 400
+        return response
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if user.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is creating a forgot password code.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to create a new forgot password code for user {user.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/forgot_password/{username}',
+            'created': False,
+            'error': f'User {jwt_username} is not authorized to create a new forgot password code for user '
+                     f'{user.username}.'
         })
         response.status_code = 400
         return response

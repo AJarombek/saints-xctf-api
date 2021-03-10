@@ -6,9 +6,10 @@ Date: 7/12/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
 
 from decorators import auth_required
+from utils.jwt import get_claims
 from dao.commentDao import CommentDao
 from model.Comment import Comment
 from model.CommentData import CommentData
@@ -133,6 +134,7 @@ def comment_post():
         response = jsonify({
             'self': f'/v2/comments',
             'added': False,
+            'comment': None,
             'error': "the request body isn't populated"
         })
         response.status_code = 400
@@ -140,11 +142,31 @@ def comment_post():
 
     comment_to_add = Comment(comment_data)
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if comment_to_add.username == jwt_username:
+        # You are so loved.
+        current_app.logger.info(f'User {jwt_username} is creating a comment on log {comment_to_add.log_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to create a comment for user {comment_to_add.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/comments',
+            'added': False,
+            'comment': None,
+            'error': f'User {jwt_username} is not authorized to create a comment for user {comment_to_add.username}.'
+        })
+        response.status_code = 400
+        return response
+
     if None in [comment_to_add.username, comment_to_add.first, comment_to_add.last,
                 comment_to_add.log_id, comment_to_add.time]:
         response = jsonify({
             'self': f'/v2/comments',
             'added': False,
+            'comment': None,
             'error': "'username', 'first', 'last', 'log_id', and 'time' are required fields"
         })
         response.status_code = 400
@@ -229,6 +251,24 @@ def comment_with_id_put(comment_id):
             'updated': False,
             'comment': None,
             'error': 'there is no existing comment with this id'
+        })
+        response.status_code = 400
+        return response
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if old_comment.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is updating a comment with id {old_comment.comment_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update a comment with id {old_comment.comment_id}.'
+        )
+        response = jsonify({
+            'self': f'/v2/comments',
+            'updated': False,
+            'comment': None,
+            'error': f'User {jwt_username} is not authorized to update a comment with id {old_comment.comment_id}.'
         })
         response.status_code = 400
         return response
