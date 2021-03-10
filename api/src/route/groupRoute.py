@@ -7,14 +7,16 @@ Date: 7/7/2019
 from datetime import datetime
 from typing import Optional
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
 from sqlalchemy.engine import ResultProxy, RowProxy
 from sqlalchemy.schema import Column
 
 from decorators import auth_required
+from utils.jwt import get_claims
 from model.Group import Group
 from model.GroupData import GroupData
 from model.GroupMemberData import GroupMemberData
+from model.GroupMember import GroupMember
 from model.Team import Team
 from model.TeamData import TeamData
 from dao.groupDao import GroupDao
@@ -263,6 +265,33 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the PUT API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    group_member: GroupMember = GroupMemberDao.get_group_member_by_group_name(
+        team_name=team_name,
+        group_name=group_name,
+        username=jwt_username
+    )
+
+    if group_member is not None and group_member.user == 'admin' and group_member.status == 'accepted':
+        current_app.logger.info(
+            f'Admin user {jwt_username} is updating a group with name {group_name} in team {team_name}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update a group with name {group_name} in team {team_name}.'
+        )
+        response = jsonify({
+            'self': f'/v2/groups/{team_name}/{group_name}',
+            'updated': False,
+            'group': None,
+            'error': f'User {jwt_username} is not authorized to update a group with name {group_name} in team '
+                     f'{team_name}.'
+        })
+        response.status_code = 400
+        return response
+
     old_group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
 
     if old_group_row is None:
@@ -361,6 +390,24 @@ def group_by_id_put(group_id: str) -> Response:
     :return: A response object for the PUT API request.
     """
     old_group = GroupDao.get_group_by_id(int(group_id))
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    group_member: GroupMember = GroupMemberDao.get_group_member(group_id=int(group_id), username=jwt_username)
+
+    if group_member is not None and group_member.user == 'admin' and group_member.status == 'accepted':
+        current_app.logger.info(f'Admin user {jwt_username} is updating a group with id {group_id}.')
+    else:
+        current_app.logger.info(f'User {jwt_username} is not authorized to update a group with id {group_id}.')
+        response = jsonify({
+            'self': f'/v2/groups/{group_id}',
+            'updated': False,
+            'group': None,
+            'error': f'User {jwt_username} is not authorized to update a group with id {group_id}.'
+        })
+        response.status_code = 400
+        return response
 
     if old_group is None:
         response = jsonify({
@@ -521,6 +568,31 @@ def group_members_by_group_id_and_username_put(group_id: str, username: str) -> 
     :param username: Unique name for a user.
     :return: A response object for the PUT API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    group_member: GroupMember = GroupMemberDao.get_group_member(group_id=int(group_id), username=jwt_username)
+
+    if group_member is not None and group_member.user == 'admin' and group_member.status == 'accepted':
+        current_app.logger.info(
+            f'Admin user {jwt_username} is updating the group membership for user {username} in group with id '
+            f'{group_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update the group membership for user {username} in group with '
+            f'id {group_id}.'
+        )
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'updated': False,
+            'group_member': None,
+            'error': f'User {jwt_username} is not authorized to update the group membership for user {username} in '
+                     f'group with id {group_id}.'
+        })
+        response.status_code = 400
+        return response
+
     group_member_data: dict = request.get_json()
     status = group_member_data.get('status')
     user = group_member_data.get('user')
@@ -541,7 +613,7 @@ def group_members_by_group_id_and_username_put(group_id: str, username: str) -> 
     else:
         response = jsonify({
             'self': f'/v2/groups/members/{group_id}/{username}',
-            'updated': True,
+            'updated': False,
             'group_member': None,
             'error': 'The group membership failed to update.'
         })
@@ -556,6 +628,30 @@ def group_members_by_group_id_and_username_delete(group_id: str, username: str) 
     :param username: Unique name for a user.
     :return: A response object for the DELETE API request.
     """
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    group_member: GroupMember = GroupMemberDao.get_group_member(group_id=int(group_id), username=jwt_username)
+
+    if group_member is not None and group_member.user == 'admin' and group_member.status == 'accepted':
+        current_app.logger.info(
+            f'Admin user {jwt_username} is deleting the group membership for user {username} in group with id '
+            f'{group_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to delete the group membership for user {username} in group with '
+            f'id {group_id}.'
+        )
+        response = jsonify({
+            'self': f'/v2/groups/members/{group_id}/{username}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to delete the group membership for user {username} in '
+                     f'group with id {group_id}.'
+        })
+        response.status_code = 400
+        return response
+
     membership_deleted = GroupMemberDao.soft_delete_group_member(int(group_id), username)
 
     if membership_deleted:

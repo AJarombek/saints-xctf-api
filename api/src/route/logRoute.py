@@ -6,7 +6,7 @@ Date: 7/6/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, redirect, url_for, Response
+from flask import Blueprint, request, jsonify, redirect, url_for, Response, current_app
 
 from decorators import auth_required
 from dao.logDao import LogDao
@@ -15,6 +15,7 @@ from model.Log import Log
 from model.LogData import LogData
 from model.CommentData import CommentData
 from utils.logs import to_miles, calculate_mile_pace
+from utils.jwt import get_claims
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -164,6 +165,24 @@ def logs_post() -> Response:
 
     log_to_add: Log = Log(log_data)
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if log_to_add.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is uploading a new exercise log.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to upload an exercise log for user {log_to_add.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/logs',
+            'added': False,
+            'log': None,
+            'error': f'User {jwt_username} is not authorized to upload an exercise log for user {log_to_add.username}.'
+        })
+        response.status_code = 400
+        return response
+
     if None in [log_to_add.username, log_to_add.first, log_to_add.last, log_to_add.date,
                 log_to_add.type, log_to_add.feel]:
         response = jsonify({
@@ -291,6 +310,24 @@ def log_by_id_put(log_id) -> Response:
     log_data: dict = request.get_json()
     new_log = Log(log_data)
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if old_log.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is updating their exercise log with id {log_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to update an exercise log owned by user {old_log.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/logs/{log_id}',
+            'updated': False,
+            'log': None,
+            'error': f'User {jwt_username} is not authorized to update an exercise log owned by user {old_log.username}.'
+        })
+        response.status_code = 400
+        return response
+
     if new_log.distance and new_log.metric:
         new_log.miles = to_miles(new_log.metric, new_log.distance)
         new_log.pace = calculate_mile_pace(new_log.miles, new_log.time)
@@ -347,6 +384,26 @@ def log_by_id_delete(log_id) -> Response:
     :param log_id: The unique identifier for an exercise log.
     :return: A response object for the DELETE API request.
     """
+    existing_log: Log = LogDao.get_log_by_id(log_id=log_id)
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_log.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is deleting their exercise log with id {log_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to delete an exercise log owned by user {existing_log.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/logs/{log_id}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to delete an exercise log owned by user '
+                     f'{existing_log.username}.'
+        })
+        response.status_code = 400
+        return response
+
     are_comments_deleted = CommentDao.delete_comments_by_log_id(log_id=log_id)
 
     if not are_comments_deleted:
@@ -384,6 +441,25 @@ def log_by_id_soft_delete(log_id) -> Response:
     :return: A response object for the DELETE API request.
     """
     existing_log: Log = LogDao.get_log_by_id(log_id=log_id)
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_log.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is soft deleting their exercise log with id {log_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to soft delete an exercise log owned by user '
+            f'{existing_log.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/logs/{log_id}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to soft delete an exercise log owned by user '
+                     f'{existing_log.username}.'
+        })
+        response.status_code = 400
+        return response
 
     if existing_log is None:
         response = jsonify({

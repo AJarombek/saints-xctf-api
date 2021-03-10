@@ -12,6 +12,7 @@ from sqlalchemy import and_, or_
 
 from database import db
 from model.GroupMember import GroupMember
+from model.TeamGroup import TeamGroup
 from dao.basicDao import BasicDao
 
 
@@ -28,6 +29,22 @@ class GroupMemberDao:
         return GroupMember.query\
             .filter(and_(GroupMember.group_id == group_id, GroupMember.username == username))\
             .filter(GroupMember.deleted.is_(False))\
+            .first()
+
+    @staticmethod
+    def get_group_member_by_group_name(team_name: str, group_name: str, username: str) -> GroupMember:
+        """
+        Get a group membership based on a team name, group name, and username of a user.
+        :param team_name: Unique name for a team.
+        :param group_name: Unique name of a group within a team.
+        :param username: Unique identifier for the user.
+        :return: A group membership object.
+        """
+        return GroupMember.query \
+            .filter(GroupMember.group_name == TeamGroup.group_name) \
+            .filter(and_(TeamGroup.group_name == group_name, TeamGroup.team_name == team_name))\
+            .filter(and_(GroupMember.group_name == group_name, GroupMember.username == username)) \
+            .filter(GroupMember.deleted.is_(False)) \
             .first()
 
     @staticmethod
@@ -78,7 +95,7 @@ class GroupMemberDao:
     def get_group_members(group_name: str, team_name: str) -> ResultProxy:
         """
         Get the users who are members of a group.
-        :param group_name: Unique name of a group.
+        :param group_name: Unique name of a group within a team.
         :param team_name: Unique name for a team.
         :return: A list of group members.
         """
