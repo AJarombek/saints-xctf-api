@@ -320,6 +320,34 @@ def comment_with_id_delete(comment_id):
     :param comment_id: The unique identifier for a comment.
     :return: A response object for the DELETE API request.
     """
+    existing_comment: Comment = CommentDao.get_comment_by_id(comment_id=comment_id)
+
+    if existing_comment is None:
+        response = jsonify({
+            'self': f'/v2/comments/{comment_id}',
+            'deleted': False,
+            'error': 'there is no existing comment with this id'
+        })
+        response.status_code = 400
+        return response
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_comment.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is deleting a comment with id {existing_comment.comment_id}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to delete a comment with id {existing_comment.comment_id}.'
+        )
+        response = jsonify({
+            'self': f'/v2/comments',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to delete a comment with id {existing_comment.comment_id}.'
+        })
+        response.status_code = 400
+        return response
+
     is_deleted = CommentDao.delete_comment_by_id(comment_id=comment_id)
 
     if is_deleted:
@@ -356,11 +384,22 @@ def comment_with_id_soft_delete(comment_id):
         response.status_code = 400
         return response
 
-    if existing_comment.deleted:
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if existing_comment.username == jwt_username:
+        current_app.logger.info(
+            f'User {jwt_username} is soft deleting a comment with id {existing_comment.comment_id}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to soft delete a comment with id {existing_comment.comment_id}.'
+        )
         response = jsonify({
-            'self': f'/v2/comments/soft/{comment_id}',
+            'self': f'/v2/comments',
             'deleted': False,
-            'error': 'this comment is already soft deleted'
+            'error': f'User {jwt_username} is not authorized to soft delete a comment with id '
+                     f'{existing_comment.comment_id}.'
         })
         response.status_code = 400
         return response

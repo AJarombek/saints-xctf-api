@@ -7,10 +7,11 @@ Date: 8/5/2019
 
 from datetime import datetime, timedelta
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for
+from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
 from sqlalchemy.schema import Column
 
 from decorators import auth_required
+from utils.jwt import get_claims
 from utils.codes import generate_code
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
@@ -222,6 +223,35 @@ def activation_code_by_code_delete(code: str) -> Response:
     :param code: The activation code to delete.
     :return: A response object for the DELETE API request.
     """
+    existing_code: Code = ActivationCodeDao.get_activation_code(code=code)
+
+    if existing_code is None:
+        response = jsonify({
+            'self': f'/v2/activation_code/{code}',
+            'deleted': False,
+            'error': 'there is no existing activation code with this code'
+        })
+        response.status_code = 400
+        return response
+
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+    jwt_email = jwt_claims.get('email')
+
+    if existing_code.email == jwt_email:
+        current_app.logger.info(f'User {jwt_username} is deleting activation code {existing_code.activation_code}.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to delete activation code {existing_code.activation_code}.'
+        )
+        response = jsonify({
+            'self': f'/v2/activation_code/{code}',
+            'deleted': False,
+            'error': f'User {jwt_username} is not authorized to delete activation code {existing_code.activation_code}.'
+        })
+        response.status_code = 400
+        return response
+
     is_deleted = ActivationCodeDao.delete_code(activation_code=code)
 
     if is_deleted:
@@ -258,11 +288,23 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
         response.status_code = 400
         return response
 
-    if existing_code.deleted:
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+    jwt_email = jwt_claims.get('email')
+
+    if existing_code.email == jwt_email:
+        current_app.logger.info(
+            f'User {jwt_username} is soft deleting activation code {existing_code.activation_code}.'
+        )
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to soft delete activation code {existing_code.activation_code}.'
+        )
         response = jsonify({
             'self': f'/v2/activation_code/soft/{code}',
             'deleted': False,
-            'error': 'this activation code is already soft deleted'
+            'error': f'User {jwt_username} is not authorized to soft delete activation code '
+                     f'{existing_code.activation_code}.'
         })
         response.status_code = 400
         return response
