@@ -222,6 +222,19 @@ def user_update_last_login(username) -> Response:
         return user_update_last_login_by_username_put(username)
 
 
+@user_route.route('/lookup/<username>', methods=['GET'])
+def user_lookup(username) -> Response:
+    """
+    Endpoint for looking up a username/email to see if its currently in use.  This endpoint is used while a user is
+    registering, before they have access to view other user's details.
+    :param username: Username (or email) of a User.
+    :return: JSON representation of the result of a user lookup.
+    """
+    if request.method == 'GET':
+        ''' [GET] /v2/users/lookup/<username> '''
+        return user_lookup_by_username_get(username)
+
+
 @user_route.route('/links', methods=['GET'])
 def user_links() -> Response:
     """
@@ -1027,6 +1040,37 @@ def user_update_last_login_by_username_put(username) -> Response:
         return response
 
 
+def user_lookup_by_username_get(username: str) -> Response:
+    """
+    Check if a user exists based on its username or email.
+    :param username: Username that uniquely identifies a user.
+    :return: A response object for the GET API request.
+    """
+    existing_user: User = UserDao.get_user_by_username(username=username)
+
+    # If the user cant be found, try searching the email column in the database
+    if existing_user is None:
+        email = username
+        existing_user: User = UserDao.get_user_by_email(email=email)
+
+    # If the user still can't be found, return with an error code
+    if existing_user is None:
+        response = jsonify({
+            'self': f'/v2/users/lookup/{username}',
+            'exists': False,
+            'error': 'There is no user with this username or email.'
+        })
+        response.status_code = 400
+        return response
+    else:
+        response = jsonify({
+            'self': f'/v2/users/lookup/{username}',
+            'exists': True
+        })
+        response.status_code = 200
+        return response
+
+
 def user_links_get() -> Response:
     """
     Get all the other user API endpoints.
@@ -1114,6 +1158,11 @@ def user_links_get() -> Response:
                 'link': '/v2/users/<username>/update_last_login',
                 'verb': 'PUT',
                 'description': 'Update a user with a given username.  Specifically, change the users last login date.'
+            },
+            {
+                'link': '/v2/users/lookup/<username>',
+                'verb': 'GET',
+                'description': 'Check if a user exists with a username or email.'
             }
         ],
     })
