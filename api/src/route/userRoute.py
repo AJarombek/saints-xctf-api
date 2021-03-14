@@ -14,7 +14,7 @@ from sqlalchemy.engine import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
 
-from decorators import auth_required, disabled, DELETE
+from decorators import auth_required, disabled, DELETE, GET
 from utils.jwt import get_claims
 from dao.userDao import UserDao
 from dao.groupDao import GroupDao
@@ -36,7 +36,7 @@ user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
 
 @user_route.route('', methods=['GET', 'POST'])
-@auth_required()
+@auth_required(enabled_methods=[GET])
 def users_redirect() -> Response:
     """
     Redirect endpoints looking for a resource named 'users' to the user routes.
@@ -52,7 +52,7 @@ def users_redirect() -> Response:
 
 
 @user_route.route('/', methods=['GET', 'POST'])
-@auth_required()
+@auth_required(enabled_methods=[GET])
 def users() -> Response:
     """
     Endpoints for searching all the users or creating a user

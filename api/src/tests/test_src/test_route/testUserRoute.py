@@ -1314,6 +1314,29 @@ class TestUserRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/users/andy/update_last_login', AuthVariant.UNAUTHORIZED)
 
+    def test_user_lookup_by_username_get_route_400(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/lookup/<username>' route.  This test proves
+        that looking for a user with a username that doesn't exist results in a HTTP 400 error.
+        """
+        response: Response = self.client.get('/v2/users/lookup/invalid_username')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/lookup/invalid_username')
+        self.assertFalse(response_json.get('exists'))
+        self.assertEqual(response_json.get('error'), 'There is no user with this username or email.')
+
+    def test_user_lookup_by_username_get_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/lookup/<username>' route.  This test proves that
+        looking for a user with a valid username results in a 200 status.
+        """
+        response: Response = self.client.get('/v2/users/lookup/andy')
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/users/lookup/andy')
+        self.assertTrue(response_json.get('exists'))
+
     def test_user_get_links_route_200(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/users/links' route.  This test proves that calling
@@ -1323,4 +1346,4 @@ class TestUserRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/links')
-        self.assertEqual(len(response_json.get('endpoints')), 16)
+        self.assertEqual(len(response_json.get('endpoints')), 17)
