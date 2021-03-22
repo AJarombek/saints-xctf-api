@@ -19,7 +19,7 @@ class TestMessageFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/message_feed/group/invalid_group/10/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -37,7 +37,7 @@ class TestMessageFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/message_feed/group/invalid_group/10/10',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -54,7 +54,7 @@ class TestMessageFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/message_feed/group/mensxc/5/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)

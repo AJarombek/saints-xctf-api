@@ -22,7 +22,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/notifications',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
@@ -47,7 +47,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/notifications',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
@@ -72,7 +72,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/notifications/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -115,7 +115,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/notifications/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -138,7 +138,7 @@ class TestNotificationRoute(TestSuite):
             '/v2/notifications/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -166,7 +166,7 @@ class TestNotificationRoute(TestSuite):
             '/v2/notifications/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -200,7 +200,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/notifications/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -215,7 +215,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/notifications/1',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -241,7 +241,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.put(
             '/v2/notifications/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -257,7 +257,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/notifications/1',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -269,7 +269,7 @@ class TestNotificationRoute(TestSuite):
             '/v2/notifications/1',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -300,7 +300,7 @@ class TestNotificationRoute(TestSuite):
             '/v2/notifications/22',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -329,7 +329,7 @@ class TestNotificationRoute(TestSuite):
         """
         response: Response = self.client.delete(
             '/v2/notifications/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
@@ -353,12 +353,12 @@ class TestNotificationRoute(TestSuite):
         # Ensure that the notification was already deleted before testing the DELETE endpoint
         self.client.delete(
             '/v2/notifications/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response: Response = self.client.delete(
             '/v2/notifications/soft/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -382,20 +382,20 @@ class TestNotificationRoute(TestSuite):
             '/v2/notifications/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         notification_id = response_json.get('notification').get('notification_id')
 
         response: Response = self.client.delete(
             f'/v2/notifications/soft/{notification_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
             f'/v2/notifications/soft/{notification_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 400)
 
@@ -417,20 +417,20 @@ class TestNotificationRoute(TestSuite):
         })
         response: Response = self.client.post(
             '/v2/notifications/', data=request_body, content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         notification_id = response_json.get('notification').get('notification_id')
 
         response = self.client.delete(
             f'/v2/notifications/soft/{notification_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.get(
             f'/v2/notifications/{notification_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)

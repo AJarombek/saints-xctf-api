@@ -6,7 +6,7 @@ version: '3.7'
 services:
   saints-xctf-auth:
     domainname: saints-xctf-auth
-    image: ajarombek/mock-saints-xctf-auth
+    image: ajarombek/mock-saints-xctf-auth:latest
     ports:
       - 5001:5000
     networks:

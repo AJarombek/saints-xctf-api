@@ -23,7 +23,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
@@ -48,7 +48,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/users',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
@@ -73,7 +73,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -137,7 +137,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/users/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -166,7 +166,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -186,7 +186,7 @@ class TestUserRoute(TestSuite):
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
             '/v2/users/andy1',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         request_body = json.dumps({
@@ -206,7 +206,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -223,7 +223,7 @@ class TestUserRoute(TestSuite):
         # Before trying to create the user, make sure that the activation code already exists.
         self.client.delete(
             '/v2/activation_code/ABC123',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         request_body = json.dumps({'group_id': 1, 'email': 'andrew@jarombek.com'})
@@ -231,7 +231,7 @@ class TestUserRoute(TestSuite):
             '/v2/activation_code/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response_json: dict = response.get_json()
@@ -249,7 +249,7 @@ class TestUserRoute(TestSuite):
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
             '/v2/users/andy2',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         request_body = json.dumps({
@@ -269,7 +269,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -321,7 +321,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users/invalid_username',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -336,7 +336,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users/andy',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -362,7 +362,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.put(
             '/v2/users/invalid_username',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -378,7 +378,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users/andy',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -390,7 +390,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -426,7 +426,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -461,7 +461,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.delete(
             '/v2/users/invalid_user',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
@@ -485,12 +485,12 @@ class TestUserRoute(TestSuite):
         # Ensure that the user was already deleted before testing the DELETE endpoint
         self.client.delete(
             '/v2/users/invalid_user',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response: Response = self.client.delete(
             '/v2/users/soft/invalid_user',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -507,7 +507,7 @@ class TestUserRoute(TestSuite):
             '/v2/activation_code/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response_json: dict = response.get_json()
@@ -525,7 +525,7 @@ class TestUserRoute(TestSuite):
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
             '/v2/users/andy3',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         request_body = json.dumps({
@@ -541,20 +541,20 @@ class TestUserRoute(TestSuite):
             '/v2/users/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         username = response_json.get('user').get('username')
 
         response: Response = self.client.delete(
             f'/v2/users/soft/{username}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
             f'/v2/users/soft/{username}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 400)
 
@@ -570,7 +570,7 @@ class TestUserRoute(TestSuite):
             '/v2/activation_code/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response_json: dict = response.get_json()
@@ -588,7 +588,7 @@ class TestUserRoute(TestSuite):
         # Delete the user to void a duplicate entry constraint error.
         self.client.delete(
             '/v2/users/andy3',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         request_body = json.dumps({
@@ -604,7 +604,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -613,7 +613,7 @@ class TestUserRoute(TestSuite):
 
         response: Response = self.client.delete(
             f'/v2/users/soft/{username}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
@@ -637,7 +637,7 @@ class TestUserRoute(TestSuite):
         # A very important song, but not a username used on the website.
         response: Response = self.client.get(
             '/v2/users/snapshot/bound2',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -653,7 +653,7 @@ class TestUserRoute(TestSuite):
         # A very important song, but not a username used on the website.
         response: Response = self.client.get(
             '/v2/users/snapshot/andy',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -755,7 +755,7 @@ class TestUserRoute(TestSuite):
         """
         Test performing a successful HTTP GET request on the '/v2/users/groups/<username>' route.
         """
-        response: Response = self.client.get('/v2/users/groups/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/users/groups/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/groups/andy')
@@ -789,7 +789,7 @@ class TestUserRoute(TestSuite):
         """
         Test performing a successful HTTP GET request on the '/v2/users/teams/<username>' route.
         """
-        response: Response = self.client.get('/v2/users/teams/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/users/teams/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/teams/andy')
@@ -823,7 +823,7 @@ class TestUserRoute(TestSuite):
         """
         Test performing a successful HTTP GET request on the '/v2/users/memberships/<username>' route.
         """
-        response: Response = self.client.get('/v2/users/memberships/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/users/memberships/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
@@ -885,7 +885,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -904,7 +904,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -928,7 +928,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -947,7 +947,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -971,7 +971,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -996,7 +996,7 @@ class TestUserRoute(TestSuite):
             '/v2/users/memberships/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
 
@@ -1021,7 +1021,7 @@ class TestUserRoute(TestSuite):
         """
         Test performing a successful HTTP GET request on the '/v2/users/notifications/<username>' route.
         """
-        response: Response = self.client.get('/v2/users/notifications/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/users/notifications/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/notifications/andy')
@@ -1059,7 +1059,7 @@ class TestUserRoute(TestSuite):
         """
         Test performing a successful HTTP GET request on the '/v2/users/flair/<username>' route.
         """
-        response: Response = self.client.get('/v2/users/flair/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/users/flair/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/users/flair/andy')
@@ -1095,7 +1095,7 @@ class TestUserRoute(TestSuite):
         # So. Much. Salad.
         response: Response = self.client.get(
             '/v2/users/statistics/bound2',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -1110,7 +1110,7 @@ class TestUserRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/users/statistics/andy',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -1216,7 +1216,7 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response_json.get('created'))
 
-        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         forgot_password_codes = response_json.get('forgot_password_codes')
@@ -1252,7 +1252,7 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response_json.get('created'))
 
-        response: Response = self.client.get('/v2/forgot_password/andy2', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/forgot_password/andy2', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         forgot_password_codes = response_json.get('forgot_password_codes')
@@ -1294,12 +1294,12 @@ class TestUserRoute(TestSuite):
         that calling this endpoint with the proper fields results in a 200 status code.
         """
         response: Response = self.client.put(
-            '/v2/users/andy2/update_last_login',
-            headers={'Authorization': 'Bearer j.w.t'}
+            '/v2/users/andy/update_last_login',
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/users/andy2/update_last_login')
+        self.assertEqual(response_json.get('self'), '/v2/users/andy/update_last_login')
         self.assertEqual(response_json.get('last_login_updated'), True)
 
     def test_user_update_last_login_by_username_put_route_forbidden(self) -> None:

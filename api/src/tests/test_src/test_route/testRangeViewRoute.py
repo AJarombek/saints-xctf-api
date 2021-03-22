@@ -19,7 +19,7 @@ class TestRangeViewRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/range_view/groups/0/r/2019-11-25/2020-01-05',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -34,7 +34,7 @@ class TestRangeViewRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/range_view/users/invalid_user/rb/2019-11-25/2020-01-05',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -49,7 +49,7 @@ class TestRangeViewRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/range_view/all/_/rbso/2010-11-25/2011-01-05',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -64,7 +64,7 @@ class TestRangeViewRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/range_view/users/andy/r/2016-12-01/2016-12-31',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -85,7 +85,7 @@ class TestRangeViewRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/range_view/groups/1/r/2017-12-01/2017-12-31',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)

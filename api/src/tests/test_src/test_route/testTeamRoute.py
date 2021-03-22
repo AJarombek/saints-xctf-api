@@ -17,7 +17,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams' route. This route is redirected to
         '/v2/teams/' by default.
         """
-        response: Response = self.client.get('/v2/teams', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams', headers={'Authorization': f'Bearer {self.jwt}'})
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/teams/', headers.get('Location'))
@@ -39,7 +39,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/' route.  This test proves that the endpoint returns
         a list of teams.
         """
-        response: Response = self.client.get('/v2/teams/', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams')
@@ -62,7 +62,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/<name>' route.  This test proves that
         trying to retrieve a team with a name that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/teams/invalid', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/invalid', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/teams/invalid')
@@ -74,7 +74,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/<name>' route.  This test proves that
         retrieving a team with a valid name results in the team and a 200 status.
         """
-        response: Response = self.client.get('/v2/teams/saintsxctf', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/saintsxctf', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams/saintsxctf')
@@ -97,7 +97,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/members/<team_name>' route.  This test proves that
         trying to retrieve the members of a team that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/teams/members/invalid', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/members/invalid', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/teams/members/invalid')
@@ -109,7 +109,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/members/<team_name>' route.  This test proves that
         retrieving the members of a valid team results in the members and a 200 status.
         """
-        response: Response = self.client.get('/v2/teams/members/saintsxctf', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/members/saintsxctf', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams/members/saintsxctf')
@@ -133,7 +133,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/groups/<team_name>' route.  This test proves that
         trying to retrieve the groups that are in a team which doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/teams/groups/invalid', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/groups/invalid', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/teams/groups/invalid')
@@ -145,7 +145,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/groups/<team_name>' route.  This test proves that
         retrieving the groups in a valid team results in the group objects and a 200 status.
         """
-        response: Response = self.client.get('/v2/teams/groups/saintsxctf', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/groups/saintsxctf', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams/groups/saintsxctf')
@@ -170,7 +170,7 @@ class TestTeamRoute(TestSuite):
         when the search returns an empty result set, there is an additional message field on the JSON response.  The
         response status code is 200.
         """
-        response: Response = self.client.get('/v2/teams/search/invalid/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/search/invalid/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams/search/invalid/1')
@@ -182,7 +182,7 @@ class TestTeamRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/teams/search/<text>/<limit>' route.  This test proves that
         a search which matches teams returns a list of team objects and a 200 status.
         """
-        response: Response = self.client.get('/v2/teams/search/saintsxctf/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/teams/search/saintsxctf/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/teams/search/saintsxctf/1')

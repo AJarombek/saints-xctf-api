@@ -22,7 +22,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/messages',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 302)
@@ -47,7 +47,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/messages',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         headers = response.headers
         self.assertEqual(response.status_code, 307)
@@ -72,7 +72,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/messages/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -106,7 +106,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.post(
             '/v2/messages/',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -133,7 +133,7 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -163,7 +163,7 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -198,7 +198,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/messages/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -213,7 +213,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/messages/2',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -239,7 +239,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.put(
             '/v2/messages/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -255,7 +255,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/messages/2',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -267,7 +267,7 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/2',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -295,7 +295,7 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/2',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -322,7 +322,7 @@ class TestMessageRoute(TestSuite):
         """
         response: Response = self.client.delete(
             '/v2/messages/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
@@ -346,12 +346,12 @@ class TestMessageRoute(TestSuite):
         # Ensure that the message was already deleted before testing the DELETE endpoint
         self.client.delete(
             '/v2/messages/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
 
         response: Response = self.client.delete(
             '/v2/messages/soft/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -376,20 +376,20 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')
 
         response: Response = self.client.delete(
             f'/v2/messages/soft/{message_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
             f'/v2/messages/soft/{message_id}',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 400)
 
@@ -412,15 +412,15 @@ class TestMessageRoute(TestSuite):
             '/v2/messages/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         message_id = response_json.get('message').get('message_id')
 
-        response = self.client.delete(f'/v2/messages/soft/{message_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response = self.client.delete(f'/v2/messages/soft/{message_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.get(f'/v2/messages/{message_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get(f'/v2/messages/{message_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(response_json.get('message'))

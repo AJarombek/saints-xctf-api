@@ -86,6 +86,23 @@ def forgot_password_get(username) -> Response:
         response.status_code = 400
         return response
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
+    if user.username == jwt_username:
+        current_app.logger.info(f'User {jwt_username} is accessing their forgot password codes.')
+    else:
+        current_app.logger.info(
+            f'User {jwt_username} is not authorized to access forgot password codes for user {user.username}.'
+        )
+        response = jsonify({
+            'self': f'/v2/forgot_password/{username}',
+            'created': False,
+            'error': f'User {jwt_username} is not authorized to access forgot password codes for user {user.username}.'
+        })
+        response.status_code = 400
+        return response
+
     forgot_password_codes: ResultProxy = ForgotPasswordDao.get_forgot_password_codes(username=user.username)
 
     if forgot_password_codes is None:
@@ -132,24 +149,6 @@ def forgot_password_post(username) -> Response:
             'self': f'/v2/forgot_password/{username}',
             'created': False,
             'error': 'There is no user associated with this username/email.'
-        })
-        response.status_code = 400
-        return response
-
-    jwt_claims: dict = get_claims(request)
-    jwt_username = jwt_claims.get('sub')
-
-    if user.username == jwt_username:
-        current_app.logger.info(f'User {jwt_username} is creating a forgot password code.')
-    else:
-        current_app.logger.info(
-            f'User {jwt_username} is not authorized to create a new forgot password code for user {user.username}.'
-        )
-        response = jsonify({
-            'self': f'/v2/forgot_password/{username}',
-            'created': False,
-            'error': f'User {jwt_username} is not authorized to create a new forgot password code for user '
-                     f'{user.username}.'
         })
         response.status_code = 400
         return response
@@ -227,7 +226,7 @@ def forgot_password_validate_code_get(code: str) -> Response:
         'is_valid': forgot_password_code is not None,
         'username': forgot_password_code.username if forgot_password_code is not None else None
     })
-    response.status_code = 200
+    response.status_code = 200 if forgot_password_code is not None else 400
     return response
 
 

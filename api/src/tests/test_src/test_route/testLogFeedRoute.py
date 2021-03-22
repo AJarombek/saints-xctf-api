@@ -19,7 +19,7 @@ class TestLogFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/log_feed/username/invalid_user/10/0',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -37,7 +37,7 @@ class TestLogFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/log_feed/username/invalid_user/10/10',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 500)
@@ -54,7 +54,7 @@ class TestLogFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/log_feed/username/andy/25/100',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -70,7 +70,7 @@ class TestLogFeedRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/log_feed/group/5/20/80',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)

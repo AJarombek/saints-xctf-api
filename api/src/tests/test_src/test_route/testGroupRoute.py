@@ -20,7 +20,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups' route. This route is redirected to
         '/v2/groups/' by default.
         """
-        response: Response = self.client.get('/v2/groups', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups', headers={'Authorization': f'Bearer {self.jwt}'})
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/groups/', headers.get('Location'))
@@ -42,7 +42,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/' route.  This test proves that the endpoint returns
         a list of groups.
         """
-        response: Response = self.client.get('/v2/groups/', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups')
@@ -67,7 +67,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/saintsxctf/invalid_group_name',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -80,7 +80,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
         retrieving a group with a valid name results in the group and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/saintsxctf/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/saintsxctf/wmenstf', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/saintsxctf/wmenstf')
@@ -105,7 +105,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.put(
             '/v2/groups/saintsxctf/invalid_group_name',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -119,7 +119,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
         if the updated group is the same as the original group, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/groups/saintsxctf/wmenstf', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/saintsxctf/wmenstf', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('group'))
@@ -130,7 +130,7 @@ class TestGroupRoute(TestSuite):
             '/v2/groups/saintsxctf/wmenstf',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -162,7 +162,7 @@ class TestGroupRoute(TestSuite):
             '/v2/groups/saintsxctf/alumni',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -187,7 +187,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/<group_id>' route.  This test proves that
         trying to retrieve a group with an id that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/0')
@@ -199,7 +199,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/<group_id>' route.  This test proves that
         retrieving a group with a valid id results in the group and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/1')
@@ -222,7 +222,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/team/<group_id>' route.  This test proves that
         trying to retrieve a team via a group id that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/team/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/team/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/team/0')
@@ -234,7 +234,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/team/<group_id>' route.  This test proves that
         retrieving a team via a valid group id results in the team and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/team/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/team/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/team/1')
@@ -260,7 +260,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/members/saintsxctf/invalid_group_name',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -277,7 +277,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/members/saintsxctf/wmenstf',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -320,7 +320,7 @@ class TestGroupRoute(TestSuite):
             '/v2/groups/members/1/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -344,7 +344,7 @@ class TestGroupRoute(TestSuite):
             '/v2/groups/members/1/andy',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -377,7 +377,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves
         that the request results in an HTTP 204 response.
         """
-        response: Response = self.client.delete('/v2/groups/members/7/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.delete('/v2/groups/members/7/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
     def test_group_members_by_group_id_and_username_delete_route_forbidden(self) -> None:
@@ -398,7 +398,7 @@ class TestGroupRoute(TestSuite):
         proves that trying to retrieve group members from a group with an id that doesn't exist results in a HTTP
         400 error.
         """
-        response: Response = self.client.get('/v2/groups/members/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/members/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/members/0')
@@ -413,7 +413,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/members/1',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -447,7 +447,7 @@ class TestGroupRoute(TestSuite):
         proves that trying to retrieve group statistics from a group with an id that doesn't exist results in an HTTP
         400 error.
         """
-        response: Response = self.client.get('/v2/groups/statistics/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/statistics/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/statistics/0')
@@ -459,7 +459,7 @@ class TestGroupRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/groups/statistics/<group_id>' route.  This test
         proves that retrieving group statistics from a group with a valid id results in the stats and a 200 status.
         """
-        response: Response = self.client.get('/v2/groups/statistics/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/statistics/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/statistics/1')
@@ -517,7 +517,7 @@ class TestGroupRoute(TestSuite):
         proves that trying to retrieve leaderboard information from a group with an id that doesn't exist results in an
         HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/groups/leaderboard/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/leaderboard/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/0')
@@ -530,7 +530,7 @@ class TestGroupRoute(TestSuite):
         proves that trying to retrieve leaderboard information from a valid group results in leaderboard items and an
         HTTP 200 response code.
         """
-        response: Response = self.client.get('/v2/groups/leaderboard/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/leaderboard/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/1')
@@ -577,7 +577,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/leaderboard/0/week',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -591,7 +591,7 @@ class TestGroupRoute(TestSuite):
         proves that trying to retrieve leaderboard information during an interval from a valid group results in
         leaderboard items and an HTTP 200 response code.
         """
-        response: Response = self.client.get('/v2/groups/leaderboard/1/year', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/groups/leaderboard/1/year', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/groups/leaderboard/1/year')
@@ -643,7 +643,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/snapshot/saintsxctf/invalid_group_name',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -659,7 +659,7 @@ class TestGroupRoute(TestSuite):
         """
         response: Response = self.client.get(
             '/v2/groups/snapshot/saintsxctf/wmenstf',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)

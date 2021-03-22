@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/12/2019
 """
 
-import boto3
 import json
+
+import boto3
 
 
 def retrieve_db_cred(env: str = 'prod') -> map:

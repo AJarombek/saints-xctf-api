@@ -21,4 +21,8 @@ RUN pipenv install
 ENV FLASK_APP app.py
 ENV ENV localtest
 
+COPY credentials .aws/
+ENV AWS_DEFAULT_REGION us-east-1
+ENV AWS_SHARED_CREDENTIALS_FILE .aws/credentials
+
 ENTRYPOINT ["pipenv", "run", "flask", "test"]

@@ -21,7 +21,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/logs' route. This route is redirected to
         '/v2/logs/' by default.
         """
-        response: Response = self.client.get('/v2/logs', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/logs', headers={'Authorization': f'Bearer {self.jwt}'})
         headers = response.headers
         self.assertEqual(response.status_code, 302)
         self.assertIn('/v2/logs/', headers.get('Location'))
@@ -43,7 +43,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/logs' route. This route is redirected to
         '/v2/logs/' by default.
         """
-        response: Response = self.client.post('/v2/logs', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.post('/v2/logs', headers={'Authorization': f'Bearer {self.jwt}'})
         headers = response.headers
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/logs/', headers.get('Location'))
@@ -66,7 +66,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/logs/' route.  This test proves that the endpoint returns
         a list of logs.
         """
-        response: Response = self.client.get('/v2/logs/', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/logs/', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/logs')
@@ -89,7 +89,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP POST request on the '/v2/logs/' route.  This test proves that calling this endpoint
         with an empty request body results in a 400 error code.
         """
-        response: Response = self.client.post('/v2/logs/', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.post('/v2/logs/', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/logs')
@@ -118,7 +118,7 @@ class TestLogRoute(TestSuite):
             '/v2/logs/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -150,7 +150,7 @@ class TestLogRoute(TestSuite):
             '/v2/logs/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -175,7 +175,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/logs/<log_id>' route.  This test proves that trying to
         retrieve a log with an ID that doesn't exist results in a HTTP 400 error.
         """
-        response: Response = self.client.get('/v2/logs/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/logs/0')
@@ -188,7 +188,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/logs/<log_id>' route.  This test proves that retrieving
         a log with a valid ID results in the log and a 200 status.
         """
-        response: Response = self.client.get('/v2/logs/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/logs/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/logs/1')
@@ -212,7 +212,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that trying to
         update a log that doesn't exist results in a 400 error.
         """
-        response: Response = self.client.put('/v2/logs/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.put('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/logs/0')
@@ -225,7 +225,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that if the
         updated log is the same as the original log, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/logs/1', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/logs/1', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('log'))
@@ -236,7 +236,7 @@ class TestLogRoute(TestSuite):
             '/v2/logs/1',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -278,7 +278,7 @@ class TestLogRoute(TestSuite):
             '/v2/logs/1',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -303,7 +303,7 @@ class TestLogRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
         endpoint should return a 204 success status, no matter if the log existed or not.
         """
-        response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
     def test_log_by_id_delete_route_forbidden(self) -> None:
@@ -324,9 +324,9 @@ class TestLogRoute(TestSuite):
         the log doesn't exist, a 400 error is returned.
         """
         # Ensure that the log was already deleted before testing the DELETE endpoint
-        self.client.delete('/v2/logs/0', headers={'Authorization': 'Bearer j.w.t'})
+        self.client.delete('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
 
-        response: Response = self.client.delete('/v2/logs/soft/0', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.delete('/v2/logs/soft/0', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
@@ -356,15 +356,15 @@ class TestLogRoute(TestSuite):
             '/v2/logs/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         log_id = response_json.get('log').get('log_id')
 
-        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 400)
 
     def test_log_by_id_soft_delete_route_204(self) -> None:
@@ -395,15 +395,15 @@ class TestLogRoute(TestSuite):
             '/v2/logs/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': 'Bearer j.w.t'}
+            headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         log_id = response_json.get('log').get('log_id')
 
-        response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.get(f'/v2/logs/{log_id}', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get(f'/v2/logs/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertIsNone(response_json.get('log'))

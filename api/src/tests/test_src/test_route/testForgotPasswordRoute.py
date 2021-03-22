@@ -21,7 +21,7 @@ class TestForgotPasswordRoute(TestSuite):
         trying to retrieve a forgot password code for a user that doesn't exist results in a HTTP 400 error code
         with an empty list returned.
         """
-        response: Response = self.client.get('/v2/forgot_password/fake_user', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/forgot_password/fake_user', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
@@ -34,9 +34,9 @@ class TestForgotPasswordRoute(TestSuite):
         or more forgot password codes and a successful HTTP 200 code.
         """
         # Ensure that at least one forgot password code exists for this user
-        self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        self.client.post('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
 
-        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/andy')
@@ -98,7 +98,7 @@ class TestForgotPasswordRoute(TestSuite):
         set to false.
         """
         response: Response = self.client.get(
-            '/v2/forgot_password/validate/abc123', headers={'Authorization': 'Bearer j.w.t'}
+            '/v2/forgot_password/validate/abc123', headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -110,10 +110,10 @@ class TestForgotPasswordRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/forgot_password/validate/<code>' route.  This test proves that
         validating a forgot password code that exists results in a 200 HTTP code response.
         """
-        response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.post('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 201)
 
-        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': 'Bearer j.w.t'})
+        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         forgot_password_codes = response_json.get('forgot_password_codes')
