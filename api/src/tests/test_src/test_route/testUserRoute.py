@@ -7,7 +7,9 @@ Date: 12/10/2019
 import json
 from datetime import datetime
 import unittest
+import asyncio
 
+import aiohttp
 from flask import Response
 
 from tests.TestSuite import TestSuite
@@ -54,12 +56,14 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 307)
         self.assertIn('/v2/users/', headers.get('Location'))
 
+    @unittest.skip('User Creation Does Not Require JWT Authorization')
     def test_user_post_route_redirect_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP POST request on the '/v2/users' route.
         """
         test_route_auth(self, self.client, 'POST', '/v2/users', AuthVariant.FORBIDDEN)
 
+    @unittest.skip('User Creation Does Not Require JWT Authorization')
     def test_user_post_route_redirect_unauthorized(self) -> None:
         """
         Test performing an unauthorized HTTP POST request on the '/v2/users' route.
@@ -221,11 +225,6 @@ class TestUserRoute(TestSuite):
         this endpoint with a valid request JSON results in a 200 success code and a new user object.
         """
         # Before trying to create the user, make sure that the activation code already exists.
-        self.client.delete(
-            '/v2/activation_code/ABC123',
-            headers={'Authorization': f'Bearer {self.jwt}'}
-        )
-
         request_body = json.dumps({'group_id': 1, 'email': 'andrew@jarombek.com'})
         response: Response = self.client.post(
             '/v2/activation_code/',
@@ -302,12 +301,14 @@ class TestUserRoute(TestSuite):
         self.assertIn('subscribed', user)
         self.assertIn('deleted', user)
 
+    @unittest.skip('User Creation Does Not Require JWT Authorization')
     def test_user_post_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP POST request on the '/v2/users/' route.
         """
         test_route_auth(self, self.client, 'POST', '/v2/users/', AuthVariant.FORBIDDEN)
 
+    @unittest.skip('User Creation Does Not Require JWT Authorization')
     def test_user_post_route_unauthorized(self) -> None:
         """
         Test performing an unauthorized HTTP POST request on the '/v2/users/' route.
@@ -370,6 +371,22 @@ class TestUserRoute(TestSuite):
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('user'))
         self.assertEqual(response_json.get('error'), 'there is no existing user with this username')
+
+    def test_user_by_username_put_route_400_updating_other_user(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
+        trying to update a user which is different than the one authenticated results in a 400 error.
+        """
+        response: Response = self.client.put(
+            '/v2/users/andy2',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('user'))
+        self.assertEqual(response_json.get('error'), 'User andy is not authorized to update user andy2.')
 
     def test_user_by_username_put_route_400_no_update(self) -> None:
         """
@@ -454,16 +471,13 @@ class TestUserRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/users/andy', AuthVariant.UNAUTHORIZED)
 
-    def test_user_by_username_delete_route_204(self) -> None:
+    def test_user_by_username_delete_route_403(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/users/<username>' route.  This test proves
-        that the endpoint should return a 204 success status, no matter if the user existed or not.
+        that the endpoint is disabled even with proper validation.
         """
-        response: Response = self.client.delete(
-            '/v2/users/invalid_user',
-            headers={'Authorization': f'Bearer {self.jwt}'}
-        )
-        self.assertEqual(response.status_code, 204)
+        response: Response = self.client.delete('/v2/users/andy', headers={'Authorization': f'Bearer {self.jwt}'})
+        self.assertEqual(response.status_code, 403)
 
     def test_user_by_username_delete_route_forbidden(self) -> None:
         """
@@ -1216,7 +1230,10 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response_json.get('created'))
 
-        response: Response = self.client.get('/v2/forgot_password/andy', headers={'Authorization': f'Bearer {self.jwt}'})
+        response: Response = self.client.get(
+            '/v2/forgot_password/andy',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         forgot_password_codes = response_json.get('forgot_password_codes')
@@ -1252,7 +1269,26 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response_json.get('created'))
 
-        response: Response = self.client.get('/v2/forgot_password/andy2', headers={'Authorization': f'Bearer {self.jwt}'})
+        auth_url = self.auth_url
+
+        async def token(test_suite: TestSuite):
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                        url=f"{auth_url}/token",
+                        json={'clientId': 'andy2', 'clientSecret': 'B0unD2'}
+                ) as auth_response:
+                    response_body = await auth_response.json()
+                    print(f"Response JWT: {response_body.get('result')}")
+                    test_suite.andy2_jwt = response_body.get('result')
+
+        self.andy2_jwt = None
+        asyncio.run(token(self))
+        print(f"JWT: {self.andy2_jwt}")
+
+        response: Response = self.client.get(
+            '/v2/forgot_password/andy2',
+            headers={'Authorization': f'Bearer {self.andy2_jwt}'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         forgot_password_codes = response_json.get('forgot_password_codes')

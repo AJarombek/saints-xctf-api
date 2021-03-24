@@ -20,11 +20,13 @@ from database import db
 
 class TestSuite(unittest.TestCase):
     jwt = None
+    auth_url = None
 
     @classmethod
     def setUpClass(cls) -> None:
         flask_env = os.getenv('FLASK_ENV') or 'local'
         auth_url = config[flask_env].AUTH_URL
+        TestSuite.auth_url = auth_url
 
         secretsmanager = boto3.client('secretsmanager')
         response = secretsmanager.get_secret_value(SecretId=f'saints-xctf-andy-password')
@@ -59,6 +61,7 @@ class TestSuite(unittest.TestCase):
         self.app_context.push()
         self.client: FlaskClient = self.app.test_client()
         self.jwt = TestSuite.jwt
+        self.auth_url = TestSuite.auth_url
 
     def tearDown(self) -> None:
         """

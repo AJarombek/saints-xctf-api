@@ -315,7 +315,7 @@ def notification_by_id_delete(notification_id) -> Response:
         response = jsonify({
             'self': f'/v2/notifications/{notification_id}',
             'deleted': False,
-            'error': 'there is no existing notification with this id'
+            'error': 'There is no existing notification with this id.'
         })
         response.status_code = 400
         return response

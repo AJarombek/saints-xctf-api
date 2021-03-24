@@ -322,6 +322,20 @@ class TestNotificationRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/notifications/1', AuthVariant.UNAUTHORIZED)
 
+    def test_notification_by_id_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
+        that the endpoint should return a 400 error status if the notification id specified does not exist.
+        """
+        response: Response = self.client.delete(
+            '/v2/notifications/0',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual('There is no existing notification with this id.', response_json.get('error'))
+
     def test_notification_by_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves

@@ -445,6 +445,18 @@ def user_by_username_put(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the PUT API request.
     """
+    old_user: User = UserDao.get_user_by_username(username=username)
+
+    if old_user is None:
+        response = jsonify({
+            'self': f'/v2/users/{username}',
+            'updated': False,
+            'user': None,
+            'error': 'there is no existing user with this username'
+        })
+        response.status_code = 400
+        return response
+
     jwt_claims: dict = get_claims(request)
     jwt_username = jwt_claims.get('sub')
 
@@ -457,18 +469,6 @@ def user_by_username_put(username) -> Response:
             'updated': False,
             'user': None,
             'error': f'User {jwt_username} is not authorized to update user {username}.'
-        })
-        response.status_code = 400
-        return response
-
-    old_user: User = UserDao.get_user_by_username(username=username)
-
-    if old_user is None:
-        response = jsonify({
-            'self': f'/v2/users/{username}',
-            'updated': False,
-            'user': None,
-            'error': 'there is no existing user with this username'
         })
         response.status_code = 400
         return response
