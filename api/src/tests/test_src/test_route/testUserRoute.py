@@ -1275,15 +1275,13 @@ class TestUserRoute(TestSuite):
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                         url=f"{auth_url}/token",
-                        json={'clientId': 'andy2', 'clientSecret': 'B0unD2'}
+                        json={'clientId': 'andy2', 'clientSecret': 'B0unDTw0'}
                 ) as auth_response:
                     response_body = await auth_response.json()
-                    print(f"Response JWT: {response_body.get('result')}")
                     test_suite.andy2_jwt = response_body.get('result')
 
         self.andy2_jwt = None
         asyncio.run(token(self))
-        print(f"JWT: {self.andy2_jwt}")
 
         response: Response = self.client.get(
             '/v2/forgot_password/andy2',

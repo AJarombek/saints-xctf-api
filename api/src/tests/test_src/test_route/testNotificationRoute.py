@@ -250,6 +250,43 @@ class TestNotificationRoute(TestSuite):
         self.assertIsNone(response_json.get('notification'))
         self.assertEqual(response_json.get('error'), 'there is no existing notification with this id')
 
+    def test_notification_by_id_put_route_400_other_users_notification(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/notifications/<notification_id>' route.  This test proves that
+        trying to update a notification that doesn't belong to the user making the API call results in a 400 error.
+        """
+        request_body = json.dumps({
+            "username": "andy2",
+            "viewed": "N",
+            "time": str(datetime.now()),
+            "description": "Other User's Notification"
+        })
+
+        response: Response = self.client.post(
+            '/v2/notifications/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('notification_id', response_json.get('notification'))
+        notification_id = response_json.get('notification').get('notification_id')
+
+        response: Response = self.client.put(
+            f'/v2/notifications/{notification_id}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), f'/v2/notifications/{notification_id}')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('notification'))
+        self.assertEqual(
+            response_json.get('error'),
+            'User andy is not authorized to update a notification sent to andy2.'
+        )
+
     def test_notification_by_id_put_route_400_no_update(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/notifications/<notification_id>' route.  This test proves that
@@ -335,6 +372,41 @@ class TestNotificationRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
         self.assertEqual('There is no existing notification with this id.', response_json.get('error'))
+
+    def test_notification_by_id_delete_route_400_other_users_notification(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
+        that the endpoint should return a 400 error status if the notification belongs to another user.
+        """
+        request_body = json.dumps({
+            "username": "andy2",
+            "viewed": "N",
+            "time": str(datetime.now()),
+            "description": "Other User's Notification"
+        })
+
+        response: Response = self.client.post(
+            '/v2/notifications/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('notification_id', response_json.get('notification'))
+        notification_id = response_json.get('notification').get('notification_id')
+
+        response: Response = self.client.delete(
+            f'/v2/notifications/{notification_id}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            'User andy is not authorized to delete a notification sent to andy2.',
+            response_json.get('error')
+        )
 
     def test_notification_by_id_delete_route_204(self) -> None:
         """
