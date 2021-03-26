@@ -7,10 +7,11 @@ Date: 12/2/2019
 import json
 from datetime import datetime
 
+import asyncio
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token
 
 
 class TestNotificationRoute(TestSuite):
@@ -262,11 +263,13 @@ class TestNotificationRoute(TestSuite):
             "description": "Other User's Notification"
         })
 
+        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy2', client_secret='B0unDTw0'))
+
         response: Response = self.client.post(
             '/v2/notifications/',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get('andy2')}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -431,8 +434,26 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
         that the endpoint should return a 204 success status, no matter if the notification existed or not.
         """
+        request_body = json.dumps({
+            "username": "andy",
+            "viewed": "N",
+            "time": str(datetime.now()),
+            "description": "My Notification"
+        })
+
+        response: Response = self.client.post(
+            '/v2/notifications/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('notification_id', response_json.get('notification'))
+        notification_id = response_json.get('notification').get('notification_id')
+
         response: Response = self.client.delete(
-            '/v2/notifications/0',
+            f'/v2/notifications/{notification_id}',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)

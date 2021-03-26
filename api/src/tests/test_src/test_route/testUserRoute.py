@@ -550,10 +550,12 @@ class TestUserRoute(TestSuite):
         self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
         self.assertIn('expiration_date', activation_code_json)
 
-        # Delete the user to void a duplicate entry constraint error.
+        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy3', client_secret='password'))
+
+        # Delete the user to avoid a duplicate entry constraint error.
         self.client.delete(
-            '/v2/users/andy3',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            '/v2/users/soft/andy3',
+            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
         )
 
         request_body = json.dumps({
@@ -617,7 +619,7 @@ class TestUserRoute(TestSuite):
 
         # Delete the user to avoid a duplicate entry constraint error.
         self.client.delete(
-            '/v2/users/andy3',
+            '/v2/users/soft/andy3',
             headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
         )
 
@@ -1035,6 +1037,34 @@ class TestUserRoute(TestSuite):
         self.assertFalse(response_json.get('updated'))
         self.assertEqual(response_json.get('error'), "failed to update the user's memberships")
 
+    def test_user_memberships_by_username_put_route_400_other_user(self) -> None:
+        """
+        Test performing an unsuccessful HTTP PUT request on the '/v2/users/memberships/<username>' route by trying to
+        update the memberships of another user.
+        """
+        request_body = json.dumps({
+            'teams_joined': [],
+            'teams_left': [],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            '/v2/users/memberships/andy2',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy2')
+        self.assertFalse(response_json.get('updated'))
+        self.assertEqual(
+            response_json.get('error'),
+            "User andy is not authorized to update the memberships of user andy2."
+        )
+
     def test_user_memberships_by_username_put_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP PUT request on the '/v2/users/memberships/<username>' route.
@@ -1285,23 +1315,11 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response_json.get('created'))
 
-        auth_url = self.auth_url
-
-        async def token(test_suite: TestSuite):
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                        url=f"{auth_url}/token",
-                        json={'clientId': 'andy2', 'clientSecret': 'B0unDTw0'}
-                ) as auth_response:
-                    response_body = await auth_response.json()
-                    test_suite.andy2_jwt = response_body.get('result')
-
-        self.andy2_jwt = None
-        asyncio.run(token(self))
+        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy2', client_secret='B0unDTw0'))
 
         response: Response = self.client.get(
             '/v2/forgot_password/andy2',
-            headers={'Authorization': f'Bearer {self.andy2_jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get('andy2')}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -1337,6 +1355,25 @@ class TestUserRoute(TestSuite):
         Test performing an unauthorized HTTP PUT request on the '/v2/users/<username>/change_password' route.
         """
         test_route_auth(self, self.client, 'PUT', '/v2/users/andy/change_password', AuthVariant.UNAUTHORIZED)
+
+    def test_user_update_last_login_by_username_put_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/users/<username>/update_last_login' route.  This test proves
+        that calling this endpoint with the proper fields but on a different user than the one authenticated results in
+        a 400 status code.
+        """
+        response: Response = self.client.put(
+            '/v2/users/andy2/update_last_login',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/users/andy2/update_last_login')
+        self.assertEqual(response_json.get('last_login_updated'), False)
+        self.assertEqual(
+            response_json.get('error'),
+            "User andy is not authorized to update the last login date of user andy2."
+        )
 
     def test_user_update_last_login_by_username_put_route_200(self) -> None:
         """

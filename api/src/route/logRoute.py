@@ -442,6 +442,15 @@ def log_by_id_soft_delete(log_id) -> Response:
     """
     existing_log: Log = LogDao.get_log_by_id(log_id=log_id)
 
+    if existing_log is None:
+        response = jsonify({
+            'self': f'/v2/logs/soft/{log_id}',
+            'deleted': False,
+            'error': 'there is no existing exercise log with this id'
+        })
+        response.status_code = 400
+        return response
+
     jwt_claims: dict = get_claims(request)
     jwt_username = jwt_claims.get('sub')
 
@@ -457,15 +466,6 @@ def log_by_id_soft_delete(log_id) -> Response:
             'deleted': False,
             'error': f'User {jwt_username} is not authorized to soft delete an exercise log owned by user '
                      f'{existing_log.username}.'
-        })
-        response.status_code = 400
-        return response
-
-    if existing_log is None:
-        response = jsonify({
-            'self': f'/v2/logs/soft/{log_id}',
-            'deleted': False,
-            'error': 'there is no existing exercise log with this id'
         })
         response.status_code = 400
         return response
