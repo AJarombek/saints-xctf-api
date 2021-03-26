@@ -389,7 +389,7 @@ def notification_by_id_soft_delete(notification_id) -> Response:
             f'{existing_notification.username}.'
         )
         response = jsonify({
-            'self': f'/v2/notifications/{notification_id}',
+            'self': f'/v2/notifications/soft/{notification_id}',
             'deleted': False,
             'error': f'User {jwt_username} is not authorized to soft delete a notification sent to '
                      f'{existing_notification.username}.'

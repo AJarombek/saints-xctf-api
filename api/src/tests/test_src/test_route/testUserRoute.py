@@ -13,7 +13,7 @@ import aiohttp
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token
 
 
 class TestUserRoute(TestSuite):
@@ -510,6 +510,20 @@ class TestUserRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
 
+    def test_user_by_username_soft_delete_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/users/soft/<username>' route.  This test
+        proves that if the user being deleted is different than the authenticated user, a 400 error is returned.
+        """
+        response: Response = self.client.delete(
+            '/v2/users/soft/NewmanZone',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(response_json.get('error'), 'User andy is not authorized to soft delete user NewmanZone.')
+
     def test_user_by_username_soft_delete_route_400_already_deleted(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/users/soft/<username>' route.  This test
@@ -599,10 +613,12 @@ class TestUserRoute(TestSuite):
         self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
         self.assertIn('expiration_date', activation_code_json)
 
-        # Delete the user to void a duplicate entry constraint error.
+        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy3', client_secret='password'))
+
+        # Delete the user to avoid a duplicate entry constraint error.
         self.client.delete(
             '/v2/users/andy3',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
         )
 
         request_body = json.dumps({

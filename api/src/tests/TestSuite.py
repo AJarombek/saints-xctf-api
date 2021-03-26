@@ -62,6 +62,7 @@ class TestSuite(unittest.TestCase):
         self.client: FlaskClient = self.app.test_client()
         self.jwt = TestSuite.jwt
         self.auth_url = TestSuite.auth_url
+        self.jwts = {}
 
     def tearDown(self) -> None:
         """

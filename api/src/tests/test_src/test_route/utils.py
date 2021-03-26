@@ -4,9 +4,10 @@ Author: Andrew Jarombek
 Date: 10/15/2020
 """
 
-from unittest import TestCase
+from unittest import TestCase, TestSuite
 from enum import Enum
 
+import aiohttp
 from flask import Response
 from flask.testing import FlaskClient
 
@@ -47,3 +48,20 @@ def test_route_auth(case: TestCase, client: FlaskClient, verb: str, endpoint: st
     response_json: dict = response.get_json()
     case.assertEqual(expected_code, response.status_code)
     case.assertEqual(expected_description, response_json.get('error_description'))
+
+
+async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, client_secret: str):
+    """
+    Using an authentication URL, retrieve a JWT for a user to use in tests.
+    :param test_suite: The test suite which needs the JWT.
+    :param auth_url: The authentication URL to use.
+    :param client_id: Username of the user that the JWT will belong to.
+    :param client_secret: Password of the user that the JWT will belong to.
+    """
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                url=f"{auth_url}/token",
+                json={'clientId': client_id, 'clientSecret': client_secret}
+        ) as auth_response:
+            response_body = await auth_response.json()
+            test_suite.jwts[client_id] = response_body.get('result')
