@@ -140,9 +140,9 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/groups/saintsxctf/wmenstf')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('group'))
-        self.assertRegexpMatches(
+        self.assertEqual(
             response_json.get('error'),
-            r'^User andy is not authorized to delete the group membership for user andy in group with id \d+\.$'
+            'User andy is not authorized to update a group with name wmenstf in team saintsxctf.'
         )
 
     def test_group_by_group_name_put_route_400_no_update(self) -> None:
@@ -264,6 +264,94 @@ class TestGroupRoute(TestSuite):
         self.assertIsNone(response_json.get('group'))
         self.assertEqual(response_json.get('error'), 'There is no existing group with this id.')
 
+    def test_group_by_id_put_route_400_not_an_admin(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_id>' route.  This test proves that
+        a user trying to update a group they are not an administrator of results in a 400 error.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/wmenstf',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        response: Response = self.client.put(f'/v2/groups/{group_id}', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), f'/v2/groups/{group_id}')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertEqual(
+            response_json.get('error'),
+            f'User andy is not authorized to update a group with id {group_id}.'
+        )
+
+    def test_group_by_id_put_route_400_no_update(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_id>' route.  This test proves that if the updated
+        group is the same as the original group, a 400 error is returned.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/alumni',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        request_body = json.dumps(response_json.get('group'))
+
+        response: Response = self.client.put(
+            f'/v2/groups/{group_id}',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), f'/v2/groups/{group_id}')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertEqual(
+            response_json.get('error'),
+            f'The group submitted is equal to the existing group with the same id.'
+        )
+
+    def test_group_by_id_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_id>' route.  This test proves that if the updated
+        group object is valid and the user is an admin of the group, the group is updated and a 200 status code is
+        returned.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/wmenstf',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        group_dict: dict = response_json.get('group')
+        group_dict['description'] = f"Updated: {datetime.now()}"
+        request_body = json.dumps(group_dict)
+
+        response: Response = self.client.put(
+            f'/v2/groups/{group_id}',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), f'/v2/groups/{group_id}')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+
     def test_group_by_id_put_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP PUT request on the '/v2/groups/<group_id>' route.
@@ -364,11 +452,54 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/members/saintsxctf/wmenstf', AuthVariant.UNAUTHORIZED)
 
-    def test_members_by_group_id_and_username_put_route_200(self) -> None:
+    def test_group_members_by_group_id_and_username_put_route_400_not_an_admin(self) -> None:
         """
-        Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
-        the request results in an HTTP 200 response.
+        Test performing an HTTP PUT request on the '/v2/groups/members/<group_id>/<username>' route.  This test proves that
+        the request results in an HTTP 400 error response if the user making the request is not an admin of the
+        specified group.
         """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/menstf',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        request_body = json.dumps({
+            "status": "accepted",
+            "user": "user"
+        })
+        response: Response = self.client.put(
+            f'/v2/groups/members/{group_id}/andy',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group_member'))
+        self.assertEqual(
+            response_json.get('error'),
+            f'User andy is not authorized to update the group membership for user andy in group with id {group_id}.'
+        )
+
+    def test_group_members_by_group_id_and_username_put_route_200(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/members/<group_id>/<username>' route.  This test proves
+        that the request results in an HTTP 200 response.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/alumni',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
 
         # You know I'm always here for you no matter what.  Will always give you my best if you ask for it.
         request_body = json.dumps({
@@ -376,14 +507,14 @@ class TestGroupRoute(TestSuite):
             "user": "user"
         })
         response: Response = self.client.put(
-            '/v2/groups/members/1/andy',
+            f'/v2/groups/members/{group_id}/andy',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/groups/members/1/andy')
+        self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('group_member'))
 
@@ -400,14 +531,14 @@ class TestGroupRoute(TestSuite):
             "user": "admin"
         })
         response: Response = self.client.put(
-            '/v2/groups/members/1/andy',
+            f'/v2/groups/members/{group_id}/andy',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/groups/members/1/andy')
+        self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('group_member'))
 
