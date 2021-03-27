@@ -276,8 +276,12 @@ class TestNotificationRoute(TestSuite):
         self.assertIn('notification_id', response_json.get('notification'))
         notification_id = response_json.get('notification').get('notification_id')
 
+        request_body = json.dumps(response_json.get('notification'))
+
         response: Response = self.client.put(
             f'/v2/notifications/{notification_id}',
+            data=request_body,
+            content_type='application/json',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
@@ -347,22 +351,22 @@ class TestNotificationRoute(TestSuite):
         """
         # 'viewed' is the only notification column that can be altered after creation.
         request_body = json.dumps({
-            "username": "mkcurran",
-            "time": "2017-06-30 19:23:21",
-            "link": "https://www.saintsxctf.com/log.php?logno=1979",
+            "username": "andy",
+            "time": "2017-07-01 21:00:21",
+            "link": "https://www.saintsxctf.com/log.php?logno=2017",
             "viewed": "Y",
             "description": f"Caroline Driscoll Commented on Your Log:."
         })
 
         response: Response = self.client.put(
-            '/v2/notifications/22',
+            '/v2/notifications/29',
             data=request_body,
             content_type='application/json',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), '/v2/notifications/22')
+        self.assertEqual(response_json.get('self'), '/v2/notifications/29')
         self.assertTrue(response_json.get('updated'))
         self.assertIsNotNone(response_json.get('notification'))
         self.assertIn('viewed', response_json.get('notification'))

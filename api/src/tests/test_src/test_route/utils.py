@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 10/15/2020
 """
 
+import string
+import random
 from unittest import TestCase, TestSuite
 from enum import Enum
 
@@ -65,3 +67,8 @@ async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, cl
         ) as auth_response:
             response_body = await auth_response.json()
             test_suite.jwts[client_id] = response_body.get('result')
+
+
+def random_code() -> str:
+    chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    return ''.join(random.choices(chars, k=12))

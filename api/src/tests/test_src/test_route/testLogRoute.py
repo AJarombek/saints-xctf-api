@@ -298,13 +298,48 @@ class TestLogRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/logs/1', AuthVariant.UNAUTHORIZED)
 
+    def test_log_by_id_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
+        endpoint should return a 400 failure status if the log does not exist.
+        """
+        response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        self.assertEqual(response.status_code, 400)
+
     def test_log_by_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
-        endpoint should return a 204 success status, no matter if the log existed or not.
+        endpoint should return a 204 success status if the log id is valid.
         """
-        response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "name": "Central Park Trails + Strides",
+            "location": "New York, NY",
+            "date": "2021-03-26",
+            "type": "run",
+            "time": "00:43:47",
+            "feel": 6,
+            "description": f"Going to try and run a 5K time trial around central park on Sunday, stride progressions "
+                           f"today and 15 second strides tomorrow.",
+            "time_created": "2021-03-26 16:00:00",
+            "deleted": False
+        })
+        response: Response = self.client.post(
+            '/v2/logs/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        log_id = response_json.get('log').get('log_id')
+
+        response: Response = self.client.delete(f'/v2/logs/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual('There is no existing exercise log with this id.', response_json.get('error'))
 
     def test_log_by_id_delete_route_forbidden(self) -> None:
         """

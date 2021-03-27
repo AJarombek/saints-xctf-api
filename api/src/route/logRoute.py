@@ -386,6 +386,15 @@ def log_by_id_delete(log_id) -> Response:
     """
     existing_log: Log = LogDao.get_log_by_id(log_id=log_id)
 
+    if existing_log is None:
+        response = jsonify({
+            'self': f'/v2/logs/{log_id}',
+            'deleted': False,
+            'error': 'There is no existing exercise log with this id.'
+        })
+        response.status_code = 400
+        return response
+
     jwt_claims: dict = get_claims(request)
     jwt_username = jwt_claims.get('sub')
 

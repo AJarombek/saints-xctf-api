@@ -9,11 +9,10 @@ from datetime import datetime
 import unittest
 import asyncio
 
-import aiohttp
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token, random_code
 
 
 class TestUserRoute(TestSuite):
@@ -550,16 +549,9 @@ class TestUserRoute(TestSuite):
         self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
         self.assertIn('expiration_date', activation_code_json)
 
-        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy3', client_secret='password'))
-
-        # Delete the user to avoid a duplicate entry constraint error.
-        self.client.delete(
-            '/v2/users/soft/andy3',
-            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
-        )
-
+        random_username = f'andy{random_code()}'
         request_body = json.dumps({
-            "username": "andy3",
+            "username": random_username,
             "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
@@ -574,19 +566,21 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
-        username = response_json.get('user').get('username')
+        self.assertEqual(response.status_code, 201, msg=f'Error creating user: {response_json.get("error")}')
 
         response: Response = self.client.delete(
-            f'/v2/users/soft/{username}',
+            f'/v2/users/soft/{random_username}',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
-            f'/v2/users/soft/{username}',
+            f'/v2/users/soft/{random_username}',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
+        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
+        self.assertEqual('this user is already soft deleted', response_json.get('error'))
 
     def test_user_by_username_soft_delete_route_204(self) -> None:
         """
@@ -615,16 +609,9 @@ class TestUserRoute(TestSuite):
         self.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
         self.assertIn('expiration_date', activation_code_json)
 
-        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy3', client_secret='password'))
-
-        # Delete the user to avoid a duplicate entry constraint error.
-        self.client.delete(
-            '/v2/users/soft/andy3',
-            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
-        )
-
+        random_username = f'andy{random_code()}'
         request_body = json.dumps({
-            "username": "andy3",
+            "username": random_username,
             "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
@@ -639,13 +626,16 @@ class TestUserRoute(TestSuite):
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
-
         self.assertEqual(response.status_code, 201, msg=f'Error creating user: {response_json.get("error")}')
-        username = response_json.get('user').get('username')
+
+        # As a cleanup step, delete the user.
+        asyncio.run(
+            get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id=random_username, client_secret='password')
+        )
 
         response: Response = self.client.delete(
-            f'/v2/users/soft/{username}',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            f'/v2/users/soft/{random_username}',
+            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
         )
         self.assertEqual(response.status_code, 204)
 
