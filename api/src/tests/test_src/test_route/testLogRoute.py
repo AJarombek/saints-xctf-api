@@ -130,6 +130,41 @@ class TestLogRoute(TestSuite):
             "'username', 'first', 'last', 'date', 'type', and 'feel' are required fields"
         )
 
+    def test_log_post_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/logs/' route.  This test proves that calling
+        this endpoint with a valid request JSON results in a 400 error if a user is trying to create an exercise log
+        for another user.
+        """
+        request_body = json.dumps({
+            "username": "andy2",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "date": "2021-03-27",
+            "type": "run",
+            "feel": 6,
+            "miles": 6.02,
+            "description": "5.5 Miles slow around Central Park trails, 8x15 sec strides.  Flowers are blooming, "
+                           "very pretty.",
+            "time_created": str(datetime.now())
+        })
+
+        response: Response = self.client.post(
+            '/v2/logs/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/logs')
+        self.assertFalse(response_json.get('added'))
+        self.assertIsNone(response_json.get('log'))
+        self.assertEqual(
+            response_json.get('error'),
+            "User andy is not authorized to upload an exercise log for user andy2."
+        )
+
     def test_log_post_route_200(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/logs/' route.  This test proves that calling
@@ -155,7 +190,7 @@ class TestLogRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), '/v2/logs')
-        self.assertEqual(response_json.get('added'), True)
+        self.assertTrue(response_json.get('added'))
         self.assertIsNotNone(response_json.get('log'))
 
     def test_log_post_route_forbidden(self) -> None:
@@ -219,6 +254,34 @@ class TestLogRoute(TestSuite):
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('log'))
         self.assertEqual(response_json.get('error'), 'there is no existing log with this id')
+
+    def test_log_by_id_put_route_400_other_users_log(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/logs/<log_id>' route.  This test proves that trying to
+        update a log that belongs to another user results in a 400 error.
+        """
+        response: Response = self.client.get('/v2/logs/5', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('log'))
+
+        request_body = json.dumps(response_json.get('log'))
+
+        response: Response = self.client.put(
+            '/v2/logs/5',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/logs/5')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('log'))
+        self.assertEqual(
+            response_json.get('error'),
+            'User andy is not authorized to update an exercise log owned by user Joe.'
+        )
 
     def test_log_by_id_put_route_400_no_update(self) -> None:
         """
@@ -304,7 +367,24 @@ class TestLogRoute(TestSuite):
         endpoint should return a 400 failure status if the log does not exist.
         """
         response: Response = self.client.delete('/v2/logs/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual('There is no existing exercise log with this id.', response_json.get('error'))
+
+    def test_log_by_id_delete_route_400_other_users_log(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
+        endpoint should return a 400 failure status if the log belongs to another user.
+        """
+        response: Response = self.client.delete('/v2/logs/5', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            'User andy is not authorized to delete an exercise log owned by user Joe.',
+            response_json.get('error')
+        )
 
     def test_log_by_id_delete_route_204(self) -> None:
         """
@@ -338,8 +418,7 @@ class TestLogRoute(TestSuite):
         response: Response = self.client.delete(f'/v2/logs/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(response_json.get('deleted'))
-        self.assertEqual('There is no existing exercise log with this id.', response_json.get('error'))
+        self.assertTrue(response_json.get('deleted'))
 
     def test_log_by_id_delete_route_forbidden(self) -> None:
         """
@@ -401,6 +480,20 @@ class TestLogRoute(TestSuite):
 
         response: Response = self.client.delete(f'/v2/logs/soft/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 400)
+
+    def test_log_by_id_soft_delete_route_400_other_users_log(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/logs/<log_id>' route.  This test proves that the
+        endpoint should return a 400 failure status if the log belongs to another user.
+        """
+        response: Response = self.client.delete('/v2/logs/soft/5', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            'User andy is not authorized to soft delete an exercise log owned by user Joe.',
+            response_json.get('error')
+        )
 
     def test_log_by_id_soft_delete_route_204(self) -> None:
         """

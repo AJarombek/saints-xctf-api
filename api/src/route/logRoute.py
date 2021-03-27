@@ -323,7 +323,8 @@ def log_by_id_put(log_id) -> Response:
             'self': f'/v2/logs/{log_id}',
             'updated': False,
             'log': None,
-            'error': f'User {jwt_username} is not authorized to update an exercise log owned by user {old_log.username}.'
+            'error': f'User {jwt_username} is not authorized to update an exercise log owned by user '
+                     f'{old_log.username}.'
         })
         response.status_code = 400
         return response
