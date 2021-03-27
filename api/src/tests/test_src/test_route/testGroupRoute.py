@@ -114,12 +114,15 @@ class TestGroupRoute(TestSuite):
         self.assertIsNone(response_json.get('group'))
         self.assertEqual(response_json.get('error'), 'there is no existing group with this name')
 
-    def test_group_by_group_name_put_route_400_no_update(self) -> None:
+    def test_group_by_group_name_put_route_400_not_an_admin(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
-        if the updated group is the same as the original group, a 400 error is returned.
+        if the user trying to update a group is not an admin of that group group, a 400 error is returned.
         """
-        response: Response = self.client.get('/v2/groups/saintsxctf/wmenstf', headers={'Authorization': f'Bearer {self.jwt}'})
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/wmenstf',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response_json.get('group'))
@@ -135,6 +138,37 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/groups/saintsxctf/wmenstf')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertRegexpMatches(
+            response_json.get('error'),
+            r'^User andy is not authorized to delete the group membership for user andy in group with id \d+\.$'
+        )
+
+    def test_group_by_group_name_put_route_400_no_update(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves that
+        if the updated group is the same as the original group, a 400 error is returned.
+        """
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/alumni',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+
+        request_body = json.dumps(response_json.get('group'))
+
+        response: Response = self.client.put(
+            '/v2/groups/saintsxctf/alumni',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/saintsxctf/alumni')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('group'))
         self.assertEqual(
@@ -216,6 +250,31 @@ class TestGroupRoute(TestSuite):
         Test performing an unauthorized HTTP GET request on the '/v2/groups/<group_id>' route.
         """
         test_route_auth(self, self.client, 'GET', '/v2/groups/1', AuthVariant.UNAUTHORIZED)
+
+    def test_group_by_id_put_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/groups/<group_id>' route.  This test proves that
+        trying to update a group that doesn't exist results in a 400 error.
+        """
+        response: Response = self.client.put('/v2/groups/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/groups/0')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('group'))
+        self.assertEqual(response_json.get('error'), 'There is no existing group with this id.')
+
+    def test_group_by_id_put_route_forbidden(self) -> None:
+        """
+        Test performing a forbidden HTTP PUT request on the '/v2/groups/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/1', AuthVariant.FORBIDDEN)
+
+    def test_group_by_id_put_route_unauthorized(self) -> None:
+        """
+        Test performing an unauthorized HTTP PUT request on the '/v2/groups/<group_id>' route.
+        """
+        test_route_auth(self, self.client, 'PUT', '/v2/groups/1', AuthVariant.UNAUTHORIZED)
 
     def test_team_by_group_id_get_route_400(self) -> None:
         """

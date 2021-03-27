@@ -86,7 +86,7 @@ def group_by_id(group_id) -> Response:
         return group_by_id_put(group_id)
 
 
-@group_route.route('/team/<group_id>', methods=['GET', 'PUT'])
+@group_route.route('/team/<group_id>', methods=['GET'])
 @auth_required()
 def team_by_group_id(group_id) -> Response:
     """
