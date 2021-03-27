@@ -245,14 +245,75 @@ class TestActivationCodeRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/activation_code/60UN02', AuthVariant.UNAUTHORIZED)
 
+    def test_activation_code_delete_route_400_other_users_code(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that the
+        endpoint should return a 400 error status if the activation code exists, but it belongs to another user.
+        """
+        request_body = json.dumps({'email': 'saintsxctf@jarombek.com', 'group_id': 1})
+        post_response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        self.assertEqual(post_response.status_code, 200)
+
+        response_json: dict = post_response.get_json()
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+
+        response: Response = self.client.delete(
+            f'/v2/activation_code/{activation_code}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            response_json.get('error'),
+            f'User andy is not authorized to delete activation code {activation_code}.'
+        )
+
+    def test_activation_code_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that the
+        endpoint should return a 400 failure status if the activation code does not exist.
+        """
+        response: Response = self.client.delete(
+            f'/v2/activation_code/TESTCD',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(response_json.get('error'), 'there is no existing activation code with this code')
+
     def test_activation_code_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/activation_code/<code>' route.  This test proves that the
-        endpoint should return a 204 success status, no matter if the code existed or not.
+        endpoint should return a 204 success status if the activation code exists.
         """
+        request_body = json.dumps({'email': 'andrew@jarombek.com', 'group_id': 1})
+        post_response = self.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        self.assertEqual(post_response.status_code, 200)
 
-        response: Response = self.client.delete('/v2/activation_code/TESTCD', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = post_response.get_json()
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+
+        response: Response = self.client.delete(
+            f'/v2/activation_code/{activation_code}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
+        self.assertTrue(response_json.get('deleted'))
 
     def test_activation_code_delete_route_forbidden(self) -> None:
         """

@@ -562,21 +562,24 @@ class TestUserRoute(TestSuite):
         response: Response = self.client.post(
             '/v2/users/',
             data=request_body,
-            content_type='application/json',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            content_type='application/json'
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201, msg=f'Error creating user: {response_json.get("error")}')
 
+        asyncio.run(
+            get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id=random_username, client_secret='password')
+        )
+
         response: Response = self.client.delete(
             f'/v2/users/soft/{random_username}',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get(random_username)}"}
         )
         self.assertEqual(response.status_code, 204)
 
         response: Response = self.client.delete(
             f'/v2/users/soft/{random_username}',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get(random_username)}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
@@ -635,7 +638,7 @@ class TestUserRoute(TestSuite):
 
         response: Response = self.client.delete(
             f'/v2/users/soft/{random_username}',
-            headers={'Authorization': f"Bearer {self.jwts.get('andy3')}"}
+            headers={'Authorization': f"Bearer {self.jwts.get(random_username)}"}
         )
         self.assertEqual(response.status_code, 204)
 

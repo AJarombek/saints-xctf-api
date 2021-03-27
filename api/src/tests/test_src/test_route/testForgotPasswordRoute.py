@@ -101,9 +101,9 @@ class TestForgotPasswordRoute(TestSuite):
             '/v2/forgot_password/validate/abc123', headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/validate/abc123')
-        self.assertEqual(response_json.get('is_valid'), False)
+        self.assertFalse(response_json.get('is_valid'))
 
     def test_forgot_password_code_validation_get_route_200_valid(self) -> None:
         """
