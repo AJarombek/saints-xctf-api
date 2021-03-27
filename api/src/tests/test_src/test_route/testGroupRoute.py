@@ -7,10 +7,12 @@ Date: 11/10/2019
 import json
 from datetime import datetime
 
+import asyncio
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant, create_test_user, destroy_test_user, \
+    get_jwt_token
 
 
 class TestGroupRoute(TestSuite):
@@ -562,13 +564,81 @@ class TestGroupRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/groups/members/1/andy', AuthVariant.UNAUTHORIZED)
 
-    def test_group_members_by_group_id_and_username_delete_route_200(self) -> None:
+    def test_group_members_by_group_id_and_username_delete_route_400_not_an_admin(self) -> None:
         """
-        Test performing an HTTP DELETE request on the '/v2/groups/<team_name>/<group_name>' route.  This test proves
-        that the request results in an HTTP 204 response.
+        Test performing an HTTP DELETE request on the '/v2/groups/<group_id>/<username>' route.  This test proves
+        that the request results in an HTTP 400 response if the user making the request is not an admin of the group.
         """
-        response: Response = self.client.delete('/v2/groups/members/7/andy', headers={'Authorization': f'Bearer {self.jwt}'})
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/wmenstf',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        response: Response = self.client.delete(
+            f'/v2/groups/members/{group_id}/andy',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(response_json.get('error'), 'a group does not exist with this id or the group has no members')
+
+    def test_group_members_by_group_id_and_username_delete_route_204(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/groups/members/<group_id>/<username>' route.  This test
+        proves that the request results in an HTTP 204 response.
+        """
+        temporary_username: str = create_test_user(self)
+
+        asyncio.run(
+            get_jwt_token(
+                test_suite=self,
+                auth_url=self.auth_url,
+                client_id=temporary_username,
+                client_secret='password'
+            )
+        )
+
+        request_body = json.dumps({
+            'teams_joined': ['saintsxctf'],
+            'teams_left': [],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_left': []
+        })
+
+        response: Response = self.client.put(
+            f'/v2/users/memberships/{temporary_username}',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f"Bearer {self.jwts.get(temporary_username)}"}
+        )
+        response_json: dict = response.get_json()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json.get('self'), f'/v2/users/memberships/{temporary_username}')
+        self.assertTrue(response_json.get('updated'))
+
+        response: Response = self.client.get(
+            '/v2/groups/saintsxctf/alumni',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response_json.get('group'))
+        group_id = response_json.get('group').get('id')
+
+        response: Response = self.client.delete(
+            f'/v2/groups/members/{group_id}/{temporary_username}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
         self.assertEqual(response.status_code, 204)
+
+        destroy_test_user(self, temporary_username)
 
     def test_group_members_by_group_id_and_username_delete_route_forbidden(self) -> None:
         """

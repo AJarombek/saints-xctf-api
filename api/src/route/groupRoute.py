@@ -265,6 +265,18 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the PUT API request.
     """
+    old_group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
+
+    if old_group_row is None:
+        response = jsonify({
+            'self': f'/v2/groups/{team_name}/{group_name}',
+            'updated': False,
+            'group': None,
+            'error': 'there is no existing group with this name'
+        })
+        response.status_code = 400
+        return response
+
     jwt_claims: dict = get_claims(request)
     jwt_username = jwt_claims.get('sub')
 
@@ -288,18 +300,6 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
             'group': None,
             'error': f'User {jwt_username} is not authorized to update a group with name {group_name} in team '
                      f'{team_name}.'
-        })
-        response.status_code = 400
-        return response
-
-    old_group_row: Optional[RowProxy] = GroupDao.get_group(team_name=team_name, group_name=group_name)
-
-    if old_group_row is None:
-        response = jsonify({
-            'self': f'/v2/groups/{team_name}/{group_name}',
-            'updated': False,
-            'group': None,
-            'error': 'there is no existing group with this name'
         })
         response.status_code = 400
         return response

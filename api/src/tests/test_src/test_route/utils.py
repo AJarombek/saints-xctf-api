@@ -6,6 +6,7 @@ Date: 10/15/2020
 
 import string
 import random
+import json
 from unittest import TestCase, TestSuite
 from enum import Enum
 
@@ -52,7 +53,7 @@ def test_route_auth(case: TestCase, client: FlaskClient, verb: str, endpoint: st
     case.assertEqual(expected_description, response_json.get('error_description'))
 
 
-async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, client_secret: str):
+async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, client_secret: str) -> None:
     """
     Using an authentication URL, retrieve a JWT for a user to use in tests.
     :param test_suite: The test suite which needs the JWT.
@@ -70,5 +71,70 @@ async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, cl
 
 
 def random_code() -> str:
+    """
+    Create a random 12 digit code made up of latin characters and digits.
+    :return: The 12 digit random code.
+    """
     chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
     return ''.join(random.choices(chars, k=12))
+
+
+def create_test_user(case: TestCase) -> str:
+    """
+    Create a user which can be used for tests.
+    :param case: Unittest test case from which to make assertions and access variables.
+    :return: The username of the test user.
+    """
+    request_body = json.dumps({'email': 'andrew@jarombek.com', 'group_id': 1})
+    response: Response = case.client.post(
+        '/v2/activation_code/',
+        data=request_body,
+        content_type='application/json',
+        headers={'Authorization': f'Bearer {case.jwt}'}
+    )
+
+    response_json: dict = response.get_json()
+    case.assertEqual(response.status_code, 200)
+    case.assertEqual(response_json.get('self'), '/v2/activation_code')
+    case.assertEqual(response_json.get('added'), True)
+
+    activation_code_json = response_json.get('activation_code')
+    activation_code = activation_code_json.get('activation_code')
+    case.assertEqual(6, len(activation_code_json.get('activation_code')))
+    case.assertEqual(1, activation_code_json.get('group_id'))
+    case.assertEqual('andrew@jarombek.com', activation_code_json.get('email'))
+    case.assertIn('expiration_date', activation_code_json)
+
+    random_username = f'andy{random_code()}'
+    request_body = json.dumps({
+        "username": random_username,
+        "email": "andrew@jarombek.com",
+        "first": "Andrew",
+        "last": "Jarombek",
+        "password": "password",
+        "activation_code": activation_code
+    })
+
+    response: Response = case.client.post(
+        '/v2/users/',
+        data=request_body,
+        content_type='application/json',
+        headers={'Authorization': f'Bearer {case.jwt}'}
+    )
+    response_json: dict = response.get_json()
+    case.assertEqual(response.status_code, 201, msg=f'Error creating user: {response_json.get("error")}')
+
+    return random_username
+
+
+def destroy_test_user(case: TestCase, username: str) -> None:
+    """
+    Destroy the temporary user which was used for tests.
+    :param case: Unittest test case from which to make assertions and access variables.
+    :param username: Username for the temporary user to delete.
+    """
+    response: Response = case.client.delete(
+        f'/v2/users/soft/{username}',
+        headers={'Authorization': f'Bearer {case.jwt}'}
+    )
+    case.assertEqual(response.status_code, 204)
