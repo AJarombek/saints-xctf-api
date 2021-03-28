@@ -72,6 +72,33 @@ class TestFlairRoute(TestSuite):
             "'username' and 'flair' are required fields"
         )
 
+    def test_flair_post_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/flair/' route.  This test proves that calling
+        this endpoint with a valid request JSON results in a 400 error code if a user is trying to create a flair for
+        another user.
+        """
+        request_body = json.dumps({
+            "username": "andy2",
+            "flair": "Website Creator"
+        })
+
+        response: Response = self.client.post(
+            '/v2/flair/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/flair')
+        self.assertFalse(response_json.get('added'))
+        self.assertIsNone(response_json.get('flair'))
+        self.assertEqual(
+            response_json.get('error'),
+            "User andy is not authorized to create a flair for user andy2."
+        )
+
     def test_flair_post_route_201(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/flair/' route.  This test proves that calling

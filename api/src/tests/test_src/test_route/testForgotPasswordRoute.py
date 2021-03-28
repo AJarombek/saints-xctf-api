@@ -54,7 +54,7 @@ class TestForgotPasswordRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'GET', '/v2/forgot_password/andy', AuthVariant.UNAUTHORIZED)
 
-    def test_forgot_password_post_route_400(self) -> None:
+    def test_forgot_password_post_route_400_invalid_user(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/forgot_password/<username>' route.  This test proves that
         calling this endpoint with a invalid username results in a 400 error code.
@@ -63,7 +63,7 @@ class TestForgotPasswordRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), '/v2/forgot_password/fake_user')
-        self.assertFalse(response_json.get('inserted'))
+        self.assertFalse(response_json.get('created'))
         self.assertEquals(response_json.get('error'), 'There is no user associated with this username/email.')
 
     def test_forgot_password_post_route_201(self) -> None:
