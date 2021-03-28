@@ -341,7 +341,7 @@ def comment_with_id_delete(comment_id):
             f'User {jwt_username} is not authorized to delete a comment with id {existing_comment.comment_id}.'
         )
         response = jsonify({
-            'self': f'/v2/comments',
+            'self': f'/v2/comments/{comment_id}',
             'deleted': False,
             'error': f'User {jwt_username} is not authorized to delete a comment with id {existing_comment.comment_id}.'
         })
@@ -396,7 +396,7 @@ def comment_with_id_soft_delete(comment_id):
             f'User {jwt_username} is not authorized to soft delete a comment with id {existing_comment.comment_id}.'
         )
         response = jsonify({
-            'self': f'/v2/comments',
+            'self': f'/v2/comments/{comment_id}',
             'deleted': False,
             'error': f'User {jwt_username} is not authorized to soft delete a comment with id '
                      f'{existing_comment.comment_id}.'

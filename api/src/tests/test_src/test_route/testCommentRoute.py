@@ -118,6 +118,37 @@ class TestCommentRoute(TestSuite):
             "'username', 'first', 'last', 'log_id', and 'time' are required fields"
         )
 
+    def test_comment_post_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP POST request on the '/v2/comments/' route.  This test proves that calling
+        this endpoint with a valid request JSON results in a 400 success code if a user is attempting to create a
+        comment for another user.
+        """
+        request_body = json.dumps({
+            "username": "andy2",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": "2021-03-27 12:00:00",
+            "content": "Hi"
+        })
+
+        response: Response = self.client.post(
+            '/v2/comments/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/comments')
+        self.assertFalse(response_json.get('added'))
+        self.assertIsNone(response_json.get('comment'))
+        self.assertEqual(
+            response_json.get('error'),
+            "User andy is not authorized to create a comment for user andy2."
+        )
+
     def test_comment_post_route_200(self) -> None:
         """
         Test performing an HTTP POST request on the '/v2/comments/' route.  This test proves that calling
@@ -234,6 +265,38 @@ class TestCommentRoute(TestSuite):
             'the comment submitted is equal to the existing comment with the same id'
         )
 
+    def test_comment_with_id_put_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that if a valid
+        comment JSON is passed to this endpoint, a 400 error response code will be returned if a user is attempting to
+        edit another users comment.
+        """
+        request_body = json.dumps({
+            "comment_id": 12,
+            "username": "Fish",
+            "first": "Benjamin",
+            "last": "Fishbein",
+            "log_id": 11,
+            "time": "2016-12-26 09:50:49",
+            "content": f"Keep up the good work!! (Edited {datetime.now()})"
+        })
+
+        response: Response = self.client.put(
+            '/v2/comments/12',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/comments/12')
+        self.assertFalse(response_json.get('updated'))
+        self.assertIsNone(response_json.get('comment'))
+        self.assertEqual(
+            response_json.get('error'),
+            'User andy is not authorized to update a comment with id 12.'
+        )
+
     def test_comment_with_id_put_route_200(self) -> None:
         """
         Test performing an HTTP PUT request on the '/v2/comments/<comment_id>' route.  This test proves that if a valid
@@ -275,13 +338,71 @@ class TestCommentRoute(TestSuite):
         """
         test_route_auth(self, self.client, 'PUT', '/v2/comments/1', AuthVariant.UNAUTHORIZED)
 
+    def test_comment_with_id_delete_route_400_no_existing(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
+        endpoint should return a 400 error status if the comment does not exist.
+        """
+        response: Response = self.client.delete('/v2/comments/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/comments/0')
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            response_json.get('error'),
+            'there is no existing comment with this id'
+        )
+
+    def test_comment_with_id_delete_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
+        endpoint should return a 400 error status, no matter if the code existed or not.
+        """
+        response: Response = self.client.delete('/v2/comments/12', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/comments/12')
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            response_json.get('error'),
+            'User andy is not authorized to delete a comment with id 12.'
+        )
+
     def test_comment_with_id_delete_route_204(self) -> None:
         """
         Test performing an HTTP DELETE request on the '/v2/comments/<comment_id>' route.  This test proves that the
         endpoint should return a 204 success status, no matter if the code existed or not.
         """
-        response: Response = self.client.delete('/v2/comments/0', headers={'Authorization': f'Bearer {self.jwt}'})
+        request_body = json.dumps({
+            "username": "andy",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": "2021-03-27 12:00:00",
+            "content": "I hope you are having a nice weekend."
+        })
+
+        response: Response = self.client.post(
+            '/v2/comments/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get('self'), '/v2/comments')
+        self.assertEqual(response_json.get('added'), True)
+        self.assertIsNotNone(response_json.get('comment'))
+        comment_id = response_json.get('comment').get('comment_id')
+
+        response: Response = self.client.delete(
+            f'/v2/comments/{comment_id}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
+        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
+        self.assertEqual(response_json.get('self'), f'/v2/comments/{comment_id}')
+        self.assertTrue(response_json.get('deleted'))
 
     def test_comment_with_id_delete_route_forbidden(self) -> None:
         """
@@ -369,10 +490,28 @@ class TestCommentRoute(TestSuite):
         response = self.client.delete(f'/v2/comments/soft/{comment_id}', headers={'Authorization': f'Bearer {self.jwt}'})
         self.assertEqual(response.status_code, 204)
 
-        response: Response = self.client.delete(f'/v2/comments/soft/{comment_id}', headers={'Authorization': f'Bearer {self.jwt}'})
+        response: Response = self.client.delete(
+            f'/v2/comments/soft/{comment_id}',
+            headers={'Authorization': f'Bearer {self.jwt}'}
+        )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get('deleted'))
+
+    def test_comment_with_id_soft_delete_route_400_other_user(self) -> None:
+        """
+        Test performing an HTTP DELETE request on the '/v2/comments/soft/<comment_id>' route.  This test proves that the
+        endpoint should return a 400 error status, no matter if the code existed or not.
+        """
+        response: Response = self.client.delete('/v2/comments/soft/12', headers={'Authorization': f'Bearer {self.jwt}'})
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json.get('self'), '/v2/comments/soft/12')
+        self.assertFalse(response_json.get('deleted'))
+        self.assertEqual(
+            response_json.get('error'),
+            'User andy is not authorized to soft delete a comment with id 12.'
+        )
 
     def test_comment_with_id_soft_delete_route_forbidden(self) -> None:
         """
