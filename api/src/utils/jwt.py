@@ -17,5 +17,5 @@ def get_claims(request: Request) -> dict:
     """
     authorization_header: str = request.headers.get('Authorization')
     token = authorization_header.replace('Bearer ', '')
-    jwt_claims = base64.b64decode(token.split(".")[1])
+    jwt_claims = base64.b64decode(token.split(".")[1] + '==')
     return json.loads(jwt_claims)

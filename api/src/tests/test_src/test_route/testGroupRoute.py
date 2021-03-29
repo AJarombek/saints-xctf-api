@@ -506,7 +506,7 @@ class TestGroupRoute(TestSuite):
         # You know I'm always here for you no matter what.  Will always give you my best if you ask for it.
         request_body = json.dumps({
             "status": "accepted",
-            "user": "user"
+            "user": "admin"
         })
         response: Response = self.client.put(
             f'/v2/groups/members/{group_id}/andy',
@@ -525,7 +525,7 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(1, group_member.get('group_id'))
         self.assertEqual('alumni', group_member.get('group_name'))
         self.assertEqual('accepted', group_member.get('status'))
-        self.assertEqual('user', group_member.get('user'))
+        self.assertEqual('admin', group_member.get('user'))
         self.assertEqual('andy', group_member.get('username'))
 
         request_body = json.dumps({
@@ -586,7 +586,10 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
         self.assertFalse(response_json.get('deleted'))
-        self.assertEqual(response_json.get('error'), 'a group does not exist with this id or the group has no members')
+        self.assertEqual(
+            response_json.get('error'),
+            f'User andy is not authorized to delete the group membership for user andy in group with id {group_id}.'
+        )
 
     def test_group_members_by_group_id_and_username_delete_route_204(self) -> None:
         """

@@ -1,0 +1,17 @@
+# Docker Compose configuration for the mocked SaintsXCTF Functions API.
+# Author: Andrew Jarombek
+# Date: 3/28/2021
+
+version: '3.7'
+services:
+  saints-xctf-fn:
+    domainname: saints-xctf-fn
+    image: ajarombek/mock-saints-xctf-functions:latest
+    ports:
+      - 5002:5000
+    networks:
+      - local-saints-xctf-api-net
+
+networks:
+  local-saints-xctf-api-net:
+    driver: bridge

@@ -135,6 +135,6 @@ def destroy_test_user(case: TestCase, username: str) -> None:
     """
     response: Response = case.client.delete(
         f'/v2/users/soft/{username}',
-        headers={'Authorization': f'Bearer {case.jwt}'}
+        headers={'Authorization': f'Bearer {case.jwts.get(username)}'}
     )
     case.assertEqual(response.status_code, 204)

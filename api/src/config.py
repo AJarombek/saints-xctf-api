@@ -14,7 +14,7 @@ class LocalConfig:
 class LocalTestConfig:
     ENV = 'localtest'
     AUTH_URL = 'http://saints-xctf-auth:5000'
-    FUNCTION_URL = 'https://dev.fn.saintsxctf.com'
+    FUNCTION_URL = 'http://saints-xctf-fn:5000'
 
 
 class TestConfig:

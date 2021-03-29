@@ -583,7 +583,7 @@ class TestUserRoute(TestSuite):
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual('this user is already soft deleted', response_json.get('error'))
+        self.assertEqual('there is no existing user with this username', response_json.get('error'))
 
     def test_user_by_username_soft_delete_route_204(self) -> None:
         """
@@ -903,7 +903,7 @@ class TestUserRoute(TestSuite):
             'teams_joined': [],
             'teams_left': [],
             'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'mensxc'}],
-            'groups_left': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}]
+            'groups_left': []
         })
 
         response: Response = self.client.put(
@@ -921,7 +921,7 @@ class TestUserRoute(TestSuite):
         request_body = json.dumps({
             'teams_joined': [],
             'teams_left': [],
-            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'menstf'}],
             'groups_left': [{'team_name': 'saintsxctf', 'group_name': 'mensxc'}]
         })
 
@@ -964,7 +964,7 @@ class TestUserRoute(TestSuite):
         request_body = json.dumps({
             'teams_joined': ['saintsxctf'],
             'teams_left': ['xc_alumni'],
-            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'alumni'}],
+            'groups_joined': [{'team_name': 'saintsxctf', 'group_name': 'mensxc'}],
             'groups_left': []
         })
 

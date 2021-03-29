@@ -574,15 +574,6 @@ def user_by_username_soft_delete(username) -> Response:
         response.status_code = 400
         return response
 
-    if existing_user.deleted:
-        response = jsonify({
-            'self': f'/v2/users/soft/{username}',
-            'deleted': False,
-            'error': 'this user is already soft deleted'
-        })
-        response.status_code = 400
-        return response
-
     # Update the user model to reflect the soft delete
     existing_user.deleted = True
     existing_user.deleted_date = datetime.now()

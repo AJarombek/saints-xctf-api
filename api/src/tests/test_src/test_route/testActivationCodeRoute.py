@@ -269,7 +269,7 @@ class TestActivationCodeRoute(TestSuite):
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get('self'), f'/v2/activation_code/soft/{activation_code}')
+        self.assertEqual(response_json.get('self'), f'/v2/activation_code/{activation_code}')
         self.assertFalse(response_json.get('deleted'))
         self.assertEqual(
             response_json.get('error'),
@@ -401,7 +401,7 @@ class TestActivationCodeRoute(TestSuite):
         self.assertFalse(response_json.get('deleted'))
         self.assertEqual(
             response_json.get('error'),
-            f'User andy is not authorized to delete activation code {activation_code}.'
+            f'User andy is not authorized to soft delete activation code {activation_code}.'
         )
 
     def test_activation_code_soft_delete_route_400_already_deleted(self) -> None:
