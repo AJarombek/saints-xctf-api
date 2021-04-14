@@ -14,6 +14,7 @@ from flask import current_app
 from database import db
 from dao.basicDao import BasicDao
 from model.TeamMember import TeamMember
+from model.GroupMember import GroupMember
 
 
 class TeamMemberDao:
@@ -78,6 +79,45 @@ class TeamMemberDao:
             ''',
             {'team_name': team_name}
         )
+
+    @staticmethod
+    def set_initial_membership(username: str, team_name: str, group_id: int, group_name: str) -> bool:
+        """
+        Set the team and group memberships for a new user when they join SaintsXCTF.
+        :param username: Unique identifier for the new user.
+        :param team_name: Unique name of a team.
+        :param group_id: Unique id of a group.
+        :param group_name: Unique name of a group within a team.
+        :return: Whether or not the team and group memberships were successfully created.
+        """
+        team_membership = TeamMember({
+            'team_name': team_name,
+            'username': username,
+            'status': 'accepted',
+            'user': 'user',
+            'deleted': False,
+            'created_date': datetime.now(),
+            'created_user': username,
+            'created_app': 'saints-xctf-api'
+        })
+
+        db.session.add(team_membership)
+
+        group_membership = GroupMember({
+            'group_name': group_name,
+            'group_id': group_id,
+            'username': username,
+            'status': 'accepted',
+            'user': 'user',
+            'deleted': False,
+            'created_date': datetime.now(),
+            'created_user': username,
+            'created_app': 'saints-xctf-api'
+        })
+
+        db.session.add(group_membership)
+
+        return BasicDao.safe_commit()
 
     @staticmethod
     def accept_user_team_membership(username: str, team_name: str, updating_username: str) -> bool:

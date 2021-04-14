@@ -1,5 +1,6 @@
 """
 User routes in the SaintsXCTF API.  Used for retrieving and updating application users.
+So much love for you here <3
 Author: Andrew Jarombek
 Date: 6/16/2019
 """
@@ -24,13 +25,17 @@ from dao.flairDao import FlairDao
 from dao.notificationDao import NotificationDao
 from dao.logDao import LogDao
 from dao.teamMemberDao import TeamMemberDao
+from dao.codeDao import CodeDao
+from dao.activationCodeDao import ActivationCodeDao
+from dao.teamDao import TeamDao
 from model.Code import Code
 from model.FlairData import FlairData
 from model.Flair import Flair
 from model.User import User
 from model.UserData import UserData
 from model.ForgotPassword import ForgotPassword
-from dao.codeDao import CodeDao
+from model.Team import Team
+from model.Group import Group
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
@@ -357,10 +362,24 @@ def user_post() -> Response:
         user_to_add.deleted_user = None
         user_to_add.deleted = False
 
-        # First add the user since its activation code is valid
+        # First, add the user since its activation code is valid.
         UserDao.add_user(user_to_add)
-        # Second remove the activation code so it cant be used again
-        code = Code({'activation_code': user_to_add.activation_code})
+
+        # Second, set the initial team and group for the user.
+        code: Code = ActivationCodeDao.get_activation_code(user_to_add.activation_code)
+
+        initial_group_id = int(code.group_id)
+        initial_group: Group = GroupDao.get_group_by_id(initial_group_id)
+        initial_team: Team = TeamDao.get_team_by_group_id(initial_group_id)
+
+        TeamMemberDao.set_initial_membership(
+            username=user_to_add.username,
+            team_name=initial_team.name,
+            group_id=initial_group_id,
+            group_name=initial_group.group_name
+        )
+
+        # Third, remove the activation code so it cant be used again.
         CodeDao.remove_code(code)
 
         added_user = UserDao.get_user_by_username(user_to_add.username)
