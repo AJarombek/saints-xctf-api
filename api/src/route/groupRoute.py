@@ -21,6 +21,7 @@ from model.Team import Team
 from model.TeamData import TeamData
 from dao.groupDao import GroupDao
 from dao.groupMemberDao import GroupMemberDao
+from dao.teamMemberDao import TeamMemberDao
 from dao.logDao import LogDao
 from dao.teamDao import TeamDao
 
@@ -600,6 +601,18 @@ def group_members_by_group_id_and_username_put(group_id: str, username: str) -> 
     is_updated = GroupMemberDao.update_group_member(int(group_id), username, status, user)
 
     if is_updated:
+        team: Team = TeamDao.get_team_by_group_id(int(group_id))
+        team_membership: ResultProxy = TeamMemberDao.get_user_team_membership(username=username, team_name=team.name)
+
+        if team_membership.rowcount > 0:
+            for membership in team_membership:
+                if membership.user != 'accepted':
+                    TeamMemberDao.accept_user_team_membership(
+                        username=username,
+                        team_name=team.name,
+                        updating_username=jwt_username
+                    )
+
         updated_group_member = GroupMemberDao.get_group_member(int(group_id), username)
         updated_group_member_dict: dict = GroupMemberData(updated_group_member).__dict__
 
@@ -655,6 +668,19 @@ def group_members_by_group_id_and_username_delete(group_id: str, username: str) 
     membership_deleted = GroupMemberDao.soft_delete_group_member(int(group_id), username)
 
     if membership_deleted:
+        team: Team = TeamDao.get_team_by_group_id(int(group_id))
+        user_groups: ResultProxy = GroupMemberDao.get_user_groups_in_team(username, team.name)
+
+        # If the user has no more group memberships in this team, remove them from the team.
+        if user_groups.rowcount == 0:
+            TeamMemberDao.update_user_memberships(
+                username=username,
+                teams_joined=[],
+                teams_left=[team.name],
+                groups_joined=[],
+                groups_left=[]
+            )
+
         response = jsonify({
             'self': f'/v2/groups/members/{group_id}/{username}',
             'deleted': True,

@@ -38,6 +38,27 @@ class TeamMemberDao:
         )
 
     @staticmethod
+    def get_user_team_membership(username: str, team_name: str) -> ResultProxy:
+        """
+        Get information about a specific team that a user is a member of.
+        :param username: Unique identifier for the user.
+        :param team_name: Unique name of a team.
+        :return: Details about a team membership.
+        """
+        return db.session.execute(
+            '''
+            SELECT team_name,title,status,user 
+            FROM teammembers 
+            INNER JOIN teams ON teams.name=teammembers.team_name 
+            WHERE username=:username
+            AND teams.name=:team_name
+            AND teammembers.deleted IS FALSE
+            AND teams.deleted IS FALSE
+            ''',
+            {'username': username, 'team_name': team_name}
+        )
+
+    @staticmethod
     def get_team_members(team_name: str) -> ResultProxy:
         """
         Get the users who are members of a team.
@@ -57,6 +78,30 @@ class TeamMemberDao:
             ''',
             {'team_name': team_name}
         )
+
+    @staticmethod
+    def accept_user_team_membership(username: str, team_name: str, updating_username: str) -> bool:
+        """
+        Change the status of a users team membership to 'accepted'.
+        :param username: Unique identifier for the user who team membership is getting updated.
+        :param team_name: Unique name of a team.
+        :param updating_username: Unique identifier for the user who is updating a team membership.
+        :return: Whether or not the team membership was successfully updated.
+        """
+        db.session.execute(
+            '''
+            UPDATE teammembers SET 
+                status = 'accepted',
+                modified_date=CURRENT_TIMESTAMP(),
+                modified_user=:updating_username,
+                modified_app='saints-xctf-api'
+            WHERE username=:username
+            AND team_name=:team_name
+            AND deleted IS FALSE
+            ''',
+            {'username': username, 'team_name': team_name, 'updating_username': updating_username}
+        )
+        return BasicDao.safe_commit()
 
     @staticmethod
     def update_user_memberships(username: str, teams_joined: List[str], teams_left: List[str],

@@ -53,11 +53,11 @@ def links() -> Response:
         'group': '/v2/groups/links',
         'log_feed': '/v2/log_feed/links',
         'log': '/v2/logs/links',
-        'mail': '/v2/mail/links',
         'message_feed': '/v2/message_feed/links',
         'message': '/v2/messages/links',
         'notification': '/v2/notifications/links',
         'range_view': '/v2/range_view/links',
+        'team': '/v2/teams/links',
         'user': '/v2/users/links'
     })
 
