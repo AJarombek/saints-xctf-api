@@ -386,21 +386,32 @@ class LogDao:
             return result.first()
 
     @staticmethod
-    def get_log_feed(limit: int, offset: int) -> ResultProxy:
+    def get_log_feed(limit: int, offset: int, username: str) -> ResultProxy:
         """
-        Retrieve a collection of logs
+        Retrieve a collection of logs.  The logs returned depend upon which teams the user making the
+        request is a member of.
         :param limit: The maximum number of logs to return
         :param offset: The number of logs to skip before returning
+        :param username: Unique identifier of the user making the log feed request
         :return: A list of logs
         """
         return db.session.execute(
             '''
-            SELECT * FROM logs 
-            WHERE deleted IS FALSE
-            ORDER BY date DESC, log_id DESC
+            SELECT DISTINCT logs.* FROM logs
+            INNER JOIN teammembers
+            ON logs.username = teammembers.username
+            WHERE teammembers.deleted IS FALSE
+            AND logs.deleted IS FALSE
+            AND teammembers.team_name IN (
+                SELECT team_name FROM teammembers
+                WHERE username = :username
+                AND status = 'accepted'
+                AND deleted IS FALSE
+            )
+            ORDER BY logs.date DESC, log_id DESC
             LIMIT :limit OFFSET :offset
             ''',
-            {'limit': limit, 'offset': offset}
+            {'limit': limit, 'offset': offset, 'username': username}
         )
 
     @staticmethod

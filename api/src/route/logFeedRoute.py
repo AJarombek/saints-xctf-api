@@ -11,6 +11,7 @@ from decorators import auth_required
 from model.CommentData import CommentData
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
+from utils.jwt import get_claims
 
 log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/log_feed')
 
@@ -58,6 +59,9 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
     limit = int(limit)
     offset = int(offset)
 
+    jwt_claims: dict = get_claims(request)
+    jwt_username = jwt_claims.get('sub')
+
     if filter_by == 'group' or filter_by == 'groups':
         logs = LogDao.get_group_log_feed(group_id=int(bucket), limit=limit, offset=offset)
         count = LogDao.get_group_log_feed_count(group_id=int(bucket)).first()['count']
@@ -65,7 +69,7 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
         logs = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
         count = LogDao.get_user_log_feed_count(username=bucket).first()['count']
     elif filter_by == 'all':
-        logs = LogDao.get_log_feed(limit=limit, offset=offset)
+        logs = LogDao.get_log_feed(limit=limit, offset=offset, username=jwt_username)
         count = LogDao.get_log_feed_count().first()['count']
 
     pages = int((count - 1) / limit) + 1
