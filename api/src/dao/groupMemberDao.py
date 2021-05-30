@@ -56,7 +56,7 @@ class GroupMemberDao:
         """
         return db.session.execute(
             '''
-            SELECT groupmembers.group_name,group_title,status,user 
+            SELECT `groups`.id, groupmembers.group_name, group_title, status, user
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             WHERE username=:username

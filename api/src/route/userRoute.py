@@ -661,6 +661,7 @@ def user_snapshot_by_username_get(username) -> Response:
 
         for group in groups:
             group_dict = {
+                'id': group['id'],
                 'group_name': group['group_name'],
                 'group_title': group['group_title'],
                 'status': group['status'],
@@ -734,6 +735,7 @@ def user_groups_by_username_get(username) -> Response:
 
     for group in groups:
         group_list.append({
+            'id': group['id'],
             'group_name': group['group_name'],
             'group_title': group['group_title'],
             'status': group['status'],
@@ -927,7 +929,7 @@ def user_statistics_by_username_get(username) -> Response:
     if user is None:
         response = jsonify({
             'self': f'/v2/users/statistics/{username}',
-            'user': None,
+            'stats': None,
             'error': 'there is no user with this username'
         })
         response.status_code = 400

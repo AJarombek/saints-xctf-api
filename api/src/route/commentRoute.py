@@ -161,17 +161,17 @@ def comment_post():
         response.status_code = 400
         return response
 
-    if None in [comment_to_add.username, comment_to_add.first, comment_to_add.last,
-                comment_to_add.log_id, comment_to_add.time]:
+    if None in [comment_to_add.username, comment_to_add.first, comment_to_add.last, comment_to_add.log_id]:
         response = jsonify({
             'self': f'/v2/comments',
             'added': False,
             'comment': None,
-            'error': "'username', 'first', 'last', 'log_id', and 'time' are required fields"
+            'error': "'username', 'first', 'last', and 'log_id' are required fields"
         })
         response.status_code = 400
         return response
 
+    comment_to_add.time = datetime.now()
     comment_to_add.created_date = datetime.now()
     comment_to_add.created_app = 'saints-xctf-api'
     comment_to_add.created_user = None
