@@ -10,6 +10,7 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import get_debug_queries, current_app
 from database import db
 from flaskBcrypt import flask_bcrypt
+from flasgger import Swagger
 
 from commands import test
 from config import config
@@ -154,6 +155,8 @@ def create_app(config_name) -> Flask:
 
 flask_env = os.getenv('FLASK_ENV') or 'local'
 app = create_app(flask_env)
+
+swagger = Swagger(app)
 
 
 @app.after_request

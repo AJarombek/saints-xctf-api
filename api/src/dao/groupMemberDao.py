@@ -7,7 +7,7 @@ Date: 7/2/2019
 
 from datetime import datetime
 
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy import and_, or_
 
 from database import db

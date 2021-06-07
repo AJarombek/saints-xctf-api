@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import asyncio
 
 from flask import Blueprint, request, jsonify, Response, current_app, abort
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 import aiohttp
 
 from decorators import auth_required

@@ -6,7 +6,7 @@ Date: 7/3/2019
 """
 
 from database import db
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from dao.basicDao import BasicDao
 from model.Notification import Notification
 

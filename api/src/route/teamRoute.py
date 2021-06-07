@@ -7,7 +7,7 @@ Date: 11/29/2020
 from typing import List
 
 from flask import Blueprint, Response, request, redirect, url_for, jsonify
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 
 from decorators import auth_required
 from dao.teamDao import TeamDao

@@ -5,7 +5,7 @@ Author: Andrew Jarombek
 Date: 11/29/2020
 """
 
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from database import db
 
 

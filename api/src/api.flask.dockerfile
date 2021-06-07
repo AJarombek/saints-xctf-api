@@ -9,7 +9,9 @@ LABEL maintainer="andrew@jarombek.com" \
       description="Dockerfile for the Flask SaintsXCTF API in Production"
 
 RUN apt-get update \
-    && pip install pipenv \
+    && apt-get install g++
+
+RUN pip install pipenv \
     && pip install uwsgi
 
 RUN mkdir /src

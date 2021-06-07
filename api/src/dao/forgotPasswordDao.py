@@ -7,7 +7,7 @@ Date: 7/3/2019
 
 from datetime import datetime
 
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 
 from database import db
 from dao.basicDao import BasicDao

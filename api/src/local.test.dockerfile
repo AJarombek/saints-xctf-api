@@ -9,7 +9,7 @@ LABEL maintainer="andrew@jarombek.com" \
       description="Dockerfile for the SaintsXCTF API that runs unit tests"
 
 RUN apk update \
-    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
+    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev g++ \
     && pip install --upgrade pip \
     && pip install pipenv
 

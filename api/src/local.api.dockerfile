@@ -11,7 +11,7 @@ LABEL maintainer="andrew@jarombek.com" \
 # Install Python dependencies along with MySQL.  On my local environment, MySQL is run in a Docker container.
 # Before I start the API, I wan't to populate MySQL with data from a production backup.
 RUN apk update \
-    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev \
+    && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev g++ \
     && pip install --upgrade pip \
     && pip install pipenv \
     && apk add --update mysql mysql-client

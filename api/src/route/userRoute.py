@@ -11,7 +11,7 @@ from typing import List
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
 from sqlalchemy.schema import Column
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
 

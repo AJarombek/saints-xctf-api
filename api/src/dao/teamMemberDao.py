@@ -8,7 +8,7 @@ Date: 11/29/2020
 from typing import List, Dict
 from datetime import datetime
 
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from flask import current_app
 
 from database import db

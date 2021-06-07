@@ -5,7 +5,7 @@ Date: 7/18/2019
 """
 
 from dao.basicDao import BasicDao
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from database import db
 from model.Message import Message
 

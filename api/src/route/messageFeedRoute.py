@@ -5,7 +5,7 @@ Date: 7/27/2019
 """
 
 from flask import Blueprint, request, jsonify, Response
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 
 from decorators import auth_required
 from dao.messageDao import MessageDao

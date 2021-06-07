@@ -7,7 +7,8 @@ Date: 7/2/2019
 
 from typing import Optional, Literal
 
-from sqlalchemy.engine import ResultProxy, RowProxy
+from sqlalchemy.engine.cursor import ResultProxy
+from sqlalchemy.engine.row import RowProxy
 from sqlalchemy.schema import Column
 
 from database import db

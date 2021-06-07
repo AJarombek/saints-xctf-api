@@ -8,7 +8,8 @@ from datetime import datetime
 from typing import Optional
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
-from sqlalchemy.engine import ResultProxy, RowProxy
+from sqlalchemy.engine.cursor import ResultProxy
+from sqlalchemy.engine.row import RowProxy
 from sqlalchemy.schema import Column
 
 from decorators import auth_required

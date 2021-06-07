@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
-from sqlalchemy.engine import ResultProxy
+from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.schema import Column
 
 import utils.dates as dates
