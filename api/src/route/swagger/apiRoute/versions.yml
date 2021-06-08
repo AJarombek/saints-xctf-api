@@ -1,0 +1,7 @@
+List all the versions of the SaintsXCTF API.
+---
+produces:
+  - application/json
+responses:
+  200:
+    description: Retrieve SaintsXCTF API version endpoints.

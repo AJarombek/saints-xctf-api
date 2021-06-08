@@ -1,0 +1,7 @@
+Entrypoint route to the SaintsXCTF API.
+---
+produces:
+  - application/json
+responses:
+  200:
+    description: An entrypoint to the SaintsXCTF API.

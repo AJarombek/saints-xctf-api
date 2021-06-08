@@ -5,11 +5,13 @@ Date: 6/21/2019
 """
 
 from flask import Blueprint, jsonify, Response, abort
+from flasgger import swag_from
 
 api_route = Blueprint('api_route', __name__, url_prefix='/')
 
 
 @api_route.route('/', methods=['GET'])
+@swag_from('swagger/apiRoute/api.yml')
 def api() -> Response:
     """
     Entry point for the SaintsXCTF API
@@ -23,6 +25,7 @@ def api() -> Response:
 
 
 @api_route.route('/versions', methods=['GET'])
+@swag_from('swagger/apiRoute/versions.yml')
 def versions() -> Response:
     return jsonify({
         'self': '/versions',
