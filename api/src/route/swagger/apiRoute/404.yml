@@ -1,0 +1,9 @@
+Display a generic 404 error.  This endpoint is a template for other 404 errors in the API.
+---
+produces:
+  - application/json
+tags:
+  - Error
+responses:
+  404:
+    description: A generic 404 error response from the SaintsXCTF API.

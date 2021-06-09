@@ -2,6 +2,8 @@ Entrypoint route to the SaintsXCTF API.
 ---
 produces:
   - application/json
+tags:
+  - Metadata
 responses:
   200:
     description: An entrypoint to the SaintsXCTF API.

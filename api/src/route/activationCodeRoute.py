@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
 from sqlalchemy.schema import Column
+from flasgger import swag_from
 
 from decorators import auth_required
 from utils.jwt import get_claims
@@ -34,6 +35,7 @@ def activation_code_redirect() -> Response:
 
 @activation_code_route.route('/', methods=['POST'])
 @auth_required()
+@swag_from('swagger/activationCodeRoute/activationCodePost.yml')
 def activation_code() -> Response:
     """
     Endpoint for creating new activation codes.

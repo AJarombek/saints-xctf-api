@@ -36,6 +36,7 @@ def versions() -> Response:
 
 
 @api_route.route('/v2', methods=['GET'])
+@swag_from('swagger/apiRoute/v2.yml')
 def version2() -> Response:
     return jsonify({
         'self': '/v2',
@@ -46,6 +47,7 @@ def version2() -> Response:
 
 
 @api_route.route('/v2/links', methods=['GET'])
+@swag_from('swagger/apiRoute/v2Links.yml')
 def links() -> Response:
     return jsonify({
         'self': '/v2/links',
@@ -66,6 +68,7 @@ def links() -> Response:
 
 
 @api_route.route('/404', methods=['GET'])
+@swag_from('swagger/apiRoute/404.yml')
 def error404() -> Response:
     """
     Route for testing the logic of 404 HTTP errors.
@@ -75,6 +78,7 @@ def error404() -> Response:
 
 
 @api_route.route('/500', methods=['GET'])
+@swag_from('swagger/apiRoute/500.yml')
 def error500() -> Response:
     """
     Route for testing the logic of 500 HTTP errors.
