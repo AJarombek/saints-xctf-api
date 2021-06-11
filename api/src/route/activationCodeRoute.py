@@ -48,6 +48,8 @@ def activation_code() -> Response:
 
 @activation_code_route.route('/<code>', methods=['GET', 'DELETE'])
 @auth_required()
+@swag_from('swagger/activationCodeRoute/activationCodeGet.yml', methods=['GET'])
+@swag_from('swagger/activationCodeRoute/activationCodeDelete.yml', methods=['DELETE'])
 def activation_code_by_code(code) -> Response:
     """
     Endpoints for retrieving a single activation codes and deleting codes.
@@ -65,6 +67,7 @@ def activation_code_by_code(code) -> Response:
 
 @activation_code_route.route('/exists/<code>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/activationCodeRoute/activationCodeExistsGet.yml')
 def activation_code_exists_by_code(code) -> Response:
     """
     Endpoints determining if an activation code exists.

@@ -1,0 +1,20 @@
+Route to delete an activation code.
+---
+produces:
+  - application/json
+tags:
+  - Activation Code
+security:
+  - bearerAuth: []
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Unique identifier for an existing activation code.
+responses:
+  204:
+    description: Successfully deleted an activation code.
+  400:
+    description: There is no existing activation code object with the given code or the user doesn't have permission.
+  500:
+    description: An error occurred while deleting an activation code.

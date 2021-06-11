@@ -185,6 +185,15 @@ swagger_template = {
     },
     "host": "localhost:5000",
     "basePath": "/",
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
     "schemes": [
         "http",
         "https"

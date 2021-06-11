@@ -1,0 +1,18 @@
+Route to check if an activation code exists in the database.
+---
+produces:
+  - application/json
+tags:
+  - Activation Code
+security:
+  - bearerAuth: []
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Unique identifier for an existing activation code.
+responses:
+  200:
+    description: A matching activation code exists.
+  400:
+    description: No matching activation code exists.

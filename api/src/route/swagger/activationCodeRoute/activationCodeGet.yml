@@ -1,0 +1,18 @@
+Route to retrieve an activation code.
+---
+produces:
+  - application/json
+tags:
+  - Activation Code
+security:
+  - bearerAuth: []
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Unique identifier for an existing activation code.
+responses:
+  200:
+    description: Successfully retrieved an activation code.
+  400:
+    description: Failed to retrieve an activation code object with the supplied code

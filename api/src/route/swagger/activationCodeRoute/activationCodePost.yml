@@ -6,8 +6,29 @@ produces:
   - application/json
 tags:
   - Activation Code
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing a group identifier and email.
+    schema:
+      id: ActivationCode
+      required:
+        - group_id
+        - email
+      properties:
+        group_id:
+          type: integer
+          description: Unique identifier for a group that the activation code is associated with.
+        email:
+          type: string
+          description: Default email to send the activation code to.
 responses:
   200:
     description: Successfully create an activation code.
   500:
     description: Failed to create an activation code.
+  400:
+    description: The request body isn't populated or required fields are missing.
