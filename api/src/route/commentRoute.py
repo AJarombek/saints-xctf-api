@@ -7,6 +7,7 @@ Date: 7/12/2019
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flasgger import swag_from
 
 from decorators import auth_required
 from utils.jwt import get_claims
@@ -35,6 +36,8 @@ def comments_redirect() -> Response:
 
 @comment_route.route('/', methods=['GET', 'POST'])
 @auth_required()
+@swag_from('swagger/commentRoute/commentsGet.yml', methods=['GET'])
+@swag_from('swagger/commentRoute/commentPost.yml', methods=['POST'])
 def comments() -> Response:
     """
     Endpoints for retrieving all the comments and creating new comments.

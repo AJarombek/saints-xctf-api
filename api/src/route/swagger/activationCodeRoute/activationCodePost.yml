@@ -28,7 +28,11 @@ parameters:
 responses:
   200:
     description: Successfully create an activation code.
-  500:
-    description: Failed to create an activation code.
   400:
     description: The request body isn't populated or required fields are missing.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create an activation code.

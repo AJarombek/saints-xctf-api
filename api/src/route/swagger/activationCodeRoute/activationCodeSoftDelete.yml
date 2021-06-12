@@ -1,4 +1,4 @@
-Route to delete an activation code.
+Route to soft delete an activation code.
 ---
 produces:
   - application/json
@@ -13,7 +13,7 @@ parameters:
     description: Unique identifier for an existing activation code.
 responses:
   204:
-    description: Successfully deleted an activation code.
+    description: Successfully soft deleted an activation code.
   400:
     description: There is no existing activation code object with the given code or the user doesn't have permission.
   401:

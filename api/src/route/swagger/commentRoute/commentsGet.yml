@@ -1,0 +1,17 @@
+Route to retrieve all comments in the database.
+---
+produces:
+  - application/json
+tags:
+  - Comment
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved comments.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve comments.

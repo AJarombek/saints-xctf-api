@@ -16,3 +16,7 @@ responses:
     description: A matching activation code exists.
   400:
     description: No matching activation code exists.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

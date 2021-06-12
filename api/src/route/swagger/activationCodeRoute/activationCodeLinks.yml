@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with activation codes.
+---
+produces:
+  - application/json
+tags:
+  - Activation Code
+responses:
+  200:
+    description: Links to all activation code API endpoints.

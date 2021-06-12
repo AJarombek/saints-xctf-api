@@ -16,3 +16,7 @@ responses:
     description: Successfully retrieved an activation code.
   400:
     description: Failed to retrieve an activation code object with the supplied code
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

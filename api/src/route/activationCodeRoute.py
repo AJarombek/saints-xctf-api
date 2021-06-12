@@ -81,6 +81,7 @@ def activation_code_exists_by_code(code) -> Response:
 
 @activation_code_route.route('/soft/<code>', methods=['DELETE'])
 @auth_required()
+@swag_from('swagger/activationCodeRoute/activationCodeSoftDelete.yml')
 def activation_code_soft_by_code(code) -> Response:
     """
     Endpoints for soft deleting activation codes.
@@ -93,6 +94,7 @@ def activation_code_soft_by_code(code) -> Response:
 
 
 @activation_code_route.route('/links', methods=['GET'])
+@swag_from('swagger/activationCodeRoute/activationCodeLinks.yml')
 def activation_code_links() -> Response:
     """
     Endpoint for information about the activation code API endpoints.

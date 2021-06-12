@@ -192,6 +192,14 @@ swagger_template = {
                 "scheme": "bearer",
                 "bearerFormat": "JWT"
             }
+        },
+        "responses": {
+            "UnauthorizedError": {
+                "description": "No API token exists on the request."
+            },
+            "ForbiddenError": {
+                "description": "The API authentication token is invalid."
+            }
         }
     },
     "schemes": [
