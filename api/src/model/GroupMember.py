@@ -39,8 +39,8 @@ class GroupMember(db.Model):
     group_name = Column(db.VARCHAR(20), db.ForeignKey('groups.group_name'), index=True)
     group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
     username = Column(db.VARCHAR(20), index=True)
-    status = Column(db.VARCHAR(10), db.ForeignKey('status.status'))
-    user = Column(db.VARCHAR(10), db.ForeignKey('admins.user'))
+    status = Column(db.VARCHAR(10))
+    user = Column(db.VARCHAR(10))
     deleted = Column(db.BOOLEAN)
 
     # Audit Columns

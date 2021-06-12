@@ -1,0 +1,50 @@
+Route to create a comment on an exercise log.
+---
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - Comment
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing a group identifier and email.
+    schema:
+      id: CommentPostBody
+      required:
+        - log_id
+        - username
+        - first
+        - last
+        - content
+      properties:
+        log_id:
+          type: integer
+          description: Unique identifier for an exercise log that the comment is written for.
+        username:
+          type: string
+          description: Username of the user writing the comment.
+        first:
+          type: string
+          description: First name of the user writing the comment.
+        last:
+          type: string
+          description: Last name of the user writing the comment.
+        content:
+          type: string
+          description: Written content of the comment.
+responses:
+  200:
+    description: Successfully created a comment on an exercide log.
+  400:
+    description: The request body isn't populated or required fields are missing.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create a comment on an exercise log.

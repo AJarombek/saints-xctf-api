@@ -14,7 +14,7 @@ parameters:
     required: true
     description: JSON request body containing a group identifier and email.
     schema:
-      id: ActivationCode
+      id: ActivationCodePostBody
       required:
         - group_id
         - email
