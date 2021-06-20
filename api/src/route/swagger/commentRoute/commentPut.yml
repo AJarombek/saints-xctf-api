@@ -1,7 +1,5 @@
-Route to create a comment on an exercise log.
+Route to update a comment with a specific id.
 ---
-consumes:
-  - application/json
 produces:
   - application/json
 tags:
@@ -9,19 +7,20 @@ tags:
 security:
   - bearerAuth: []
 parameters:
+  - name: comment_id
+    in: path
+    required: true
+    description: Unique identifier for a comment.
   - name: body
     in: body
     required: true
     description: JSON request body containing comment details.
     schema:
-      id: CommentPostBody
-      required:
-        - log_id
-        - username
-        - first
-        - last
-        - content
+      id: Comment
       properties:
+        comment_id:
+          type: integer
+          description: Unique identifier for the comment.
         log_id:
           type: integer
           description: Unique identifier for an exercise log that the comment is written for.
@@ -34,17 +33,20 @@ parameters:
         last:
           type: string
           description: Last name of the user writing the comment.
+        time:
+          type: string
+          description: Timestamp for when the comment was written.
         content:
           type: string
           description: Written content of the comment.
 responses:
   200:
-    description: Successfully created a comment on an exercide log.
+    description: Successfully updated a comment with the given id.
   400:
-    description: The request body isn't populated or required fields are missing.
+    description: There is no existing comment with the given id, the updated comment is the same as the existing comment, or the user doesn't have permission to delete it.
   401:
     $ref: '#/components/responses/UnauthorizedError'
   403:
     $ref: '#/components/responses/ForbiddenError'
   500:
-    description: Failed to create a comment on an exercise log.
+    description: Failed to update a comment with a specific id.

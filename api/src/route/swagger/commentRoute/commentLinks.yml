@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with comments.
+---
+produces:
+  - application/json
+tags:
+  - Comment
+responses:
+  200:
+    description: Links to all comment API endpoints.

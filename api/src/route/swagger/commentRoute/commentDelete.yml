@@ -1,0 +1,24 @@
+Route to delete a comment with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Comment
+security:
+  - bearerAuth: []
+parameters:
+  - name: comment_id
+    in: path
+    required: true
+    description: Unique identifier for a comment.
+responses:
+  204:
+    description: Successfully deleted a comment with the given id.
+  400:
+    description: There is no existing comment with the given id or the user doesn't have permission to delete it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to delete a comment with a specific id.

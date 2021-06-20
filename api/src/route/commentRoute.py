@@ -54,6 +54,9 @@ def comments() -> Response:
 
 @comment_route.route('/<comment_id>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required()
+@swag_from('swagger/commentRoute/commentGet.yml', methods=['GET'])
+@swag_from('swagger/commentRoute/commentPut.yml', methods=['PUT'])
+@swag_from('swagger/commentRoute/commentDelete.yml', methods=['DELETE'])
 def comment_with_id(comment_id) -> Response:
     """
     Endpoints for retrieving a single comments, editing an existing comment, and deleting a comment.
@@ -75,6 +78,7 @@ def comment_with_id(comment_id) -> Response:
 
 @comment_route.route('/soft/<comment_id>', methods=['DELETE'])
 @auth_required()
+@swag_from('swagger/commentRoute/commentSoftDelete.yml', methods=['DELETE'])
 def comment_soft_by_code(comment_id) -> Response:
     """
     Endpoints for soft deleting comments.
@@ -87,6 +91,7 @@ def comment_soft_by_code(comment_id) -> Response:
 
 
 @comment_route.route('/links', methods=['GET'])
+@swag_from('swagger/commentRoute/commentLinks.yml', methods=['GET'])
 def comment_links() -> Response:
     """
     Endpoint for information about the comment API endpoints.
