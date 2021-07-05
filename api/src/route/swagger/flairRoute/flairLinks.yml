@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with user flair.
+---
+produces:
+  - application/json
+tags:
+  - Flair
+responses:
+  200:
+    description: Links to all flair API endpoints.

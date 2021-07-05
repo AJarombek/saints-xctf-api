@@ -1,0 +1,38 @@
+Route to create a flair object for a user.
+---
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - Flair
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing flair details.
+    schema:
+      id: FlairPostBody
+      required:
+        - username
+        - flair
+      properties:
+        username:
+          type: string
+          description: Username of the user that the flair is given to.
+        flair:
+          type: string
+          description: Content of the flair, which is displayed on the user's profile page.
+responses:
+  200:
+    description: Successfully created a flair object for a user.
+  400:
+    description: The request body isn't populated or required fields are missing.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create a flair object for a user.

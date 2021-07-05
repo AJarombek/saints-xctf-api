@@ -7,6 +7,7 @@ Date: 7/5/2019
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify, redirect, url_for, Response, current_app
+from flasgger import swag_from
 
 from decorators import auth_required
 from utils.jwt import get_claims
@@ -31,6 +32,7 @@ def flair_redirect() -> Response:
 
 @flair_route.route('/', methods=['POST'])
 @auth_required()
+@swag_from('swagger/flairRoute/flairPost.yml')
 def flair():
     """
     Endpoint for creating flair.
@@ -42,6 +44,7 @@ def flair():
 
 
 @flair_route.route('/links', methods=['GET'])
+@swag_from('swagger/flairRoute/flairLinks.yml')
 def flair_links() -> Response:
     """
     Endpoint for information about the flair API endpoints.
