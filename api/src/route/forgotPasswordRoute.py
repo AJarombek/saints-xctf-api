@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import asyncio
 
 from flask import Blueprint, request, jsonify, Response, current_app, abort
+from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 import aiohttp
 
@@ -27,6 +28,8 @@ forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix=
 
 @forgot_password_route.route('/<username>', methods=['GET', 'POST'])
 @auth_required(enabled_methods=[GET])
+@swag_from('swagger/forgotPasswordRoute/forgotPasswordGet.yml', methods=['GET'])
+@swag_from('swagger/forgotPasswordRoute/forgotPasswordPost.yml', methods=['POST'])
 def forgot_password(username) -> Response:
     """
     Endpoints for retrieving or creating a forgot password code
@@ -42,6 +45,7 @@ def forgot_password(username) -> Response:
 
 
 @forgot_password_route.route('/validate/<code>', methods=['GET'])
+@swag_from('swagger/forgotPasswordRoute/forgotPasswordValidate.yml', methods=['GET'])
 def forgot_password_code_validation(code) -> Response:
     """
     Endpoints for validating whether or not a forgot password code exists.
@@ -54,6 +58,7 @@ def forgot_password_code_validation(code) -> Response:
 
 
 @forgot_password_route.route('/links', methods=['GET'])
+@swag_from('swagger/forgotPasswordRoute/forgotPasswordLinks.yml', methods=['GET'])
 def forgot_password_links() -> Response:
     """
     Endpoint for information about the forgot password API endpoints.
