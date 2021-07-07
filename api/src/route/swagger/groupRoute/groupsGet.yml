@@ -1,0 +1,17 @@
+Route to retrieve all groups in the database.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved groups.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve groups.

@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import RowProxy
 from sqlalchemy.schema import Column
@@ -43,6 +44,7 @@ def groups_redirect() -> Response:
 
 @group_route.route('/', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupsGet.yml', methods=['GET'])
 def groups() -> Response:
     """
     Endpoints for retrieving all the groups.
@@ -55,6 +57,8 @@ def groups() -> Response:
 
 @group_route.route('/<team_name>/<group_name>', methods=['GET', 'PUT'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupByTeamGroupGet.yml', methods=['GET'])
+@swag_from('swagger/groupRoute/groupByTeamGroupPut.yml', methods=['PUT'])
 def group(team_name, group_name) -> Response:
     """
     Endpoints for retrieving a single group and updating an existing group.
@@ -73,6 +77,8 @@ def group(team_name, group_name) -> Response:
 
 @group_route.route('/<group_id>', methods=['GET', 'PUT'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupByIdGet.yml', methods=['GET'])
+@swag_from('swagger/groupRoute/groupByIdPut.yml', methods=['PUT'])
 def group_by_id(group_id) -> Response:
     """
     Endpoints for retrieving a single group based on its id.
@@ -90,6 +96,7 @@ def group_by_id(group_id) -> Response:
 
 @group_route.route('/team/<group_id>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/teamByGroupIdGet.yml', methods=['GET'])
 def team_by_group_id(group_id) -> Response:
     """
     Endpoint for retrieving team information for a group.
@@ -103,6 +110,7 @@ def team_by_group_id(group_id) -> Response:
 
 @group_route.route('/members/<team_name>/<group_name>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupMembersByTeamGroupGet.yml', methods=['GET'])
 def group_members(team_name, group_name) -> Response:
     """
     Endpoint for retrieving the members of a group.
@@ -117,6 +125,7 @@ def group_members(team_name, group_name) -> Response:
 
 @group_route.route('/members/<group_id>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupMembersByIdGet.yml', methods=['GET'])
 def group_members_by_id(group_id) -> Response:
     """
     Endpoint for retrieving the members of a group based on the group id.
@@ -130,6 +139,8 @@ def group_members_by_id(group_id) -> Response:
 
 @group_route.route('/members/<group_id>/<username>', methods=['PUT', 'DELETE'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupMembersByIdUsernamePut.yml', methods=['PUT'])
+@swag_from('swagger/groupRoute/groupMembersByIdUsernameDelete.yml', methods=['DELETE'])
 def group_members_by_group_id_and_username(group_id, username) -> Response:
     """
     Endpoint for updating and deleting group memberships.
@@ -148,6 +159,7 @@ def group_members_by_group_id_and_username(group_id, username) -> Response:
 
 @group_route.route('/statistics/<group_id>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupStatisticsGet.yml', methods=['GET'])
 def group_statistics(group_id) -> Response:
     """
     Endpoint for retrieving statistics about group members.
@@ -162,7 +174,9 @@ def group_statistics(group_id) -> Response:
 @group_route.route('/leaderboard/<group_id>', methods=['GET'])
 @group_route.route('/leaderboard/<group_id>/<interval>', methods=['GET'])
 @auth_required()
-def group_leaderboard(group_id, interval = None) -> Response:
+@swag_from('swagger/groupRoute/groupLeaderboardByIdGet.yml', methods=['GET'])
+@swag_from('swagger/groupRoute/groupLeaderboardByIdIntervalGet.yml', methods=['GET'])
+def group_leaderboard(group_id, interval=None) -> Response:
     """
     Endpoint for retrieving leaderboard information about a group.
     You are so caring, it is beautiful.  My love for you is forever.
@@ -177,6 +191,7 @@ def group_leaderboard(group_id, interval = None) -> Response:
 
 @group_route.route('/snapshot/<team_name>/<group_name>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/groupRoute/groupSnapshot.yml', methods=['GET'])
 def group_snapshot(team_name, group_name) -> Response:
     """
     Endpoint for retrieving a group along with statistics and leaderboards.
@@ -190,6 +205,7 @@ def group_snapshot(team_name, group_name) -> Response:
 
 
 @group_route.route('/links', methods=['GET'])
+@swag_from('swagger/groupRoute/groupLinks.yml', methods=['GET'])
 def group_links() -> Response:
     """
     Endpoint for information about the group API endpoints.
