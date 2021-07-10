@@ -172,8 +172,7 @@ class GroupDao:
         """
         db.session.execute(
             '''
-            UPDATE groups SET 
-                grouppic=:grouppic, 
+            UPDATE groups SET
                 grouppic_name=:grouppic_name, 
                 description=:description, 
                 week_start=:week_start,

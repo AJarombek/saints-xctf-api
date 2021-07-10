@@ -1,0 +1,44 @@
+Route to update a group with a specific id in the database.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: group_id
+    in: path
+    required: true
+    description: Unique id for a group.
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing group details.
+    schema:
+      id: GroupPutBody
+      required:
+        - grouppic_name
+        - description
+        - week_start
+      properties:
+        grouppic_name:
+          type: string
+          description: Name of the picture used for the group.
+        description:
+          type: string
+          description: Text description of the group.
+        week_start:
+          type: string
+          description: Day that marks the start of the week for a group.
+responses:
+  200:
+    description: Successfully updated a group with a specific id.
+  400:
+    description: There is no group with the given id, the user does not have access to update the group, or the group submitted is the same as the existing group.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to update the group.
