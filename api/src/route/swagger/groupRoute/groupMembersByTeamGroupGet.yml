@@ -1,0 +1,26 @@
+Route to retrieve a the members in a group based upon the group name and team name.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: team_name
+    in: path
+    required: true
+    description: Name which uniquely identifies a team.
+  - name: group_name
+    in: path
+    required: true
+    description: Name for a group.
+responses:
+  200:
+    description: Successfully retrieved the group members.
+  400:
+    description: The group does not exist or there are no members in the group.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

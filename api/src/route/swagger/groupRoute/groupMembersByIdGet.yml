@@ -1,0 +1,22 @@
+Route to retrieve a the members in a group based upon the group id.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: group_id
+    in: path
+    required: true
+    description: Unique id for a group.
+responses:
+  200:
+    description: Successfully retrieved the group members.
+  400:
+    description: There is no group with the given id or there are no members in the group.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

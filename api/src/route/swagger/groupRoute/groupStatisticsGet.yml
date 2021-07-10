@@ -1,0 +1,22 @@
+Route to retrieve statistics about a group with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: group_id
+    in: path
+    required: true
+    description: Unique id for a group.
+responses:
+  200:
+    description: Successfully retrieved the group statistics.
+  400:
+    description: Failed to retrieve group statistics.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

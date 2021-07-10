@@ -1,0 +1,26 @@
+Route to retrieve a snapshot of information about a group.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: team_name
+    in: path
+    required: true
+    description: Name which uniquely identifies a team.
+  - name: group_name
+    in: path
+    required: true
+    description: Name for a group.
+responses:
+  200:
+    description: Successfully retrieved a snapshot of information about a group.
+  400:
+    description: There is no group with this name.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

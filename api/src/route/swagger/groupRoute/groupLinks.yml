@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with groups.
+---
+produces:
+  - application/json
+tags:
+  - Group
+responses:
+  200:
+    description: Links to all group API endpoints.

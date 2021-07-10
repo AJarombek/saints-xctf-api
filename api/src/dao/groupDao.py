@@ -182,7 +182,6 @@ class GroupDao:
             AND deleted IS FALSE
             ''',
             {
-                'grouppic': group.grouppic,
                 'grouppic_name': group.grouppic_name,
                 'description': group.description,
                 'week_start': group.week_start,

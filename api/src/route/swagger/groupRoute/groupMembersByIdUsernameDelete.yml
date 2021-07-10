@@ -1,0 +1,28 @@
+Route to delete a group membership for a user with a specific username in a group with a given id.
+---
+produces:
+  - application/json
+tags:
+  - Group
+security:
+  - bearerAuth: []
+parameters:
+  - name: group_id
+    in: path
+    required: true
+    description: Unique identifier for a group.
+  - name: username
+    in: path
+    required: true
+    description: Unique identifier for a user.
+responses:
+  204:
+    description: Successfully deleted the group membership.
+  400:
+    description: This user does not have access to delete the group membership.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to delete the group membership.
