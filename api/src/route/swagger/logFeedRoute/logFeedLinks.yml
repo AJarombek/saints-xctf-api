@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with a log feed.
+---
+produces:
+  - application/json
+tags:
+  - LogFeed
+responses:
+  200:
+    description: Links to all log feed API endpoints.

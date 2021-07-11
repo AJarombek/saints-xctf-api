@@ -1,0 +1,72 @@
+Route to create an exercise log.
+---
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - Exercise Log
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing exercise log details.
+    schema:
+      id: LogPostBody
+      required:
+        - username
+        - first
+        - last
+        - date
+        - type
+        - feel
+      properties:
+        username:
+          type: string
+          description: Username for the user of the exercise log.
+        first:
+          type: string
+          description: First name for the user of the exercise log.
+        last:
+          type: string
+          description: Last name for the user of the exercise log.
+        date:
+          type: string
+          description: Date that the exercise occurred on.
+        type:
+          type: string
+          description: Type of exercise.  Options include run, bike, swim, and other.
+        feel:
+          type: integer
+          description: How the user felt while performing the exercise.
+        name:
+          type: string
+          description: Name of the exercise log.
+        location:
+          type: string
+          description: Location that the exercise log took place.
+        distance:
+          type: float
+          description: Distance moved during of the exercise.
+        metric:
+          type: string
+          description: Metric for the exercise distance.  Options include miles, kilometers, and meters.
+        time:
+          type: string
+          description: Time the exercise took to complete.
+        description:
+          type: string
+          description: Text description for the exercise log.
+responses:
+  200:
+    description: Successfully created an exercide log.
+  400:
+    description: The request body isn't populated, required fields are missing, or the user does not have access to create the submitted exercise log.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create an exercise log.

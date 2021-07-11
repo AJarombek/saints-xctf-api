@@ -7,6 +7,7 @@ Date: 7/6/2019
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify, redirect, url_for, Response, current_app
+from flasgger import swag_from
 
 from decorators import auth_required
 from dao.logDao import LogDao
@@ -38,6 +39,8 @@ def logs_redirect() -> Response:
 
 @log_route.route('/', methods=['GET', 'POST'])
 @auth_required()
+@swag_from('swagger/logRoute/logsGet.yml', methods=['GET'])
+@swag_from('swagger/logRoute/logPost.yml', methods=['POST'])
 def logs():
     """
     Endpoints for retrieving all the logs and creating new logs.
@@ -54,6 +57,9 @@ def logs():
 
 @log_route.route('/<log_id>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required()
+@swag_from('swagger/logRoute/logGet.yml', methods=['GET'])
+@swag_from('swagger/logRoute/logPut.yml', methods=['PUT'])
+@swag_from('swagger/logRoute/logDelete.yml', methods=['DELETE'])
 def logs_with_id(log_id):
     """
     Endpoints for retrieving a single log, editing an existing log, and deleting a log.
@@ -75,6 +81,7 @@ def logs_with_id(log_id):
 
 @log_route.route('/soft/<log_id>', methods=['DELETE'])
 @auth_required()
+@swag_from('swagger/logRoute/logSoftDelete.yml', methods=['DELETE'])
 def log_soft_with_id(log_id) -> Response:
     """
     Endpoints for soft deleting exercise logs.
@@ -87,6 +94,7 @@ def log_soft_with_id(log_id) -> Response:
 
 
 @log_route.route('/links', methods=['GET'])
+@swag_from('swagger/logRoute/logLinks.yml', methods=['GET'])
 def log_links() -> Response:
     """
     Endpoint for information about the log API endpoints.

@@ -1,0 +1,34 @@
+Route to retrieve a feed (list) of exercise logs.
+---
+produces:
+  - application/json
+tags:
+  - LogFeed
+security:
+  - bearerAuth: []
+parameters:
+  - name: filter_by
+    in: path
+    required: true
+    description: What to filter exercise logs by, whether it be a user, group, or unfiltered.
+  - name: bucket
+    in: path
+    required: true
+    description: Username or group name to filter by.  If filter by is 'all', this value is ignored.
+  - name: limit
+    in: path
+    required: true
+    description: The maximum number of exercise logs to return.
+  - name: offset
+    in: path
+    required: true
+    description: The number of exercise logs to skip from the start of the log feed.
+responses:
+  200:
+    description: Successfully retrieved a list of exercise logs.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: No exercise logs found in this log feed.

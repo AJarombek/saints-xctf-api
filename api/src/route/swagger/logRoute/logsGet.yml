@@ -1,0 +1,17 @@
+Route to retrieve all logs in the database.
+---
+produces:
+  - application/json
+tags:
+  - Exercise Log
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved exercise logs.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve exercise logs.
