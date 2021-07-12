@@ -1,0 +1,24 @@
+Route to soft delete an exercise log with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Exercise Log
+security:
+  - bearerAuth: []
+parameters:
+  - name: log_id
+    in: path
+    required: true
+    description: Unique identifier for an exercise log.
+responses:
+  204:
+    description: Successfully soft deleted an exercise log with the given id.
+  400:
+    description: There is no existing exercise log with the given id, the exercise log is already soft deleted, or the user doesn't have permission to soft delete it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to soft delete an exercise log or failed to soft delete the comments on the exercise log.

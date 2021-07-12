@@ -1,0 +1,22 @@
+Route to retrieve an exercise log with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Exercise Log
+security:
+  - bearerAuth: []
+parameters:
+  - name: log_id
+    in: path
+    required: true
+    description: Unique identifier for an exercise log.
+responses:
+  200:
+    description: Successfully retrieved an exercise log with the given id.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve an exercise log with a specific id.

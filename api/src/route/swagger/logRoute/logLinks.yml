@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with an exercise log.
+---
+produces:
+  - application/json
+tags:
+  - Exercise Log
+responses:
+  200:
+    description: Links to all exercise log API endpoints.

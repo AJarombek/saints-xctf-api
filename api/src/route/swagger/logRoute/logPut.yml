@@ -1,0 +1,62 @@
+Route to update an exercise log with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Exercise Log
+security:
+  - bearerAuth: []
+parameters:
+  - name: log_id
+    in: path
+    required: true
+    description: Unique identifier for an exercise log.
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing comment details.
+    schema:
+      id: LogPutBody
+      required:
+        - date
+        - type
+        - feel
+      properties:
+        date:
+          type: string
+          description: Date that the exercise occurred on.
+        type:
+          type: string
+          description: Type of exercise.  Options include run, bike, swim, and other.
+        feel:
+          type: integer
+          description: How the user felt while performing the exercise.
+        name:
+          type: string
+          description: Name of the exercise log.
+        location:
+          type: string
+          description: Location that the exercise log took place.
+        distance:
+          type: float
+          description: Distance moved during of the exercise.
+        metric:
+          type: string
+          description: Metric for the exercise distance.  Options include miles, kilometers, and meters.
+        time:
+          type: string
+          description: Time the exercise took to complete.
+        description:
+          type: string
+          description: Text description for the exercise log.
+responses:
+  200:
+    description: Successfully updated a comment with the given id.
+  400:
+    description: There is no existing comment with the given id, the updated comment is the same as the existing comment, or the user doesn't have permission to delete it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to update a comment with a specific id.
