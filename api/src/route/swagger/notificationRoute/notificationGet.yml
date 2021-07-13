@@ -1,0 +1,22 @@
+Route to retrieve a notification with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+parameters:
+  - name: notification_id
+    in: path
+    required: true
+    description: Unique identifier for a notification.
+responses:
+  200:
+    description: Successfully retrieved a notification with the given id.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve a notification with a specific id.

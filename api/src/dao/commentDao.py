@@ -4,7 +4,10 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
+from datetime import datetime
+
 from sqlalchemy import desc
+
 from database import db
 from dao.basicDao import BasicDao
 from model.Comment import Comment
@@ -136,6 +139,35 @@ class CommentDao:
                 'modified_app': comment.modified_app,
                 'deleted_date': comment.deleted_date,
                 'deleted_app': comment.deleted_app
+            }
+        )
+        return BasicDao.safe_commit()
+
+    @staticmethod
+    def soft_delete_comments_by_log_id(log_id: int) -> bool:
+        """
+        Soft Delete comments associated with an exercise log from the database.
+        :param log_id: Unique identifier for an exercise log.
+        :return: True if the soft deletion was successful without error, False otherwise.
+        """
+        db.session.execute(
+            '''
+            UPDATE comments SET 
+                deleted=:deleted,
+                modified_date=:modified_date,
+                modified_app=:modified_app,
+                deleted_date=:deleted_date,
+                deleted_app=:deleted_app
+            WHERE log_id=:log_id
+            AND deleted IS FALSE
+            ''',
+            {
+                'log_id': log_id,
+                'deleted': True,
+                'modified_date': datetime.now(),
+                'modified_app': 'saints-xctf-api',
+                'deleted_date': datetime.now(),
+                'deleted_app': 'saints-xctf-api'
             }
         )
         return BasicDao.safe_commit()

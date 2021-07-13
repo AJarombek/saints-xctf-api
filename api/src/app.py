@@ -22,10 +22,8 @@ from route.forgotPasswordRoute import forgot_password_route
 from route.flairRoute import flair_route
 from route.logRoute import log_route
 from route.logFeedRoute import log_feed_route
-from route.messageRoute import message_route
 from route.groupRoute import group_route
 from route.commentRoute import comment_route
-from route.messageFeedRoute import message_feed_route
 from route.rangeViewRoute import range_view_route
 from route.notificationRoute import notification_route
 from route.teamRoute import team_route
@@ -47,9 +45,7 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(log_route)
     application.register_blueprint(log_feed_route)
     application.register_blueprint(group_route)
-    application.register_blueprint(message_route)
     application.register_blueprint(comment_route)
-    application.register_blueprint(message_feed_route)
     application.register_blueprint(range_view_route)
     application.register_blueprint(notification_route)
     application.register_blueprint(team_route)

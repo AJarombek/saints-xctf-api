@@ -8,6 +8,7 @@ Date: 8/6/2019
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flasgger import swag_from
 
 from decorators import auth_required
 from utils.jwt import get_claims
@@ -36,6 +37,8 @@ def notifications_redirect() -> Response:
 
 @notification_route.route('/', methods=['GET', 'POST'])
 @auth_required()
+@swag_from('swagger/notificationRoute/notificationsGet.yml', methods=['GET'])
+@swag_from('swagger/notificationRoute/notificationsPost.yml', methods=['POST'])
 def notifications() -> Response:
     """
     Endpoints for retrieving all the notifications and creating new notifications.
@@ -52,6 +55,9 @@ def notifications() -> Response:
 
 @notification_route.route('/<notification_id>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required()
+@swag_from('swagger/notificationRoute/notificationGet.yml', methods=['GET'])
+@swag_from('swagger/notificationRoute/notificationPut.yml', methods=['PUT'])
+@swag_from('swagger/notificationRoute/notificationDelete.yml', methods=['DELETE'])
 def notification_by_id(notification_id) -> Response:
     """
     Endpoints for retrieving a single notification, updating existing notifications, and deleting notifications.
@@ -73,6 +79,7 @@ def notification_by_id(notification_id) -> Response:
 
 @notification_route.route('/soft/<notification_id>', methods=['DELETE'])
 @auth_required()
+@swag_from('swagger/notificationRoute/notificationSoftDelete.yml', methods=['DELETE'])
 def notification_soft_by_id(notification_id) -> Response:
     """
     Endpoints for soft deleting user notifications.
@@ -85,6 +92,7 @@ def notification_soft_by_id(notification_id) -> Response:
 
 
 @notification_route.route('/links', methods=['GET'])
+@swag_from('swagger/notificationRoute/notificationLinks.yml', methods=['GET'])
 def notification_links() -> Response:
     """
     Endpoint for information about the notification API endpoints.

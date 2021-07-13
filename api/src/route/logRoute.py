@@ -422,9 +422,9 @@ def log_by_id_delete(log_id) -> Response:
         response.status_code = 400
         return response
 
-    are_comments_deleted = CommentDao.delete_comments_by_log_id(log_id=log_id)
+    comments_deleted = CommentDao.delete_comments_by_log_id(log_id=log_id)
 
-    if not are_comments_deleted:
+    if not comments_deleted:
         response = jsonify({
             'self': f'/v2/logs/{log_id}',
             'deleted': False,
@@ -433,9 +433,9 @@ def log_by_id_delete(log_id) -> Response:
         response.status_code = 500
         return response
 
-    is_log_deleted = LogDao.delete_log(log_id=log_id)
+    log_deleted = LogDao.delete_log(log_id=log_id)
 
-    if is_log_deleted:
+    if log_deleted:
         response = jsonify({
             'self': f'/v2/logs/{log_id}',
             'deleted': True,
@@ -495,6 +495,17 @@ def log_by_id_soft_delete(log_id) -> Response:
             'error': 'this exercise log is already soft deleted'
         })
         response.status_code = 400
+        return response
+
+    comments_deleted = CommentDao.soft_delete_comments_by_log_id(log_id=log_id)
+
+    if not comments_deleted:
+        response = jsonify({
+            'self': f'/v2/logs/{log_id}',
+            'deleted': False,
+            'error': 'failed to soft delete the comments on this log'
+        })
+        response.status_code = 500
         return response
 
     # Update the comment model to reflect the soft delete

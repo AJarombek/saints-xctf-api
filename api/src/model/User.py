@@ -82,7 +82,6 @@ class User(db.Model):
     notification = db.relationship('Notification', backref='notification')
     log = db.relationship('Log', backref='log')
     forgot_password = db.relationship('ForgotPassword', backref='forgot_password')
-    message = db.relationship('Message', backref='message')
     comment = db.relationship('Comment', backref='comment')
 
     def __str__(self):

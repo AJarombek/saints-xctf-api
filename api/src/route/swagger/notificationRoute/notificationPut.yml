@@ -1,0 +1,36 @@
+Route to update a notification with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+parameters:
+  - name: log_id
+    in: path
+    required: true
+    description: Unique identifier for a notification.
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing notification details.
+    schema:
+      id: NotificationPutBody
+        required:
+          - viewed
+        properties:
+          viewed:
+            type: string
+            description: Whether the notification was viewed or not.  Valid strings are 'Y' and 'N'.
+responses:
+  200:
+    description: Successfully updated a notification with the given id.
+  400:
+    description: There is no existing notification with the given id, the updated notification is the same as the existing notification, or the user doesn't have permission to update it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to update a notification with a specific id.

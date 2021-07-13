@@ -57,8 +57,6 @@ class Group(db.Model):
     deleted_user = Column(db.VARCHAR(31))
     deleted_app = Column(db.VARCHAR(31))
 
-    message = db.relationship('Message', backref='group_message')
-
     def __str__(self):
         """
         String representation of a group within a team.  This representation is meant to be human readable.

@@ -1,0 +1,41 @@
+Route to create a notification.
+---
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing notification details.
+    schema:
+      id: NotificationPostBody
+      required:
+        - username
+        - description
+      properties:
+        username:
+          type: string
+          description: Username for the user of the notification.
+        link:
+          type: string
+          description: URL that links to a webpage that displays the source of the notification.  For example, a link to an exercise log with a new comment on it.
+        description:
+          type: string
+          description: Text description for the notification.
+responses:
+  200:
+    description: Successfully created a notification.
+  400:
+    description: The request body isn't populated or required fields are missing.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create a notification.

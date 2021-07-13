@@ -1,0 +1,17 @@
+Route to retrieve all notifications in the database.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved notifications.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve notifications.

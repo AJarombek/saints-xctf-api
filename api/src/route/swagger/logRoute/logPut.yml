@@ -14,7 +14,7 @@ parameters:
   - name: body
     in: body
     required: true
-    description: JSON request body containing comment details.
+    description: JSON request body containing exercise log details.
     schema:
       id: LogPutBody
       required:
@@ -51,12 +51,12 @@ parameters:
           description: Text description for the exercise log.
 responses:
   200:
-    description: Successfully updated a comment with the given id.
+    description: Successfully updated an exercise log with the given id.
   400:
-    description: There is no existing comment with the given id, the updated comment is the same as the existing comment, or the user doesn't have permission to delete it.
+    description: There is no existing exercise log with the given id, the updated exercise log is the same as the existing exercise log, or the user doesn't have permission to update it.
   401:
     $ref: '#/components/responses/UnauthorizedError'
   403:
     $ref: '#/components/responses/ForbiddenError'
   500:
-    description: Failed to update a comment with a specific id.
+    description: Failed to update an exercise log with a specific id.
