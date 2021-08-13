@@ -1,0 +1,24 @@
+Route to soft delete a notification with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+parameters:
+  - name: notification_id
+    in: path
+    required: true
+    description: Unique identifier for a notification.
+responses:
+  204:
+    description: Successfully soft deleted a notification with the given id.
+  400:
+    description: There is no existing notificationg with the given id, the notification is already soft deleted, or the user doesn't have permission to soft delete it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to soft delete a notification.

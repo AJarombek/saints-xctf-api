@@ -1,0 +1,24 @@
+Route to delete a notification with a specific id.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+security:
+  - bearerAuth: []
+parameters:
+  - name: notification_id
+    in: path
+    required: true
+    description: Unique identifier for a notification.
+responses:
+  204:
+    description: Successfully deleted a notification with the given id.
+  400:
+    description: There is no existing notification with the given id or the user doesn't have permission to delete it.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to delete a notification.

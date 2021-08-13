@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with notifications.
+---
+produces:
+  - application/json
+tags:
+  - Notification
+responses:
+  200:
+    description: Links to all notification API endpoints.
