@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with range views.
+---
+produces:
+  - application/json
+tags:
+  - RangeView
+responses:
+  200:
+    description: Links to all range view API endpoints.

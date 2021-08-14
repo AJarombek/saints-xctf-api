@@ -1,0 +1,38 @@
+Route to create a range view during a specific time period.
+---
+produces:
+  - application/json
+tags:
+  - RangeView
+security:
+  - bearerAuth: []
+parameters:
+  - name: filter_by
+    in: path
+    required: true
+    description: Filtering mechanism for the range view.  Options are 'group_name' and 'username'.
+  - name: bucket
+    in: path
+    required: true
+    description: The group name or username used to filter range views.
+  - name: exercise_types
+    in: path
+    required: true
+    description: Types of exercises to include in the range view.  Options are any combination of 'r', 'b', 's', and 'o'.
+  - name: start
+    in: path
+    required: true
+    description: Start date of the range view.  Date is formatted 'YYYY-MM-DD'.
+  - name: end
+    in: path
+    required: true
+    description: End date of the range view.  Date is formatted 'YYYY-MM-DD'.
+responses:
+  200:
+    description: Successfully created a range view.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create a range view.
