@@ -122,7 +122,6 @@ class User(db.Model):
             user_1.username == user_2.username,
             user_1.first == user_2.first,
             user_1.last == user_2.last,
-            user_1.salt == user_2.salt,
             user_1.password == user_2.password,
             user_1.profilepic_name == user_2.profilepic_name,
             user_1.description == user_2.description,
@@ -132,7 +131,6 @@ class User(db.Model):
             user_1.favorite_event == user_2.favorite_event,
             user_1.activation_code == user_2.activation_code,
             user_1.email == user_2.email,
-            user_1.subscribed == user_2.subscribed,
             str(user_1.last_signin) == str(user_2.last_signin),
             user_1.week_start == user_2.week_start,
             user_1.deleted == user_2.deleted

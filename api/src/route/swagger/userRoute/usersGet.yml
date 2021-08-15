@@ -1,0 +1,17 @@
+Route to retrieve all users in the database.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved users.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve users.

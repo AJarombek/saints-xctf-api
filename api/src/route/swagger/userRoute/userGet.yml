@@ -1,0 +1,22 @@
+Route to retrieve a user with a specific username.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username for a user.
+responses:
+  200:
+    description: Successfully retrieved a user with the given username.
+  400:
+    description: No user exists with the given username.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

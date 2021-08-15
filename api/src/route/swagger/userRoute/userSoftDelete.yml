@@ -1,0 +1,24 @@
+Route to soft delete a user with a specific username.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique identifier for a user.
+responses:
+  204:
+    description: Successfully soft deleted a user with the given username.
+  400:
+    description: There is no existing user with the given username, the user is already soft deleted, or the user making the API request doesn't have permission to soft delete the user.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to soft delete a user.

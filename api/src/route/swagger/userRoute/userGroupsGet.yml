@@ -1,0 +1,20 @@
+Route to retrieve groups that a user has memberships with.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username for a user.
+responses:
+  200:
+    description: Successfully retrieved a list of groups for a user.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

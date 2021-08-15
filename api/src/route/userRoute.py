@@ -278,12 +278,6 @@ def users_get() -> Response:
             if user_dict.get('last_signin') is not None:
                 user_dict['last_signin'] = str(user_dict['last_signin'])
 
-            if user_dict.get('profilepic') is not None:
-                try:
-                    user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
-                except AttributeError:
-                    pass
-
             user_dicts.append(user_dict)
 
         response = jsonify({
@@ -444,12 +438,6 @@ def user_by_username_get(username) -> Response:
         if user_dict.get('last_signin') is not None:
             user_dict['last_signin'] = str(user_dict['last_signin'])
 
-        if user_dict.get('profilepic') is not None:
-            try:
-                user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
-            except AttributeError:
-                pass
-
         response = jsonify({
             'self': f'/v2/users/{username}',
             'user': user_dict
@@ -502,12 +490,6 @@ def user_by_username_put(username) -> Response:
             updated_user = UserDao.get_user_by_username(username)
 
             updated_user_dict: dict = UserData(updated_user).__dict__
-
-            if updated_user_dict.get('profilepic') is not None:
-                try:
-                    updated_user_dict['profilepic'] = updated_user_dict['profilepic'].decode('utf-8')
-                except AttributeError:
-                    pass
 
             response = jsonify({
                 'self': f'/v2/users/{username}',
@@ -648,12 +630,6 @@ def user_snapshot_by_username_get(username) -> Response:
             user_dict['member_since'] = str(user_dict['member_since'])
         if user_dict.get('last_signin') is not None:
             user_dict['last_signin'] = str(user_dict['last_signin'])
-
-        if user_dict.get('profilepic') is not None:
-            try:
-                user_dict['profilepic'] = user_dict['profilepic'].decode('utf-8')
-            except AttributeError:
-                pass
 
         username = user_dict['username']
         groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)

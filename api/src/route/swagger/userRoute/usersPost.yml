@@ -1,0 +1,69 @@
+Route to create a new user.
+---
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing notification details.
+    schema:
+      id: UserPostBody
+      required:
+        - username
+        - first
+        - last
+        - email
+        - password
+        - activation_code
+      properties:
+        username:
+          type: string
+          description: Unique username for the user.
+        first:
+          type: string
+          description: First name of the user.
+        last:
+          type: string
+          description: Last name of the user.
+        email:
+          type: string
+          description: Email assigned to the user's account.
+        password:
+          type: string
+          description: Password used to authenticate the user.
+        activation_code:
+          type: string
+          description: Code allowing the user to be created.
+        description:
+          type: string
+          description: Description of the user, displayed on the user's profile page.
+        class_year:
+          type: string
+          description: Year that the user graduated, displayed on the user's profile page.
+        location:
+          type: string
+          description: Location of the user, displayed on the user's profile page.
+        favorite_event:
+          type: string
+          description: Favorite event of the user, displayed on the user's profile page.
+        week_start:
+          type: string
+          description: Day that marks the start of a week for the user.  Options are 'sunday' or 'monday'.
+responses:
+  200:
+    description: Successfully created a new user.
+  400:
+    description: The request body isn't populated, required fields are missing, the activation code is invalid or expired, or the username, password, or email are invalid.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to create a user.

@@ -15,7 +15,7 @@ responses:
   204:
     description: Successfully soft deleted a notification with the given id.
   400:
-    description: There is no existing notificationg with the given id, the notification is already soft deleted, or the user doesn't have permission to soft delete it.
+    description: There is no existing notification with the given id, the notification is already soft deleted, or the user doesn't have permission to soft delete it.
   401:
     $ref: '#/components/responses/UnauthorizedError'
   403:
