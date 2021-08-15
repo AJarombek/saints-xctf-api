@@ -1,0 +1,22 @@
+Route to retrieve a team with a specific name.
+---
+produces:
+  - application/json
+tags:
+  - Team
+security:
+  - bearerAuth: []
+parameters:
+  - name: name
+    in: path
+    required: true
+    description: Unique name for a team.
+responses:
+  200:
+    description: Successfully retrieved a team with the given name.
+  400:
+    description: No team exists with this name.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

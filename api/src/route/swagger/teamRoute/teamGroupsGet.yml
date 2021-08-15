@@ -1,0 +1,22 @@
+Route to retrieve all the groups in a team.
+---
+produces:
+  - application/json
+tags:
+  - Team
+security:
+  - bearerAuth: []
+parameters:
+  - name: team_name
+    in: path
+    required: true
+    description: Unique name for a team.
+responses:
+  200:
+    description: Successfully retrieved all the groups within a team.
+  400:
+    description: No team exists with this name or this team has no groups.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

@@ -1,0 +1,24 @@
+Route to text search for teams in the database.
+---
+produces:
+  - application/json
+tags:
+  - Team
+security:
+  - bearerAuth: []
+parameters:
+  - name: text
+    in: path
+    required: true
+    description: Text used to search for teams in the database.
+  - name: limit
+    in: path
+    required: true
+    description: Maximum number of teams to return in the response.
+responses:
+  200:
+    description: Result of the text search.  Even if no teams are found, a successful response code is returned.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

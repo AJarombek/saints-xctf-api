@@ -1,0 +1,17 @@
+Route to retrieve all teams in the database.
+---
+produces:
+  - application/json
+tags:
+  - Team
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved teams.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to retrieve teams.
