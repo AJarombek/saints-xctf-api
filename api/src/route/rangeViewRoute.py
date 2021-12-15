@@ -5,6 +5,7 @@ Date: 8/3/2019
 """
 
 from flask import Blueprint, request, jsonify, Response
+from flasgger import swag_from
 
 from decorators import auth_required
 from dao.logDao import LogDao
@@ -15,6 +16,7 @@ range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/range
 
 @range_view_route.route('/<filter_by>/<bucket>/<exercise_types>/<start>/<end>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/rangeViewRoute/rangeViewGet.yml', methods=['GET'])
 def range_view(filter_by, bucket, exercise_types, start, end):
     """
     Endpoint for retrieving log information based on filters and a date range.
@@ -32,6 +34,7 @@ def range_view(filter_by, bucket, exercise_types, start, end):
 
 
 @range_view_route.route('/links', methods=['GET'])
+@swag_from('swagger/rangeViewRoute/rangeViewLinks.yml', methods=['GET'])
 def range_view_links() -> Response:
     """
     Endpoint for information about the range view API endpoints.

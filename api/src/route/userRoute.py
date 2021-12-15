@@ -14,6 +14,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
+from flasgger import swag_from
 
 from decorators import auth_required, disabled, DELETE, GET
 from utils.jwt import get_claims
@@ -58,6 +59,8 @@ def users_redirect() -> Response:
 
 @user_route.route('/', methods=['GET', 'POST'])
 @auth_required(enabled_methods=[GET])
+@swag_from('swagger/userRoute/usersGet.yml', methods=['GET'])
+@swag_from('swagger/userRoute/usersPost.yml', methods=['POST'])
 def users() -> Response:
     """
     Endpoints for searching all the users or creating a user
@@ -75,6 +78,8 @@ def users() -> Response:
 @user_route.route('/<username>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required()
 @disabled(disabled_methods=[DELETE])
+@swag_from('swagger/userRoute/userGet.yml', methods=['GET'])
+@swag_from('swagger/userRoute/userPut.yml', methods=['PUT'])
 def user(username) -> Response:
     """
     Endpoints for specific users (searching, updating, or deleting)
@@ -96,6 +101,7 @@ def user(username) -> Response:
 
 @user_route.route('/soft/<username>', methods=['DELETE'])
 @auth_required()
+@swag_from('swagger/userRoute/userSoftDelete.yml', methods=['DELETE'])
 def user_soft_by_username(username) -> Response:
     """
     Endpoints for soft deleting a user.
@@ -109,6 +115,7 @@ def user_soft_by_username(username) -> Response:
 
 @user_route.route('/snapshot/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userSnapshotGet.yml', methods=['GET'])
 def user_snapshot(username) -> Response:
     """
     Endpoint for a website snapshot for a specific user.  Provides more details than the base user route,
@@ -123,6 +130,7 @@ def user_snapshot(username) -> Response:
 
 @user_route.route('/groups/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userGroupsGet.yml', methods=['GET'])
 def user_groups(username) -> Response:
     """
     Endpoint for retrieving a user's group memberships.
@@ -136,6 +144,7 @@ def user_groups(username) -> Response:
 
 @user_route.route('/teams/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userTeamsGet.yml', methods=['GET'])
 def user_teams(username) -> Response:
     """
     Endpoint for retrieving a user's team memberships.
@@ -149,6 +158,8 @@ def user_teams(username) -> Response:
 
 @user_route.route('/memberships/<username>', methods=['GET', 'PUT'])
 @auth_required()
+@swag_from('swagger/userRoute/userMembershipsGet.yml', methods=['GET'])
+@swag_from('swagger/userRoute/userMembershipsPut.yml', methods=['PUT'])
 def user_memberships(username) -> Response:
     """
     Endpoint for retrieving a user's team and group memberships.
@@ -165,6 +176,7 @@ def user_memberships(username) -> Response:
 
 @user_route.route('/notifications/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userNotificationsGet.yml', methods=['GET'])
 def user_notifications(username) -> Response:
     """
     Endpoint for retrieving a user's notifications.
@@ -178,6 +190,7 @@ def user_notifications(username) -> Response:
 
 @user_route.route('/flair/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userFlairGet.yml', methods=['GET'])
 def user_flair(username) -> Response:
     """
     Endpoint for retrieving a user's flair.
@@ -191,6 +204,7 @@ def user_flair(username) -> Response:
 
 @user_route.route('/statistics/<username>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/userRoute/userStatisticsGet.yml', methods=['GET'])
 def user_statistics(username) -> Response:
     """
     Endpoint for retrieving a user's statistics.
@@ -203,6 +217,7 @@ def user_statistics(username) -> Response:
 
 
 @user_route.route('/<username>/change_password', methods=['PUT'])
+@swag_from('swagger/userRoute/userChangePasswordPut.yml', methods=['PUT'])
 def user_change_password(username) -> Response:
     """
     Endpoint for changing a users password.
@@ -216,6 +231,7 @@ def user_change_password(username) -> Response:
 
 @user_route.route('/<username>/update_last_login', methods=['PUT'])
 @auth_required()
+@swag_from('swagger/userRoute/userUpdateLastLoginPut.yml', methods=['PUT'])
 def user_update_last_login(username) -> Response:
     """
     Update the date of a users previous sign in.
@@ -228,6 +244,7 @@ def user_update_last_login(username) -> Response:
 
 
 @user_route.route('/lookup/<username>', methods=['GET'])
+@swag_from('swagger/userRoute/userLookupGet.yml', methods=['GET'])
 def user_lookup(username) -> Response:
     """
     Endpoint for looking up a username/email to see if its currently in use.  This endpoint is used while a user is
@@ -241,6 +258,7 @@ def user_lookup(username) -> Response:
 
 
 @user_route.route('/links', methods=['GET'])
+@swag_from('swagger/userRoute/userLinks.yml', methods=['GET'])
 def user_links() -> Response:
     """
     Endpoint for information about the user API endpoints.

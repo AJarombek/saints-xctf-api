@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with users.
+---
+produces:
+  - application/json
+tags:
+  - User
+responses:
+  200:
+    description: Links to all user API endpoints.

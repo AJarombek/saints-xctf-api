@@ -1,0 +1,20 @@
+Route to retrieve flair given to a user.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username for a user.
+responses:
+  200:
+    description: Successfully retrieved flair given to a user.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

@@ -1,0 +1,44 @@
+Route to update the team and group memberships of a user with a specific username.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username for a user.
+  - name: body
+    in: body
+    required: true
+    description: JSON request body containing user details.
+    schema:
+      id: UserPutBody
+        required: []
+        properties:
+          teams_joined:
+            type: string
+            description: Unique username for the user.
+          teams_left:
+            type: string
+            description: First name of the user.
+          groups_joined:
+            type: string
+            description: Last name of the user.
+          groups_left:
+            type: string
+            description: Email assigned to the user's account.
+responses:
+  201:
+    description: Successfully updated the memberships of a user with a given username.
+  400:
+    description: The user making the API request doesn't have permission to update memberships for this user.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
+  500:
+    description: Failed to update memberships for a user with a specific username.

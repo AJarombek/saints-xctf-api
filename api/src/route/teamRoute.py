@@ -8,6 +8,7 @@ from typing import List
 
 from flask import Blueprint, Response, request, redirect, url_for, jsonify
 from sqlalchemy.engine.cursor import ResultProxy
+from flasgger import swag_from
 
 from decorators import auth_required
 from dao.teamDao import TeamDao
@@ -33,6 +34,7 @@ def teams_redirect() -> Response:
 
 @team_route.route('/', methods=['GET'])
 @auth_required()
+@swag_from('swagger/teamRoute/teamsGet.yml', methods=['GET'])
 def teams() -> Response:
     """
     Endpoints for searching all the teams
@@ -45,6 +47,7 @@ def teams() -> Response:
 
 @team_route.route('/<name>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/teamRoute/teamGet.yml', methods=['GET'])
 def team(name) -> Response:
     """
     Endpoints for specific teams (just searching)
@@ -58,6 +61,7 @@ def team(name) -> Response:
 
 @team_route.route('/members/<team_name>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/teamRoute/teamMembersGet.yml', methods=['GET'])
 def team_members(team_name) -> Response:
     """
     Endpoint for retrieving the members of a team.
@@ -71,6 +75,7 @@ def team_members(team_name) -> Response:
 
 @team_route.route('/groups/<team_name>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/teamRoute/teamGroupsGet.yml', methods=['GET'])
 def team_groups(team_name) -> Response:
     """
     Endpoint for retrieving the groups that are part of a team.
@@ -84,6 +89,7 @@ def team_groups(team_name) -> Response:
 
 @team_route.route('/search/<text>/<limit>', methods=['GET'])
 @auth_required()
+@swag_from('swagger/teamRoute/teamSearchGet.yml', methods=['GET'])
 def search_teams(text, limit) -> Response:
     """
     Endpoint that performs a text search for teams.
@@ -97,6 +103,7 @@ def search_teams(text, limit) -> Response:
 
 
 @team_route.route('/links', methods=['GET'])
+@swag_from('swagger/teamRoute/teamLinks.yml', methods=['GET'])
 def team_links() -> Response:
     """
     Endpoint for information about the team API endpoints.

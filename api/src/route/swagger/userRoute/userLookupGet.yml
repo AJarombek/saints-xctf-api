@@ -1,0 +1,22 @@
+Route to check if a user exists based on a username or email.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username or email address for a user.
+responses:
+  200:
+    description: Successfully retrieved a user with the given email or username.
+  400:
+    description: There is no user with the given email or username.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'

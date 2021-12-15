@@ -1,0 +1,22 @@
+Route to retrieve statistics for a user.
+---
+produces:
+  - application/json
+tags:
+  - User
+security:
+  - bearerAuth: []
+parameters:
+  - name: username
+    in: path
+    required: true
+    description: Unique username for a user.
+responses:
+  200:
+    description: Successfully retrieved statistics for a user.
+  400:
+    description: There is no user with this username.
+  401:
+    $ref: '#/components/responses/UnauthorizedError'
+  403:
+    $ref: '#/components/responses/ForbiddenError'
