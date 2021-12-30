@@ -12,7 +12,9 @@ import asyncio
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token, random_code
+from tests.test_src.test_route.utils import (
+    test_route_auth, AuthVariant, get_jwt_token, random_code, create_andy2_test_user
+)
 
 
 class TestUserRoute(TestSuite):
@@ -255,7 +257,7 @@ class TestUserRoute(TestSuite):
             "email": "andrew@jarombek.com",
             "first": "Andrew",
             "last": "Jarombek",
-            "password": "B0unD2",
+            "password": "B0unDTw0",
             "description": "If it's me, you know that just saying hi to me makes me happy.  Please don't be hard on "
                            "yourself if you can't or aren't ready yet.  It's okay, I'm still always here for you.",
             "member_since": str(datetime.fromisoformat('2019-12-13')),
@@ -376,6 +378,8 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>' route.  This test proves that
         trying to update a user which is different than the one authenticated results in a 400 error.
         """
+        create_andy2_test_user(self)
+
         response: Response = self.client.put(
             '/v2/users/andy2',
             headers={'Authorization': f'Bearer {self.jwt}'}
@@ -942,6 +946,10 @@ class TestUserRoute(TestSuite):
         Test performing a successful HTTP PUT request on the '/v2/users/memberships/<username>' route by leaving and
         joining teams.
         """
+        create_andy2_test_user(self)
+
+        asyncio.run(get_jwt_token(test_suite=self, auth_url=self.auth_url, client_id='andy2', client_secret='B0unDTw0'))
+
         request_body = json.dumps({
             'teams_joined': ['saintsxctf_alumni'],
             'teams_left': ['saintsxctf'],
@@ -950,15 +958,15 @@ class TestUserRoute(TestSuite):
         })
 
         response: Response = self.client.put(
-            '/v2/users/memberships/andy',
+            '/v2/users/memberships/andy2',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get('andy2')}"}
         )
         response_json: dict = response.get_json()
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy2')
         self.assertTrue(response_json.get('updated'))
 
         request_body = json.dumps({
@@ -969,15 +977,15 @@ class TestUserRoute(TestSuite):
         })
 
         response: Response = self.client.put(
-            '/v2/users/memberships/andy',
+            '/v2/users/memberships/andy2',
             data=request_body,
             content_type='application/json',
-            headers={'Authorization': f'Bearer {self.jwt}'}
+            headers={'Authorization': f"Bearer {self.jwts.get('andy2')}"}
         )
         response_json: dict = response.get_json()
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy')
+        self.assertEqual(response_json.get('self'), '/v2/users/memberships/andy2')
         self.assertTrue(response_json.get('updated'))
 
     def test_user_memberships_by_username_put_route_500_invalid_team(self) -> None:
@@ -1303,6 +1311,8 @@ class TestUserRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/users/<username>/change_password' route.  This test proves that
         calling this endpoint with the proper fields results in a 200 status code.
         """
+        create_andy2_test_user(self)
+
         response: Response = self.client.post('/v2/forgot_password/andy2')
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 201)

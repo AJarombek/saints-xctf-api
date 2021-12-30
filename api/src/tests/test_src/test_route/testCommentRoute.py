@@ -115,7 +115,7 @@ class TestCommentRoute(TestSuite):
         self.assertIsNone(response_json.get('comment'))
         self.assertEqual(
             response_json.get('error'),
-            "'username', 'first', 'last', 'log_id', and 'time' are required fields"
+            "'username', 'first', 'last', and 'log_id' are required fields"
         )
 
     def test_comment_post_route_400_other_user(self) -> None:
@@ -399,10 +399,7 @@ class TestCommentRoute(TestSuite):
             f'/v2/comments/{comment_id}',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
-        self.assertEqual(response_json.get('self'), f'/v2/comments/{comment_id}')
-        self.assertTrue(response_json.get('deleted'))
 
     def test_comment_with_id_delete_route_forbidden(self) -> None:
         """

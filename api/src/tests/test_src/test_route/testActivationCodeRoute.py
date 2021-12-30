@@ -312,9 +312,7 @@ class TestActivationCodeRoute(TestSuite):
             f'/v2/activation_code/{activation_code}',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
-        self.assertTrue(response_json.get('deleted'))
 
     def test_activation_code_delete_route_forbidden(self) -> None:
         """

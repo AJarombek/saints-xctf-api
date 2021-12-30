@@ -11,7 +11,7 @@ import asyncio
 from flask import Response
 
 from tests.TestSuite import TestSuite
-from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token
+from tests.test_src.test_route.utils import test_route_auth, AuthVariant, get_jwt_token, create_andy2_test_user
 
 
 class TestNotificationRoute(TestSuite):
@@ -256,6 +256,8 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP PUT request on the '/v2/notifications/<notification_id>' route.  This test proves that
         trying to update a notification that doesn't belong to the user making the API call results in a 400 error.
         """
+        create_andy2_test_user(self)
+
         request_body = json.dumps({
             "username": "andy2",
             "viewed": "N",
@@ -403,6 +405,8 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/notifications/<notification_id>' route.  This test proves
         that the endpoint should return a 400 error status if the notification belongs to another user.
         """
+        create_andy2_test_user(self)
+
         request_body = json.dumps({
             "username": "andy2",
             "viewed": "N",
@@ -498,6 +502,8 @@ class TestNotificationRoute(TestSuite):
         Test performing an HTTP DELETE request on the '/v2/notifications/soft/<notification_id>' route.  This test
         proves that if the notification belongs to another user, a 400 error is returned.
         """
+        create_andy2_test_user(self)
+
         request_body = json.dumps({
             "username": "andy2",
             "viewed": "N",

@@ -9,6 +9,8 @@ import random
 import json
 from unittest import TestCase, TestSuite
 from enum import Enum
+from typing import Union, Any
+from datetime import datetime
 
 import aiohttp
 from flask import Response
@@ -53,7 +55,7 @@ def test_route_auth(case: TestCase, client: FlaskClient, verb: str, endpoint: st
     case.assertEqual(expected_description, response_json.get('error_description'))
 
 
-async def get_jwt_token(test_suite: TestSuite, auth_url: str, client_id: str, client_secret: str) -> None:
+async def get_jwt_token(test_suite: Union[TestSuite, Any], auth_url: str, client_id: str, client_secret: str) -> None:
     """
     Using an authentication URL, retrieve a JWT for a user to use in tests.
     :param test_suite: The test suite which needs the JWT.
@@ -138,3 +140,51 @@ def destroy_test_user(case: TestCase, username: str) -> None:
         headers={'Authorization': f'Bearer {case.jwts.get(username)}'}
     )
     case.assertEqual(response.status_code, 204)
+
+
+def create_andy2_test_user(case: TestCase) -> None:
+    """
+    Create the 'andy2' test user if it does not already exist.
+    :param case: Unittest test case from which to make assertions and access variables.
+    """
+    response: Response = case.client.get(
+        '/v2/users/andy2',
+        headers={'Authorization': f'Bearer {case.jwt}'}
+    )
+
+    if response.status_code != 200:
+        request_body = json.dumps({'group_id': 1, 'email': 'andrew@jarombek.com'})
+        response: Response = case.client.post(
+            '/v2/activation_code/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {case.jwt}'}
+        )
+
+        response_json: dict = response.get_json()
+        case.assertEqual(response.status_code, 200)
+
+        activation_code_json = response_json.get('activation_code')
+        activation_code = activation_code_json.get('activation_code')
+
+        case.client.delete('/v2/users/andy2', headers={'Authorization': f'Bearer {case.jwt}'})
+
+        request_body = json.dumps({
+            "username": "andy2",
+            "email": "andrew@jarombek.com",
+            "first": "Andrew",
+            "last": "Jarombek",
+            "password": "B0unDTw0",
+            "description": "",
+            "member_since": str(datetime.fromisoformat('2019-12-13')),
+            "activation_code": activation_code,
+            "last_signin": str(datetime.fromisoformat('2019-12-14'))
+        })
+
+        response: Response = case.client.post(
+            '/v2/users/',
+            data=request_body,
+            content_type='application/json',
+            headers={'Authorization': f'Bearer {case.jwt}'}
+        )
+        case.assertEqual(201, response.status_code)

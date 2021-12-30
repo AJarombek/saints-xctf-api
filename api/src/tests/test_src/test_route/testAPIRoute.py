@@ -66,11 +66,9 @@ class TestApiRoute(TestSuite):
         self.assertEqual(response_json.get('group'), '/v2/groups/links')
         self.assertEqual(response_json.get('log_feed'), '/v2/log_feed/links')
         self.assertEqual(response_json.get('log'), '/v2/logs/links')
-        self.assertEqual(response_json.get('mail'), '/v2/mail/links')
-        self.assertEqual(response_json.get('message_feed'), '/v2/message_feed/links')
-        self.assertEqual(response_json.get('message'), '/v2/messages/links')
         self.assertEqual(response_json.get('notification'), '/v2/notifications/links')
         self.assertEqual(response_json.get('range_view'), '/v2/range_view/links')
+        self.assertEqual(response_json.get('team'), '/v2/teams/links')
         self.assertEqual(response_json.get('user'), '/v2/users/links')
 
     def test_404_route(self) -> None:

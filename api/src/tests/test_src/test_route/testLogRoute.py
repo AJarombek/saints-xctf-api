@@ -416,9 +416,7 @@ class TestLogRoute(TestSuite):
         log_id = response_json.get('log').get('log_id')
 
         response: Response = self.client.delete(f'/v2/logs/{log_id}', headers={'Authorization': f'Bearer {self.jwt}'})
-        response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 204)
-        self.assertTrue(response_json.get('deleted'))
 
     def test_log_by_id_delete_route_forbidden(self) -> None:
         """

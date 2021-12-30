@@ -89,31 +89,11 @@ class Group(db.Model):
         :param group_2: The second group object.
         :return: True if the objects are equal, False otherwise.
         """
-        if group_1.grouppic is None:
-            self_grouppic = bytes()
-        else:
-            self_grouppic = group_1.grouppic
-            try:
-                self_grouppic = self_grouppic.decode('utf-8')
-            except AttributeError:
-                pass
-
-        if group_2.grouppic is None:
-            other_grouppic = bytes()
-        else:
-            other_grouppic = group_2.grouppic
-            try:
-                other_grouppic = other_grouppic.decode('utf-8')
-            except AttributeError:
-                pass
-
         return all([
             group_1.id == group_2.id,
             group_1.group_name == group_2.group_name,
             group_1.group_title == group_2.group_title,
-            self_grouppic == other_grouppic,
             group_1.grouppic_name == group_2.grouppic_name,
             group_1.week_start == group_2.week_start,
-            group_1.description == group_2.description,
-            group_1.deleted == group_2.deleted
+            group_1.description == group_2.description
         ])

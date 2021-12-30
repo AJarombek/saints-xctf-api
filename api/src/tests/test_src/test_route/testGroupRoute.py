@@ -264,7 +264,7 @@ class TestGroupRoute(TestSuite):
         self.assertEqual(response_json.get('self'), '/v2/groups/0')
         self.assertFalse(response_json.get('updated'))
         self.assertIsNone(response_json.get('group'))
-        self.assertEqual(response_json.get('error'), 'There is no existing group with this id.')
+        self.assertEqual(response_json.get('error'), 'User andy is not authorized to update a group with id 0.')
 
     def test_group_by_id_put_route_400_not_an_admin(self) -> None:
         """
@@ -330,7 +330,7 @@ class TestGroupRoute(TestSuite):
         returned.
         """
         response: Response = self.client.get(
-            '/v2/groups/saintsxctf/wmenstf',
+            '/v2/groups/saintsxctf/alumni',
             headers={'Authorization': f'Bearer {self.jwt}'}
         )
         response_json: dict = response.get_json()
@@ -351,8 +351,8 @@ class TestGroupRoute(TestSuite):
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get('self'), f'/v2/groups/{group_id}')
-        self.assertFalse(response_json.get('updated'))
-        self.assertIsNone(response_json.get('group'))
+        self.assertTrue(response_json.get('updated'))
+        self.assertIsNotNone(response_json.get('group'))
 
     def test_group_by_id_put_route_forbidden(self) -> None:
         """
@@ -504,30 +504,6 @@ class TestGroupRoute(TestSuite):
         group_id = response_json.get('group').get('id')
 
         # You know I'm always here for you no matter what.  Will always give you my best if you ask for it.
-        request_body = json.dumps({
-            "status": "accepted",
-            "user": "admin"
-        })
-        response: Response = self.client.put(
-            f'/v2/groups/members/{group_id}/andy',
-            data=request_body,
-            content_type='application/json',
-            headers={'Authorization': f'Bearer {self.jwt}'}
-        )
-        response_json: dict = response.get_json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get('self'), f'/v2/groups/members/{group_id}/andy')
-        self.assertTrue(response_json.get('updated'))
-        self.assertIsNotNone(response_json.get('group_member'))
-
-        group_member: dict = response_json.get('group_member')
-
-        self.assertEqual(1, group_member.get('group_id'))
-        self.assertEqual('alumni', group_member.get('group_name'))
-        self.assertEqual('accepted', group_member.get('status'))
-        self.assertEqual('admin', group_member.get('user'))
-        self.assertEqual('andy', group_member.get('username'))
-
         request_body = json.dumps({
             "status": "accepted",
             "user": "admin"
