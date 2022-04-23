@@ -24,6 +24,9 @@ class TestSuite(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        """
+        Set up logic performed before each test class executes.
+        """
         flask_env = os.getenv('FLASK_ENV') or 'local'
         auth_url = config[flask_env].AUTH_URL
         TestSuite.auth_url = auth_url
@@ -49,7 +52,7 @@ class TestSuite(unittest.TestCase):
 
     def setUp(self) -> None:
         """
-        Set up logic for the test suite.  Invoked before unit tests are run.
+        Set up logic performed before every test.
         """
         if os.environ.get('ENV') == 'localtest':
             env = 'localtest'
@@ -66,7 +69,7 @@ class TestSuite(unittest.TestCase):
 
     def tearDown(self) -> None:
         """
-        Tear down logic for the test suite.  Invoked after unit tests are run.
+        Tear down logic performed after every test.
         """
         db.session.remove()
         self.app_context.pop()

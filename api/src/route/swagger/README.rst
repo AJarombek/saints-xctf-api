@@ -34,3 +34,13 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``userRoute``               | Open API documentation for user API routes.                                            |
 +-----------------------------+----------------------------------------------------------------------------------------------+
+
+References
+----------
+
+1) `flasgger <https://github.com/flasgger/flasgger>`_
+2) `flasgger OpenAPI 3.0 Support <https://github.com/flasgger/flasgger#openapi-30-support>`_
+3) `OpenAPI Spec <https://github.com/OAI/OpenAPI-Specification/blob/main/versions/2.0.md#operationObject>`_
+4) `Swagger Authentication <https://swagger.io/docs/specification/authentication/>`_
+5) `Swagger Example <https://petstore.swagger.io/#/>`_
+5) `Swagger Example JSON <https://petstore.swagger.io/v2/swagger.json>`_

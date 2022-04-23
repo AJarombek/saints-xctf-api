@@ -17,20 +17,19 @@ parameters:
     description: JSON request body containing user details.
     schema:
       id: UserPutBody
-        required: []
-        properties:
-          teams_joined:
-            type: string
-            description: Unique username for the user.
-          teams_left:
-            type: string
-            description: First name of the user.
-          groups_joined:
-            type: string
-            description: Last name of the user.
-          groups_left:
-            type: string
-            description: Email assigned to the user's account.
+      properties:
+        teams_joined:
+          type: string
+          description: Unique username for the user.
+        teams_left:
+          type: string
+          description: First name of the user.
+        groups_joined:
+          type: string
+          description: Last name of the user.
+        groups_left:
+          type: string
+          description: Email assigned to the user's account.
 responses:
   201:
     description: Successfully updated the memberships of a user with a given username.

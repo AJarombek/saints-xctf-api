@@ -181,21 +181,11 @@ swagger_template = {
     },
     "host": "localhost:5000",
     "basePath": "/",
-    "components": {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
-        },
-        "responses": {
-            "UnauthorizedError": {
-                "description": "No API token exists on the request."
-            },
-            "ForbiddenError": {
-                "description": "The API authentication token is invalid."
-            }
+    "securityDefinitions": {
+        "bearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     },
     "schemes": [

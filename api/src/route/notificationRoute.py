@@ -38,7 +38,7 @@ def notifications_redirect() -> Response:
 @notification_route.route('/', methods=['GET', 'POST'])
 @auth_required()
 @swag_from('swagger/notificationRoute/notificationsGet.yml', methods=['GET'])
-@swag_from('swagger/notificationRoute/notificationsPost.yml', methods=['POST'])
+@swag_from('swagger/notificationRoute/notificationPost.yml', methods=['POST'])
 def notifications() -> Response:
     """
     Endpoints for retrieving all the notifications and creating new notifications.
