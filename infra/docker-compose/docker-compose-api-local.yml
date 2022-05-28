@@ -17,6 +17,8 @@ services:
       - 5000:5000
     networks:
       - local-saints-xctf-api-net
+    volumes:
+      - ./logs:/logs
 
 networks:
   local-saints-xctf-api-net:

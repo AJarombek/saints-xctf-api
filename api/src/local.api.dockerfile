@@ -21,10 +21,12 @@ RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS '
     && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE DATABASE IF NOT EXISTS saintsxctf" \
     && mysql --protocol=tcp -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'"
 
+RUN mkdir logs
+
 COPY . /src
 WORKDIR /src
 
-#RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
+RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < local-db.sql
 
 RUN pipenv install
 

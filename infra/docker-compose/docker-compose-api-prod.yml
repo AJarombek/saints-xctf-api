@@ -13,6 +13,8 @@ services:
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
     networks:
       - saints-xctf-api-net
+    volumes:
+      - ./logs:/logs
   saints-xctf-api-nginx:
     image: 739088120071.dkr.ecr.us-east-1.amazonaws.com/saints-xctf-api-nginx:2.0.0
     ports:

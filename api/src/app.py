@@ -5,6 +5,7 @@ Date: 6/8/2019
 """
 
 import os
+import logging
 
 from flask import Flask, jsonify
 from flask_sqlalchemy import get_debug_queries, current_app
@@ -54,6 +55,13 @@ def create_app(config_name) -> Flask:
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     application.config['SQLALCHEMY_RECORD_QUERIES'] = True
     application.config['SLOW_DB_QUERY_TIME'] = 0.5
+
+    root_logger = logging.getLogger()
+    formatter = logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+    file_handler = logging.FileHandler("/logs/saints-xctf-api.log")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+    root_logger.addHandler(file_handler)
 
     db.init_app(application)
     flask_bcrypt.init_app(application)

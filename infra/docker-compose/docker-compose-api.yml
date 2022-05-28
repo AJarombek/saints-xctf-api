@@ -17,6 +17,8 @@ services:
       - AWS_SHARED_CREDENTIALS_FILE=.aws/credentials
     networks:
       - saints-xctf-api-net
+    volumes:
+      - ./logs:/logs
   saints-xctf-api:
     domainname: saints-xctf-api
     build:

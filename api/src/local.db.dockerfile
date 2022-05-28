@@ -2,7 +2,7 @@
 # Author: Andrew Jarombek
 # Date: 6/22/2019
 
-FROM mysql:5.7
+FROM mysql:5.7.36
 
 LABEL maintainer="andrew@jarombek.com" \
       version="1.0.0" \

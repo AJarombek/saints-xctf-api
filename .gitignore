@@ -4,3 +4,4 @@ __pycache__
 venv/*
 api/src/tmp/*
 api/src/credentials
+infra/docker-compose/logs
