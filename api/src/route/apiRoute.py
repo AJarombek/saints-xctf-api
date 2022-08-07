@@ -31,7 +31,8 @@ def versions() -> Response:
         'self': '/versions',
         'version_latest': '/v2',
         'version_1': None,
-        'version_2': '/v2'
+        'version_2': '/v2',
+        'version_demo': '/demo'
     })
 
 
@@ -46,28 +47,48 @@ def version2() -> Response:
     })
 
 
+@api_route.route('/demo', methods=['GET'])
+@swag_from('swagger/apiRoute/demo.yml')
+def version2() -> Response:
+    return jsonify({
+        'self': '/demo',
+        'version': 2,
+        'latest': True,
+        'links': '/demo/links'
+    })
+
+
+link_list = {
+    'self': '/v2/links',
+    'activation_code': '/v2/activation_code/links',
+    'comment': '/v2/comments/links',
+    'flair': '/v2/flair/links',
+    'forgot_password': '/v2/forgot_password/links',
+    'group': '/v2/groups/links',
+    'log_feed': '/v2/log_feed/links',
+    'log': '/v2/logs/links',
+    'notification': '/v2/notifications/links',
+    'range_view': '/v2/range_view/links',
+    'team': '/v2/teams/links',
+    'user': '/v2/users/links'
+}
+
+
 @api_route.route('/v2/links', methods=['GET'])
 @swag_from('swagger/apiRoute/v2Links.yml')
 def links() -> Response:
-    return jsonify({
-        'self': '/v2/links',
-        'activation_code': '/v2/activation_code/links',
-        'comment': '/v2/comments/links',
-        'flair': '/v2/flair/links',
-        'forgot_password': '/v2/forgot_password/links',
-        'group': '/v2/groups/links',
-        'log_feed': '/v2/log_feed/links',
-        'log': '/v2/logs/links',
-        'notification': '/v2/notifications/links',
-        'range_view': '/v2/range_view/links',
-        'team': '/v2/teams/links',
-        'user': '/v2/users/links'
-    })
+    return jsonify(link_list)
+
+
+@api_route.route('/demo/links', methods=['GET'])
+@swag_from('swagger/apiRoute/demoLinks.yml')
+def links() -> Response:
+    return jsonify(link_list)
 
 
 @api_route.route('/404', methods=['GET'])
 @swag_from('swagger/apiRoute/404.yml')
-def error404() -> Response:
+def error404():
     """
     Route for testing the logic of 404 HTTP errors.
     :return: Custom error handling JSON.

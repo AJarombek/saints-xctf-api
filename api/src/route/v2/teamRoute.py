@@ -16,6 +16,7 @@ from dao.teamMemberDao import TeamMemberDao
 from dao.teamGroupDao import TeamGroupDao
 from model.Team import Team
 from model.TeamData import TeamData
+from route.common.team import links
 
 team_route = Blueprint('team_route', __name__, url_prefix='/v2/teams')
 
@@ -276,35 +277,6 @@ def team_links_get() -> Response:
     Get all the other team API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/teams/links',
-        'endpoints': [
-            {
-                'link': '/v2/teams',
-                'verb': 'GET',
-                'description': 'Get all the teams in the database.'
-            },
-            {
-                'link': '/v2/teams/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve a single team with a given name.'
-            },
-            {
-                'link': '/v2/teams/members/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve the members of a team with a given name.'
-            },
-            {
-                'link': '/v2/teams/groups/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve the groups in a team based on the team name.'
-            },
-            {
-                'link': '/v2/teams/search/<text>/<limit>',
-                'verb': 'GET',
-                'description': 'Text search for teams.'
-            }
-        ],
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response

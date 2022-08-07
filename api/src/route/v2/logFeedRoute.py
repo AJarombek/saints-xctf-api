@@ -13,6 +13,7 @@ from model.CommentData import CommentData
 from dao.logDao import LogDao
 from dao.commentDao import CommentDao
 from utils.jwt import get_claims
+from route.common.logFeed import links
 
 log_feed_route = Blueprint('log_feed_route', __name__, url_prefix='/v2/log_feed')
 
@@ -140,15 +141,6 @@ def log_feed_links_get() -> Response:
     Get all the other log feed API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/log_feed/links',
-        'endpoints': [
-            {
-                'link': '/v2/log_feed/<filter_by>/<bucket>/<limit>/<offset>',
-                'verb': 'GET',
-                'description': 'Get a list of exercise logs based on certain filters.'
-            }
-        ]
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response

@@ -37,6 +37,14 @@ Directories
 Version History
 ---------------
 
+`v2.0.2 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.2>`_ - Swagger Docs & Group Route Fix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Release Date: May 28th, 2022
+
+Fixed a failing Group route and add Swagger documentation for all endpoints.
+
+
 `v2.0.1 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.1>`_ - Bug Fixes & Testing Fixes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

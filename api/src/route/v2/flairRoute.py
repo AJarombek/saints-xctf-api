@@ -14,6 +14,7 @@ from utils.jwt import get_claims
 from dao.flairDao import FlairDao
 from model.Flair import Flair
 from model.FlairData import FlairData
+from route.common.flair import links
 
 flair_route = Blueprint('flair_route', __name__, url_prefix='/v2/flair')
 
@@ -145,15 +146,6 @@ def flair_links_get() -> Response:
     Get all the other flair API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/flair/links',
-        'endpoints': [
-            {
-                'link': '/v2/flair',
-                'verb': 'POST',
-                'description': 'Create a new flair item.'
-            }
-        ],
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response

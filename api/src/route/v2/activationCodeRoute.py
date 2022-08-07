@@ -17,6 +17,7 @@ from utils.codes import generate_code
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 from model.CodeData import CodeData
+from route.common.activationCode import links
 
 activation_code_route = Blueprint('activation_code_route', __name__, url_prefix='/v2/activation_code')
 
@@ -347,30 +348,6 @@ def activation_code_links_get() -> Response:
     Get all the other activation code API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/activation_code/links',
-        'endpoints': [
-            {
-                'link': '/v2/activation_code',
-                'verb': 'POST',
-                'description': 'Create a new activation code.'
-            },
-            {
-                'link': '/v2/activation_code/<code>',
-                'verb': 'GET',
-                'description': 'Retrieve a single activation code with a given unique code.'
-            },
-            {
-                'link': '/v2/activation_code/<code>',
-                'verb': 'DELETE',
-                'description': 'Delete a single activation code.'
-            },
-            {
-                'link': '/v2/activation_code/soft/<code>',
-                'verb': 'DELETE',
-                'description': 'Soft delete a single activation code.'
-            }
-        ],
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response

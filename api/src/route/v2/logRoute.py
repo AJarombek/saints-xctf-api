@@ -17,6 +17,7 @@ from model.LogData import LogData
 from model.CommentData import CommentData
 from utils.logs import to_miles, calculate_mile_pace
 from utils.jwt import get_claims
+from route.common.log import links
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -539,40 +540,6 @@ def log_links_get() -> Response:
     Get all the other log API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/logs/links',
-        'endpoints': [
-            {
-                'link': '/v2/logs',
-                'verb': 'GET',
-                'description': 'Get all the exercise logs in the database.'
-            },
-            {
-                'link': '/v2/logs',
-                'verb': 'POST',
-                'description': 'Create a new exercise log.'
-            },
-            {
-                'link': '/v2/logs/<log_id>',
-                'verb': 'GET',
-                'description': 'Retrieve a single exercise log with a given unique id.'
-            },
-            {
-                'link': '/v2/logs/<log_id>',
-                'verb': 'PUT',
-                'description': 'Update an exercise log with a given unique id.'
-            },
-            {
-                'link': '/v2/logs/<log_id>',
-                'verb': 'DELETE',
-                'description': 'Delete a single exercise log with a given unique id.'
-            },
-            {
-                'link': '/v2/logs/soft/<comment_id>',
-                'verb': 'DELETE',
-                'description': 'Soft delete a single exercise log with a given unique id.'
-            }
-        ],
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response

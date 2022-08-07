@@ -15,6 +15,7 @@ from utils.jwt import get_claims
 from model.Notification import Notification
 from model.NotificationData import NotificationData
 from dao.notificationDao import NotificationDao
+from route.common.notification import links
 
 notification_route = Blueprint('notification_route', __name__, url_prefix='/v2/notifications')
 
@@ -436,40 +437,6 @@ def notification_links_get() -> Response:
     Get all the other notification API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify({
-        'self': f'/v2/notifications/links',
-        'endpoints': [
-            {
-                'link': '/v2/notifications',
-                'verb': 'GET',
-                'description': 'Get all the user notifications in the database.'
-            },
-            {
-                'link': '/v2/notifications',
-                'verb': 'POST',
-                'description': 'Create a new user notification.'
-            },
-            {
-                'link': '/v2/notifications/<notification_id>',
-                'verb': 'GET',
-                'description': 'Retrieve a single user notification with a given unique id.'
-            },
-            {
-                'link': '/v2/notifications/<notification_id>',
-                'verb': 'PUT',
-                'description': 'Update a user notification with a given unique id.'
-            },
-            {
-                'link': '/v2/notifications/<notification_id>',
-                'verb': 'DELETE',
-                'description': 'Delete a user notification with a given unique id.'
-            },
-            {
-                'link': '/v2/notifications/soft/<notification_id>',
-                'verb': 'DELETE',
-                'description': 'Soft delete a user notification with a given unique id.'
-            }
-        ],
-    })
+    response = jsonify(links)
     response.status_code = 200
     return response
