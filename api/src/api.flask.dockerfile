@@ -14,6 +14,10 @@ RUN apt-get update \
 RUN pip install pipenv \
     && pip install uwsgi
 
+RUN mkdir /logs
+WORKDIR /logs
+RUN touch saints-xctf-api.log
+
 RUN mkdir /src
 WORKDIR /src
 
