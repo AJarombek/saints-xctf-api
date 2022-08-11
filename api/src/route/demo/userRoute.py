@@ -15,9 +15,26 @@ from model.User import User
 user_demo_route = Blueprint('user_demo_route', __name__, url_prefix='/demo/users')
 
 user_database = {
-    'andy': UserData(user=User({
-
-    }))
+    'andy': User({
+        'username': 'andy',
+        'first': 'Andy',
+        'last': 'Jarombek',
+        'salt': 'aaa',
+        'password': 'aaa',
+        'profilepic': None,
+        'profilepic_name': 'snow-race-profile-picture.jpg',
+        'description': 'I sometimes like to run...',
+        'member_since': '2016-12-23',
+        'class_year': 2017,
+        'location': 'New York, NY',
+        'favorite_event': 'Shakeout',
+        'activation_code': 'aaaaaa',
+        'email': 'andrew@jarombek.com',
+        'last_signin': None,
+        'week_start': 'monday',
+        'subscribed': None,
+        'deleted': 0
+    })
 }
 
 
@@ -29,11 +46,11 @@ def users_redirect() -> Response:
     :return: Response object letting the caller know where to redirect the request to.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users '''
+        ''' [GET] /demo/users '''
         return redirect(url_for('user_demo_route.users'), code=302)
 
     elif request.method == 'POST':
-        ''' [POST] /v2/users '''
+        ''' [POST] /demo/users '''
         return redirect(url_for('user_demo_route.users'), code=307)
 
 
@@ -47,11 +64,11 @@ def users() -> Response:
     :return: JSON representation of a list of users and relevant metadata
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/ '''
+        ''' [GET] /demo/users/ '''
         return users_get()
 
     elif request.method == 'POST':
-        ''' [POST] /v2/users/ '''
+        ''' [POST] /demo/users/ '''
         return user_post()
 
 
@@ -67,15 +84,15 @@ def user(username) -> Response:
     :return: JSON representation of a user and relevant metadata
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/<username> '''
+        ''' [GET] /demo/users/<username> '''
         return user_by_username_get(username)
 
     elif request.method == 'PUT':
-        ''' [PUT] /v2/users/<username> '''
+        ''' [PUT] /demo/users/<username> '''
         return user_by_username_put(username)
 
     elif request.method == 'DELETE':
-        ''' [DELETE] /v2/users/<username> '''
+        ''' [DELETE] /demo/users/<username> '''
         return user_by_username_delete(username)
 
 
@@ -89,7 +106,7 @@ def user_soft_by_username(username) -> Response:
     :return: JSON representation of users and relevant metadata.
     """
     if request.method == 'DELETE':
-        ''' [DELETE] /v2/users/soft/<username> '''
+        ''' [DELETE] /demo/users/soft/<username> '''
         return user_by_username_soft_delete(username)
 
 
@@ -104,7 +121,7 @@ def user_snapshot(username) -> Response:
     :return: JSON representation of a user and relevant metadata
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/snapshot/<username> '''
+        ''' [GET] /demo/users/snapshot/<username> '''
         return user_snapshot_by_username_get(username)
 
 
@@ -118,7 +135,7 @@ def user_groups(username) -> Response:
     :return: JSON representation of a list of group memberships
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/groups/<username> '''
+        ''' [GET] /demo/users/groups/<username> '''
         return user_groups_by_username_get(username)
 
 
@@ -132,7 +149,7 @@ def user_teams(username) -> Response:
     :return: JSON representation of a list of team memberships
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/teams/<username> '''
+        ''' [GET] /demo/users/teams/<username> '''
         return user_teams_by_username_get(username)
 
 
@@ -147,10 +164,10 @@ def user_memberships(username) -> Response:
     :return: JSON representation of a list of team memberships with nested group memberships
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/memberships/<username> '''
+        ''' [GET] /demo/users/memberships/<username> '''
         return user_memberships_by_username_get(username)
     elif request.method == 'PUT':
-        ''' [PUT] /v2/users/memberships/<username> '''
+        ''' [PUT] /demo/users/memberships/<username> '''
         return user_memberships_by_username_put(username)
 
 
@@ -164,7 +181,7 @@ def user_notifications(username) -> Response:
     :return: JSON representation of a list of notifications
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/notifications/<username> '''
+        ''' [GET] /demo/users/notifications/<username> '''
         return user_notifications_by_username_get(username)
 
 
@@ -178,7 +195,7 @@ def user_flair(username) -> Response:
     :return: JSON representation of a list of flair objects
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/flair/<username> '''
+        ''' [GET] /demo/users/flair/<username> '''
         return user_flair_by_username_get(username)
 
 
@@ -192,7 +209,7 @@ def user_statistics(username) -> Response:
     :return: JSON representation of a users exercise statistics.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/statistics/<username> '''
+        ''' [GET] /demo/users/statistics/<username> '''
         return user_statistics_by_username_get(username)
 
 
@@ -205,7 +222,7 @@ def user_change_password(username) -> Response:
     :return: JSON with the result of the password change.
     """
     if request.method == 'PUT':
-        ''' [GET] /v2/users/<username>/change_password '''
+        ''' [GET] /demo/users/<username>/change_password '''
         return user_change_password_by_username_put(username)
 
 
@@ -219,7 +236,7 @@ def user_update_last_login(username) -> Response:
     :return: JSON with the result of the last login update
     """
     if request.method == 'PUT':
-        ''' [PUT] /v2/users/<username>/update_last_login'''
+        ''' [PUT] /demo/users/<username>/update_last_login'''
         return user_update_last_login_by_username_put(username)
 
 
@@ -233,7 +250,7 @@ def user_lookup(username) -> Response:
     :return: JSON representation of the result of a user lookup.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/lookup/<username> '''
+        ''' [GET] /demo/users/lookup/<username> '''
         return user_lookup_by_username_get(username)
 
 
@@ -245,7 +262,7 @@ def user_links() -> Response:
     :return: Metadata about the user API.
     """
     if request.method == 'GET':
-        ''' [GET] /v2/users/links '''
+        ''' [GET] /demo/users/links '''
         return user_links_get()
 
 
@@ -254,9 +271,16 @@ def users_get() -> Response:
     Retrieve all the users in the database.
     :return: A response object for the GET API request.
     """
+    user_dicts = []
+
+    for user_object in user_database.values():
+        user_dict = UserData(user_object).__dict__
+        user_dict['this_user'] = f'/v2/users/{user_dict["username"]}'
+        user_dicts.append(user_dict)
+
     response = jsonify({
-        'self': '/v2/users',
-        'users': {}
+        'self': '/demo/users',
+        'users': user_dicts
     })
     response.status_code = 200
     return response
@@ -268,7 +292,7 @@ def user_post() -> Response:
     :return: A response object for the POST API request.
     """
     response = jsonify({
-        'self': '/v2/users',
+        'self': '/demo/users',
         'added': True,
         'user': {},
         'new_user': f'/v2/users/{request.get_json().get("username")}'
@@ -284,7 +308,7 @@ def user_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/{username}',
+        'self': f'/demo/users/{username}',
         'user': {}
     })
     response.status_code = 200
@@ -298,7 +322,7 @@ def user_by_username_put(username) -> Response:
     :return: A response object for the PUT API request.
     """
     response = jsonify({
-        'self': f'/v2/users/{username}',
+        'self': f'/demo/users/{username}',
         'updated': True,
         'user': {}
     })
@@ -313,7 +337,7 @@ def user_by_username_delete(username) -> Response:
     :return: A response object for the DELETE API request.
     """
     response = jsonify({
-        'self': f'/v2/users/{username}',
+        'self': f'/demo/users/{username}',
         'deleted': True,
     })
     response.status_code = 204
@@ -327,7 +351,7 @@ def user_by_username_soft_delete(username) -> Response:
     :return: A response object for the DELETE API request.
     """
     response = jsonify({
-        'self': f'/v2/users/soft/{username}',
+        'self': f'/demo/users/soft/{username}',
         'deleted': True,
     })
     response.status_code = 204
@@ -341,7 +365,7 @@ def user_snapshot_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/snapshot/{username}',
+        'self': f'/demo/users/snapshot/{username}',
         'user': {}
     })
     response.status_code = 200
@@ -355,7 +379,7 @@ def user_groups_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/groups/{username}',
+        'self': f'/demo/users/groups/{username}',
         'groups': {}
     })
     response.status_code = 200
@@ -369,7 +393,7 @@ def user_teams_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/teams/{username}',
+        'self': f'/demo/users/teams/{username}',
         'teams': {}
     })
     response.status_code = 200
@@ -383,7 +407,7 @@ def user_memberships_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/memberships/{username}',
+        'self': f'/demo/users/memberships/{username}',
         'memberships': {}
     })
     response.status_code = 200
@@ -397,7 +421,7 @@ def user_memberships_by_username_put(username) -> Response:
     :return: A response object for the PUT API request.
     """
     response = jsonify({
-        'self': f'/v2/users/memberships/{username}',
+        'self': f'/demo/users/memberships/{username}',
         'updated': True,
     })
     response.status_code = 201
@@ -411,7 +435,7 @@ def user_notifications_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/notifications/{username}',
+        'self': f'/demo/users/notifications/{username}',
         'notifications': {}
     })
     response.status_code = 200
@@ -425,7 +449,7 @@ def user_flair_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/flair/{username}',
+        'self': f'/demo/users/flair/{username}',
         'flair': {}
     })
     response.status_code = 200
@@ -439,7 +463,7 @@ def user_statistics_by_username_get(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/statistics/{username}',
+        'self': f'/demo/users/statistics/{username}',
         'stats': {}
     })
     response.status_code = 200
@@ -453,7 +477,7 @@ def user_change_password_by_username_put(username) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/{username}/change_password',
+        'self': f'/demo/users/{username}/change_password',
         'password_updated': True,
         'forgot_password_code_deleted': {}
     })
@@ -468,7 +492,7 @@ def user_update_last_login_by_username_put(username) -> Response:
     :return: A response object for the PUT API request.
     """
     response = jsonify({
-        'self': f'/v2/users/{username}/update_last_login',
+        'self': f'/demo/users/{username}/update_last_login',
         'last_login_updated': True
     })
     response.status_code = 200
@@ -482,7 +506,7 @@ def user_lookup_by_username_get(username: str) -> Response:
     :return: A response object for the GET API request.
     """
     response = jsonify({
-        'self': f'/v2/users/lookup/{username}',
+        'self': f'/demo/users/lookup/{username}',
         'exists': True
     })
     response.status_code = 200
