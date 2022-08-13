@@ -46,6 +46,7 @@ class User(db.Model):
         self.deleted_app = user.get('deleted_app')
 
     __tablename__ = 'users'
+    __bind_key__ = 'app'
 
     # Data Columns
     username = Column(db.VARCHAR(20), primary_key=True)

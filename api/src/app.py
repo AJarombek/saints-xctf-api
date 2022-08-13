@@ -52,6 +52,11 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(team_route)
 
     application.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
+    application.config['SQLALCHEMY_BINDS'] = {
+        'app': application.config['SQLALCHEMY_DATABASE_URI'],
+        'demo': 'sqlite:///demo.db'
+    }
+
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     application.config['SQLALCHEMY_RECORD_QUERIES'] = True
     application.config['SLOW_DB_QUERY_TIME'] = 0.5

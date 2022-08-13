@@ -33,6 +33,7 @@ class Notification(db.Model):
         self.deleted_app = notification.get('deleted_app')
 
     __tablename__ = 'notifications'
+    __bind_key__ = 'app'
 
     # Data Columns
     notification_id = Column(db.INT, autoincrement=True, primary_key=True)

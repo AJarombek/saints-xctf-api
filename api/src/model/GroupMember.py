@@ -33,6 +33,7 @@ class GroupMember(db.Model):
         self.deleted_app = group_member.get('deleted_app')
 
     __tablename__ = 'groupmembers'
+    __bind_key__ = 'app'
 
     # Data Columns
     id = Column(db.INTEGER, primary_key=True, autoincrement=True)

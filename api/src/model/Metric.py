@@ -18,6 +18,7 @@ class Metric(db.Model):
         self.metric = metric.get('metric')
 
     __tablename__ = 'metrics'
+    __bind_key__ = 'app'
 
     metric = Column(db.VARCHAR(15), primary_key=True)
 

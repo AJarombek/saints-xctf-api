@@ -18,6 +18,7 @@ class Admin(db.Model):
         self.user = code.get('user')
 
     __tablename__ = 'admins'
+    __bind_key__ = 'app'
 
     user = Column(db.VARCHAR(10), primary_key=True)
 

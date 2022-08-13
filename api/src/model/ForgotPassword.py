@@ -30,6 +30,7 @@ class ForgotPassword(db.Model):
         self.deleted_app = forgot_password.get('deleted_app')
 
     __tablename__ = 'forgotpassword'
+    __bind_key__ = 'app'
 
     # Data Columns
     forgot_code = Column(db.VARCHAR(8), primary_key=True)

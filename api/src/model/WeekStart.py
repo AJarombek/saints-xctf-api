@@ -10,6 +10,7 @@ from sqlalchemy import Column
 
 class WeekStart(db.Model):
     __tablename__ = 'weekstart'
+    __bind_key__ = 'app'
 
     week_start = Column(db.VARCHAR(15), primary_key=True)
 
@@ -22,3 +23,7 @@ class WeekStart(db.Model):
         :return: The week start object in string form.
         """
         return '<WeekStart %r>' % self.week_start
+
+
+class WeekStartDemo(WeekStart):
+    __bind_key__ = 'demo'

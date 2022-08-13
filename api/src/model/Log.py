@@ -45,6 +45,7 @@ class Log(db.Model):
         self.deleted_app = log.get('deleted_app')
 
     __tablename__ = 'logs'
+    __bind_key__ = 'app'
 
     # Data Columns
     log_id = Column(db.INT, autoincrement=True, primary_key=True)
