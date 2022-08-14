@@ -20,7 +20,7 @@ class Admin(db.Model):
     __tablename__ = 'admins'
     __bind_key__ = 'app'
 
-    user = Column(db.VARCHAR(10), primary_key=True)
+    user = Column(db.VARCHAR(10), primary_key=True, nullable=False)
 
     def __str__(self):
         """
