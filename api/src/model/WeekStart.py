@@ -12,7 +12,7 @@ class WeekStart(db.Model):
     __tablename__ = 'weekstart'
     __bind_key__ = 'app'
 
-    week_start = Column(db.VARCHAR(15), primary_key=True)
+    week_start = Column(db.VARCHAR(15), primary_key=True, nullable=False)
 
     user = db.relationship('User', backref='user')
     group = db.relationship('Group', backref='group')

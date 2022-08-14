@@ -20,7 +20,7 @@ class Type(db.Model):
     __tablename__ = 'types'
     __bind_key__ = 'app'
 
-    type = Column(db.VARCHAR(15), primary_key=True)
+    type = Column(db.VARCHAR(15), primary_key=True, nullable=False)
 
     def __str__(self):
         """

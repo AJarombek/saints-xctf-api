@@ -180,3 +180,103 @@ CREATE TABLE IF NOT EXISTS notifications(
     deleted_app TEXT,
     FOREIGN KEY (username) REFERENCES users(username)
 );
+
+CREATE TABLE IF NOT EXISTS status(
+    status TEXT PRIMARY KEY NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS teams(
+    name TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    picture_name TEXT,
+    description TEXT,
+    week_start TEXT,
+    deleted INTEGER,
+    created_date NUMERIC,
+    created_user TEXT,
+    created_app TEXT,
+    modified_date NUMERIC,
+    modified_user TEXT,
+    modified_app TEXT,
+    deleted_date NUMERIC,
+    deleted_user TEXT,
+    deleted_app TEXT
+);
+
+CREATE TABLE IF NOT EXISTS teamgroups(
+    team_name TEXT NOT NULL,
+    group_id INTEGER NOT NULL,
+    group_name TEXT NOT NULL,
+    deleted INTEGER,
+    created_date NUMERIC,
+    created_user TEXT,
+    created_app TEXT,
+    modified_date NUMERIC,
+    modified_user TEXT,
+    modified_app TEXT,
+    deleted_date NUMERIC,
+    deleted_user TEXT,
+    deleted_app TEXT,
+    FOREIGN KEY (team_name) REFERENCES teams (name),
+    FOREIGN KEY (group_id) REFERENCES `groups` (id),
+    FOREIGN KEY (group_name) REFERENCES `groups` (group_name)
+);
+
+CREATE TABLE IF NOT EXISTS teammembers(
+    team_name TEXT NOT NULL,
+    username TEXT NOT NULL,
+    status TEXT NOT NULL,
+    user TEXT NOT NULL,
+    deleted INTEGER,
+    created_date NUMERIC,
+    created_user TEXT,
+    created_app TEXT,
+    modified_date NUMERIC,
+    modified_user TEXT,
+    modified_app TEXT,
+    deleted_date NUMERIC,
+    deleted_user TEXT,
+    deleted_app TEXT,
+    FOREIGN KEY (team_name) REFERENCES teams(name),
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+
+CREATE TABLE IF NOT EXISTS types(
+    type TEXT PRIMARY KEY NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users
+(
+    username TEXT PRIMARY KEY NOT NULL,
+    first TEXT NOT NULL,
+    last TEXT NOT NULL,
+    salt TEXT,
+    password TEXT NOT NULL,
+    profilepic BLOB,
+    profilepic_name TEXT,
+    description TEXT,
+    member_since NUMERIC,
+    class_year INTEGER,
+    location TEXT,
+    favorite_event TEXT,
+    activation_code TEXT NOT NULL,
+    email TEXT,
+    last_signin NUMERIC,
+    week_start TEXT,
+    subscribed TEXT,
+    deleted INTEGER,
+    created_date NUMERIC,
+    created_user TEXT,
+    created_app TEXT,
+    modified_date NUMERIC,
+    modified_user TEXT,
+    modified_app TEXT,
+    deleted_date NUMERIC,
+    deleted_user TEXT,
+    deleted_app TEXT,
+    FOREIGN KEY (week_start) REFERENCES weekstart(week_start)
+);
+
+create table weekstart(
+    week_start TEXT PRIMARY KEY NOT NULL
+);
