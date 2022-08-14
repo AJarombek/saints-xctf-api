@@ -4,9 +4,10 @@ Author: Andrew Jarombek
 Date: 8/13/2022
 """
 
+from sqlalchemy import Column
+
 from app import db
 from model.Flair import Flair
-from sqlalchemy import Column
 
 
 class FlairDemo(Flair):

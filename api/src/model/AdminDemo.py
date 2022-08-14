@@ -4,9 +4,10 @@ Author: Andrew Jarombek
 Date: 8/13/2022
 """
 
+from sqlalchemy import Column
+
 from app import db
 from model.Admin import Admin
-from sqlalchemy import Column
 
 
 class AdminDemo(Admin):
