@@ -10,32 +10,9 @@ from flasgger import swag_from
 from decorators import auth_required, disabled, DELETE, GET
 from route.common.user import links
 from model.UserData import UserData
-from model.User import User
+from dao.userDemoDao import UserDemoDao
 
 user_demo_route = Blueprint('user_demo_route', __name__, url_prefix='/demo/users')
-
-user_database = {
-    'andy': User({
-        'username': 'andy',
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'salt': 'aaa',
-        'password': 'aaa',
-        'profilepic': None,
-        'profilepic_name': 'snow-race-profile-picture.jpg',
-        'description': 'I sometimes like to run...',
-        'member_since': '2016-12-23',
-        'class_year': 2017,
-        'location': 'New York, NY',
-        'favorite_event': 'Shakeout',
-        'activation_code': 'aaaaaa',
-        'email': 'andrew@jarombek.com',
-        'last_signin': None,
-        'week_start': 'monday',
-        'subscribed': None,
-        'deleted': 0
-    })
-}
 
 
 @user_demo_route.route('', methods=['GET', 'POST'])
@@ -273,7 +250,7 @@ def users_get() -> Response:
     """
     user_dicts = []
 
-    for user_object in user_database.values():
+    for user_object in UserDemoDao.get_users():
         user_dict = UserData(user_object).__dict__
         user_dict['this_user'] = f'/v2/users/{user_dict["username"]}'
         user_dicts.append(user_dict)

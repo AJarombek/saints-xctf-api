@@ -245,8 +245,7 @@ CREATE TABLE IF NOT EXISTS types(
     type TEXT PRIMARY KEY NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS users
-(
+CREATE TABLE IF NOT EXISTS users(
     username TEXT PRIMARY KEY NOT NULL,
     first TEXT NOT NULL,
     last TEXT NOT NULL,
@@ -277,6 +276,29 @@ CREATE TABLE IF NOT EXISTS users
     FOREIGN KEY (week_start) REFERENCES weekstart(week_start)
 );
 
-create table weekstart(
+CREATE TABLE IF NOT EXISTS weekstart(
     week_start TEXT PRIMARY KEY NOT NULL
 );
+
+DELETE FROM admins;
+INSERT INTO admins (user) VALUES ('admin');
+INSERT INTO admins (user) VALUES ('user');
+
+DELETE FROM metrics;
+INSERT INTO metrics (metric) VALUES ('kilometers');
+INSERT INTO metrics (metric) VALUES ('meters');
+INSERT INTO metrics (metric) VALUES ('miles');
+
+DELETE FROM status;
+INSERT INTO status (status) VALUES ('accepted');
+INSERT INTO status (status) VALUES ('pending');
+
+DELETE FROM types;
+INSERT INTO types (type) VALUES ('run');
+INSERT INTO types (type) VALUES ('bike');
+INSERT INTO types (type) VALUES ('swim');
+INSERT INTO types (type) VALUES ('other');
+
+DELETE FROM weekstart;
+INSERT INTO weekstart (week_start) VALUES ('sunday');
+INSERT INTO weekstart (week_start) VALUES ('monday');
