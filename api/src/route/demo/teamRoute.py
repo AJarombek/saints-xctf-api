@@ -4,83 +4,20 @@ Author: Andrew Jarombek
 Date: 8/10/2022
 """
 
+from typing import List
+
 from flask import Blueprint, Response, request, redirect, url_for, jsonify
 from flasgger import swag_from
 
 from decorators import auth_required
 from model.Team import Team
+from model.TeamDemo import TeamDemo
 from model.TeamData import TeamData
-from model.TeamMember import TeamMember
 from model.TeamMemberData import TeamMemberData
 from route.common.team import links
+from dao.teamDemoDao import TeamDemoDao
 
 team_demo_route = Blueprint('team_demo_route', __name__, url_prefix='/demo/teams')
-
-team_database = {
-    'friends': Team(team={
-        'name': 'friends',
-        'title': 'Andy & Friends',
-        'picture_name': None,
-        'description': None,
-        'week_start': None,
-        'deleted': 0
-    }),
-    'jarombek': Team(team={
-        'name': 'jarombek',
-        'title': 'Jarombek Family',
-        'picture_name': None,
-        'description': None,
-        'week_start': None,
-        'deleted': 0
-    }),
-    'saintsxctf': Team(team={
-        'name': 'saintsxctf',
-        'title': 'St. Lawrence Cross Country and Track & Field',
-        'picture_name': None,
-        'description': None,
-        'week_start': None,
-        'deleted': 0
-    }),
-    'saintsxctf_alumni': Team(team={
-        'name': 'saintsxctf_alumni',
-        'title': 'SaintsXCTF Alumni',
-        'picture_name': None,
-        'description': None,
-        'week_start': None,
-        'deleted': 0
-    }),
-}
-
-team_members_database = [
-    TeamMember(team={
-        'team_name': 'saintsxctf',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 0
-    }),
-    TeamMember(team={
-        'team_name': 'saintsxctf_alumni',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 0
-    }),
-    TeamMember(team={
-        'team_name': 'friends',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 0
-    }),
-    TeamMember(team={
-        'team_name': 'jarombek',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 0
-    })
-]
 
 
 @team_demo_route.route('', methods=['GET'])
@@ -182,9 +119,11 @@ def teams_get() -> Response:
     Retrieve all the teams in the database.
     :return: A response object for the GET API request.
     """
+    all_teams: List[Team] = TeamDemoDao.get_teams()
+
     response = jsonify({
         'self': '/demo/teams',
-        'teams': [TeamData(team_data).__dict__ for team_data in team_database.values()]
+        'teams': [TeamData(team_info).__dict__ for team_info in all_teams]
     })
     response.status_code = 200
     return response
@@ -196,14 +135,25 @@ def team_by_name_get(name) -> Response:
     :param name: Name that uniquely identifies a team.
     :return: A response object for the GET API request.
     """
-    team_data = team_database.get(name)
+    team_info: TeamDemo = TeamDemoDao.get_team_by_name(name=name)
 
-    response = jsonify({
-        'self': f'/demo/teams/{name}',
-        'team': TeamData(team_data).__dict__ if team_data else {}
-    })
-    response.status_code = 200
-    return response
+    if team_info is None:
+        response = jsonify({
+            'self': f'/demo/teams/{name}',
+            'team': None,
+            'error': 'there is no team with this name'
+        })
+        response.status_code = 400
+        return response
+    else:
+        team_dict: dict = TeamData(team_info).__dict__
+
+        response = jsonify({
+            'self': f'/demo/teams/{name}',
+            'team': team_dict
+        })
+        response.status_code = 200
+        return response
 
 
 def team_members_by_team_name_get(team_name) -> Response:
@@ -215,12 +165,7 @@ def team_members_by_team_name_get(team_name) -> Response:
     response = jsonify({
         'self': f'/demo/teams/members/{team_name}',
         'group': f'/demo/teams/{team_name}',
-        'team_members': [
-            TeamMemberData(team_member_data).__dict__
-            for team_member_data
-            in team_members_database
-            if team_member_data.team_name == team_name
-        ]
+        'team_members': []
     })
     response.status_code = 200
     return response
@@ -248,18 +193,25 @@ def search_teams_by_text_get(text: str, limit: int) -> Response:
     :param limit: The maximum number of teams to return.
     :return: A response object for the GET API request
     """
-    team_list = []
+    searched_teams: List[TeamDemo] = TeamDemoDao.search_teams(text, limit)
 
-    for team_name, team_data in team_database.items():
-        if text in team_name:
-            team_list.append(TeamData(team_data).__dict__)
+    if searched_teams is None or len(searched_teams) == 0:
+        response = jsonify({
+            'self': f'/demo/teams/search/{text}/{limit}',
+            'teams': [],
+            'message': 'no teams were found with the provided text'
+        })
+        response.status_code = 200
+        return response
+    else:
+        team_dicts = [TeamData(team_info).__dict__ for team_info in searched_teams]
 
-    response = jsonify({
-        'self': f'/demo/teams/search/{text}/{limit}',
-        'teams': team_list
-    })
-    response.status_code = 200
-    return response
+        response = jsonify({
+            'self': f'/demo/teams/search/{text}/{limit}',
+            'teams': team_dicts
+        })
+        response.status_code = 200
+        return response
 
 
 def team_links_get() -> Response:

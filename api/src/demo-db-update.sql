@@ -11,8 +11,95 @@ DELETE FROM groupmembers;
 DELETE FROM logs;
 DELETE FROM notifications;
 DELETE FROM teams;
+INSERT INTO teams (
+    name,
+    title,
+    picture_name,
+    description,
+    week_start,
+    deleted
+) VALUES (
+    'friends',
+    'Andy & Friends',
+    NULL,
+    NULL,
+    'monday',
+    0
+);
+
+INSERT INTO teams (
+    name,
+    title,
+    picture_name,
+    description,
+    week_start,
+    deleted
+) VALUES (
+    'jarombek',
+    'Jarombek Family',
+    NULL,
+    NULL,
+    'monday',
+    0
+);
+
+INSERT INTO teams (
+    name,
+    title,
+    picture_name,
+    description,
+    week_start,
+    deleted
+) VALUES (
+    'saintsxctf',
+    'St. Lawrence Cross Country and Track & Field',
+    NULL,
+    NULL,
+    'monday',
+    0
+);
+
+INSERT INTO teams (
+    name,
+    title,
+    picture_name,
+    description,
+    week_start,
+    deleted
+) VALUES (
+    'saintsxctf_alumni',
+    'SaintsXCTF Alumni',
+    NULL,
+    NULL,
+    'monday',
+    0
+);
+
 DELETE FROM teamgroups;
 DELETE FROM teammembers;
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'saintsxctf', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'saintsxctf_alumni', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'friends', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'jarombek', 'andy', 'accepted', 'admin', 0
+);
 
 DELETE FROM users;
 INSERT INTO users (
