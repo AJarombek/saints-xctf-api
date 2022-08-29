@@ -8,7 +8,8 @@ from flask import Blueprint, request, jsonify, Response
 from flasgger import swag_from
 
 from decorators import auth_required
-from route.common.rangeView import links
+from route.common.rangeView import range_view_links
+from route.common.versions import APIVersion
 
 range_view_demo_route = Blueprint('range_view_demo_route', __name__, url_prefix='/demo/range_view')
 
@@ -68,6 +69,6 @@ def range_view_links_get() -> Response:
     Get all the other range view API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(range_view_links(APIVersion.demo.value))
     response.status_code = 200
     return response

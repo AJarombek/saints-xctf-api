@@ -16,7 +16,8 @@ from dao.teamMemberDao import TeamMemberDao
 from dao.teamGroupDao import TeamGroupDao
 from model.Team import Team
 from model.TeamData import TeamData
-from route.common.team import links
+from route.common.team import team_links, teams_get as common_teams_get
+from route.common.versions import APIVersion
 
 team_route = Blueprint('team_route', __name__, url_prefix='/v2/teams')
 
@@ -120,25 +121,7 @@ def teams_get() -> Response:
     Retrieve all the teams in the database.
     :return: A response object for the GET API request.
     """
-    all_teams: List[Team] = TeamDao.get_teams()
-
-    if all_teams is None:
-        response = jsonify({
-            'self': '/v2/teams',
-            'teams': None,
-            'error': 'an unexpected error occurred retrieving teams'
-        })
-        response.status_code = 500
-        return response
-    else:
-        team_dicts = [TeamData(team_info).__dict__ for team_info in all_teams]
-
-        response = jsonify({
-            'self': '/v2/teams',
-            'teams': team_dicts
-        })
-        response.status_code = 200
-        return response
+    return common_teams_get(APIVersion.v2, TeamDao)
 
 
 def team_by_name_get(name) -> Response:
@@ -277,6 +260,6 @@ def team_links_get() -> Response:
     Get all the other team API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(team_links(APIVersion.v2.value))
     response.status_code = 200
     return response

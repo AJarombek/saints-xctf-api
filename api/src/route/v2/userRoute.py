@@ -37,7 +37,8 @@ from model.UserData import UserData
 from model.ForgotPassword import ForgotPassword
 from model.Team import Team
 from model.Group import Group
-from route.common.user import links
+from route.common.user import user_links
+from route.common.versions import APIVersion
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
@@ -1083,7 +1084,7 @@ def user_links_get() -> Response:
     Get all the other user API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(user_links(APIVersion.v2.value))
     response.status_code = 200
     return response
 

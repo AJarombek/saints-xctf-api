@@ -8,7 +8,8 @@ from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from flasgger import swag_from
 
 from decorators import auth_required, disabled, DELETE, GET
-from route.common.user import links
+from route.common.user import user_links
+from route.common.versions import APIVersion
 from model.UserData import UserData
 from dao.userDemoDao import UserDemoDao
 
@@ -495,6 +496,6 @@ def user_links_get() -> Response:
     Get all the other user API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(user_links(APIVersion.demo.value))
     response.status_code = 200
     return response

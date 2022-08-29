@@ -9,7 +9,8 @@ from flasgger import swag_from
 
 from decorators import auth_required
 from dao.logDao import LogDao
-from route.common.rangeView import links
+from route.common.rangeView import range_view_links
+from route.common.versions import APIVersion
 from utils import exerciseFilters
 
 range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/range_view')
@@ -112,6 +113,6 @@ def range_view_links_get() -> Response:
     Get all the other range view API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(range_view_links(APIVersion.v2.value))
     response.status_code = 200
     return response
