@@ -21,7 +21,8 @@ from dao.userDao import UserDao
 from model.ForgotPassword import ForgotPassword
 from model.ForgotPasswordData import ForgotPasswordData
 from model.User import User
-from route.common.forgotPassword import links
+from route.common.forgotPassword import forgot_password_links
+from route.common.versions import APIVersion
 from decorators import GET
 
 forgot_password_route = Blueprint('forgot_password_route', __name__, url_prefix='/v2/forgot_password')
@@ -241,6 +242,6 @@ def forgot_password_links_get() -> Response:
     Get all the other forgot password API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(forgot_password_links(APIVersion.v2.value))
     response.status_code = 200
     return response

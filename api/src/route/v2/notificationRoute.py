@@ -15,7 +15,8 @@ from utils.jwt import get_claims
 from model.Notification import Notification
 from model.NotificationData import NotificationData
 from dao.notificationDao import NotificationDao
-from route.common.notification import links
+from route.common.notification import notification_links
+from route.common.versions import APIVersion
 
 notification_route = Blueprint('notification_route', __name__, url_prefix='/v2/notifications')
 
@@ -437,6 +438,6 @@ def notification_links_get() -> Response:
     Get all the other notification API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(notification_links(APIVersion.v2.value))
     response.status_code = 200
     return response

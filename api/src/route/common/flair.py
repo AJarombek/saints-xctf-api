@@ -4,13 +4,21 @@ Author: Andrew Jarombek
 Date: 8/5/2022
 """
 
-links = {
-    'self': f'/v2/flair/links',
-    'endpoints': [
-        {
-            'link': '/v2/flair',
-            'verb': 'POST',
-            'description': 'Create a new flair item.'
-        }
-    ],
-}
+from typing import Dict, Any
+
+
+def flair_links(version: str) -> Dict[str, Any]:
+    """
+    Get all the flair API endpoints.
+    :return: A dictionary describing all flair API endpoints.
+    """
+    return {
+        'self': f'/{version}/flair/links',
+        'endpoints': [
+            {
+                'link': f'/{version}/flair',
+                'verb': 'POST',
+                'description': 'Create a new flair item.'
+            }
+        ],
+    }

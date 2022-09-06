@@ -14,7 +14,8 @@ from utils.jwt import get_claims
 from dao.commentDao import CommentDao
 from model.Comment import Comment
 from model.CommentData import CommentData
-from route.common.comment import links
+from route.common.comment import comment_links
+from route.common.versions import APIVersion
 
 comment_route = Blueprint('comment_route', __name__, url_prefix='/v2/comments')
 
@@ -444,6 +445,6 @@ def comment_links_get() -> Response:
     Get all the other comment API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(comment_links(APIVersion.v2.value))
     response.status_code = 200
     return response

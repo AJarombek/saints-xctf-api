@@ -17,7 +17,8 @@ from model.LogData import LogData
 from model.CommentData import CommentData
 from utils.logs import to_miles, calculate_mile_pace
 from utils.jwt import get_claims
-from route.common.log import links
+from route.common.log import log_links
+from route.common.versions import APIVersion
 
 log_route = Blueprint('log_route', __name__, url_prefix='/v2/logs')
 
@@ -540,6 +541,6 @@ def log_links_get() -> Response:
     Get all the other log API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(log_links(APIVersion.v2.value))
     response.status_code = 200
     return response

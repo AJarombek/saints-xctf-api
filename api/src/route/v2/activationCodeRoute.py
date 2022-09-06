@@ -17,7 +17,8 @@ from utils.codes import generate_code
 from dao.activationCodeDao import ActivationCodeDao
 from model.Code import Code
 from model.CodeData import CodeData
-from route.common.activationCode import links
+from route.common.activationCode import activation_code_links
+from route.common.versions import APIVersion
 
 activation_code_route = Blueprint('activation_code_route', __name__, url_prefix='/v2/activation_code')
 
@@ -348,6 +349,6 @@ def activation_code_links_get() -> Response:
     Get all the other activation code API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(activation_code_links(APIVersion.v2.value))
     response.status_code = 200
     return response

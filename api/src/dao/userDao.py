@@ -8,12 +8,14 @@ from typing import List
 
 from sqlalchemy.orm import defer
 
+from app import app
 from database import db
 from dao.basicDao import BasicDao
 from model.User import User
 
 
 class UserDao:
+    engine = db.get_engine(app=app, bind='app')
 
     @staticmethod
     def get_users() -> List[User]:
@@ -93,7 +95,8 @@ class UserDao:
                 'favorite_event': user.favorite_event,
                 'week_start': user.week_start,
                 'username': username
-            }
+            },
+            bind=UserDao.engine
         )
         return BasicDao.safe_commit()
 
@@ -112,7 +115,8 @@ class UserDao:
             WHERE username=:username 
             AND deleted IS FALSE
             ''',
-            {'username': username, 'password': password}
+            {'username': username, 'password': password},
+            bind=UserDao.engine
         )
         return BasicDao.safe_commit()
 
@@ -130,7 +134,8 @@ class UserDao:
             WHERE username=:username
             AND deleted IS FALSE
             ''',
-            {'username': username}
+            {'username': username},
+            bind=UserDao.engine
         )
         return BasicDao.safe_commit()
 
@@ -143,11 +148,13 @@ class UserDao:
         """
         db.session.execute(
             'DELETE FROM teammembers WHERE username=:username',
-            {'username': username}
+            {'username': username},
+            bind=UserDao.engine
         )
         db.session.execute(
             'DELETE FROM users WHERE username=:username',
-            {'username': username}
+            {'username': username},
+            bind=UserDao.engine
         )
         return BasicDao.safe_commit()
 
@@ -176,6 +183,7 @@ class UserDao:
                 'modified_app': user.modified_app,
                 'deleted_date': user.deleted_date,
                 'deleted_app': user.deleted_app
-            }
+            },
+            bind=UserDao.engine
         )
         return BasicDao.safe_commit()

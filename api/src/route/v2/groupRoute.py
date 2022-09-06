@@ -26,7 +26,8 @@ from dao.groupMemberDao import GroupMemberDao
 from dao.teamMemberDao import TeamMemberDao
 from dao.logDao import LogDao
 from dao.teamDao import TeamDao
-from route.common.group import links
+from route.common.group import group_links
+from route.common.versions import APIVersion
 
 group_route = Blueprint('group_route', __name__, url_prefix='/v2/groups')
 
@@ -857,7 +858,7 @@ def group_links_get() -> Response:
     Get all the other group API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(links)
+    response = jsonify(group_links(APIVersion.v2.value))
     response.status_code = 200
     return response
 
