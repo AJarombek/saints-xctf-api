@@ -10,7 +10,6 @@ from datetime import datetime
 from typing import List
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
-from sqlalchemy.schema import Column
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
@@ -24,7 +23,6 @@ from dao.groupMemberDao import GroupMemberDao
 from dao.forgotPasswordDao import ForgotPasswordDao
 from dao.flairDao import FlairDao
 from dao.notificationDao import NotificationDao
-from dao.logDao import LogDao
 from dao.teamMemberDao import TeamMemberDao
 from dao.codeDao import CodeDao
 from dao.activationCodeDao import ActivationCodeDao
@@ -37,8 +35,13 @@ from model.UserData import UserData
 from model.ForgotPassword import ForgotPassword
 from model.Team import Team
 from model.Group import Group
-from route.common.user import user_links
 from route.common.versions import APIVersion
+from route.common.user import (
+    user_links,
+    users_get as _users_get,
+    user_by_username_get as _user_by_username_get,
+    user_snapshot_by_username_get as _user_snapshot_by_username_get
+)
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
 
@@ -276,36 +279,7 @@ def users_get() -> Response:
     Retrieve all the users in the database.
     :return: A response object for the GET API request.
     """
-    all_users: list = UserDao.get_users()
-
-    if all_users is None:
-        response = jsonify({
-            'self': '/v2/users',
-            'users': None,
-            'error': 'an unexpected error occurred retrieving users'
-        })
-        response.status_code = 500
-        return response
-    else:
-        user_dicts = []
-
-        for user in all_users:
-            user_dict = UserData(user).__dict__
-            user_dict['this_user'] = f'/v2/users/{user_dict["username"]}'
-
-            if user_dict.get('member_since') is not None:
-                user_dict['member_since'] = str(user_dict['member_since'])
-            if user_dict.get('last_signin') is not None:
-                user_dict['last_signin'] = str(user_dict['last_signin'])
-
-            user_dicts.append(user_dict)
-
-        response = jsonify({
-            'self': '/v2/users',
-            'users': user_dicts
-        })
-        response.status_code = 200
-        return response
+    return _users_get(APIVersion.v2.value, UserDao)
 
 
 def user_post() -> Response:
@@ -434,36 +408,7 @@ def user_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    user: User = UserDao.get_user_by_username(username=username)
-
-    # If the user cant be found, try searching the email column in the database
-    if user is None:
-        email = username
-        user: User = UserDao.get_user_by_email(email=email)
-
-    # If the user still can't be found, return with an error code
-    if user is None:
-        response = jsonify({
-            'self': f'/v2/users/{username}',
-            'user': None,
-            'error': 'there is no user with this username'
-        })
-        response.status_code = 400
-        return response
-    else:
-        user_dict: dict = UserData(user).__dict__
-
-        if user_dict.get('member_since') is not None:
-            user_dict['member_since'] = str(user_dict['member_since'])
-        if user_dict.get('last_signin') is not None:
-            user_dict['last_signin'] = str(user_dict['last_signin'])
-
-        response = jsonify({
-            'self': f'/v2/users/{username}',
-            'user': user_dict
-        })
-        response.status_code = 200
-        return response
+    return _user_by_username_get(username, APIVersion.v2.value, UserDao)
 
 
 def user_by_username_put(username) -> Response:
@@ -627,97 +572,7 @@ def user_snapshot_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    user: User = UserDao.get_user_by_username(username=username)
-
-    # If the user cant be found, try searching the email column in the database
-    if user is None:
-        email = username
-        user: User = UserDao.get_user_by_email(email=email)
-
-    # If the user still can't be found, return with an error code
-    if user is None:
-        response = jsonify({
-            'self': f'/v2/users/snapshot/{username}',
-            'user': None,
-            'error': 'there is no user with this username'
-        })
-        response.status_code = 400
-        return response
-    else:
-        user_dict: dict = UserData(user).__dict__
-
-        if user_dict.get('member_since') is not None:
-            user_dict['member_since'] = str(user_dict['member_since'])
-        if user_dict.get('last_signin') is not None:
-            user_dict['last_signin'] = str(user_dict['last_signin'])
-
-        username = user_dict['username']
-        groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
-        group_list = []
-
-        for group in groups:
-            group_dict = {
-                'id': group['id'],
-                'group_name': group['group_name'],
-                'group_title': group['group_title'],
-                'status': group['status'],
-                'user': group['user']
-            }
-            newest_log: Column = GroupDao.get_newest_log_date(group['group_name'])
-            group_dict['newest_log'] = newest_log['newest']
-
-            newest_message = GroupDao.get_newest_message_date(group['group_name'])
-            group_dict['newest_message'] = newest_message['newest']
-
-            group_list.append(group_dict)
-
-        user_dict['groups'] = group_list
-
-        forgot_password_codes: ResultProxy = ForgotPasswordDao.get_forgot_password_codes(username=username)
-
-        forgot_password_list = []
-        for forgot_password_code in forgot_password_codes:
-            forgot_password_list.append({
-                'forgot_code': forgot_password_code['forgot_code'],
-                'username': forgot_password_code['username'],
-                'expires': forgot_password_code['expires'],
-                'deleted': forgot_password_code['deleted'],
-            })
-
-        user_dict['forgotpassword'] = forgot_password_list
-
-        flairs: List[Flair] = FlairDao.get_flair_by_username(username=username)
-        flair_dicts = []
-
-        for flair in flairs:
-            flair_dicts.append(FlairData(flair).__dict__)
-
-        user_dict['flair'] = flair_dicts
-
-        notifications: ResultProxy = NotificationDao.get_notification_by_username(username=username)
-
-        notification_dicts = []
-        for notification in notifications:
-            notification_dicts.append({
-                'notification_id': notification['notification_id'],
-                'username': notification['username'],
-                'time': notification['time'],
-                'link': notification['link'],
-                'viewed': notification['viewed'],
-                'description': notification['description']
-            })
-
-        user_dict['notifications'] = notification_dicts
-
-        stats = compile_user_statistics(user, username)
-        user_dict['statistics'] = stats
-
-        response = jsonify({
-            'self': f'/v2/users/snapshot/{username}',
-            'user': user_dict
-        })
-        response.status_code = 200
-        return response
+    return _user_snapshot_by_username_get(username, APIVersion.v2.value, UserDao)
 
 
 def user_groups_by_username_get(username) -> Response:
@@ -1087,44 +942,3 @@ def user_links_get() -> Response:
     response = jsonify(user_links(APIVersion.v2.value))
     response.status_code = 200
     return response
-
-
-"""
-Helper Methods
-"""
-
-
-def compile_user_statistics(user: UserData, username: str) -> dict:
-    """
-    Query user statistics and combine them into a single map.
-    :param user: A user object containing information such as their preferred week start date.
-    :param username: The username of the user to get statistics for.
-    """
-    miles: Column = LogDao.get_user_miles(username)
-    miles_past_year: Column = LogDao.get_user_miles_interval(username, 'year')
-    miles_past_month: Column = LogDao.get_user_miles_interval(username, 'month')
-    miles_past_week: Column = LogDao.get_user_miles_interval(username, 'week', week_start=user.week_start)
-    run_miles: Column = LogDao.get_user_miles_interval_by_type(username, 'run')
-    run_miles_past_year: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
-    run_miles_past_month: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
-    run_miles_past_week: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
-    all_time_feel: Column = LogDao.get_user_avg_feel(username)
-    year_feel: Column = LogDao.get_user_avg_feel_interval(username, 'year')
-    month_feel: Column = LogDao.get_user_avg_feel_interval(username, 'month')
-    week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
-
-    return {
-        'miles_all_time': float(miles['total']),
-        'miles_past_year': float(0 if miles_past_year['total'] is None else miles_past_year['total']),
-        'miles_past_month': float(0 if miles_past_month['total'] is None else miles_past_month['total']),
-        'miles_past_week': float(0 if miles_past_week['total'] is None else miles_past_week['total']),
-        'run_miles_all_time': float(0 if run_miles['total'] is None else run_miles['total']),
-        'run_miles_past_year': float(0 if run_miles_past_year['total'] is None else run_miles_past_year['total']),
-        'run_miles_past_month': float(0 if run_miles_past_month['total'] is None else run_miles_past_month['total']),
-        'run_miles_past_week': float(0 if run_miles_past_week['total'] is None else run_miles_past_week['total']),
-        'feel_all_time': float(0 if all_time_feel['average'] is None else all_time_feel['average']),
-        'feel_past_year': float(0 if year_feel['average'] is None else year_feel['average']),
-        'feel_past_month': float(0 if month_feel['average'] is None else month_feel['average']),
-        'feel_past_week': float(0 if week_feel['average'] is None else week_feel['average'])
-    }
-

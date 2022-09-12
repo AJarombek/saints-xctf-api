@@ -55,6 +55,8 @@ def team_links(version: str) -> Dict[str, Any]:
 def teams_get(version: APIVersion, dao: Union[Type[TeamDao], Type[TeamDemoDao]]) -> Response:
     """
     Retrieve all the teams in the database.
+    :param version: Version of the API to use for the request.
+    :param dao: Data access object to use for database access.
     :return: A response object for the GET API request.
     """
     all_teams: List[Team] = dao.get_teams()

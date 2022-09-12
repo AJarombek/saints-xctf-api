@@ -8,10 +8,14 @@ from flask import Blueprint, request, jsonify, Response, redirect, url_for
 from flasgger import swag_from
 
 from decorators import auth_required, disabled, DELETE, GET
-from route.common.user import user_links
 from route.common.versions import APIVersion
-from model.UserData import UserData
 from dao.userDemoDao import UserDemoDao
+from route.common.user import (
+    user_links,
+    users_get as _users_get,
+    user_by_username_get as _user_by_username_get,
+    user_snapshot_by_username_get as _user_snapshot_by_username_get
+)
 
 user_demo_route = Blueprint('user_demo_route', __name__, url_prefix='/demo/users')
 
@@ -249,19 +253,7 @@ def users_get() -> Response:
     Retrieve all the users in the database.
     :return: A response object for the GET API request.
     """
-    user_dicts = []
-
-    for user_object in UserDemoDao.get_users():
-        user_dict = UserData(user_object).__dict__
-        user_dict['this_user'] = f'/v2/users/{user_dict["username"]}'
-        user_dicts.append(user_dict)
-
-    response = jsonify({
-        'self': '/demo/users',
-        'users': user_dicts
-    })
-    response.status_code = 200
-    return response
+    return _users_get(APIVersion.demo.value, UserDemoDao)
 
 
 def user_post() -> Response:
@@ -285,12 +277,7 @@ def user_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/users/{username}',
-        'user': {}
-    })
-    response.status_code = 200
-    return response
+    return _user_by_username_get(username, APIVersion.demo.value, UserDemoDao)
 
 
 def user_by_username_put(username) -> Response:
@@ -342,12 +329,7 @@ def user_snapshot_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/users/snapshot/{username}',
-        'user': {}
-    })
-    response.status_code = 200
-    return response
+    return _user_snapshot_by_username_get(username, APIVersion.demo.value, UserDemoDao)
 
 
 def user_groups_by_username_get(username) -> Response:
