@@ -11,6 +11,7 @@ from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import RowProxy
 from sqlalchemy.schema import Column
 
+from app import app
 from database import db
 from dao.basicDao import BasicDao
 from model.Group import Group
@@ -20,6 +21,7 @@ WeekStart = Literal['monday', 'sunday']
 
 
 class GroupDao:
+    engine = db.get_engine(app=app, bind='app')
 
     @staticmethod
     def get_groups() -> list:
@@ -61,7 +63,8 @@ class GroupDao:
             AND `groups`.deleted IS FALSE
             AND teamgroups.deleted IS FALSE
             ''',
-            {'team_name': team_name, 'group_name': group_name}
+            {'team_name': team_name, 'group_name': group_name},
+            bind=GroupDao.engine
         )
         return result.first()
 
@@ -81,25 +84,8 @@ class GroupDao:
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
             ''',
-            {'group_name': group_name}
-        )
-        return result.first()
-
-    @staticmethod
-    def get_newest_message_date(group_name: str) -> Column:
-        """
-        Get the date of the newest message in the group
-        :param group_name: The unique name for the group
-        :return: A date of a message
-        """
-        result: ResultProxy = db.session.execute(
-            '''
-            SELECT MAX(time) AS newest 
-            FROM messages 
-            WHERE group_name=:group_name
-            AND deleted IS FALSE
-            ''',
-            {'group_name': group_name}
+            {'group_name': group_name},
+            bind=GroupDao.engine
         )
         return result.first()
 
@@ -136,7 +122,8 @@ class GroupDao:
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
-                {'group_id': group_id}
+                {'group_id': group_id},
+                bind=GroupDao.engine
             )
         else:
             return db.session.execute(
@@ -160,7 +147,8 @@ class GroupDao:
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
-                {'group_id': group_id, 'date': date}
+                {'group_id': group_id, 'date': date},
+                bind=GroupDao.engine
             )
 
     @staticmethod
@@ -188,6 +176,7 @@ class GroupDao:
                 'group_name': group.group_name,
                 'modified_date': group.modified_date,
                 'modified_app': group.modified_app
-            }
+            },
+            bind=GroupDao.engine
         )
         return BasicDao.safe_commit()

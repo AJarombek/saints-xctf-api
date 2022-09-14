@@ -14,6 +14,14 @@ from model.User import User
 from model.UserData import UserData
 from model.FlairData import FlairData
 from model.Flair import Flair
+from dao.flairDao import FlairDao
+from dao.flairDemoDao import FlairDemoDao
+from dao.forgotPasswordDao import ForgotPasswordDao
+from dao.forgotPasswordDemoDao import ForgotPasswordDemoDao
+from dao.groupDao import GroupDao
+from dao.groupDemoDao import GroupDemoDao
+from dao.groupMemberDao import GroupMemberDao
+from dao.groupMemberDemoDao import GroupMemberDemoDao
 from dao.userDao import UserDao
 from dao.userDemoDao import UserDemoDao
 from route.common.versions import APIVersion
@@ -196,21 +204,31 @@ def user_by_username_get(username: str, version: APIVersion, dao: Union[Type[Use
 
 
 def user_snapshot_by_username_get(
-    username: str, version: APIVersion, dao: Union[Type[UserDao], Type[UserDemoDao]]
+    username: str,
+    version: APIVersion,
+    user_dao: Union[Type[UserDao], Type[UserDemoDao]],
+    group_member_dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]],
+    group_dao: Union[Type[GroupDao], Type[GroupDemoDao]],
+    forgot_password_dao: Union[Type[ForgotPasswordDao], Type[ForgotPasswordDemoDao]],
+    flair_dao: Union[Type[FlairDao], Type[FlairDemoDao]]
 ) -> Response:
     """
     Get a snapshot with information about a user with a given username.
     :param username: Username that uniquely identifies a user.
     :param version: Version of the API to use for the request.
-    :param dao: Data access object to use for database access.
+    :param user_dao: Data access object to use for user related database access.
+    :param group_member_dao: Data access object to use for group member related database access.
+    :param group_dao: Data access object to use for group related database access.
+    :param forgot_password_dao: Data access object to use for forgot password related database access.
+    :param flair_dao: Data access object to use for flair related database access.
     :return: A response object for the GET API request.
     """
-    user: User = dao.get_user_by_username(username=username)
+    user: User = user_dao.get_user_by_username(username=username)
 
     # If the user cant be found, try searching the email column in the database
     if user is None:
         email = username
-        user: User = dao.get_user_by_email(email=email)
+        user: User = user_dao.get_user_by_email(email=email)
 
     # If the user still can't be found, return with an error code
     if user is None:
@@ -230,7 +248,7 @@ def user_snapshot_by_username_get(
             user_dict['last_signin'] = str(user_dict['last_signin'])
 
         username = user_dict['username']
-        groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
+        groups: ResultProxy = group_member_dao.get_user_groups(username=username)
         group_list = []
 
         for group in groups:
@@ -241,17 +259,14 @@ def user_snapshot_by_username_get(
                 'status': group['status'],
                 'user': group['user']
             }
-            newest_log: Column = GroupDao.get_newest_log_date(group['group_name'])
+            newest_log: Column = group_dao.get_newest_log_date(group['group_name'])
             group_dict['newest_log'] = newest_log['newest']
-
-            newest_message = GroupDao.get_newest_message_date(group['group_name'])
-            group_dict['newest_message'] = newest_message['newest']
 
             group_list.append(group_dict)
 
         user_dict['groups'] = group_list
 
-        forgot_password_codes: ResultProxy = ForgotPasswordDao.get_forgot_password_codes(username=username)
+        forgot_password_codes: ResultProxy = forgot_password_dao.get_forgot_password_codes(username=username)
 
         forgot_password_list = []
         for forgot_password_code in forgot_password_codes:
@@ -264,7 +279,7 @@ def user_snapshot_by_username_get(
 
         user_dict['forgotpassword'] = forgot_password_list
 
-        flairs: List[Flair] = FlairDao.get_flair_by_username(username=username)
+        flairs: List[Flair] = flair_dao.get_flair_by_username(username=username)
         flair_dicts = []
 
         for flair in flairs:

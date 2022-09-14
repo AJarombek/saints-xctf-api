@@ -8,8 +8,9 @@ Date: 7/2/2019
 from datetime import datetime
 
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 
+from app import app
 from database import db
 from model.GroupMember import GroupMember
 from model.TeamGroup import TeamGroup
@@ -17,6 +18,7 @@ from dao.basicDao import BasicDao
 
 
 class GroupMemberDao:
+    engine = db.get_engine(app=app, bind='app')
 
     @staticmethod
     def get_group_member(group_id: int, username: str) -> GroupMember:
@@ -63,7 +65,8 @@ class GroupMemberDao:
             AND groupmembers.deleted IS FALSE 
             AND `groups`.deleted IS FALSE 
             ''',
-            {'username': username}
+            {'username': username},
+            bind=GroupMemberDao.engine
         )
 
     @staticmethod
@@ -88,7 +91,8 @@ class GroupMemberDao:
             AND teamgroups.deleted IS FALSE 
             AND teams.deleted IS FALSE 
             ''',
-            {'username': username, 'team_name': team_name}
+            {'username': username, 'team_name': team_name},
+            bind=GroupMemberDao.engine
         )
 
     @staticmethod
@@ -113,7 +117,8 @@ class GroupMemberDao:
             AND teamgroups.deleted IS FALSE 
             AND users.deleted IS FALSE 
             ''',
-            {'group_name': group_name, 'team_name': team_name}
+            {'group_name': group_name, 'team_name': team_name},
+            bind=GroupMemberDao.engine
         )
 
     @staticmethod
@@ -132,7 +137,8 @@ class GroupMemberDao:
             AND groupmembers.deleted IS FALSE 
             AND users.deleted IS FALSE 
             ''',
-            {'group_id': group_id}
+            {'group_id': group_id},
+            bind=GroupMemberDao.engine
         )
 
     @staticmethod
@@ -163,7 +169,8 @@ class GroupMemberDao:
                 'modified_app': 'saints-xctf-api',
                 'status': status,
                 'user': user
-            }
+            },
+            bind=GroupMemberDao.engine
         )
         return BasicDao.safe_commit()
 
@@ -191,6 +198,7 @@ class GroupMemberDao:
                 'deleted': True,
                 'deleted_date': datetime.now(),
                 'deleted_app': 'saints-xctf-api'
-            }
+            },
+            bind=GroupMemberDao.engine
         )
         return BasicDao.safe_commit()

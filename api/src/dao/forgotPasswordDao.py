@@ -9,12 +9,14 @@ from datetime import datetime
 
 from sqlalchemy.engine.cursor import ResultProxy
 
+from app import app
 from database import db
 from dao.basicDao import BasicDao
 from model.ForgotPassword import ForgotPassword
 
 
 class ForgotPasswordDao:
+    engine = db.get_engine(app=app, bind='app')
 
     @staticmethod
     def get_forgot_password_code(code: str) -> ForgotPassword:
@@ -44,7 +46,8 @@ class ForgotPasswordDao:
             AND expires >= NOW()
             AND deleted IS FALSE
             ''',
-            {'username': username}
+            {'username': username},
+            bind=ForgotPasswordDao.engine
         )
 
     @staticmethod
@@ -70,6 +73,7 @@ class ForgotPasswordDao:
             WHERE forgot_code=:forgot_code 
             AND deleted IS FALSE
             ''',
-            {'forgot_code': code}
+            {'forgot_code': code},
+            bind=ForgotPasswordDao.engine
         )
         return BasicDao.safe_commit()
