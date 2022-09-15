@@ -22,6 +22,10 @@ from dao.groupDao import GroupDao
 from dao.groupDemoDao import GroupDemoDao
 from dao.groupMemberDao import GroupMemberDao
 from dao.groupMemberDemoDao import GroupMemberDemoDao
+from dao.logDao import LogDao
+from dao.logDemoDao import LogDemoDao
+from dao.notificationDao import NotificationDao
+from dao.notificationDemoDao import NotificationDemoDao
 from dao.userDao import UserDao
 from dao.userDemoDao import UserDemoDao
 from route.common.versions import APIVersion
@@ -210,7 +214,8 @@ def user_snapshot_by_username_get(
     group_member_dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]],
     group_dao: Union[Type[GroupDao], Type[GroupDemoDao]],
     forgot_password_dao: Union[Type[ForgotPasswordDao], Type[ForgotPasswordDemoDao]],
-    flair_dao: Union[Type[FlairDao], Type[FlairDemoDao]]
+    flair_dao: Union[Type[FlairDao], Type[FlairDemoDao]],
+    notification_dao: Union[Type[NotificationDao], Type[NotificationDemoDao]]
 ) -> Response:
     """
     Get a snapshot with information about a user with a given username.
@@ -221,6 +226,7 @@ def user_snapshot_by_username_get(
     :param group_dao: Data access object to use for group related database access.
     :param forgot_password_dao: Data access object to use for forgot password related database access.
     :param flair_dao: Data access object to use for flair related database access.
+    :param notification_dao: Data access object to use for notification related database access.
     :return: A response object for the GET API request.
     """
     user: User = user_dao.get_user_by_username(username=username)
@@ -287,7 +293,7 @@ def user_snapshot_by_username_get(
 
         user_dict['flair'] = flair_dicts
 
-        notifications: ResultProxy = NotificationDao.get_notification_by_username(username=username)
+        notifications: ResultProxy = notification_dao.get_notification_by_username(username=username)
 
         notification_dicts = []
         for notification in notifications:
@@ -353,24 +359,24 @@ Helper Methods
 """
 
 
-def compile_user_statistics(user: UserData, username: str) -> dict:
+def compile_user_statistics(user: UserData, username: str, dao: Union[Type[LogDao], Type[LogDemoDao]]) -> dict:
     """
     Query user statistics and combine them into a single map.
     :param user: A user object containing information such as their preferred week start date.
     :param username: The username of the user to get statistics for.
     """
-    miles: Column = LogDao.get_user_miles(username)
-    miles_past_year: Column = LogDao.get_user_miles_interval(username, 'year')
-    miles_past_month: Column = LogDao.get_user_miles_interval(username, 'month')
-    miles_past_week: Column = LogDao.get_user_miles_interval(username, 'week', week_start=user.week_start)
-    run_miles: Column = LogDao.get_user_miles_interval_by_type(username, 'run')
-    run_miles_past_year: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'year')
-    run_miles_past_month: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'month')
-    run_miles_past_week: Column = LogDao.get_user_miles_interval_by_type(username, 'run', 'week')
-    all_time_feel: Column = LogDao.get_user_avg_feel(username)
-    year_feel: Column = LogDao.get_user_avg_feel_interval(username, 'year')
-    month_feel: Column = LogDao.get_user_avg_feel_interval(username, 'month')
-    week_feel: Column = LogDao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
+    miles: Column = dao.get_user_miles(username)
+    miles_past_year: Column = dao.get_user_miles_interval(username, 'year')
+    miles_past_month: Column = dao.get_user_miles_interval(username, 'month')
+    miles_past_week: Column = dao.get_user_miles_interval(username, 'week', week_start=user.week_start)
+    run_miles: Column = dao.get_user_miles_interval_by_type(username, 'run')
+    run_miles_past_year: Column = dao.get_user_miles_interval_by_type(username, 'run', 'year')
+    run_miles_past_month: Column = dao.get_user_miles_interval_by_type(username, 'run', 'month')
+    run_miles_past_week: Column = dao.get_user_miles_interval_by_type(username, 'run', 'week')
+    all_time_feel: Column = dao.get_user_avg_feel(username)
+    year_feel: Column = dao.get_user_avg_feel_interval(username, 'year')
+    month_feel: Column = dao.get_user_avg_feel_interval(username, 'month')
+    week_feel: Column = dao.get_user_avg_feel_interval(username, 'week', week_start=user.week_start)
 
     return {
         'miles_all_time': float(miles['total']),
