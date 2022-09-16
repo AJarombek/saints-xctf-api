@@ -27,6 +27,7 @@ from dao.teamMemberDao import TeamMemberDao
 from dao.codeDao import CodeDao
 from dao.activationCodeDao import ActivationCodeDao
 from dao.teamDao import TeamDao
+from dao.logDao import LogDao
 from model.Code import Code
 from model.FlairData import FlairData
 from model.Flair import Flair
@@ -40,7 +41,10 @@ from route.common.user import (
     user_links,
     users_get as _users_get,
     user_by_username_get as _user_by_username_get,
-    user_snapshot_by_username_get as _user_snapshot_by_username_get
+    user_snapshot_by_username_get as _user_snapshot_by_username_get,
+    user_statistics_by_username_get as _user_statistics_by_username_get,
+    user_groups_by_username_get as _user_groups_by_username_get,
+    user_teams_by_username_get as _user_teams_by_username_get
 )
 
 user_route = Blueprint('user_route', __name__, url_prefix='/v2/users')
@@ -572,7 +576,17 @@ def user_snapshot_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_snapshot_by_username_get(username, APIVersion.v2.value, UserDao)
+    return _user_snapshot_by_username_get(
+        username=username,
+        version=APIVersion.v2.value,
+        user_dao=UserDao,
+        group_member_dao=GroupMemberDao,
+        group_dao=GroupDao,
+        forgot_password_dao=ForgotPasswordDao,
+        flair_dao=FlairDao,
+        notification_dao=NotificationDao,
+        log_dao=LogDao
+    )
 
 
 def user_groups_by_username_get(username) -> Response:
@@ -581,24 +595,7 @@ def user_groups_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    groups: ResultProxy = GroupMemberDao.get_user_groups(username=username)
-    group_list = []
-
-    for group in groups:
-        group_list.append({
-            'id': group['id'],
-            'group_name': group['group_name'],
-            'group_title': group['group_title'],
-            'status': group['status'],
-            'user': group['user']
-        })
-
-    response = jsonify({
-        'self': f'/v2/users/groups/{username}',
-        'groups': group_list
-    })
-    response.status_code = 200
-    return response
+    return _user_groups_by_username_get(username, APIVersion.v2.value, GroupMemberDao)
 
 
 def user_teams_by_username_get(username) -> Response:
@@ -607,23 +604,7 @@ def user_teams_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    teams: ResultProxy = TeamMemberDao.get_user_teams(username=username)
-    team_list = []
-
-    for team in teams:
-        team_list.append({
-            'team_name': team['team_name'],
-            'title': team['title'],
-            'status': team['status'],
-            'user': team['user']
-        })
-
-    response = jsonify({
-        'self': f'/v2/users/teams/{username}',
-        'teams': team_list
-    })
-    response.status_code = 200
-    return response
+    return _user_teams_by_username_get(username, APIVersion.v2.value, TeamMemberDao)
 
 
 def user_memberships_by_username_get(username) -> Response:
@@ -769,29 +750,7 @@ def user_statistics_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    user: User = UserDao.get_user_by_username(username=username)
-
-    # If the user cant be found, try searching the email column in the database
-    if user is None:
-        email = username
-        user: User = UserDao.get_user_by_email(email=email)
-
-    # If the user still can't be found, return with an error code
-    if user is None:
-        response = jsonify({
-            'self': f'/v2/users/statistics/{username}',
-            'stats': None,
-            'error': 'there is no user with this username'
-        })
-        response.status_code = 400
-        return response
-
-    response = jsonify({
-        'self': f'/v2/users/statistics/{username}',
-        'stats': compile_user_statistics(user, username)
-    })
-    response.status_code = 200
-    return response
+    return _user_statistics_by_username_get(username, APIVersion.v2.value, UserDao, LogDao)
 
 
 def user_change_password_by_username_put(username) -> Response:

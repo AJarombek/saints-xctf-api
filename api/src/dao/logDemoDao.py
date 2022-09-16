@@ -4,16 +4,13 @@ Author: Andrew Jarombek
 Date: 9/14/2022
 """
 
-from typing import Literal
-
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.schema import Column
 
 from app import app
 import utils.dates as dates
+from utils.literals import WeekStart
 from database import db
-
-WeekStart = Literal['monday', 'sunday']
 
 
 class LogDemoDao:

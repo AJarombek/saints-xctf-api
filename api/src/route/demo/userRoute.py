@@ -10,11 +10,21 @@ from flasgger import swag_from
 from decorators import auth_required, disabled, DELETE, GET
 from route.common.versions import APIVersion
 from dao.userDemoDao import UserDemoDao
+from dao.groupMemberDemoDao import GroupMemberDemoDao
+from dao.groupDemoDao import GroupDemoDao
+from dao.forgotPasswordDemoDao import ForgotPasswordDemoDao
+from dao.flairDemoDao import FlairDemoDao
+from dao.notificationDemoDao import NotificationDemoDao
+from dao.logDemoDao import LogDemoDao
+from dao.teamMemberDemoDao import TeamMemberDemoDao
 from route.common.user import (
     user_links,
     users_get as _users_get,
     user_by_username_get as _user_by_username_get,
-    user_snapshot_by_username_get as _user_snapshot_by_username_get
+    user_snapshot_by_username_get as _user_snapshot_by_username_get,
+    user_statistics_by_username_get as _user_statistics_by_username_get,
+    user_groups_by_username_get as _user_groups_by_username_get,
+    user_teams_by_username_get as _user_teams_by_username_get
 )
 
 user_demo_route = Blueprint('user_demo_route', __name__, url_prefix='/demo/users')
@@ -265,7 +275,7 @@ def user_post() -> Response:
         'self': '/demo/users',
         'added': True,
         'user': {},
-        'new_user': f'/v2/users/{request.get_json().get("username")}'
+        'new_user': f'/demo/users/{request.get_json().get("username")}'
     })
     response.status_code = 201
     return response
@@ -329,7 +339,17 @@ def user_snapshot_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_snapshot_by_username_get(username, APIVersion.demo.value, UserDemoDao)
+    return _user_snapshot_by_username_get(
+        username=username,
+        version=APIVersion.demo.value,
+        user_dao=UserDemoDao,
+        group_member_dao=GroupMemberDemoDao,
+        group_dao=GroupDemoDao,
+        forgot_password_dao=ForgotPasswordDemoDao,
+        flair_dao=FlairDemoDao,
+        notification_dao=NotificationDemoDao,
+        log_dao=LogDemoDao
+    )
 
 
 def user_groups_by_username_get(username) -> Response:
@@ -338,12 +358,7 @@ def user_groups_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/users/groups/{username}',
-        'groups': {}
-    })
-    response.status_code = 200
-    return response
+    return _user_groups_by_username_get(username, APIVersion.demo.value, GroupMemberDemoDao)
 
 
 def user_teams_by_username_get(username) -> Response:
@@ -352,12 +367,7 @@ def user_teams_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/users/teams/{username}',
-        'teams': {}
-    })
-    response.status_code = 200
-    return response
+    return _user_teams_by_username_get(username, APIVersion.demo.value, TeamMemberDemoDao)
 
 
 def user_memberships_by_username_get(username) -> Response:
@@ -422,12 +432,7 @@ def user_statistics_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/users/statistics/{username}',
-        'stats': {}
-    })
-    response.status_code = 200
-    return response
+    return _user_statistics_by_username_get(username, APIVersion.demo.value, UserDemoDao, LogDemoDao)
 
 
 def user_change_password_by_username_put(username) -> Response:

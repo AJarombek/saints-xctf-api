@@ -5,15 +5,12 @@ Author: Andrew Jarombek
 Date: 9/13/2022
 """
 
-from typing import Literal
-
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.schema import Column
 
 from app import app
 from database import db
-
-WeekStart = Literal['monday', 'sunday']
+from utils.literals import WeekStart
 
 
 class GroupDemoDao:

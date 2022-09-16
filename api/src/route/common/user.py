@@ -26,6 +26,8 @@ from dao.logDao import LogDao
 from dao.logDemoDao import LogDemoDao
 from dao.notificationDao import NotificationDao
 from dao.notificationDemoDao import NotificationDemoDao
+from dao.teamMemberDao import TeamMemberDao
+from dao.teamMemberDemoDao import TeamMemberDemoDao
 from dao.userDao import UserDao
 from dao.userDemoDao import UserDemoDao
 from route.common.versions import APIVersion
@@ -207,6 +209,65 @@ def user_by_username_get(username: str, version: APIVersion, dao: Union[Type[Use
         return response
 
 
+def user_groups_by_username_get(
+    username, version: APIVersion, dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]]
+) -> Response:
+    """
+    Get the group memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :param version: Version of the API to use for the request.
+    :param dao: Data access object to use for database access.
+    :return: A response object for the GET API request.
+    """
+    groups: ResultProxy = dao.get_user_groups(username=username)
+    group_list = []
+
+    for group in groups:
+        group_list.append({
+            'id': group['id'],
+            'group_name': group['group_name'],
+            'group_title': group['group_title'],
+            'status': group['status'],
+            'user': group['user']
+        })
+
+    response = jsonify({
+        'self': f'/{version}/users/groups/{username}',
+        'groups': group_list
+    })
+    response.status_code = 200
+    return response
+
+
+def user_teams_by_username_get(
+    username, version: APIVersion, dao: Union[Type[TeamMemberDao], Type[TeamMemberDemoDao]]
+) -> Response:
+    """
+    Get the team memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :param version: Version of the API to use for the request.
+    :param dao: Data access object to use for database access.
+    :return: A response object for the GET API request.
+    """
+    teams: ResultProxy = dao.get_user_teams(username=username)
+    team_list = []
+
+    for team in teams:
+        team_list.append({
+            'team_name': team['team_name'],
+            'title': team['title'],
+            'status': team['status'],
+            'user': team['user']
+        })
+
+    response = jsonify({
+        'self': f'/{version}/users/teams/{username}',
+        'teams': team_list
+    })
+    response.status_code = 200
+    return response
+
+
 def user_snapshot_by_username_get(
     username: str,
     version: APIVersion,
@@ -215,7 +276,8 @@ def user_snapshot_by_username_get(
     group_dao: Union[Type[GroupDao], Type[GroupDemoDao]],
     forgot_password_dao: Union[Type[ForgotPasswordDao], Type[ForgotPasswordDemoDao]],
     flair_dao: Union[Type[FlairDao], Type[FlairDemoDao]],
-    notification_dao: Union[Type[NotificationDao], Type[NotificationDemoDao]]
+    notification_dao: Union[Type[NotificationDao], Type[NotificationDemoDao]],
+    log_dao: Union[Type[LogDao], Type[LogDemoDao]]
 ) -> Response:
     """
     Get a snapshot with information about a user with a given username.
@@ -227,6 +289,7 @@ def user_snapshot_by_username_get(
     :param forgot_password_dao: Data access object to use for forgot password related database access.
     :param flair_dao: Data access object to use for flair related database access.
     :param notification_dao: Data access object to use for notification related database access.
+    :param log_dao: Data access object to use for exercise log related database access.
     :return: A response object for the GET API request.
     """
     user: User = user_dao.get_user_by_username(username=username)
@@ -308,7 +371,7 @@ def user_snapshot_by_username_get(
 
         user_dict['notifications'] = notification_dicts
 
-        stats = compile_user_statistics(user, username)
+        stats = compile_user_statistics(user, username, log_dao)
         user_dict['statistics'] = stats
 
         response = jsonify({
@@ -320,21 +383,25 @@ def user_snapshot_by_username_get(
 
 
 def user_statistics_by_username_get(
-    username: str, version: APIVersion, dao: Union[Type[UserDao], Type[UserDemoDao]]
+    username: str,
+    version: APIVersion,
+    user_dao: Union[Type[UserDao], Type[UserDemoDao]],
+    log_dao: Union[Type[LogDao], Type[LogDemoDao]]
 ) -> Response:
     """
     Get exercise statistics for a user.
     :param username: Username that uniquely identifies a user.
     :param version: Version of the API to use for the request.
-    :param dao: Data access object to use for database access.
+    :param user_dao: Data access object to use for database access related to users.
+    :param log_dao: Data access object to use for database access related to logs.
     :return: A response object for the GET API request.
     """
-    user: User = dao.get_user_by_username(username=username)
+    user: User = user_dao.get_user_by_username(username=username)
 
     # If the user cant be found, try searching the email column in the database
     if user is None:
         email = username
-        user: User = dao.get_user_by_email(email=email)
+        user: User = user_dao.get_user_by_email(email=email)
 
     # If the user still can't be found, return with an error code
     if user is None:
@@ -348,7 +415,7 @@ def user_statistics_by_username_get(
 
     response = jsonify({
         'self': f'/{version}/users/statistics/{username}',
-        'stats': compile_user_statistics(user, username)
+        'stats': compile_user_statistics(user, username, log_dao)
     })
     response.status_code = 200
     return response
@@ -364,6 +431,7 @@ def compile_user_statistics(user: UserData, username: str, dao: Union[Type[LogDa
     Query user statistics and combine them into a single map.
     :param user: A user object containing information such as their preferred week start date.
     :param username: The username of the user to get statistics for.
+    :param dao: Data access object to use for database access.
     """
     miles: Column = dao.get_user_miles(username)
     miles_past_year: Column = dao.get_user_miles_interval(username, 'year')

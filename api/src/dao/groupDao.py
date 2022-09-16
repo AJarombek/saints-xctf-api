@@ -5,7 +5,7 @@ Author: Andrew Jarombek
 Date: 7/2/2019
 """
 
-from typing import Optional, Literal
+from typing import Optional
 
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import RowProxy
@@ -16,8 +16,7 @@ from database import db
 from dao.basicDao import BasicDao
 from model.Group import Group
 from utils import dates
-
-WeekStart = Literal['monday', 'sunday']
+from utils.literals import WeekStart
 
 
 class GroupDao:

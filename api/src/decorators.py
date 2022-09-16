@@ -7,12 +7,12 @@ Date: 10/7/2020
 
 import functools
 import asyncio
-from typing import List, Literal, Optional
+from typing import List, Optional
 
 import aiohttp
 from flask import abort, current_app, request
+from utils.literals import HTTPMethod
 
-HTTPMethod = Literal['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 GET: HTTPMethod = 'GET'
 POST: HTTPMethod = 'POST'
 PUT: HTTPMethod = 'PUT'

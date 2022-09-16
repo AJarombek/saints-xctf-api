@@ -4,19 +4,16 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
-from typing import Literal
-
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.schema import Column
 
 from app import app
 import utils.dates as dates
+from utils.literals import WeekStart
 from dao.basicDao import BasicDao
 from database import db
 from model.Log import Log
 from utils.exerciseFilters import generate_exercise_filter_sql_query
-
-WeekStart = Literal['monday', 'sunday']
 
 
 class LogDao:

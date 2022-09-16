@@ -4,12 +4,10 @@ Author: Andrew Jarombek
 Date: 7/4/2019
 """
 
-from typing import Literal, Optional
+from typing import Optional
 from datetime import datetime, timedelta, date
 
-
-Interval = Literal['year', 'month', 'week']
-WeekStart = Literal['monday', 'sunday']
+from utils.literals import Interval, WeekStart
 
 
 def get_start_date_interval(interval: Optional[Interval], week_start: WeekStart) -> date:
