@@ -13,16 +13,13 @@ from model.TeamDemo import TeamDemo
 
 
 class TeamDemoDao:
-
     @staticmethod
     def get_teams() -> List[TeamDemo]:
         """
         Get a list of all the teams in the database.
         :return: A list containing Team model objects.
         """
-        return TeamDemo.query \
-            .filter(TeamDemo.deleted.is_(False)) \
-            .all()
+        return TeamDemo.query.filter(TeamDemo.deleted.is_(False)).all()
 
     @staticmethod
     def get_team_by_name(name: str) -> TeamDemo:
@@ -31,10 +28,11 @@ class TeamDemoDao:
         :param name: Name which uniquely identifies a team.
         :return: The result of the database query.
         """
-        return TeamDemo.query \
-            .filter_by(name=name) \
-            .filter(TeamDemo.deleted.is_(False)) \
+        return (
+            TeamDemo.query.filter_by(name=name)
+            .filter(TeamDemo.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
     def search_teams(text: str, limit: int) -> List[TeamDemo]:
@@ -44,8 +42,11 @@ class TeamDemoDao:
         :param limit: The maximum number of teams to return.
         :return: The result of the database query.
         """
-        return TeamDemo.query \
-            .filter(or_(TeamDemo.name.like(f'%{text}%'), TeamDemo.title.like(f'%{text}%'))) \
-            .filter(TeamDemo.deleted.is_(False)) \
-            .limit(limit) \
+        return (
+            TeamDemo.query.filter(
+                or_(TeamDemo.name.like(f"%{text}%"), TeamDemo.title.like(f"%{text}%"))
+            )
+            .filter(TeamDemo.deleted.is_(False))
+            .limit(limit)
             .all()
+        )

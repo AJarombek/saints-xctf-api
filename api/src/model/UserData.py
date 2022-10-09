@@ -41,19 +41,21 @@ class UserData:
         String representation of a user.  This representation is meant to be human readable.
         :return: The user in string form.
         """
-        return f'UserData: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}, ' \
-            f'password: {self.password}, profilepic_name: {self.profilepic_name}, description: {self.description}, ' \
-            f'member_since: {self.member_since}, class_year: {self.class_year}, location: {self.location}, ' \
-            f'favorite_event: {self.favorite_event}, activation_code: {self.activation_code}, email: {self.email}, ' \
-            f'subscribed: {self.subscribed}, last_signin: {self.last_signin}, week_start: {self.week_start}, ' \
-            f'deleted: {self.deleted}]'
+        return (
+            f"UserData: [username: {self.username}, first: {self.first}, last: {self.last}, salt: {self.salt}, "
+            f"password: {self.password}, profilepic_name: {self.profilepic_name}, description: {self.description}, "
+            f"member_since: {self.member_since}, class_year: {self.class_year}, location: {self.location}, "
+            f"favorite_event: {self.favorite_event}, activation_code: {self.activation_code}, email: {self.email}, "
+            f"subscribed: {self.subscribed}, last_signin: {self.last_signin}, week_start: {self.week_start}, "
+            f"deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a user.  This representation is meant to be machine readable.
         :return: The user in string form.
         """
-        return '<UserData %r>' % self.username
+        return "<UserData %r>" % self.username
 
     def __eq__(self, other):
         """

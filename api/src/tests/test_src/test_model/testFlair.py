@@ -9,19 +9,23 @@ from model.Flair import Flair
 
 
 class TestFlair(TestSuite):
-    flair1 = Flair({
-        'flair_id': 1,
-        'username': 'andy',
-        'flair': 'Website Creator',
-        'deleted': False
-    })
+    flair1 = Flair(
+        {
+            "flair_id": 1,
+            "username": "andy",
+            "flair": "Website Creator",
+            "deleted": False,
+        }
+    )
 
-    flair2 = Flair({
-        'flair_id': 2,
-        'username': 'andy',
-        'flair': 'Software Engineer',
-        'deleted': True
-    })
+    flair2 = Flair(
+        {
+            "flair_id": 2,
+            "username": "andy",
+            "flair": "Software Engineer",
+            "deleted": True,
+        }
+    )
 
     def test_flair_str(self) -> None:
         """
@@ -29,11 +33,11 @@ class TestFlair(TestSuite):
         """
         self.assertEquals(
             str(self.flair1),
-            'Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]'
+            "Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
         self.assertEquals(
             self.flair1.__str__(),
-            'Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]'
+            "Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
 
     def test_flair_repr(self) -> None:

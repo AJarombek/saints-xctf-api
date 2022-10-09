@@ -26,15 +26,17 @@ class TeamData:
         String representation of a team.  This representation is meant to be human readable.
         :return: The team in string form.
         """
-        return f'TeamData: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, ' \
-               f'week_start: {self.week_start}, description: {self.description}, deleted: {self.deleted}]'
+        return (
+            f"TeamData: [name: {self.name}, title: {self.title}, picture_name: {self.picture_name}, "
+            f"week_start: {self.week_start}, description: {self.description}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a team.  This representation is meant to be machine readable.
         :return: The team in string form.
         """
-        return '<TeamData %r>' % self.name
+        return "<TeamData %r>" % self.name
 
     def __eq__(self, other):
         """

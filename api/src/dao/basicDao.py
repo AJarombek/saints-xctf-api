@@ -10,7 +10,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 class BasicDao:
-
     @staticmethod
     def safe_commit() -> bool:
         """
@@ -19,10 +18,10 @@ class BasicDao:
         """
         try:
             db.session.commit()
-            current_app.logger.info('SQL Safely Committed')
+            current_app.logger.info("SQL Safely Committed")
             return True
         except SQLAlchemyError as error:
             db.session.rollback()
-            current_app.logger.error('SQL Commit Failed!  Rolling back...')
+            current_app.logger.error("SQL Commit Failed!  Rolling back...")
             current_app.logger.error(error.args)
             return False

@@ -9,16 +9,15 @@ from sqlalchemy import Column
 
 
 class Type(db.Model):
-
     def __init__(self, exercise_type: dict):
         """
         Initialize a Type by passing in a dictionary.
         :param exercise_type: A dictionary with fields matching the Type fields
         """
-        self.type = exercise_type.get('type')
+        self.type = exercise_type.get("type")
 
-    __tablename__ = 'types'
-    __bind_key__ = 'app'
+    __tablename__ = "types"
+    __bind_key__ = "app"
 
     type = Column(db.VARCHAR(15), primary_key=True, nullable=False)
 
@@ -27,14 +26,14 @@ class Type(db.Model):
         String representation of an exercise log type.  This representation is meant to be human readable.
         :return: The type in string form.
         """
-        return f'Type: [type: {self.type}]'
+        return f"Type: [type: {self.type}]"
 
     def __repr__(self):
         """
         String representation of an exercise log type.  This representation is meant to be machine readable.
         :return: The type in string form.
         """
-        return '<Type %r>' % self.type
+        return "<Type %r>" % self.type
 
     def __eq__(self, other):
         """

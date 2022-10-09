@@ -11,6 +11,6 @@ from model.Metric import Metric
 
 
 class MetricDemo(Metric):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     metric = Column(db.TEXT, primary_key=True)

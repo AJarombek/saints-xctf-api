@@ -12,7 +12,7 @@ from model.UserDemo import UserDemo
 
 
 class UserDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_users() -> List[UserDemo]:

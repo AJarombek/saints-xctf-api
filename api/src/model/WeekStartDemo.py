@@ -11,6 +11,6 @@ from model.WeekStart import WeekStart
 
 
 class WeekStartDemo(WeekStart):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     week_start = Column(db.TEXT, primary_key=True, nullable=False)

@@ -10,30 +10,40 @@ from model.Team import Team
 
 
 class TestTeamData(TestSuite):
-    team1 = TeamData(Team({
-        'name': 'saintsxctf',
-        'title': 'St. Lawrence Cross Country and Track & Field',
-        'picture_name': None,
-        'week_start': None,
-        'description': None,
-        'deleted': 'N'
-    }))
+    team1 = TeamData(
+        Team(
+            {
+                "name": "saintsxctf",
+                "title": "St. Lawrence Cross Country and Track & Field",
+                "picture_name": None,
+                "week_start": None,
+                "description": None,
+                "deleted": "N",
+            }
+        )
+    )
 
-    team2 = TeamData(Team({
-        'name': 'friends',
-        'title': 'Andy & Friends',
-        'picture_name': None,
-        'week_start': None,
-        'description': None,
-        'deleted': 'N'
-    }))
+    team2 = TeamData(
+        Team(
+            {
+                "name": "friends",
+                "title": "Andy & Friends",
+                "picture_name": None,
+                "week_start": None,
+                "description": None,
+                "deleted": "N",
+            }
+        )
+    )
 
     def test_team_data_str(self) -> None:
         """
         Prove that the human readable string representation of a TeamData object is as expected.
         """
-        team_str = "TeamData: [name: saintsxctf, title: St. Lawrence Cross Country and Track & Field, " \
+        team_str = (
+            "TeamData: [name: saintsxctf, title: St. Lawrence Cross Country and Track & Field, "
             "picture_name: None, week_start: None, description: None, deleted: N]"
+        )
 
         self.assertEquals(str(self.team1), team_str)
         self.assertEquals(self.team1.__str__(), team_str)

@@ -4,8 +4,10 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
+from typing import Optional
+
+from sqlalchemy.engine import Row
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy.schema import Column
 
 from app import app
 import utils.dates as dates
@@ -17,7 +19,7 @@ from utils.exerciseFilters import generate_exercise_filter_sql_query
 
 
 class LogDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_logs() -> list:
@@ -25,10 +27,7 @@ class LogDao:
         Retrieve all the exercise logs in the database
         :return: The result of the query.
         """
-        return Log.query\
-            .filter(Log.deleted.is_(False))\
-            .order_by(Log.date)\
-            .all()
+        return Log.query.filter(Log.deleted.is_(False)).order_by(Log.date).all()
 
     @staticmethod
     def get_log_by_id(log_id: int) -> Log:
@@ -37,32 +36,29 @@ class LogDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return Log.query\
-            .filter_by(log_id=log_id)\
-            .filter(Log.deleted.is_(False))\
-            .first()
+        return Log.query.filter_by(log_id=log_id).filter(Log.deleted.is_(False)).first()
 
     @staticmethod
-    def get_user_miles(username: str) -> Column:
+    def get_user_miles(username: str) -> Optional[Row]:
         """
         Get the total exercise miles for a user
         :param username: Unique identifier for a user
         :return: The total number of miles exercised
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT SUM(miles) AS total 
             FROM logs 
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=LogDao.engine
+            """,
+            {"username": username},
+            bind=LogDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_user_miles_by_type(username: str, exercise_type: str) -> Column:
+    def get_user_miles_by_type(username: str, exercise_type: str) -> Optional[Row]:
         """
         Get the total miles of a certain exercise for a user
         :param username: Unique identifier for a user
@@ -70,20 +66,22 @@ class LogDao:
         :return: The total number of miles exercised of a certain type
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT SUM(miles) AS total 
             FROM logs 
             WHERE username=:username
             AND type=:exercise_type
             AND deleted IS FALSE
-            ''',
-            {'username': username, 'exercise_type': exercise_type},
-            bind=LogDao.engine
+            """,
+            {"username": username, "exercise_type": exercise_type},
+            bind=LogDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_user_miles_interval(username: str, interval: str = None, week_start: WeekStart = 'monday') -> Column:
+    def get_user_miles_interval(
+        username: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by a user in a certain time interval.  The options include
         the past year, month, or week.
@@ -97,26 +95,26 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 WHERE username=:username
                 AND deleted IS FALSE
-                ''',
-                {'username': username},
-                bind=LogDao.engine
+                """,
+                {"username": username},
+                bind=LogDao.engine,
             )
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 WHERE username=:username 
                 AND date >= :date
                 AND deleted IS FALSE
-                ''',
-                {'username': username, 'date': date},
-                bind=LogDao.engine
+                """,
+                {"username": username, "date": date},
+                bind=LogDao.engine,
             )
 
         return result.first()
@@ -126,8 +124,8 @@ class LogDao:
         username: str,
         exercise_type: str,
         interval: str = None,
-        week_start: WeekStart = 'monday'
-    ) -> Column:
+        week_start: WeekStart = "monday",
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by a user in a certain time interval and specific exercise type.
         The interval options include the past year, month, and week.
@@ -143,53 +141,55 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 WHERE username=:username
                 AND type=:exercise_type
                 AND deleted IS FALSE
-                ''',
-                {'username': username, 'exercise_type': exercise_type},
-                bind=LogDao.engine
+                """,
+                {"username": username, "exercise_type": exercise_type},
+                bind=LogDao.engine,
             )
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 WHERE username=:username 
                 AND type=:exercise_type
                 AND date >= :date
                 AND deleted IS FALSE
-                ''',
-                {'username': username, 'date': date, 'exercise_type': exercise_type},
-                bind=LogDao.engine
+                """,
+                {"username": username, "date": date, "exercise_type": exercise_type},
+                bind=LogDao.engine,
             )
 
         return result.first()
 
     @staticmethod
-    def get_user_avg_feel(username: str) -> Column:
+    def get_user_avg_feel(username: str) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a user
         :param username: Unique identifier for a user
         :return: The average feel
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT AVG(feel) AS average 
             FROM logs 
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=LogDao.engine
+            """,
+            {"username": username},
+            bind=LogDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_user_avg_feel_interval(username: str, interval: str = None, week_start: WeekStart = 'monday') -> Column:
+    def get_user_avg_feel_interval(
+        username: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a user during a certain interval in time
         :param username: Unique identifier for a user
@@ -202,39 +202,39 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT AVG(feel) AS average 
                 FROM logs 
                 WHERE username=:username
                 AND deleted IS FALSE
-                ''',
-                {'username': username},
-                bind=LogDao.engine
+                """,
+                {"username": username},
+                bind=LogDao.engine,
             )
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT AVG(feel) AS average 
                 FROM logs 
                 WHERE username=:username
                 AND date >= :date
                 AND deleted IS FALSE
-                ''',
-                {'username': username, 'date': date},
-                bind=LogDao.engine
+                """,
+                {"username": username, "date": date},
+                bind=LogDao.engine,
             )
 
         return result.first()
 
     @staticmethod
-    def get_group_miles(group_name: str) -> Column:
+    def get_group_miles(group_name: str) -> Optional[Row]:
         """
         Get the total exercise miles for all the users in a group.
         :param group_name: Unique name for a group.
         :return: The total number of miles exercised.
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT SUM(miles) AS total 
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -242,14 +242,16 @@ class LogDao:
             AND status='accepted'
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
-            ''',
-            {'group_name': group_name},
-            bind=LogDao.engine
+            """,
+            {"group_name": group_name},
+            bind=LogDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_group_miles_interval(group_name: str, interval: str = None, week_start: WeekStart = 'monday') -> Column:
+    def get_group_miles_interval(
+        group_name: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by all the group members in a certain time interval.  The time interval
         options include the past year, month, or week.
@@ -263,7 +265,7 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -271,14 +273,14 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name},
-                bind=LogDao.engine
+                """,
+                {"group_name": group_name},
+                bind=LogDao.engine,
             )
             return result.first()
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -287,15 +289,19 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name, 'date': date},
-                bind=LogDao.engine
+                """,
+                {"group_name": group_name, "date": date},
+                bind=LogDao.engine,
             )
             return result.first()
 
     @staticmethod
-    def get_group_miles_interval_by_type(group_name: str, exercise_type: str,
-                                         interval: str = None, week_start: WeekStart = 'monday') -> Column:
+    def get_group_miles_interval_by_type(
+        group_name: str,
+        exercise_type: str,
+        interval: str = None,
+        week_start: WeekStart = "monday",
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by all the group members in a certain time interval and of a specific
         exercise type.  The interval options include the past year, month, and week.
@@ -311,7 +317,7 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -320,14 +326,14 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name, 'exercise_type': exercise_type},
-                bind=LogDao.engine
+                """,
+                {"group_name": group_name, "exercise_type": exercise_type},
+                bind=LogDao.engine,
             )
             return result.first()
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT SUM(miles) AS total 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -337,21 +343,25 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name, 'exercise_type': exercise_type, 'date': date},
-                bind=LogDao.engine
+                """,
+                {
+                    "group_name": group_name,
+                    "exercise_type": exercise_type,
+                    "date": date,
+                },
+                bind=LogDao.engine,
             )
             return result.first()
 
     @staticmethod
-    def get_group_avg_feel(group_name: str) -> Column:
+    def get_group_avg_feel(group_name: str) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a group.
         :param group_name: A name which uniquely identifies a group.
         :return: The average feel.
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT AVG(feel) AS average 
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -359,14 +369,16 @@ class LogDao:
             AND status='accepted'
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
-            ''',
-            {'group_name': group_name},
-            bind=LogDao.engine
+            """,
+            {"group_name": group_name},
+            bind=LogDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_group_avg_feel_interval(group_name: str, interval: str = None, week_start: WeekStart = 'monday') -> Column:
+    def get_group_avg_feel_interval(
+        group_name: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Retrieve the average feel statistic for all group members during a certain interval in time.
         :param group_name: A name which uniquely identifies a group.
@@ -379,7 +391,7 @@ class LogDao:
 
         if date is None:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT AVG(feel) AS average 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -387,14 +399,14 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name},
-                bind=LogDao.engine
+                """,
+                {"group_name": group_name},
+                bind=LogDao.engine,
             )
             return result.first()
         else:
             result: ResultProxy = db.session.execute(
-                '''
+                """
                 SELECT AVG(feel) AS average 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
@@ -403,9 +415,9 @@ class LogDao:
                 AND status='accepted'
                 AND logs.deleted IS FALSE
                 AND groupmembers.deleted IS FALSE
-                ''',
-                {'group_name': group_name, 'date': date},
-                bind=LogDao.engine
+                """,
+                {"group_name": group_name, "date": date},
+                bind=LogDao.engine,
             )
             return result.first()
 
@@ -420,7 +432,7 @@ class LogDao:
         :return: A list of logs
         """
         return db.session.execute(
-            '''
+            """
             SELECT DISTINCT logs.* FROM logs
             INNER JOIN teammembers
             ON logs.username = teammembers.username
@@ -434,9 +446,9 @@ class LogDao:
             )
             ORDER BY logs.date DESC, log_id DESC
             LIMIT :limit OFFSET :offset
-            ''',
-            {'limit': limit, 'offset': offset, 'username': username},
-            bind=LogDao.engine
+            """,
+            {"limit": limit, "offset": offset, "username": username},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -446,8 +458,8 @@ class LogDao:
         :return: The number of logs in existence.
         """
         return db.session.execute(
-            'SELECT COUNT(*) AS count FROM logs WHERE deleted IS FALSE',
-            bind=LogDao.engine
+            "SELECT COUNT(*) AS count FROM logs WHERE deleted IS FALSE",
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -460,15 +472,15 @@ class LogDao:
         :return: A list of logs
         """
         return db.session.execute(
-            '''
+            """
             SELECT * FROM logs 
             WHERE username=:username
             AND deleted IS FALSE
             ORDER BY date DESC, log_id DESC
             LIMIT :limit OFFSET :offset
-            ''',
-            {'username': username, 'limit': limit, 'offset': offset},
-            bind=LogDao.engine
+            """,
+            {"username": username, "limit": limit, "offset": offset},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -479,13 +491,13 @@ class LogDao:
         :return: The number of logs in existence.
         """
         return db.session.execute(
-            '''
+            """
             SELECT COUNT(*) AS count FROM logs
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=LogDao.engine
+            """,
+            {"username": username},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -498,7 +510,7 @@ class LogDao:
         :return: A list of logs
         """
         return db.session.execute(
-            '''
+            """
             SELECT log_id,logs.username,first,last,name,location,date,type,
                     distance,metric,miles,time,pace,feel,description 
             FROM logs 
@@ -509,9 +521,9 @@ class LogDao:
             AND groupmembers.deleted IS FALSE
             ORDER BY date DESC, log_id DESC 
             LIMIT :limit OFFSET :offset
-            ''',
-            {'group_id': group_id, 'limit': limit, 'offset': offset},
-            bind=LogDao.engine
+            """,
+            {"group_id": group_id, "limit": limit, "offset": offset},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -522,16 +534,16 @@ class LogDao:
         :return: The number of logs in existence.
         """
         return db.session.execute(
-            '''
+            """
             SELECT COUNT(*) AS count FROM logs
             INNER JOIN groupmembers ON logs.username=groupmembers.username 
             WHERE group_id=:group_id 
             AND status='accepted' 
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
-            ''',
-            {'group_id': group_id},
-            bind=LogDao.engine
+            """,
+            {"group_id": group_id},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -545,7 +557,7 @@ class LogDao:
         """
         type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
-            f'''
+            f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
             FROM logs 
             WHERE date >= :start 
@@ -553,13 +565,15 @@ class LogDao:
             AND deleted IS FALSE
             AND {type_query}
             GROUP BY date
-            ''',
-            {'start': start, 'end': end},
-            bind=LogDao.engine
+            """,
+            {"start": start, "end": end},
+            bind=LogDao.engine,
         )
 
     @staticmethod
-    def get_user_range_view(username: str, types: list, start: str, end: str) -> ResultProxy:
+    def get_user_range_view(
+        username: str, types: list, start: str, end: str
+    ) -> ResultProxy:
         """
         Get exercise log statistics for a user over a date range.
         :param username: Unique identifier for a user.
@@ -570,7 +584,7 @@ class LogDao:
         """
         type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
-            f'''
+            f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
             FROM logs 
             WHERE username=:username 
@@ -579,13 +593,15 @@ class LogDao:
             AND date <= :end
             AND {type_query}
             GROUP BY date
-            ''',
-            {'username': username, 'start': start, 'end': end},
-            bind=LogDao.engine
+            """,
+            {"username": username, "start": start, "end": end},
+            bind=LogDao.engine,
         )
 
     @staticmethod
-    def get_group_range_view(group_id: int, types: list, start: str, end: str) -> ResultProxy:
+    def get_group_range_view(
+        group_id: int, types: list, start: str, end: str
+    ) -> ResultProxy:
         """
         Get exercise log statistics for a group over a date range.
         :param group_id: Unique identifier for a group.
@@ -596,7 +612,7 @@ class LogDao:
         """
         type_query = generate_exercise_filter_sql_query(types)
         return db.session.execute(
-            f'''
+            f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
             FROM logs 
             INNER JOIN groupmembers 
@@ -608,9 +624,9 @@ class LogDao:
             AND date <= :end
             AND {type_query}
             GROUP BY date
-            ''',
-            {'group_id': group_id, 'start': start, 'end': end},
-            bind=LogDao.engine
+            """,
+            {"group_id": group_id, "start": start, "end": end},
+            bind=LogDao.engine,
         )
 
     @staticmethod
@@ -631,7 +647,7 @@ class LogDao:
         :return: True if the log is updated in the database, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE logs SET 
                 name=:name, 
                 location=:location, 
@@ -646,22 +662,22 @@ class LogDao:
                 description=:description
             WHERE log_id=:log_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'name': log.name,
-                'location': log.location,
-                'date': log.date,
-                'type': log.type,
-                'distance': log.distance,
-                'metric': log.metric,
-                'time': log.time,
-                'miles': log.miles,
-                'pace': log.pace,
-                'feel': log.feel,
-                'description': log.description,
-                'log_id': log.log_id
+                "name": log.name,
+                "location": log.location,
+                "date": log.date,
+                "type": log.type,
+                "distance": log.distance,
+                "metric": log.metric,
+                "time": log.time,
+                "miles": log.miles,
+                "pace": log.pace,
+                "feel": log.feel,
+                "description": log.description,
+                "log_id": log.log_id,
             },
-            bind=LogDao.engine
+            bind=LogDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -673,9 +689,9 @@ class LogDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM logs WHERE log_id=:log_id AND deleted IS FALSE',
-            {'log_id': log_id},
-            bind=LogDao.engine
+            "DELETE FROM logs WHERE log_id=:log_id AND deleted IS FALSE",
+            {"log_id": log_id},
+            bind=LogDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -687,7 +703,7 @@ class LogDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE logs SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -696,15 +712,15 @@ class LogDao:
                 deleted_app=:deleted_app
             WHERE log_id=:log_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'log_id': log.log_id,
-                'deleted': log.deleted,
-                'modified_date': log.modified_date,
-                'modified_app': log.modified_app,
-                'deleted_date': log.deleted_date,
-                'deleted_app': log.deleted_app
+                "log_id": log.log_id,
+                "deleted": log.deleted,
+                "modified_date": log.modified_date,
+                "modified_app": log.modified_app,
+                "deleted_date": log.deleted_date,
+                "deleted_app": log.deleted_app,
             },
-            bind=LogDao.engine
+            bind=LogDao.engine,
         )
         return BasicDao.safe_commit()

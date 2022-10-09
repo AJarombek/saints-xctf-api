@@ -11,12 +11,12 @@ from model.TeamMember import TeamMember
 
 
 class TeamMemberDemo(TeamMember):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     id = Column(db.INTEGER, primary_key=True)
-    team_name = Column(db.TEXT, db.ForeignKey('teams.name'))
-    username = Column(db.TEXT, db.ForeignKey('users.username'))
+    team_name = Column(db.TEXT, db.ForeignKey("teams.name"))
+    username = Column(db.TEXT, db.ForeignKey("users.username"))
     status = Column(db.TEXT)
     user = Column(db.TEXT)
     deleted = Column(db.INTEGER)

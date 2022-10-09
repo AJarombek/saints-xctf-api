@@ -20,16 +20,16 @@ def char_to_exercise(exercise_type: str) -> str:
     :param exercise_type: A character representing an exercise type.
     :return: A string representing an exercise type.
     """
-    if exercise_type == 'r':
-        return 'run'
-    elif exercise_type == 'b':
-        return 'bike'
-    elif exercise_type == 's':
-        return 'swim'
-    elif exercise_type == 'o':
-        return 'other'
+    if exercise_type == "r":
+        return "run"
+    elif exercise_type == "b":
+        return "bike"
+    elif exercise_type == "s":
+        return "swim"
+    elif exercise_type == "o":
+        return "other"
     else:
-        return 'other'
+        return "other"
 
 
 def generate_exercise_filter_sql_query(filters: list) -> str:
@@ -39,9 +39,9 @@ def generate_exercise_filter_sql_query(filters: list) -> str:
     :return: A SQL query string.
     """
     if filters is None or filters.__len__() == 0:
-        return ''
+        return ""
     else:
-        sql_query = 'type IN ('
+        sql_query = "type IN ("
         for exercise_filter in filters:
-            sql_query += f"'{exercise_filter}'" + ','
-        return sql_query[:-1] + ')'
+            sql_query += f"'{exercise_filter}'" + ","
+        return sql_query[:-1] + ")"

@@ -11,12 +11,12 @@ from model.Code import Code
 
 
 class CodeDemo(Code):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     activation_code = Column(db.TEXT, primary_key=True, nullable=False)
     email = Column(db.TEXT)
-    group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
+    group_id = Column(db.INTEGER, db.ForeignKey("groups.id"))
     expiration_date = Column(db.NUMERIC)
     deleted = Column(db.INTEGER)
 

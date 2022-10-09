@@ -12,7 +12,7 @@ from database import db
 
 
 class TeamMemberDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_user_teams(username: str) -> ResultProxy:
@@ -22,14 +22,14 @@ class TeamMemberDemoDao:
         :return: A list of teams
         """
         return db.session.execute(
-            '''
+            """
             SELECT team_name,title,status,user 
             FROM teammembers 
             INNER JOIN teams ON teams.name=teammembers.team_name 
             WHERE username=:username
             AND teammembers.deleted IS FALSE
             AND teams.deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=TeamMemberDemoDao.engine
+            """,
+            {"username": username},
+            bind=TeamMemberDemoDao.engine,
         )

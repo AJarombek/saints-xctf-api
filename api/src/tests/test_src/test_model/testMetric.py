@@ -9,9 +9,9 @@ from model.Metric import Metric
 
 
 class TestMetric(TestSuite):
-    metric1_dict = {'metric': 'meters'}
-    metric2_dict = {'metric': 'miles'}
-    metric3_dict = {'metric': 'kilometers'}
+    metric1_dict = {"metric": "meters"}
+    metric2_dict = {"metric": "miles"}
+    metric3_dict = {"metric": "kilometers"}
 
     metric1 = Metric(metric1_dict)
     metric1copy = Metric(metric1_dict)
@@ -23,7 +23,7 @@ class TestMetric(TestSuite):
         """
         Prove that the human readable string representation of a Metric object is as expected.
         """
-        metric_str = 'Metric: [metric: meters]'
+        metric_str = "Metric: [metric: meters]"
 
         self.assertEquals(str(self.metric1), metric_str)
         self.assertEquals(self.metric1.__str__(), metric_str)

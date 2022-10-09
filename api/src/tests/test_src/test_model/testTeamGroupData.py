@@ -11,19 +11,27 @@ from model.TeamGroupData import TeamGroupData
 
 
 class TestTeamGroupData(TestSuite):
-    team_group1 = TeamGroupData(TeamGroup({
-        'team_name': 'saintsxctf',
-        'group_id': 1,
-        'group_name': 'alumni',
-        'deleted': 'Y'
-    }))
+    team_group1 = TeamGroupData(
+        TeamGroup(
+            {
+                "team_name": "saintsxctf",
+                "group_id": 1,
+                "group_name": "alumni",
+                "deleted": "Y",
+            }
+        )
+    )
 
-    team_group2 = TeamGroupData(TeamGroup({
-        'team_name': 'saintsxctf_alumni',
-        'group_id': 2,
-        'group_name': 'alumni',
-        'deleted': 'N'
-    }))
+    team_group2 = TeamGroupData(
+        TeamGroup(
+            {
+                "team_name": "saintsxctf_alumni",
+                "group_id": 2,
+                "group_name": "alumni",
+                "deleted": "N",
+            }
+        )
+    )
 
     def test_team_group_data_str(self) -> None:
         """
@@ -38,8 +46,12 @@ class TestTeamGroupData(TestSuite):
         """
         Prove that the machine readable string representation of a TeamGroupData object is as expected.
         """
-        self.assertEquals(repr(self.team_group1), "<TeamGroupData 'saintsxctf', 'alumni'>")
-        self.assertEquals(self.team_group1.__repr__(), "<TeamGroupData 'saintsxctf', 'alumni'>")
+        self.assertEquals(
+            repr(self.team_group1), "<TeamGroupData 'saintsxctf', 'alumni'>"
+        )
+        self.assertEquals(
+            self.team_group1.__repr__(), "<TeamGroupData 'saintsxctf', 'alumni'>"
+        )
 
     def test_team_group_data_eq(self) -> None:
         """

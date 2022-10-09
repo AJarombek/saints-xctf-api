@@ -14,4 +14,6 @@ def generate_code(length: int = 8) -> str:
     :param length: Integer length of the secret code.
     :return: String representing a code.
     """
-    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(length))
+    return "".join(
+        secrets.choice(string.ascii_uppercase + string.digits) for _ in range(length)
+    )

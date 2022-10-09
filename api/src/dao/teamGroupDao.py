@@ -10,7 +10,6 @@ from database import db
 
 
 class TeamGroupDao:
-
     @staticmethod
     def get_team_groups(team_name: str) -> ResultProxy:
         """
@@ -19,13 +18,13 @@ class TeamGroupDao:
         :return: A list of teams
         """
         return db.session.execute(
-            '''
+            """
             SELECT id,`groups`.group_name,group_title,grouppic_name,description,week_start,`groups`.deleted
             FROM teamgroups 
             INNER JOIN `groups` ON teamgroups.group_name=`groups`.group_name 
             WHERE team_name=:team_name
             AND teamgroups.deleted IS FALSE 
             AND `groups`.deleted IS FALSE 
-            ''',
-            {'team_name': team_name}
+            """,
+            {"team_name": team_name},
         )

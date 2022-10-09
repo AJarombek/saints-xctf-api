@@ -11,7 +11,7 @@ from model.Group import Group
 
 
 class GroupDemo(Group):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     id = Column(db.INTEGER, autoincrement=True, primary_key=True)
@@ -19,7 +19,7 @@ class GroupDemo(Group):
     group_title = Column(db.TEXT)
     grouppic = Column(db.BLOB)
     grouppic_name = Column(db.TEXT)
-    week_start = Column(db.TEXT, db.ForeignKey('weekstart.week_start'))
+    week_start = Column(db.TEXT, db.ForeignKey("weekstart.week_start"))
     description = Column(db.TEXT)
     deleted = Column(db.INTEGER)
 

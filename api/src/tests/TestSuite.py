@@ -27,12 +27,14 @@ class TestSuite(unittest.TestCase):
         """
         Set up logic performed before each test class executes.
         """
-        flask_env = os.getenv('FLASK_ENV') or 'local'
+        flask_env = os.getenv("FLASK_ENV") or "local"
         auth_url = config[flask_env].AUTH_URL
         TestSuite.auth_url = auth_url
 
-        secretsmanager = boto3.client('secretsmanager')
-        response = secretsmanager.get_secret_value(SecretId=f'saints-xctf-andy-password')
+        secretsmanager = boto3.client("secretsmanager")
+        response = secretsmanager.get_secret_value(
+            SecretId=f"saints-xctf-andy-password"
+        )
         secret_string = response.get("SecretString")
         secret_dict = json.loads(secret_string)
         client_secret = secret_dict.get("password")
@@ -41,10 +43,10 @@ class TestSuite(unittest.TestCase):
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                     url=f"{auth_url}/token",
-                    json={'clientId': 'andy', 'clientSecret': client_secret}
+                    json={"clientId": "andy", "clientSecret": client_secret},
                 ) as response:
                     response_body = await response.json()
-                    result = response_body.get('result')
+                    result = response_body.get("result")
                     if result:
                         TestSuite.jwt = result
 
@@ -54,10 +56,10 @@ class TestSuite(unittest.TestCase):
         """
         Set up logic performed before every test.
         """
-        if os.environ.get('ENV') == 'localtest':
-            env = 'localtest'
+        if os.environ.get("ENV") == "localtest":
+            env = "localtest"
         else:
-            env = 'test'
+            env = "test"
 
         self.app = create_app(env)
         self.app_context = self.app.app_context()

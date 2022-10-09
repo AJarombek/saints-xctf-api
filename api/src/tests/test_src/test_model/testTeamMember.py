@@ -9,21 +9,25 @@ from model.TeamMember import TeamMember
 
 
 class TestTeamMember(TestSuite):
-    team_member1 = TeamMember({
-        'team_name': 'saintsxctf',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 'N'
-    })
+    team_member1 = TeamMember(
+        {
+            "team_name": "saintsxctf",
+            "username": "andy",
+            "status": "accepted",
+            "user": "admin",
+            "deleted": "N",
+        }
+    )
 
-    team_member2 = TeamMember({
-        'team_name': 'saintsxctf_alumni',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'user',
-        'deleted': None
-    })
+    team_member2 = TeamMember(
+        {
+            "team_name": "saintsxctf_alumni",
+            "username": "andy",
+            "status": "accepted",
+            "user": "user",
+            "deleted": None,
+        }
+    )
 
     def test_team_member_str(self) -> None:
         """
@@ -39,7 +43,9 @@ class TestTeamMember(TestSuite):
         Prove that the machine readable string representation of a TeamMember object is as expected.
         """
         self.assertEquals(repr(self.team_member1), "<TeamMember 'saintsxctf', 'andy'>")
-        self.assertEquals(self.team_member1.__repr__(), "<TeamMember 'saintsxctf', 'andy'>")
+        self.assertEquals(
+            self.team_member1.__repr__(), "<TeamMember 'saintsxctf', 'andy'>"
+        )
 
     def test_team_member_eq(self) -> None:
         """

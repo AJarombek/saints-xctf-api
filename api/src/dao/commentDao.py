@@ -14,17 +14,17 @@ from model.Comment import Comment
 
 
 class CommentDao:
-
     @staticmethod
     def get_comments() -> list:
         """
         Retrieve all the comments in the database.
         :return: The result of the query.
         """
-        return Comment.query\
-            .filter(Comment.deleted.is_(False))\
-            .order_by(Comment.time)\
+        return (
+            Comment.query.filter(Comment.deleted.is_(False))
+            .order_by(Comment.time)
             .all()
+        )
 
     @staticmethod
     def get_comment_by_id(comment_id: int) -> Comment:
@@ -33,10 +33,11 @@ class CommentDao:
         :param comment_id: The unique identifier for a comment.
         :return: The result of the query.
         """
-        return Comment.query\
-            .filter_by(comment_id=comment_id)\
-            .filter(Comment.deleted.is_(False))\
+        return (
+            Comment.query.filter_by(comment_id=comment_id)
+            .filter(Comment.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
     def get_comments_by_log_id(log_id: int) -> list:
@@ -45,11 +46,12 @@ class CommentDao:
         :param log_id: Unique identifier for an exercise log.
         :return: The result of the query.
         """
-        return Comment.query\
-            .filter_by(log_id=log_id)\
-            .filter(Comment.deleted.is_(False))\
-            .order_by(desc(Comment.time))\
+        return (
+            Comment.query.filter_by(log_id=log_id)
+            .filter(Comment.deleted.is_(False))
+            .order_by(desc(Comment.time))
             .all()
+        )
 
     @staticmethod
     def add_comment(new_comment: Comment) -> bool:
@@ -69,7 +71,7 @@ class CommentDao:
         :return: True if the comment is updated in the database, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE comments SET 
                 time=:time, 
                 content=:content, 
@@ -77,14 +79,14 @@ class CommentDao:
                 modified_app=:modified_app
             WHERE comment_id=:comment_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'comment_id': comment.comment_id,
-                'time': comment.time,
-                'content': comment.content,
-                'modified_date': comment.modified_date,
-                'modified_app': comment.modified_app,
-            }
+                "comment_id": comment.comment_id,
+                "time": comment.time,
+                "content": comment.content,
+                "modified_date": comment.modified_date,
+                "modified_app": comment.modified_app,
+            },
         )
         return BasicDao.safe_commit()
 
@@ -96,8 +98,8 @@ class CommentDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM comments WHERE comment_id=:comment_id AND deleted IS FALSE',
-            {'comment_id': comment_id}
+            "DELETE FROM comments WHERE comment_id=:comment_id AND deleted IS FALSE",
+            {"comment_id": comment_id},
         )
         return BasicDao.safe_commit()
 
@@ -109,8 +111,8 @@ class CommentDao:
         :return: True if the deletions were successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM comments WHERE log_id=:log_id AND deleted IS FALSE',
-            {'log_id': log_id}
+            "DELETE FROM comments WHERE log_id=:log_id AND deleted IS FALSE",
+            {"log_id": log_id},
         )
         return BasicDao.safe_commit()
 
@@ -122,7 +124,7 @@ class CommentDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE comments SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -131,15 +133,15 @@ class CommentDao:
                 deleted_app=:deleted_app
             WHERE comment_id=:comment_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'comment_id': comment.comment_id,
-                'deleted': comment.deleted,
-                'modified_date': comment.modified_date,
-                'modified_app': comment.modified_app,
-                'deleted_date': comment.deleted_date,
-                'deleted_app': comment.deleted_app
-            }
+                "comment_id": comment.comment_id,
+                "deleted": comment.deleted,
+                "modified_date": comment.modified_date,
+                "modified_app": comment.modified_app,
+                "deleted_date": comment.deleted_date,
+                "deleted_app": comment.deleted_app,
+            },
         )
         return BasicDao.safe_commit()
 
@@ -151,7 +153,7 @@ class CommentDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE comments SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -160,14 +162,14 @@ class CommentDao:
                 deleted_app=:deleted_app
             WHERE log_id=:log_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'log_id': log_id,
-                'deleted': True,
-                'modified_date': datetime.now(),
-                'modified_app': 'saints-xctf-api',
-                'deleted_date': datetime.now(),
-                'deleted_app': 'saints-xctf-api'
-            }
+                "log_id": log_id,
+                "deleted": True,
+                "modified_date": datetime.now(),
+                "modified_app": "saints-xctf-api",
+                "deleted_date": datetime.now(),
+                "deleted_app": "saints-xctf-api",
+            },
         )
         return BasicDao.safe_commit()

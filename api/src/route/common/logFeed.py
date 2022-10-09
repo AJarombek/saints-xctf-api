@@ -13,12 +13,12 @@ def log_feed_links(version: str) -> Dict[str, Any]:
     :return: A dictionary describing all log feed API endpoints.
     """
     return {
-        'self': f'/{version}/log_feed/links',
-        'endpoints': [
+        "self": f"/{version}/log_feed/links",
+        "endpoints": [
             {
-                'link': f'/{version}/log_feed/<filter_by>/<bucket>/<limit>/<offset>',
-                'verb': 'GET',
-                'description': 'Get a list of exercise logs based on certain filters.'
+                "link": f"/{version}/log_feed/<filter_by>/<bucket>/<limit>/<offset>",
+                "verb": "GET",
+                "description": "Get a list of exercise logs based on certain filters.",
             }
-        ]
+        ],
     }

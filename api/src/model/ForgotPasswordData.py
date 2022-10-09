@@ -10,7 +10,6 @@ from .ForgotPassword import ForgotPassword
 
 
 class ForgotPasswordData:
-
     def __init__(self, forgot_password: Optional[ForgotPassword]):
         """
         Create a forgot password object without any auditing fields.
@@ -27,15 +26,17 @@ class ForgotPasswordData:
         String representation of a forgot password code.  This representation is meant to be human readable.
         :return: The forgot password code in string form.
         """
-        return f'ForgotPasswordData: [forgot_code: {self.forgot_code}, username: {self.username}, ' \
-            f'expires: {self.expires}, deleted: {self.deleted}]'
+        return (
+            f"ForgotPasswordData: [forgot_code: {self.forgot_code}, username: {self.username}, "
+            f"expires: {self.expires}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a forgot password code.  This representation is meant to be machine readable.
         :return: The forgot password code in string form.
         """
-        return '<ForgotPasswordData %r,%r>' % (self.forgot_code, self.username)
+        return "<ForgotPasswordData %r,%r>" % (self.forgot_code, self.username)
 
     def __eq__(self, other):
         """

@@ -11,12 +11,16 @@ from decorators import auth_required
 from route.common.rangeView import range_view_links
 from route.common.versions import APIVersion
 
-range_view_demo_route = Blueprint('range_view_demo_route', __name__, url_prefix='/demo/range_view')
+range_view_demo_route = Blueprint(
+    "range_view_demo_route", __name__, url_prefix="/demo/range_view"
+)
 
 
-@range_view_demo_route.route('/<filter_by>/<bucket>/<exercise_types>/<start>/<end>', methods=['GET'])
+@range_view_demo_route.route(
+    "/<filter_by>/<bucket>/<exercise_types>/<start>/<end>", methods=["GET"]
+)
 @auth_required()
-@swag_from('swagger/rangeViewRoute/rangeViewGet.yml', methods=['GET'])
+@swag_from("swagger/rangeViewRoute/rangeViewGet.yml", methods=["GET"])
 def range_view(filter_by, bucket, exercise_types, start, end):
     """
     Endpoint for retrieving log information based on filters and a date range.
@@ -28,20 +32,20 @@ def range_view(filter_by, bucket, exercise_types, start, end):
     :param end: The last date to include in the exercise log feed.
     :return: JSON representation of a log feed and relevant metadata.
     """
-    if request.method == 'GET':
-        ''' [GET] /demo/range_view '''
+    if request.method == "GET":
+        """[GET] /demo/range_view"""
         return range_view_get(filter_by, bucket, exercise_types, start, end)
 
 
-@range_view_demo_route.route('/links', methods=['GET'])
-@swag_from('swagger/rangeViewRoute/rangeViewLinks.yml', methods=['GET'])
+@range_view_demo_route.route("/links", methods=["GET"])
+@swag_from("swagger/rangeViewRoute/rangeViewLinks.yml", methods=["GET"])
 def range_view_links() -> Response:
     """
     Endpoint for information about the range view API endpoints.
     :return: Metadata about the range view API.
     """
-    if request.method == 'GET':
-        ''' [GET] /demo/range_view/links '''
+    if request.method == "GET":
+        """[GET] /demo/range_view/links"""
         return range_view_links_get()
 
 
@@ -56,10 +60,12 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
     :param end: The last date to include in the exercise log feed.
     :return: A response object for the GET API request.
     """
-    response = jsonify({
-        'self': f'/demo/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
-        'range_view': []
-    })
+    response = jsonify(
+        {
+            "self": f"/demo/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
+            "range_view": [],
+        }
+    )
     response.status_code = 200
     return response
 

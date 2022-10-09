@@ -9,12 +9,12 @@ from sqlalchemy import Column
 
 
 class Status(db.Model):
-    __tablename__ = 'status'
-    __bind_key__ = 'app'
+    __tablename__ = "status"
+    __bind_key__ = "app"
 
     status = Column(db.VARCHAR(10), primary_key=True, nullable=False)
 
-    group_members = db.relationship('GroupMember', backref='group_member')
+    group_members = db.relationship("GroupMember", backref="group_member")
 
     def __repr__(self):
-        return '<Status %r>' % self.status
+        return "<Status %r>" % self.status

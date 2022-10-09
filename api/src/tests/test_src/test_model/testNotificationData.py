@@ -13,23 +13,23 @@ from model.NotificationData import NotificationData
 
 class TestNotificationData(TestSuite):
     notification1_dict = {
-        'notification_id': 3,
-        'username': "andy",
-        'time': datetime.fromisoformat('2019-12-01'),
-        'link': None,
-        'viewed': "N",
-        'description': "Wet and cold but good day selling Christmas trees.",
-        'deleted': False
+        "notification_id": 3,
+        "username": "andy",
+        "time": datetime.fromisoformat("2019-12-01"),
+        "link": None,
+        "viewed": "N",
+        "description": "Wet and cold but good day selling Christmas trees.",
+        "deleted": False,
     }
 
     notification2_dict = {
-        'notification_id': 4,
-        'username': "andy",
-        'time': datetime.fromisoformat('2019-12-01'),
-        'link': None,
-        'viewed': "N",
-        'description': "Now need sleep and Dotty the horse snuggle time :).",
-        'deleted': False
+        "notification_id": 4,
+        "username": "andy",
+        "time": datetime.fromisoformat("2019-12-01"),
+        "link": None,
+        "viewed": "N",
+        "description": "Now need sleep and Dotty the horse snuggle time :).",
+        "deleted": False,
     }
 
     notification1 = NotificationData(Notification(notification1_dict))
@@ -41,8 +41,10 @@ class TestNotificationData(TestSuite):
         """
         Prove that the human readable string representation of a NotificationData object is as expected.
         """
-        log_str = 'NotificationData: [notification_id: 3, username: andy, time: 2019-12-01 00:00:00, link: None, ' \
-            'viewed: N, description: Wet and cold but good day selling Christmas trees., deleted: False]'
+        log_str = (
+            "NotificationData: [notification_id: 3, username: andy, time: 2019-12-01 00:00:00, link: None, "
+            "viewed: N, description: Wet and cold but good day selling Christmas trees., deleted: False]"
+        )
 
         self.maxDiff = None
         self.assertEquals(str(self.notification1), log_str)

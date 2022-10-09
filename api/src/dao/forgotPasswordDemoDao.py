@@ -12,7 +12,7 @@ from database import db
 
 
 class ForgotPasswordDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_forgot_password_codes(username: str) -> ResultProxy:
@@ -22,13 +22,13 @@ class ForgotPasswordDemoDao:
         :return: A list of forgot password codes
         """
         return db.session.execute(
-            '''
+            """
             SELECT forgot_code, username, expires, deleted 
             FROM forgotpassword 
             WHERE username=:username 
             AND expires >= NOW()
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=ForgotPasswordDemoDao.engine
+            """,
+            {"username": username},
+            bind=ForgotPasswordDemoDao.engine,
         )

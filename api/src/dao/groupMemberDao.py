@@ -18,7 +18,7 @@ from dao.basicDao import BasicDao
 
 
 class GroupMemberDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_group_member(group_id: int, username: str) -> GroupMember:
@@ -28,13 +28,18 @@ class GroupMemberDao:
         :param username: Unique identifier for the user
         :return: A group membership object.
         """
-        return GroupMember.query\
-            .filter(and_(GroupMember.group_id == group_id, GroupMember.username == username))\
-            .filter(GroupMember.deleted.is_(False))\
+        return (
+            GroupMember.query.filter(
+                and_(GroupMember.group_id == group_id, GroupMember.username == username)
+            )
+            .filter(GroupMember.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
-    def get_group_member_by_group_name(team_name: str, group_name: str, username: str) -> GroupMember:
+    def get_group_member_by_group_name(
+        team_name: str, group_name: str, username: str
+    ) -> GroupMember:
         """
         Get a group membership based on a team name, group name, and username of a user.
         :param team_name: Unique name for a team.
@@ -42,12 +47,22 @@ class GroupMemberDao:
         :param username: Unique identifier for the user.
         :return: A group membership object.
         """
-        return GroupMember.query \
-            .filter(GroupMember.group_name == TeamGroup.group_name) \
-            .filter(and_(TeamGroup.group_name == group_name, TeamGroup.team_name == team_name))\
-            .filter(and_(GroupMember.group_name == group_name, GroupMember.username == username)) \
-            .filter(GroupMember.deleted.is_(False)) \
+        return (
+            GroupMember.query.filter(GroupMember.group_name == TeamGroup.group_name)
+            .filter(
+                and_(
+                    TeamGroup.group_name == group_name, TeamGroup.team_name == team_name
+                )
+            )
+            .filter(
+                and_(
+                    GroupMember.group_name == group_name,
+                    GroupMember.username == username,
+                )
+            )
+            .filter(GroupMember.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
     def get_user_groups(username: str) -> ResultProxy:
@@ -57,16 +72,16 @@ class GroupMemberDao:
         :return: A list of groups
         """
         return db.session.execute(
-            '''
+            """
             SELECT `groups`.id, groupmembers.group_name, group_title, status, user
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             WHERE username=:username
             AND groupmembers.deleted IS FALSE 
             AND `groups`.deleted IS FALSE 
-            ''',
-            {'username': username},
-            bind=GroupMemberDao.engine
+            """,
+            {"username": username},
+            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
@@ -78,7 +93,7 @@ class GroupMemberDao:
         :return: A list of groups
         """
         return db.session.execute(
-            '''
+            """
             SELECT groupmembers.group_name,groupmembers.group_id,group_title,status,user 
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
@@ -90,9 +105,9 @@ class GroupMemberDao:
             AND `groups`.deleted IS FALSE 
             AND teamgroups.deleted IS FALSE 
             AND teams.deleted IS FALSE 
-            ''',
-            {'username': username, 'team_name': team_name},
-            bind=GroupMemberDao.engine
+            """,
+            {"username": username, "team_name": team_name},
+            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
@@ -104,7 +119,7 @@ class GroupMemberDao:
         :return: A list of group members.
         """
         return db.session.execute(
-            '''
+            """
             SELECT users.username,first,last,member_since,user,status 
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
@@ -116,9 +131,9 @@ class GroupMemberDao:
             AND `groups`.deleted IS FALSE 
             AND teamgroups.deleted IS FALSE 
             AND users.deleted IS FALSE 
-            ''',
-            {'group_name': group_name, 'team_name': team_name},
-            bind=GroupMemberDao.engine
+            """,
+            {"group_name": group_name, "team_name": team_name},
+            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
@@ -129,20 +144,22 @@ class GroupMemberDao:
         :return: A list of group members.
         """
         return db.session.execute(
-            '''
+            """
             SELECT users.username,first,last,member_since,user,status 
             FROM groupmembers 
             INNER JOIN users ON groupmembers.username=users.username 
             WHERE groupmembers.group_id=:group_id
             AND groupmembers.deleted IS FALSE 
             AND users.deleted IS FALSE 
-            ''',
-            {'group_id': group_id},
-            bind=GroupMemberDao.engine
+            """,
+            {"group_id": group_id},
+            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
-    def update_group_member(group_id: int, username: str, status: str, user: str) -> bool:
+    def update_group_member(
+        group_id: int, username: str, status: str, user: str
+    ) -> bool:
         """
         Update a group membership for a user.
         :param group_id: Unique id of a group.
@@ -152,7 +169,7 @@ class GroupMemberDao:
         :return: True if the group membership was updated, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE groupmembers SET 
                 status=:status, 
                 user=:user,
@@ -161,16 +178,16 @@ class GroupMemberDao:
             WHERE group_id=:group_id 
             AND username=:username
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'group_id': group_id,
-                'username': username,
-                'modified_date': datetime.now(),
-                'modified_app': 'saints-xctf-api',
-                'status': status,
-                'user': user
+                "group_id": group_id,
+                "username": username,
+                "modified_date": datetime.now(),
+                "modified_app": "saints-xctf-api",
+                "status": status,
+                "user": user,
             },
-            bind=GroupMemberDao.engine
+            bind=GroupMemberDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -183,7 +200,7 @@ class GroupMemberDao:
         :return: True if the group membership was soft deleted, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE groupmembers SET 
                 deleted=:deleted,
                 deleted_date=:deleted_date,
@@ -191,14 +208,14 @@ class GroupMemberDao:
             WHERE group_id=:group_id 
             AND username=:username
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'group_id': group_id,
-                'username': username,
-                'deleted': True,
-                'deleted_date': datetime.now(),
-                'deleted_app': 'saints-xctf-api'
+                "group_id": group_id,
+                "username": username,
+                "deleted": True,
+                "deleted_date": datetime.now(),
+                "deleted_app": "saints-xctf-api",
             },
-            bind=GroupMemberDao.engine
+            bind=GroupMemberDao.engine,
         )
         return BasicDao.safe_commit()

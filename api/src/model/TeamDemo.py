@@ -11,13 +11,13 @@ from model.Team import Team
 
 
 class TeamDemo(Team):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     name = Column(db.TEXT, primary_key=True)
     title = Column(db.TEXT)
     picture_name = Column(db.TEXT)
-    week_start = Column(db.TEXT, db.ForeignKey('weekstart.week_start'))
+    week_start = Column(db.TEXT, db.ForeignKey("weekstart.week_start"))
     description = Column(db.TEXT)
     deleted = Column(db.INTEGER)
 

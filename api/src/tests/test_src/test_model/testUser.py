@@ -11,45 +11,45 @@ from model.User import User
 
 class TestUser(TestSuite):
     user1_dict = {
-        'username': "andy",
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'salt': None,
-        'password': 'hashed_and_salted_password',
-        'profilepic': None,
-        'profilepic_name': None,
-        'description': "Andy's Profile",
-        'member_since': datetime.fromisoformat('2016-12-23'),
-        'class_year': 2017,
-        'location': 'Riverside, CT',
-        'favorite_event': '8K, 5000m',
-        'activation_code': 'ABC123',
-        'email': 'andrew@jarombek.com',
-        'subscribed': 1,
-        'last_signin': datetime.fromisoformat('2019-12-10'),
-        'week_start': 'monday',
-        'deleted': False
+        "username": "andy",
+        "first": "Andy",
+        "last": "Jarombek",
+        "salt": None,
+        "password": "hashed_and_salted_password",
+        "profilepic": None,
+        "profilepic_name": None,
+        "description": "Andy's Profile",
+        "member_since": datetime.fromisoformat("2016-12-23"),
+        "class_year": 2017,
+        "location": "Riverside, CT",
+        "favorite_event": "8K, 5000m",
+        "activation_code": "ABC123",
+        "email": "andrew@jarombek.com",
+        "subscribed": 1,
+        "last_signin": datetime.fromisoformat("2019-12-10"),
+        "week_start": "monday",
+        "deleted": False,
     }
 
     user2_dict = {
-        'username': "andy2",
-        'first': 'Andrew',
-        'last': 'Jarombek',
-        'salt': None,
-        'password': 'hashed_and_salted_password',
-        'profilepic': None,
-        'profilepic_name': None,
-        'description': None,
-        'member_since': datetime.fromisoformat('2019-12-10'),
-        'class_year': 2017,
-        'location': None,
-        'favorite_event': None,
-        'activation_code': 'DEF456',
-        'email': 'andrew@jarombek.com',
-        'subscribed': None,
-        'last_signin': datetime.now(),
-        'week_start': None,
-        'deleted': False
+        "username": "andy2",
+        "first": "Andrew",
+        "last": "Jarombek",
+        "salt": None,
+        "password": "hashed_and_salted_password",
+        "profilepic": None,
+        "profilepic_name": None,
+        "description": None,
+        "member_since": datetime.fromisoformat("2019-12-10"),
+        "class_year": 2017,
+        "location": None,
+        "favorite_event": None,
+        "activation_code": "DEF456",
+        "email": "andrew@jarombek.com",
+        "subscribed": None,
+        "last_signin": datetime.now(),
+        "week_start": None,
+        "deleted": False,
     }
 
     user1 = User(user1_dict)
@@ -60,12 +60,14 @@ class TestUser(TestSuite):
         """
         Prove that the human readable string representation of a User object is as expected.
         """
-        log_str = 'User: [username: andy, first: Andy, last: Jarombek, salt: None, ' \
-                  'password: hashed_and_salted_password, ' \
-                  "description: Andy's Profile, member_since: 2016-12-23 00:00:00, class_year: 2017, " \
-                  'location: Riverside, CT, favorite_event: 8K, 5000m, activation_code: ABC123, ' \
-                  'email: andrew@jarombek.com, subscribed: 1, last_signin: 2019-12-10 00:00:00, week_start: monday, ' \
-                  'deleted: False]'
+        log_str = (
+            "User: [username: andy, first: Andy, last: Jarombek, salt: None, "
+            "password: hashed_and_salted_password, "
+            "description: Andy's Profile, member_since: 2016-12-23 00:00:00, class_year: 2017, "
+            "location: Riverside, CT, favorite_event: 8K, 5000m, activation_code: ABC123, "
+            "email: andrew@jarombek.com, subscribed: 1, last_signin: 2019-12-10 00:00:00, week_start: monday, "
+            "deleted: False]"
+        )
 
         self.maxDiff = None
         self.assertEquals(str(self.user1), log_str)

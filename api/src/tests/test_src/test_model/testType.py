@@ -9,9 +9,9 @@ from model.Type import Type
 
 
 class TestType(TestSuite):
-    type1_dict = {'type': 'run'}
-    type2_dict = {'type': 'bike'}
-    type3_dict = {'type': 'other'}
+    type1_dict = {"type": "run"}
+    type2_dict = {"type": "bike"}
+    type3_dict = {"type": "other"}
 
     type1 = Type(type1_dict)
     type1copy = Type(type1_dict)
@@ -23,7 +23,7 @@ class TestType(TestSuite):
         """
         Prove that the human readable string representation of a Type object is as expected.
         """
-        type_str = 'Type: [type: run]'
+        type_str = "Type: [type: run]"
 
         self.assertEquals(str(self.type1), type_str)
         self.assertEquals(self.type1.__str__(), type_str)

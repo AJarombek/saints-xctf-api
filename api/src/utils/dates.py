@@ -10,7 +10,9 @@ from datetime import datetime, timedelta, date
 from utils.literals import Interval, WeekStart
 
 
-def get_start_date_interval(interval: Optional[Interval], week_start: WeekStart) -> date:
+def get_start_date_interval(
+    interval: Optional[Interval], week_start: WeekStart
+) -> date:
     """
     Get the start date of a time interval, whether it be the past week, year, or month.
     :param interval: A string representing the interval (week, month, or year).
@@ -18,11 +20,11 @@ def get_start_date_interval(interval: Optional[Interval], week_start: WeekStart)
     :return: The first date of the time interval.  None if no interval is passed as an argument.
     """
     start_date = None
-    if interval == 'year':
+    if interval == "year":
         start_date = get_first_day_of_year()
-    elif interval == 'month':
+    elif interval == "month":
         start_date = get_first_day_of_month()
-    elif interval == 'week':
+    elif interval == "week":
         start_date = get_first_day_of_week(week_start=week_start)
     return start_date
 
@@ -43,16 +45,18 @@ def get_first_day_of_month() -> date:
     return datetime.today().date().replace(day=1)
 
 
-def get_first_day_of_week(week_start: WeekStart = 'monday') -> date:
+def get_first_day_of_week(week_start: WeekStart = "monday") -> date:
     """
     Retreive either last Sunday or Monday
     :param week_start: Either 'monday' or 'sunday'
     :return: A date object representing the first day of the past week
     """
     sunday_week_start = 0
-    if week_start == 'sunday':
+    if week_start == "sunday":
         sunday_week_start = 1
 
     todays_weekday = datetime.now().date().weekday()
-    first_day_of_week = datetime.today() - timedelta(days=todays_weekday + sunday_week_start)
+    first_day_of_week = datetime.today() - timedelta(
+        days=todays_weekday + sunday_week_start
+    )
     return first_day_of_week.date()

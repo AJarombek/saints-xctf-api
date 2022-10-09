@@ -11,32 +11,42 @@ from model.GroupMemberData import GroupMemberData
 
 
 class TestGroupMemberData(TestSuite):
-    group_member1 = GroupMemberData(GroupMember({
-        'id': 1,
-        'group_name': "mensxc",
-        'group_id': 3,
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'user',
-        'deleted': False
-    }))
+    group_member1 = GroupMemberData(
+        GroupMember(
+            {
+                "id": 1,
+                "group_name": "mensxc",
+                "group_id": 3,
+                "username": "andy",
+                "status": "accepted",
+                "user": "user",
+                "deleted": False,
+            }
+        )
+    )
 
-    group_member2 = GroupMemberData(GroupMember({
-        'id': 2,
-        'group_name': "alumni",
-        'group_id': 1,
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': False
-    }))
+    group_member2 = GroupMemberData(
+        GroupMember(
+            {
+                "id": 2,
+                "group_name": "alumni",
+                "group_id": 1,
+                "username": "andy",
+                "status": "accepted",
+                "user": "admin",
+                "deleted": False,
+            }
+        )
+    )
 
     def test_group_member_data_str(self) -> None:
         """
         Prove that the human readable string representation of an GroupMember object is as expected.
         """
-        group_member_str = "GroupMemberData: [id: 2, group_name: alumni, group_id: 1, username: andy, " \
-            'status: accepted, user: admin, deleted: False]'
+        group_member_str = (
+            "GroupMemberData: [id: 2, group_name: alumni, group_id: 1, username: andy, "
+            "status: accepted, user: admin, deleted: False]"
+        )
 
         self.assertEquals(str(self.group_member2), group_member_str)
         self.assertEquals(self.group_member2.__str__(), group_member_str)
@@ -46,7 +56,9 @@ class TestGroupMemberData(TestSuite):
         Prove that the machine readable string representation of an GroupMember object is as expected.
         """
         self.assertEquals(repr(self.group_member2), "<GroupMemberData 'alumni','andy'>")
-        self.assertEquals(self.group_member2.__repr__(), "<GroupMemberData 'alumni','andy'>")
+        self.assertEquals(
+            self.group_member2.__repr__(), "<GroupMemberData 'alumni','andy'>"
+        )
 
     def test_group_member_data_eq(self) -> None:
         """

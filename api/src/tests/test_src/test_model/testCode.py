@@ -12,21 +12,25 @@ from model.Code import Code
 
 
 class TestCode(TestSuite):
-    code1 = Code({
-        'activation_code': 'AJAJAJ',
-        'email': 'andrew@jarombek.com',
-        'group_id': 2,
-        'expiration_date': datetime.now() + timedelta(weeks=2),
-        'deleted': False
-    })
+    code1 = Code(
+        {
+            "activation_code": "AJAJAJ",
+            "email": "andrew@jarombek.com",
+            "group_id": 2,
+            "expiration_date": datetime.now() + timedelta(weeks=2),
+            "deleted": False,
+        }
+    )
 
-    code2 = Code({
-        'activation_code': '80UN02',
-        'email': 'andrew@jarombek.com',
-        'group_id': 1,
-        'expiration_date': None,
-        'deleted': False
-    })
+    code2 = Code(
+        {
+            "activation_code": "80UN02",
+            "email": "andrew@jarombek.com",
+            "group_id": 1,
+            "expiration_date": None,
+            "deleted": False,
+        }
+    )
 
     def test_code_str(self) -> None:
         """
@@ -35,13 +39,13 @@ class TestCode(TestSuite):
 
         self.assertEquals(
             str(self.code2),
-            'Code: [activation_code: 80UN02, email: andrew@jarombek.com, group_id: 1, expiration_date: None, '
-            'deleted: False]'
+            "Code: [activation_code: 80UN02, email: andrew@jarombek.com, group_id: 1, expiration_date: None, "
+            "deleted: False]",
         )
         self.assertEquals(
             self.code2.__str__(),
-            'Code: [activation_code: 80UN02, email: andrew@jarombek.com, group_id: 1, expiration_date: None, '
-            'deleted: False]'
+            "Code: [activation_code: 80UN02, email: andrew@jarombek.com, group_id: 1, expiration_date: None, "
+            "deleted: False]",
         )
 
     def test_code_repr(self) -> None:

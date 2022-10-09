@@ -12,19 +12,27 @@ from model.ForgotPasswordData import ForgotPasswordData
 
 
 class TestForgotPasswordData(TestSuite):
-    forgot_password1 = ForgotPasswordData(ForgotPassword({
-        'forgot_code': '123ABC',
-        'username': 'andy',
-        'expires': datetime.fromisoformat('2019-11-10 00:00:00'),
-        'deleted': False
-    }))
+    forgot_password1 = ForgotPasswordData(
+        ForgotPassword(
+            {
+                "forgot_code": "123ABC",
+                "username": "andy",
+                "expires": datetime.fromisoformat("2019-11-10 00:00:00"),
+                "deleted": False,
+            }
+        )
+    )
 
-    forgot_password2 = ForgotPasswordData(ForgotPassword({
-        'forgot_code': '456DEF',
-        'username': 'andy',
-        'expires': datetime.fromisoformat('2019-11-10 02:00:00'),
-        'deleted': False
-    }))
+    forgot_password2 = ForgotPasswordData(
+        ForgotPassword(
+            {
+                "forgot_code": "456DEF",
+                "username": "andy",
+                "expires": datetime.fromisoformat("2019-11-10 02:00:00"),
+                "deleted": False,
+            }
+        )
+    )
 
     def test_forgot_password_data_str(self) -> None:
         """
@@ -32,19 +40,23 @@ class TestForgotPasswordData(TestSuite):
         """
         self.assertEquals(
             str(self.forgot_password2),
-            'ForgotPasswordData: [forgot_code: 456DEF, username: andy, expires: 2019-11-10 02:00:00, deleted: False]'
+            "ForgotPasswordData: [forgot_code: 456DEF, username: andy, expires: 2019-11-10 02:00:00, deleted: False]",
         )
         self.assertEquals(
             self.forgot_password2.__str__(),
-            'ForgotPasswordData: [forgot_code: 456DEF, username: andy, expires: 2019-11-10 02:00:00, deleted: False]'
+            "ForgotPasswordData: [forgot_code: 456DEF, username: andy, expires: 2019-11-10 02:00:00, deleted: False]",
         )
 
     def test_forgot_password_data_repr(self) -> None:
         """
         Prove that the machine readable string representation of a ForgotPasswordData object is as expected.
         """
-        self.assertEquals(repr(self.forgot_password2), "<ForgotPasswordData '456DEF','andy'>")
-        self.assertEquals(self.forgot_password2.__repr__(), "<ForgotPasswordData '456DEF','andy'>")
+        self.assertEquals(
+            repr(self.forgot_password2), "<ForgotPasswordData '456DEF','andy'>"
+        )
+        self.assertEquals(
+            self.forgot_password2.__repr__(), "<ForgotPasswordData '456DEF','andy'>"
+        )
 
     def test_forgot_password_data_eq(self) -> None:
         """

@@ -28,8 +28,10 @@ class GroupMemberData:
         to be human readable.
         :return: The group member in string form.
         """
-        return f'GroupMemberData: [id: {self.id}, group_name: {self.group_name}, group_id: {self.group_id}, ' \
-            f'username: {self.username}, status: {self.status}, user: {self.user}, deleted: {self.deleted}]'
+        return (
+            f"GroupMemberData: [id: {self.id}, group_name: {self.group_name}, group_id: {self.group_id}, "
+            f"username: {self.username}, status: {self.status}, user: {self.user}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
@@ -37,7 +39,7 @@ class GroupMemberData:
         to be machine readable.
         :return: The group member in string form.
         """
-        return '<GroupMemberData %r,%r>' % (self.group_name, self.username)
+        return "<GroupMemberData %r,%r>" % (self.group_name, self.username)
 
     def __eq__(self, other):
         """

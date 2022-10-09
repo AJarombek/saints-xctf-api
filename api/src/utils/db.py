@@ -14,21 +14,21 @@ def get_connection_url() -> str:
     :return: Connection URL for interacting with the MySQL database
     """
     try:
-        env = os.environ['ENV']
+        env = os.environ["ENV"]
     except KeyError:
         env = "prod"
 
     # Local development credentials aren't stored in a Secret
-    if env == 'local' or env == 'localtest':
-        return 'mysql+pymysql://saintsxctflocal:saintsxctf@db/saintsxctf'
-    elif env == 'test':
-        return 'mysql+pymysql://test:test@localhost/saintsxctf'
+    if env == "local" or env == "localtest":
+        return "mysql+pymysql://saintsxctflocal:saintsxctf@db/saintsxctf"
+    elif env == "test":
+        return "mysql+pymysql://test:test@localhost/saintsxctf"
 
     secret_map = aws.retrieve_db_cred(env)
 
     hostname = aws.retrieve_db_host(env)
     username = secret_map.get("username")
     password = secret_map.get("password")
-    database = 'saintsxctf'
+    database = "saintsxctf"
 
-    return f'mysql+pymysql://{username}:{password}@{hostname}/{database}'
+    return f"mysql+pymysql://{username}:{password}@{hostname}/{database}"

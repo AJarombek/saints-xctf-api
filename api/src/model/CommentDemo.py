@@ -11,14 +11,14 @@ from model.Comment import Comment
 
 
 class CommentDemo(Comment):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     comment_id = Column(db.INTEGER, autoincrement=True, primary_key=True)
-    username = Column(db.TEXT, db.ForeignKey('users.username'), nullable=False)
+    username = Column(db.TEXT, db.ForeignKey("users.username"), nullable=False)
     first = Column(db.TEXT, nullable=False)
     last = Column(db.TEXT, nullable=False)
-    log_id = Column(db.INTEGER, db.ForeignKey('logs.log_id'), nullable=False)
+    log_id = Column(db.INTEGER, db.ForeignKey("logs.log_id"), nullable=False)
     time = Column(db.NUMERIC, nullable=False)
     content = Column(db.TEXT)
     deleted = Column(db.INTEGER)

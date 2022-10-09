@@ -16,7 +16,7 @@ from model.ForgotPassword import ForgotPassword
 
 
 class ForgotPasswordDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_forgot_password_code(code: str) -> ForgotPassword:
@@ -25,11 +25,12 @@ class ForgotPasswordDao:
         :param code: Value of the secret forgot password code
         :return: A dictionary representing the forgotten password code and metadata.
         """
-        return ForgotPassword.query\
-            .filter_by(forgot_code=code)\
-            .filter(ForgotPassword.deleted.is_(False))\
-            .filter(ForgotPassword.expires > datetime.utcnow())\
+        return (
+            ForgotPassword.query.filter_by(forgot_code=code)
+            .filter(ForgotPassword.deleted.is_(False))
+            .filter(ForgotPassword.expires > datetime.utcnow())
             .first()
+        )
 
     @staticmethod
     def get_forgot_password_codes(username: str) -> ResultProxy:
@@ -39,15 +40,15 @@ class ForgotPasswordDao:
         :return: A list of forgot password codes
         """
         return db.session.execute(
-            '''
+            """
             SELECT forgot_code, username, expires, deleted 
             FROM forgotpassword 
             WHERE username=:username 
             AND expires >= NOW()
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=ForgotPasswordDao.engine
+            """,
+            {"username": username},
+            bind=ForgotPasswordDao.engine,
         )
 
     @staticmethod
@@ -68,12 +69,12 @@ class ForgotPasswordDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             DELETE FROM forgotpassword 
             WHERE forgot_code=:forgot_code 
             AND deleted IS FALSE
-            ''',
-            {'forgot_code': code},
-            bind=ForgotPasswordDao.engine
+            """,
+            {"forgot_code": code},
+            bind=ForgotPasswordDao.engine,
         )
         return BasicDao.safe_commit()

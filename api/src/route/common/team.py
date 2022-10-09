@@ -21,38 +21,40 @@ def team_links(version: str) -> Dict[str, Any]:
     :return: A dictionary describing all team API endpoints.
     """
     return {
-        'self': f'/{version}/teams/links',
-        'endpoints': [
+        "self": f"/{version}/teams/links",
+        "endpoints": [
             {
-                'link': f'/{version}/teams',
-                'verb': 'GET',
-                'description': 'Get all the teams in the database.'
+                "link": f"/{version}/teams",
+                "verb": "GET",
+                "description": "Get all the teams in the database.",
             },
             {
-                'link': f'/{version}/teams/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve a single team with a given name.'
+                "link": f"/{version}/teams/<name>",
+                "verb": "GET",
+                "description": "Retrieve a single team with a given name.",
             },
             {
-                'link': f'/{version}/teams/members/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve the members of a team with a given name.'
+                "link": f"/{version}/teams/members/<name>",
+                "verb": "GET",
+                "description": "Retrieve the members of a team with a given name.",
             },
             {
-                'link': f'/{version}/teams/groups/<name>',
-                'verb': 'GET',
-                'description': 'Retrieve the groups in a team based on the team name.'
+                "link": f"/{version}/teams/groups/<name>",
+                "verb": "GET",
+                "description": "Retrieve the groups in a team based on the team name.",
             },
             {
-                'link': f'/{version}/teams/search/<text>/<limit>',
-                'verb': 'GET',
-                'description': 'Text search for teams.'
-            }
+                "link": f"/{version}/teams/search/<text>/<limit>",
+                "verb": "GET",
+                "description": "Text search for teams.",
+            },
         ],
     }
 
 
-def teams_get(version: APIVersion, dao: Union[Type[TeamDao], Type[TeamDemoDao]]) -> Response:
+def teams_get(
+    version: APIVersion, dao: Union[Type[TeamDao], Type[TeamDemoDao]]
+) -> Response:
     """
     Retrieve all the teams in the database.
     :param version: Version of the API to use for the request.
@@ -62,19 +64,18 @@ def teams_get(version: APIVersion, dao: Union[Type[TeamDao], Type[TeamDemoDao]])
     all_teams: List[Team] = dao.get_teams()
 
     if all_teams is None:
-        response = jsonify({
-            'self': f'/{version.value}/teams',
-            'teams': None,
-            'error': 'an unexpected error occurred retrieving teams'
-        })
+        response = jsonify(
+            {
+                "self": f"/{version.value}/teams",
+                "teams": None,
+                "error": "an unexpected error occurred retrieving teams",
+            }
+        )
         response.status_code = 500
         return response
     else:
         team_dicts = [TeamData(team_info).__dict__ for team_info in all_teams]
 
-        response = jsonify({
-            'self': f'/{version.value}/teams',
-            'teams': team_dicts
-        })
+        response = jsonify({"self": f"/{version.value}/teams", "teams": team_dicts})
         response.status_code = 200
         return response

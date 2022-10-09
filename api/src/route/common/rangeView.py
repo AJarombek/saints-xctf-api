@@ -13,12 +13,12 @@ def range_view_links(version: str) -> Dict[str, Any]:
     :return: A dictionary describing all range view API endpoints.
     """
     return {
-        'self': f'/{version}/range_view/links',
-        'endpoints': [
+        "self": f"/{version}/range_view/links",
+        "endpoints": [
             {
-                'link': f'/{version}/range_view/<filter_by>/<bucket>/<exercise_types>/<start>/<end>',
-                'verb': 'GET',
-                'description': 'Get a list of range view objects based on certain filters.'
+                "link": f"/{version}/range_view/<filter_by>/<bucket>/<exercise_types>/<start>/<end>",
+                "verb": "GET",
+                "description": "Get a list of range view objects based on certain filters.",
             }
-        ]
+        ],
     }

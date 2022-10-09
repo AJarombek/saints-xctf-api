@@ -14,7 +14,7 @@ from utils.literals import WeekStart
 
 
 class GroupDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_newest_log_date(group_name: str) -> Column:
@@ -24,15 +24,15 @@ class GroupDemoDao:
         :return: A date of an exercise log
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT MAX(time_created) AS newest 
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
             WHERE group_name=:group_name and status='accepted'
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
-            ''',
-            {'group_name': group_name},
-            bind=GroupDemoDao.engine
+            """,
+            {"group_name": group_name},
+            bind=GroupDemoDao.engine,
         )
         return result.first()

@@ -20,7 +20,7 @@ from utils.literals import WeekStart
 
 
 class GroupDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_groups() -> list:
@@ -28,21 +28,18 @@ class GroupDao:
         Retrieve all the groups in the database
         :return: The result of the query.
         """
-        return Group.query\
-            .filter(Group.deleted.is_(False))\
-            .all()
+        return Group.query.filter(Group.deleted.is_(False)).all()
 
     @staticmethod
     def get_group_by_id(group_id: int) -> Group:
         """
-       Retrieve a group with a given id from the database.
-       :param group_id: Unique id which identifies a group.
-       :return: A Group object which is the result of the query.
-       """
-        return Group.query\
-            .filter_by(id=group_id)\
-            .filter(Group.deleted.is_(False))\
-            .first()
+        Retrieve a group with a given id from the database.
+        :param group_id: Unique id which identifies a group.
+        :return: A Group object which is the result of the query.
+        """
+        return (
+            Group.query.filter_by(id=group_id).filter(Group.deleted.is_(False)).first()
+        )
 
     @staticmethod
     def get_group(team_name: str, group_name: str) -> Optional[RowProxy]:
@@ -53,7 +50,7 @@ class GroupDao:
         :return: The result of the query.
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT `groups`.id, `groups`.group_name, group_title, grouppic_name, description, week_start
             FROM `groups` 
             INNER JOIN teamgroups ON `groups`.group_name = teamgroups.group_name
@@ -61,9 +58,9 @@ class GroupDao:
             AND team_name=:team_name
             AND `groups`.deleted IS FALSE
             AND teamgroups.deleted IS FALSE
-            ''',
-            {'team_name': team_name, 'group_name': group_name},
-            bind=GroupDao.engine
+            """,
+            {"team_name": team_name, "group_name": group_name},
+            bind=GroupDao.engine,
         )
         return result.first()
 
@@ -75,21 +72,23 @@ class GroupDao:
         :return: A date of an exercise log
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT MAX(time_created) AS newest 
             FROM logs 
             INNER JOIN groupmembers ON logs.username = groupmembers.username 
             WHERE group_name=:group_name and status='accepted'
             AND logs.deleted IS FALSE
             AND groupmembers.deleted IS FALSE
-            ''',
-            {'group_name': group_name},
-            bind=GroupDao.engine
+            """,
+            {"group_name": group_name},
+            bind=GroupDao.engine,
         )
         return result.first()
 
     @staticmethod
-    def get_group_leaderboard(group_id: int, interval: str = None, week_start: WeekStart = 'monday') -> ResultProxy:
+    def get_group_leaderboard(
+        group_id: int, interval: str = None, week_start: WeekStart = "monday"
+    ) -> ResultProxy:
         """
         Get exercise statistics from users in a specific group.  These statistics are used to build a leaderboard in the
         application.
@@ -121,8 +120,8 @@ class GroupDao:
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
-                {'group_id': group_id},
-                bind=GroupDao.engine
+                {"group_id": group_id},
+                bind=GroupDao.engine,
             )
         else:
             return db.session.execute(
@@ -146,8 +145,8 @@ class GroupDao:
                 GROUP BY groupmembers.username 
                 ORDER BY miles DESC
                 """,
-                {'group_id': group_id, 'date': date},
-                bind=GroupDao.engine
+                {"group_id": group_id, "date": date},
+                bind=GroupDao.engine,
             )
 
     @staticmethod
@@ -158,7 +157,7 @@ class GroupDao:
         :return: True if the group is updated in the database, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE groups SET
                 grouppic_name=:grouppic_name, 
                 description=:description, 
@@ -167,15 +166,15 @@ class GroupDao:
                 modified_app=:modified_app
             WHERE group_name=:group_name
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'grouppic_name': group.grouppic_name,
-                'description': group.description,
-                'week_start': group.week_start,
-                'group_name': group.group_name,
-                'modified_date': group.modified_date,
-                'modified_app': group.modified_app
+                "grouppic_name": group.grouppic_name,
+                "description": group.description,
+                "week_start": group.week_start,
+                "group_name": group.group_name,
+                "modified_date": group.modified_date,
+                "modified_app": group.modified_app,
             },
-            bind=GroupDao.engine
+            bind=GroupDao.engine,
         )
         return BasicDao.safe_commit()

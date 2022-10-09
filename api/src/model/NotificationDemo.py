@@ -11,11 +11,11 @@ from model.Notification import Notification
 
 
 class NotificationDemo(Notification):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     notification_id = Column(db.INTEGER, autoincrement=True, primary_key=True)
-    username = Column(db.TEXT, db.ForeignKey('users.username'), nullable=False)
+    username = Column(db.TEXT, db.ForeignKey("users.username"), nullable=False)
     time = Column(db.NUMERIC, nullable=False)
     link = Column(db.TEXT)
     viewed = Column(db.TEXT, nullable=False)

@@ -37,18 +37,20 @@ class LogData:
         String representation of an exercise log.  This representation is meant to be human readable.
         :return: The exercise log in string form.
         """
-        return f'LogData: [log_id: {self.log_id}, username: {self.username}, first: {self.first}, last: {self.last}, ' \
-            f'name: {self.name}, location: {self.location}, date: {self.date}, type: {self.type}, ' \
-            f'distance: {self.distance}, metric: {self.metric}, miles: {self.miles}, time: {self.time}, ' \
-            f'pace: {self.pace}, feel: {self.feel}, description: {self.description}, ' \
-            f'time_created: {self.time_created}, deleted: {self.deleted}]'
+        return (
+            f"LogData: [log_id: {self.log_id}, username: {self.username}, first: {self.first}, last: {self.last}, "
+            f"name: {self.name}, location: {self.location}, date: {self.date}, type: {self.type}, "
+            f"distance: {self.distance}, metric: {self.metric}, miles: {self.miles}, time: {self.time}, "
+            f"pace: {self.pace}, feel: {self.feel}, description: {self.description}, "
+            f"time_created: {self.time_created}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of an exercise log.  This representation is meant to be machine readable.
         :return: The exercise log in string form.
         """
-        return '<LogData %r>' % self.log_id
+        return "<LogData %r>" % self.log_id
 
     def __eq__(self, other):
         """

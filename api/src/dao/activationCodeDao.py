@@ -12,7 +12,6 @@ from model.Code import Code
 
 
 class ActivationCodeDao:
-
     @staticmethod
     def get_activation_code(code: str) -> Code:
         """
@@ -20,10 +19,11 @@ class ActivationCodeDao:
         :param code: An activation code.
         :return: The result of the query.
         """
-        return Code.query\
-            .filter_by(activation_code=code)\
-            .filter(Code.deleted.is_(False))\
+        return (
+            Code.query.filter_by(activation_code=code)
+            .filter(Code.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
     def activation_code_exists(activation_code: str) -> Column:
@@ -33,13 +33,13 @@ class ActivationCodeDao:
         :return: The result of the query.
         """
         result: ResultProxy = db.session.execute(
-            '''
+            """
             SELECT COUNT(*) AS 'exists' 
             FROM codes 
             WHERE activation_code=:activation_code 
             AND deleted IS FALSE 
-            ''',
-            {'activation_code': activation_code}
+            """,
+            {"activation_code": activation_code},
         )
         return result.first()
 
@@ -61,8 +61,8 @@ class ActivationCodeDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM codes WHERE activation_code=:activation_code AND deleted IS FALSE',
-            {'activation_code': activation_code}
+            "DELETE FROM codes WHERE activation_code=:activation_code AND deleted IS FALSE",
+            {"activation_code": activation_code},
         )
         return BasicDao.safe_commit()
 
@@ -74,7 +74,7 @@ class ActivationCodeDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE codes SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -83,14 +83,14 @@ class ActivationCodeDao:
                 deleted_app=:deleted_app
             WHERE activation_code=:activation_code
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'activation_code': code.activation_code,
-                'deleted': code.deleted,
-                'modified_date': code.modified_date,
-                'modified_app': code.modified_app,
-                'deleted_date': code.deleted_date,
-                'deleted_app': code.deleted_app
-            }
+                "activation_code": code.activation_code,
+                "deleted": code.deleted,
+                "modified_date": code.modified_date,
+                "modified_app": code.modified_app,
+                "deleted_date": code.deleted_date,
+                "deleted_app": code.deleted_app,
+            },
         )
         return BasicDao.safe_commit()

@@ -11,41 +11,41 @@ from model.Log import Log
 
 class TestLog(TestSuite):
     log1_dict = {
-        'log_id': 1,
-        'username': "andy",
-        'first': "Andrew",
-        'last': "Jarombek",
-        'name': 'Van Cortlandt NYRR XC 5K',
-        'location': 'Bronx, NY',
-        'date': datetime.fromisoformat('2019-11-17'),
-        'type': 'run',
-        'distance': 5,
-        'metric': 'kilometers',
-        'miles': 3.11,
-        'time': '17:35',
-        'pace': '5:40',
-        'feel': 5,
-        'description': "Didn't run very fast and felt tired, but it was nice to run a cross country race again.",
-        'time_created': datetime.fromisoformat('2019-11-17'),
+        "log_id": 1,
+        "username": "andy",
+        "first": "Andrew",
+        "last": "Jarombek",
+        "name": "Van Cortlandt NYRR XC 5K",
+        "location": "Bronx, NY",
+        "date": datetime.fromisoformat("2019-11-17"),
+        "type": "run",
+        "distance": 5,
+        "metric": "kilometers",
+        "miles": 3.11,
+        "time": "17:35",
+        "pace": "5:40",
+        "feel": 5,
+        "description": "Didn't run very fast and felt tired, but it was nice to run a cross country race again.",
+        "time_created": datetime.fromisoformat("2019-11-17"),
     }
 
     log2_dict = {
-        'log_id': 2,
-        'username': "andy",
-        'first': "Andrew",
-        'last': "Jarombek",
-        'name': 'Cooldown',
-        'location': 'Bronx, NY',
-        'date': datetime.fromisoformat('2019-11-17'),
-        'type': 'run',
-        'distance': 1.75,
-        'metric': 'miles',
-        'miles': 1.75,
-        'time': '12:31',
-        'pace': '7:09',
-        'feel': 5,
-        'description': "I hope you are doing well and had a fun weekend.",
-        'time_created': datetime.now()
+        "log_id": 2,
+        "username": "andy",
+        "first": "Andrew",
+        "last": "Jarombek",
+        "name": "Cooldown",
+        "location": "Bronx, NY",
+        "date": datetime.fromisoformat("2019-11-17"),
+        "type": "run",
+        "distance": 1.75,
+        "metric": "miles",
+        "miles": 1.75,
+        "time": "12:31",
+        "pace": "7:09",
+        "feel": 5,
+        "description": "I hope you are doing well and had a fun weekend.",
+        "time_created": datetime.now(),
     }
 
     log1 = Log(log1_dict)
@@ -57,12 +57,14 @@ class TestLog(TestSuite):
         """
         Prove that the human readable string representation of a Log object is as expected.
         """
-        log_str = 'Log: [log_id: 1, username: andy, first: Andrew, last: Jarombek, ' \
-            'name: Van Cortlandt NYRR XC 5K, location: Bronx, NY, date: 2019-11-17 00:00:00, type: run, ' \
-            'distance: 5, metric: kilometers, miles: 3.11, time: 17:35, ' \
-            "pace: 5:40, feel: 5, " \
-            "description: Didn't run very fast and felt tired, but it was nice to run a cross country race again., " \
+        log_str = (
+            "Log: [log_id: 1, username: andy, first: Andrew, last: Jarombek, "
+            "name: Van Cortlandt NYRR XC 5K, location: Bronx, NY, date: 2019-11-17 00:00:00, type: run, "
+            "distance: 5, metric: kilometers, miles: 3.11, time: 17:35, "
+            "pace: 5:40, feel: 5, "
+            "description: Didn't run very fast and felt tired, but it was nice to run a cross country race again., "
             "time_created: 2019-11-17 00:00:00, deleted: None]"
+        )
 
         self.maxDiff = None
         self.assertEquals(str(self.log1), log_str)

@@ -28,16 +28,18 @@ class GroupData:
         String representation of a group within a team.  This representation is meant to be human readable.
         :return: The group in string form.
         """
-        return f'GroupData: [id: {self.id}, group_name: {self.group_name}, group_title: {self.group_title}, ' \
-            f'grouppic: {self.grouppic}, grouppic_name: {self.grouppic_name}, week_start: {self.week_start}, ' \
-            f'description: {self.description}, deleted: {self.deleted}]'
+        return (
+            f"GroupData: [id: {self.id}, group_name: {self.group_name}, group_title: {self.group_title}, "
+            f"grouppic: {self.grouppic}, grouppic_name: {self.grouppic_name}, week_start: {self.week_start}, "
+            f"description: {self.description}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a group within a team.  This representation is meant to be machine readable.
         :return: The group in string form.
         """
-        return '<GroupData %r, %r>' % (self.id, self.group_name)
+        return "<GroupData %r, %r>" % (self.id, self.group_name)
 
     def __eq__(self, other):
         """

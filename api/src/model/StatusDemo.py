@@ -11,6 +11,6 @@ from model.Status import Status
 
 
 class StatusDemo(Status):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     status = Column(db.TEXT, primary_key=True, nullable=False)

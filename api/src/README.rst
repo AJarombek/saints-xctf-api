@@ -52,6 +52,16 @@ To build the ECR dockerfiles, you must use docker compose.
     # Run the update script
     sqlite3 demo.db < demo-db-update.sql
 
+**Black Formatting**
+
+.. code-block:: bash
+
+    # Perform a formatting dry-run
+    black . --check
+
+    # Reformat all the Python files
+    black .
+
 Files
 -----
 

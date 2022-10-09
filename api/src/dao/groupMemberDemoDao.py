@@ -12,7 +12,7 @@ from database import db
 
 
 class GroupMemberDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_user_groups(username: str) -> ResultProxy:
@@ -22,14 +22,14 @@ class GroupMemberDemoDao:
         :return: A list of groups
         """
         return db.session.execute(
-            '''
+            """
             SELECT `groups`.id, groupmembers.group_name, group_title, status, user
             FROM groupmembers 
             INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
             WHERE username=:username
             AND groupmembers.deleted IS FALSE 
             AND `groups`.deleted IS FALSE 
-            ''',
-            {'username': username},
-            bind=GroupMemberDemoDao.engine
+            """,
+            {"username": username},
+            bind=GroupMemberDemoDao.engine,
         )

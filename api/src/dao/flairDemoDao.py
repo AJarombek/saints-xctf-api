@@ -10,7 +10,6 @@ from model.FlairDemo import FlairDemo
 
 
 class FlairDemoDao:
-
     @staticmethod
     def get_flair_by_username(username: str) -> List[FlairDemo]:
         """
@@ -18,7 +17,8 @@ class FlairDemoDao:
         :param username: Unique identifier for the user
         :return: A list of strings representing flairs.
         """
-        return FlairDemo.query\
-            .filter_by(username=username)\
-            .filter(FlairDemo.deleted.is_(False))\
+        return (
+            FlairDemo.query.filter_by(username=username)
+            .filter(FlairDemo.deleted.is_(False))
             .all()
+        )

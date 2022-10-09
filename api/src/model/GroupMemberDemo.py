@@ -11,12 +11,12 @@ from model.GroupMember import GroupMember
 
 
 class GroupMemberDemo(GroupMember):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     id = Column(db.INTEGER, primary_key=True, autoincrement=True)
-    group_name = Column(db.TEXT, db.ForeignKey('groups.group_name'))
-    group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
+    group_name = Column(db.TEXT, db.ForeignKey("groups.group_name"))
+    group_id = Column(db.INTEGER, db.ForeignKey("groups.id"))
     username = Column(db.TEXT)
     status = Column(db.TEXT)
     user = Column(db.TEXT)

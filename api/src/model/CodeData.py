@@ -25,15 +25,17 @@ class CodeData:
         String representation of an activation code.  This representation is meant to be human readable.
         :return: The activation code string.
         """
-        return f'CodeData: [activation_code: {self.activation_code}, email: {self.email}, group_id: {self.group_id}, ' \
-               f'expiration_date: {self.expiration_date}, deleted: {self.deleted}]'
+        return (
+            f"CodeData: [activation_code: {self.activation_code}, email: {self.email}, group_id: {self.group_id}, "
+            f"expiration_date: {self.expiration_date}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of an activation code.  This representation is meant to be machine readable.
         :return: The activation code string.
         """
-        return '<CodeData %r>' % self.activation_code
+        return "<CodeData %r>" % self.activation_code
 
     def __eq__(self, other):
         """

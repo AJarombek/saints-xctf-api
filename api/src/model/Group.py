@@ -10,32 +10,31 @@ from sqlalchemy.dialects.mysql import LONGBLOB
 
 
 class Group(db.Model):
-
     def __init__(self, group: dict):
         """
         Initialize a Group object by passing in a dictionary.
         :param group: A dictionary with fields matching the Group fields
         """
-        self.id = group.get('id')
-        self.group_name = group.get('group_name')
-        self.group_title = group.get('group_title')
-        self.grouppic = group.get('grouppic')
-        self.grouppic_name = group.get('grouppic_name')
-        self.week_start = group.get('week_start')
-        self.description = group.get('description')
-        self.deleted = group.get('deleted')
-        self.created_date = group.get('created_date')
-        self.created_user = group.get('created_user')
-        self.created_app = group.get('created_app')
-        self.modified_date = group.get('modified_date')
-        self.modified_user = group.get('modified_user')
-        self.modified_app = group.get('modified_app')
-        self.deleted_date = group.get('deleted_date')
-        self.deleted_user = group.get('deleted_user')
-        self.deleted_app = group.get('deleted_app')
+        self.id = group.get("id")
+        self.group_name = group.get("group_name")
+        self.group_title = group.get("group_title")
+        self.grouppic = group.get("grouppic")
+        self.grouppic_name = group.get("grouppic_name")
+        self.week_start = group.get("week_start")
+        self.description = group.get("description")
+        self.deleted = group.get("deleted")
+        self.created_date = group.get("created_date")
+        self.created_user = group.get("created_user")
+        self.created_app = group.get("created_app")
+        self.modified_date = group.get("modified_date")
+        self.modified_user = group.get("modified_user")
+        self.modified_app = group.get("modified_app")
+        self.deleted_date = group.get("deleted_date")
+        self.deleted_user = group.get("deleted_user")
+        self.deleted_app = group.get("deleted_app")
 
-    __tablename__ = 'groups'
-    __bind_key__ = 'app'
+    __tablename__ = "groups"
+    __bind_key__ = "app"
 
     # Data Columns
     id = Column(db.INT, autoincrement=True, primary_key=True)
@@ -43,7 +42,7 @@ class Group(db.Model):
     group_title = Column(db.VARCHAR(50), index=True)
     grouppic = Column(LONGBLOB)
     grouppic_name = Column(db.VARCHAR(50))
-    week_start = Column(db.VARCHAR(15), db.ForeignKey('weekstart.week_start'))
+    week_start = Column(db.VARCHAR(15), db.ForeignKey("weekstart.week_start"))
     description = Column(db.VARCHAR(255))
     deleted = Column(db.BOOLEAN)
 
@@ -63,16 +62,18 @@ class Group(db.Model):
         String representation of a group within a team.  This representation is meant to be human readable.
         :return: The group in string form.
         """
-        return f'Group: [id: {self.id}, group_name: {self.group_name}, group_title: {self.group_title}, ' \
-            f'grouppic: {self.grouppic}, grouppic_name: {self.grouppic_name}, week_start: {self.week_start}, ' \
-            f'description: {self.description}, deleted: {self.deleted}]'
+        return (
+            f"Group: [id: {self.id}, group_name: {self.group_name}, group_title: {self.group_title}, "
+            f"grouppic: {self.grouppic}, grouppic_name: {self.grouppic_name}, week_start: {self.week_start}, "
+            f"description: {self.description}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a group within a team.  This representation is meant to be machine readable.
         :return: The group in string form.
         """
-        return '<Group %r, %r>' % (self.id, self.group_name)
+        return "<Group %r, %r>" % (self.id, self.group_name)
 
     def __eq__(self, other):
         """
@@ -90,11 +91,13 @@ class Group(db.Model):
         :param group_2: The second group object.
         :return: True if the objects are equal, False otherwise.
         """
-        return all([
-            group_1.id == group_2.id,
-            group_1.group_name == group_2.group_name,
-            group_1.group_title == group_2.group_title,
-            group_1.grouppic_name == group_2.grouppic_name,
-            group_1.week_start == group_2.week_start,
-            group_1.description == group_2.description
-        ])
+        return all(
+            [
+                group_1.id == group_2.id,
+                group_1.group_name == group_2.group_name,
+                group_1.group_title == group_2.group_title,
+                group_1.grouppic_name == group_2.grouppic_name,
+                group_1.week_start == group_2.week_start,
+                group_1.description == group_2.description,
+            ]
+        )

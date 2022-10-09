@@ -51,18 +51,20 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(notification_route)
     application.register_blueprint(team_route)
 
-    application.config['SQLALCHEMY_DATABASE_URI'] = get_connection_url()
-    application.config['SQLALCHEMY_BINDS'] = {
-        'app': application.config['SQLALCHEMY_DATABASE_URI'],
-        'demo': 'sqlite:///demo.db'
+    application.config["SQLALCHEMY_DATABASE_URI"] = get_connection_url()
+    application.config["SQLALCHEMY_BINDS"] = {
+        "app": application.config["SQLALCHEMY_DATABASE_URI"],
+        "demo": "sqlite:///demo.db",
     }
 
-    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    application.config['SQLALCHEMY_RECORD_QUERIES'] = True
-    application.config['SLOW_DB_QUERY_TIME'] = 0.5
+    application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    application.config["SQLALCHEMY_RECORD_QUERIES"] = True
+    application.config["SLOW_DB_QUERY_TIME"] = 0.5
 
     root_logger = logging.getLogger()
-    formatter = logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    )
     file_handler = logging.FileHandler("/logs/saints-xctf-api.log")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
@@ -81,12 +83,17 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Unauthorized",
-            'exception': str(ex),
-            'contact': 'andrew@jarombek.com',
-            'api_index': '/versions'
-        }), 401
+        return (
+            jsonify(
+                {
+                    "error_description": "Unauthorized",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "api_index": "/versions",
+                }
+            ),
+            401,
+        )
 
     @application.errorhandler(403)
     def error_403(ex):
@@ -95,12 +102,17 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Forbidden",
-            'exception': str(ex),
-            'contact': 'andrew@jarombek.com',
-            'api_index': '/versions'
-        }), 403
+        return (
+            jsonify(
+                {
+                    "error_description": "Forbidden",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "api_index": "/versions",
+                }
+            ),
+            403,
+        )
 
     @application.errorhandler(404)
     def error_404(ex):
@@ -109,12 +121,17 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Page Not Found",
-            'exception': str(ex),
-            'contact': 'andrew@jarombek.com',
-            'api_index': '/versions'
-        }), 404
+        return (
+            jsonify(
+                {
+                    "error_description": "Page Not Found",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "api_index": "/versions",
+                }
+            ),
+            404,
+        )
 
     @application.errorhandler(409)
     def error_409(ex):
@@ -123,12 +140,17 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Conflict",
-            'exception': str(ex),
-            'message': 'You do not have permission to make this request.',
-            'api_index': '/versions'
-        }), 409
+        return (
+            jsonify(
+                {
+                    "error_description": "Conflict",
+                    "exception": str(ex),
+                    "message": "You do not have permission to make this request.",
+                    "api_index": "/versions",
+                }
+            ),
+            409,
+        )
 
     @application.errorhandler(424)
     def error_424(ex):
@@ -137,13 +159,18 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Failed Dependency",
-            'exception': str(ex),
-            'contact': 'andrew@jarombek.com',
-            'message': 'An internal API call failed.',
-            'api_index': '/versions'
-        }), 424
+        return (
+            jsonify(
+                {
+                    "error_description": "Failed Dependency",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "message": "An internal API call failed.",
+                    "api_index": "/versions",
+                }
+            ),
+            424,
+        )
 
     @application.errorhandler(500)
     def error_500(ex):
@@ -152,17 +179,22 @@ def create_app(config_name) -> Flask:
         :param ex: String representing the error that occurred.
         :return: JSON describing the error.
         """
-        return jsonify({
-            'error_description': "Internal Server Error",
-            'exception': str(ex),
-            'contact': 'andrew@jarombek.com',
-            'api_index': '/versions'
-        }), 500
+        return (
+            jsonify(
+                {
+                    "error_description": "Internal Server Error",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "api_index": "/versions",
+                }
+            ),
+            500,
+        )
 
     return application
 
 
-flask_env = os.getenv('FLASK_ENV') or 'local'
+flask_env = os.getenv("FLASK_ENV") or "local"
 app = create_app(flask_env)
 
 swagger_config = {
@@ -172,12 +204,12 @@ swagger_config = {
             "endpoint": "apispec_1",
             "route": "/apispec_1.json",
             "rule_filter": lambda rule: True,
-            "model_filter": lambda tag: True
+            "model_filter": lambda tag: True,
         }
     ],
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/swagger"
+    "specs_route": "/swagger",
 }
 
 swagger_template = {
@@ -188,23 +220,16 @@ swagger_template = {
         "contact": {
             "responsibleDeveloper": "Andrew Jarombek",
             "email": "andrew@jarombek.com",
-            "url": "https://jarombek.com"
+            "url": "https://jarombek.com",
         },
-        "version": "2.0.0"
+        "version": "2.0.0",
     },
     "host": "localhost:5000",
     "basePath": "/",
     "securityDefinitions": {
-        "bearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
+        "bearerAuth": {"type": "apiKey", "name": "Authorization", "in": "header"}
     },
-    "schemes": [
-        "http",
-        "https"
-    ]
+    "schemes": ["http", "https"],
 }
 
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
@@ -219,9 +244,9 @@ def after_request(response):
     :return: Propagate the HTTP response object
     """
     for query in get_debug_queries():
-        if query.duration >= current_app.config['SLOW_DB_QUERY_TIME']:
+        if query.duration >= current_app.config["SLOW_DB_QUERY_TIME"]:
             current_app.logger.warning(
-                'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
+                "Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n"
                 % (query.statement, query.parameters, query.duration, query.context)
             )
     return response

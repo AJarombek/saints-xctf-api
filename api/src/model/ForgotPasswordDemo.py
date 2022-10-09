@@ -11,11 +11,11 @@ from model.ForgotPassword import ForgotPassword
 
 
 class ForgotPasswordDemo(ForgotPassword):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     forgot_code = Column(db.TEXT, primary_key=True)
-    username = Column(db.TEXT, db.ForeignKey('users.username'), nullable=False)
+    username = Column(db.TEXT, db.ForeignKey("users.username"), nullable=False)
     expires = Column(db.NUMERIC, nullable=False)
     deleted = Column(db.INTEGER)
 

@@ -11,25 +11,25 @@ from model.Notification import Notification
 
 class TestNotification(TestSuite):
     notification1_dict = {
-        'notification_id': 1,
-        'username': "andy",
-        'time': datetime.fromisoformat('2019-12-31'),
-        'link': None,
-        'viewed': "N",
-        'description': "Hopefully nobody is being mean to you.  I hope you know + believe that you deserve to be "
-                       "treated with kindness.",
-        'deleted': False
+        "notification_id": 1,
+        "username": "andy",
+        "time": datetime.fromisoformat("2019-12-31"),
+        "link": None,
+        "viewed": "N",
+        "description": "Hopefully nobody is being mean to you.  I hope you know + believe that you deserve to be "
+        "treated with kindness.",
+        "deleted": False,
     }
 
     notification2_dict = {
-        'notification_id': 2,
-        'username': "andy",
-        'time': datetime.fromisoformat('2019-11-30'),
-        'link': None,
-        'viewed': "N",
-        'description': "Today was the first day selling XMas trees.  We set up the stands yesterday.  Tomorrow might "
-                       "be rough in the rain/snow.",
-        'deleted': False
+        "notification_id": 2,
+        "username": "andy",
+        "time": datetime.fromisoformat("2019-11-30"),
+        "link": None,
+        "viewed": "N",
+        "description": "Today was the first day selling XMas trees.  We set up the stands yesterday.  Tomorrow might "
+        "be rough in the rain/snow.",
+        "deleted": False,
     }
 
     notification1 = Notification(notification1_dict)
@@ -41,9 +41,11 @@ class TestNotification(TestSuite):
         """
         Prove that the human readable string representation of a Notification object is as expected.
         """
-        log_str = 'Notification: [notification_id: 1, username: andy, time: 2019-12-31 00:00:00, link: None, ' \
-            'viewed: N, description: Hopefully nobody is being mean to you.  I hope you know + believe that you ' \
-            'deserve to be treated with kindness., deleted: False]'
+        log_str = (
+            "Notification: [notification_id: 1, username: andy, time: 2019-12-31 00:00:00, link: None, "
+            "viewed: N, description: Hopefully nobody is being mean to you.  I hope you know + believe that you "
+            "deserve to be treated with kindness., deleted: False]"
+        )
 
         self.maxDiff = None
         self.assertEquals(str(self.notification1), log_str)

@@ -12,27 +12,35 @@ from model.CommentData import CommentData
 
 
 class TestComment(TestSuite):
-    comment1 = CommentData(Comment({
-        'comment_id': 1,
-        'username': 'andy',
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'log_id': 1,
-        'time': datetime.fromisoformat('2019-11-09'),
-        'content': 'Test Comment',
-        'deleted': False
-    }))
+    comment1 = CommentData(
+        Comment(
+            {
+                "comment_id": 1,
+                "username": "andy",
+                "first": "Andy",
+                "last": "Jarombek",
+                "log_id": 1,
+                "time": datetime.fromisoformat("2019-11-09"),
+                "content": "Test Comment",
+                "deleted": False,
+            }
+        )
+    )
 
-    comment2 = CommentData(Comment({
-        'comment_id': 2,
-        'username': 'andy',
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'log_id': 1,
-        'time': datetime.now(),
-        'content': 'Another Test Comment',
-        'deleted': False
-    }))
+    comment2 = CommentData(
+        Comment(
+            {
+                "comment_id": 2,
+                "username": "andy",
+                "first": "Andy",
+                "last": "Jarombek",
+                "log_id": 1,
+                "time": datetime.now(),
+                "content": "Another Test Comment",
+                "deleted": False,
+            }
+        )
+    )
 
     def test_comment_data_str(self) -> None:
         """
@@ -40,13 +48,13 @@ class TestComment(TestSuite):
         """
         self.assertEquals(
             str(self.comment1),
-            'CommentData: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, '
-            'time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]'
+            "CommentData: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, "
+            "time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]",
         )
         self.assertEquals(
             self.comment1.__str__(),
-            'CommentData: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, '
-            'time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]'
+            "CommentData: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, "
+            "time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]",
         )
 
     def test_comment_data_repr(self) -> None:

@@ -13,22 +13,22 @@ def forgot_password_links(version: str) -> Dict[str, Any]:
     :return: A dictionary describing all forgot password API endpoints.
     """
     return {
-        'self': f'/{version}/forgot_password/links',
-        'endpoints': [
+        "self": f"/{version}/forgot_password/links",
+        "endpoints": [
             {
-                'link': f'/{version}/forgot_password/<username>',
-                'verb': 'GET',
-                'description': 'Retrieve a single forgot password code assigned to a given username.'
+                "link": f"/{version}/forgot_password/<username>",
+                "verb": "GET",
+                "description": "Retrieve a single forgot password code assigned to a given username.",
             },
             {
-                'link': f'/{version}/forgot_password/<username>',
-                'verb': 'POST',
-                'description': 'Create a new forgot password code.'
+                "link": f"/{version}/forgot_password/<username>",
+                "verb": "POST",
+                "description": "Create a new forgot password code.",
             },
             {
-                'link': f'/{version}/forgot_password/validate/<code>',
-                'verb': 'GET',
-                'description': 'Validate if a forgot password code exists.'
-            }
+                "link": f"/{version}/forgot_password/validate/<code>",
+                "verb": "GET",
+                "description": "Validate if a forgot password code exists.",
+            },
         ],
     }

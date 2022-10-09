@@ -11,11 +11,11 @@ from model.Flair import Flair
 
 
 class FlairDemo(Flair):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     flair_id = Column(db.INTEGER, autoincrement=True, primary_key=True)
-    username = Column(db.TEXT, db.ForeignKey('users.username'))
+    username = Column(db.TEXT, db.ForeignKey("users.username"))
     flair = Column(db.TEXT)
     deleted = Column(db.INTEGER)
 

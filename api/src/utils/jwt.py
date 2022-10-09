@@ -15,7 +15,7 @@ def get_claims(request: Request) -> dict:
     Get the claims from a JWT payload.
     :param request: An object with details about the HTTP request.
     """
-    authorization_header: str = request.headers.get('Authorization')
-    token = authorization_header.replace('Bearer ', '')
-    jwt_claims = base64.b64decode(token.split(".")[1] + '==')
+    authorization_header: str = request.headers.get("Authorization")
+    token = authorization_header.replace("Bearer ", "")
+    jwt_claims = base64.b64decode(token.split(".")[1] + "==")
     return json.loads(jwt_claims)

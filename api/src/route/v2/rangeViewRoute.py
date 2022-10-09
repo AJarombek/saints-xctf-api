@@ -13,12 +13,14 @@ from route.common.rangeView import range_view_links
 from route.common.versions import APIVersion
 from utils import exerciseFilters
 
-range_view_route = Blueprint('range_view_route', __name__, url_prefix='/v2/range_view')
+range_view_route = Blueprint("range_view_route", __name__, url_prefix="/v2/range_view")
 
 
-@range_view_route.route('/<filter_by>/<bucket>/<exercise_types>/<start>/<end>', methods=['GET'])
+@range_view_route.route(
+    "/<filter_by>/<bucket>/<exercise_types>/<start>/<end>", methods=["GET"]
+)
 @auth_required()
-@swag_from('swagger/rangeViewRoute/rangeViewGet.yml', methods=['GET'])
+@swag_from("swagger/rangeViewRoute/rangeViewGet.yml", methods=["GET"])
 def range_view(filter_by, bucket, exercise_types, start, end):
     """
     Endpoint for retrieving log information based on filters and a date range.
@@ -30,20 +32,20 @@ def range_view(filter_by, bucket, exercise_types, start, end):
     :param end: The last date to include in the exercise log feed.
     :return: JSON representation of a log feed and relevant metadata.
     """
-    if request.method == 'GET':
-        ''' [GET] /v2/range_view '''
+    if request.method == "GET":
+        """[GET] /v2/range_view"""
         return range_view_get(filter_by, bucket, exercise_types, start, end)
 
 
-@range_view_route.route('/links', methods=['GET'])
-@swag_from('swagger/rangeViewRoute/rangeViewLinks.yml', methods=['GET'])
+@range_view_route.route("/links", methods=["GET"])
+@swag_from("swagger/rangeViewRoute/rangeViewLinks.yml", methods=["GET"])
 def range_view_links() -> Response:
     """
     Endpoint for information about the range view API endpoints.
     :return: Metadata about the range view API.
     """
-    if request.method == 'GET':
-        ''' [GET] /v2/range_view/links '''
+    if request.method == "GET":
+        """[GET] /v2/range_view/links"""
         return range_view_links_get()
 
 
@@ -58,52 +60,48 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
     :param end: The last date to include in the exercise log feed.
     :return: A response object for the GET API request.
     """
-    exercise_type_filter_list = exerciseFilters.create_exercise_filter_list(exercise_types)
+    exercise_type_filter_list = exerciseFilters.create_exercise_filter_list(
+        exercise_types
+    )
 
-    if filter_by == 'group' or filter_by == 'groups':
+    if filter_by == "group" or filter_by == "groups":
         range_view = LogDao.get_group_range_view(
-            group_id=int(bucket),
-            types=exercise_type_filter_list,
-            start=start,
-            end=end
+            group_id=int(bucket), types=exercise_type_filter_list, start=start, end=end
         )
-    elif filter_by == 'user' or filter_by == 'users':
+    elif filter_by == "user" or filter_by == "users":
         range_view = LogDao.get_user_range_view(
-            username=bucket,
-            types=exercise_type_filter_list,
-            start=start,
-            end=end
+            username=bucket, types=exercise_type_filter_list, start=start, end=end
         )
-    elif filter_by == 'all':
+    elif filter_by == "all":
         range_view = LogDao.get_range_view(
-            types=exercise_type_filter_list,
-            start=start,
-            end=end
+            types=exercise_type_filter_list, start=start, end=end
         )
     else:
         range_view = None
 
     if range_view is None or range_view.rowcount == 0:
-        response = jsonify({
-            'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
-            'range_view': [],
-            'message': 'no logs found in this date range with the selected filters'
-        })
+        response = jsonify(
+            {
+                "self": f"/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
+                "range_view": [],
+                "message": "no logs found in this date range with the selected filters",
+            }
+        )
         response.status_code = 200
         return response
     else:
         range_view_list = []
         for item in range_view:
-            range_view_list.append({
-                'date': item.date,
-                'miles': item.miles,
-                'feel': item.feel
-            })
+            range_view_list.append(
+                {"date": item.date, "miles": item.miles, "feel": item.feel}
+            )
 
-        response = jsonify({
-            'self': f'/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}',
-            'range_view': range_view_list
-        })
+        response = jsonify(
+            {
+                "self": f"/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
+                "range_view": range_view_list,
+            }
+        )
         response.status_code = 200
         return response
 

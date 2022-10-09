@@ -11,7 +11,7 @@ from model.User import User
 
 
 class UserDemo(User):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     username = Column(db.TEXT, primary_key=True)

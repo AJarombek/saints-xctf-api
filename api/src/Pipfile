@@ -9,6 +9,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+black = ">=22.10.0"
 
 [packages]
 flask = ">=1.0.3"

@@ -15,7 +15,7 @@ from model.User import User
 
 
 class UserDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_users() -> List[User]:
@@ -32,11 +32,12 @@ class UserDao:
         :param username: Username which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query\
-            .filter_by(username=username)\
-            .filter(User.deleted.is_(False))\
-            .options(defer('profilepic'), defer('profilepic_name'))\
+        return (
+            User.query.filter_by(username=username)
+            .filter(User.deleted.is_(False))
+            .options(defer("profilepic"), defer("profilepic_name"))
             .first()
+        )
 
     @staticmethod
     def get_user_by_email(email: str) -> User:
@@ -45,11 +46,12 @@ class UserDao:
         :param email: Email which uniquely identifies the user.
         :return: The result of the database query.
         """
-        return User.query\
-            .filter_by(email=email)\
-            .filter(User.deleted.is_(False))\
-            .options(defer('profilepic'), defer('profilepic_name'))\
+        return (
+            User.query.filter_by(email=email)
+            .filter(User.deleted.is_(False))
+            .options(defer("profilepic"), defer("profilepic_name"))
             .first()
+        )
 
     @staticmethod
     def add_user(user: User) -> bool:
@@ -70,7 +72,7 @@ class UserDao:
         :return: True if the user is updated in the database, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE users SET 
                 first=:first, 
                 last=:last, 
@@ -83,20 +85,20 @@ class UserDao:
                 week_start=:week_start 
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'first': user.first,
-                'last': user.last,
-                'email': user.email,
-                'profilepic_name': user.profilepic_name,
-                'description': user.description,
-                'class_year': user.class_year,
-                'location': user.location,
-                'favorite_event': user.favorite_event,
-                'week_start': user.week_start,
-                'username': username
+                "first": user.first,
+                "last": user.last,
+                "email": user.email,
+                "profilepic_name": user.profilepic_name,
+                "description": user.description,
+                "class_year": user.class_year,
+                "location": user.location,
+                "favorite_event": user.favorite_event,
+                "week_start": user.week_start,
+                "username": username,
             },
-            bind=UserDao.engine
+            bind=UserDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -109,14 +111,14 @@ class UserDao:
         :return: True if the update was successful, False otherwise
         """
         db.session.execute(
-            '''
+            """
             UPDATE users 
             SET password=:password 
             WHERE username=:username 
             AND deleted IS FALSE
-            ''',
-            {'username': username, 'password': password},
-            bind=UserDao.engine
+            """,
+            {"username": username, "password": password},
+            bind=UserDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -128,14 +130,14 @@ class UserDao:
         :return: True if the update was successful, False otherwise
         """
         db.session.execute(
-            '''
+            """
             UPDATE users 
             SET last_signin=SYSDATE() 
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
-            {'username': username},
-            bind=UserDao.engine
+            """,
+            {"username": username},
+            bind=UserDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -147,14 +149,14 @@ class UserDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM teammembers WHERE username=:username',
-            {'username': username},
-            bind=UserDao.engine
+            "DELETE FROM teammembers WHERE username=:username",
+            {"username": username},
+            bind=UserDao.engine,
         )
         db.session.execute(
-            'DELETE FROM users WHERE username=:username',
-            {'username': username},
-            bind=UserDao.engine
+            "DELETE FROM users WHERE username=:username",
+            {"username": username},
+            bind=UserDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -166,7 +168,7 @@ class UserDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE users SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -175,15 +177,15 @@ class UserDao:
                 deleted_app=:deleted_app
             WHERE username=:username
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'username': user.username,
-                'deleted': user.deleted,
-                'modified_date': user.modified_date,
-                'modified_app': user.modified_app,
-                'deleted_date': user.deleted_date,
-                'deleted_app': user.deleted_app
+                "username": user.username,
+                "deleted": user.deleted,
+                "modified_date": user.modified_date,
+                "modified_app": user.modified_app,
+                "deleted_date": user.deleted_date,
+                "deleted_app": user.deleted_app,
             },
-            bind=UserDao.engine
+            bind=UserDao.engine,
         )
         return BasicDao.safe_commit()

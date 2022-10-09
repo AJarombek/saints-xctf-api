@@ -10,21 +10,29 @@ from model.TeamMember import TeamMember
 
 
 class TestTeamMemberData(TestSuite):
-    team_member1 = TeamMemberData(TeamMember({
-        'team_name': 'saintsxctf',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'admin',
-        'deleted': 'N'
-    }))
+    team_member1 = TeamMemberData(
+        TeamMember(
+            {
+                "team_name": "saintsxctf",
+                "username": "andy",
+                "status": "accepted",
+                "user": "admin",
+                "deleted": "N",
+            }
+        )
+    )
 
-    team_member2 = TeamMemberData(TeamMember({
-        'team_name': 'saintsxctf_alumni',
-        'username': 'andy',
-        'status': 'accepted',
-        'user': 'user',
-        'deleted': None
-    }))
+    team_member2 = TeamMemberData(
+        TeamMember(
+            {
+                "team_name": "saintsxctf_alumni",
+                "username": "andy",
+                "status": "accepted",
+                "user": "user",
+                "deleted": None,
+            }
+        )
+    )
 
     def test_team_member_data_str(self) -> None:
         """
@@ -39,8 +47,12 @@ class TestTeamMemberData(TestSuite):
         """
         Prove that the machine readable string representation of a TeamMemberData object is as expected.
         """
-        self.assertEquals(repr(self.team_member1), "<TeamMemberData 'saintsxctf', 'andy'>")
-        self.assertEquals(self.team_member1.__repr__(), "<TeamMemberData 'saintsxctf', 'andy'>")
+        self.assertEquals(
+            repr(self.team_member1), "<TeamMemberData 'saintsxctf', 'andy'>"
+        )
+        self.assertEquals(
+            self.team_member1.__repr__(), "<TeamMemberData 'saintsxctf', 'andy'>"
+        )
 
     def test_team_member_data_eq(self) -> None:
         """

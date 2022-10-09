@@ -11,7 +11,7 @@ from sqlalchemy.engine.cursor import ResultProxy
 
 
 class NotificationDemoDao:
-    engine = db.get_engine(app=app, bind='demo')
+    engine = db.get_engine(app=app, bind="demo")
 
     @staticmethod
     def get_notification_by_username(username: str) -> ResultProxy:
@@ -21,13 +21,13 @@ class NotificationDemoDao:
         :return: A list of notifications
         """
         return db.session.execute(
-            '''
+            """
             SELECT * FROM notifications 
             WHERE username=:username 
             AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
             AND deleted IS FALSE
             ORDER BY time DESC
-            ''',
-            {'username': username},
-            bind=NotificationDemoDao.engine
+            """,
+            {"username": username},
+            bind=NotificationDemoDao.engine,
         )

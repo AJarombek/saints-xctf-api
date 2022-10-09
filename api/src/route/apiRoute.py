@@ -7,87 +7,79 @@ Date: 6/21/2019
 from flask import Blueprint, jsonify, Response, abort
 from flasgger import swag_from
 
-api_route = Blueprint('api_route', __name__, url_prefix='/')
+api_route = Blueprint("api_route", __name__, url_prefix="/")
 
 
-@api_route.route('/', methods=['GET'])
-@swag_from('swagger/apiRoute/api.yml')
+@api_route.route("/", methods=["GET"])
+@swag_from("swagger/apiRoute/api.yml")
 def api() -> Response:
     """
     Entry point for the SaintsXCTF API
     :return: A JSON welcome message
     """
-    return jsonify({
-        'self_link': '/',
-        'api_name': 'saints-xctf-api',
-        'versions_link': '/versions'
-    })
+    return jsonify(
+        {"self_link": "/", "api_name": "saints-xctf-api", "versions_link": "/versions"}
+    )
 
 
-@api_route.route('/versions', methods=['GET'])
-@swag_from('swagger/apiRoute/versions.yml')
+@api_route.route("/versions", methods=["GET"])
+@swag_from("swagger/apiRoute/versions.yml")
 def versions() -> Response:
-    return jsonify({
-        'self': '/versions',
-        'version_latest': '/v2',
-        'version_1': None,
-        'version_2': '/v2',
-        'version_demo': '/demo'
-    })
+    return jsonify(
+        {
+            "self": "/versions",
+            "version_latest": "/v2",
+            "version_1": None,
+            "version_2": "/v2",
+            "version_demo": "/demo",
+        }
+    )
 
 
-@api_route.route('/v2', methods=['GET'])
-@swag_from('swagger/apiRoute/v2.yml')
+@api_route.route("/v2", methods=["GET"])
+@swag_from("swagger/apiRoute/v2.yml")
 def version2() -> Response:
-    return jsonify({
-        'self': '/v2',
-        'version': 2,
-        'latest': True,
-        'links': '/v2/links'
-    })
+    return jsonify({"self": "/v2", "version": 2, "latest": True, "links": "/v2/links"})
 
 
-@api_route.route('/demo', methods=['GET'])
-@swag_from('swagger/apiRoute/demo.yml')
+@api_route.route("/demo", methods=["GET"])
+@swag_from("swagger/apiRoute/demo.yml")
 def version2() -> Response:
-    return jsonify({
-        'self': '/demo',
-        'version': 2,
-        'latest': True,
-        'links': '/demo/links'
-    })
+    return jsonify(
+        {"self": "/demo", "version": 2, "latest": True, "links": "/demo/links"}
+    )
 
 
 link_list = {
-    'self': '/v2/links',
-    'activation_code': '/v2/activation_code/links',
-    'comment': '/v2/comments/links',
-    'flair': '/v2/flair/links',
-    'forgot_password': '/v2/forgot_password/links',
-    'group': '/v2/groups/links',
-    'log_feed': '/v2/log_feed/links',
-    'log': '/v2/logs/links',
-    'notification': '/v2/notifications/links',
-    'range_view': '/v2/range_view/links',
-    'team': '/v2/teams/links',
-    'user': '/v2/users/links'
+    "self": "/v2/links",
+    "activation_code": "/v2/activation_code/links",
+    "comment": "/v2/comments/links",
+    "flair": "/v2/flair/links",
+    "forgot_password": "/v2/forgot_password/links",
+    "group": "/v2/groups/links",
+    "log_feed": "/v2/log_feed/links",
+    "log": "/v2/logs/links",
+    "notification": "/v2/notifications/links",
+    "range_view": "/v2/range_view/links",
+    "team": "/v2/teams/links",
+    "user": "/v2/users/links",
 }
 
 
-@api_route.route('/v2/links', methods=['GET'])
-@swag_from('swagger/apiRoute/v2Links.yml')
+@api_route.route("/v2/links", methods=["GET"])
+@swag_from("swagger/apiRoute/v2Links.yml")
 def links() -> Response:
     return jsonify(link_list)
 
 
-@api_route.route('/demo/links', methods=['GET'])
-@swag_from('swagger/apiRoute/demoLinks.yml')
+@api_route.route("/demo/links", methods=["GET"])
+@swag_from("swagger/apiRoute/demoLinks.yml")
 def links() -> Response:
     return jsonify(link_list)
 
 
-@api_route.route('/404', methods=['GET'])
-@swag_from('swagger/apiRoute/404.yml')
+@api_route.route("/404", methods=["GET"])
+@swag_from("swagger/apiRoute/404.yml")
 def error404():
     """
     Route for testing the logic of 404 HTTP errors.
@@ -96,8 +88,8 @@ def error404():
     abort(404)
 
 
-@api_route.route('/500', methods=['GET'])
-@swag_from('swagger/apiRoute/500.yml')
+@api_route.route("/500", methods=["GET"])
+@swag_from("swagger/apiRoute/500.yml")
 def error500() -> Response:
     """
     Route for testing the logic of 500 HTTP errors.

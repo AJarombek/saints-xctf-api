@@ -13,12 +13,12 @@ def flair_links(version: str) -> Dict[str, Any]:
     :return: A dictionary describing all flair API endpoints.
     """
     return {
-        'self': f'/{version}/flair/links',
-        'endpoints': [
+        "self": f"/{version}/flair/links",
+        "endpoints": [
             {
-                'link': f'/{version}/flair',
-                'verb': 'POST',
-                'description': 'Create a new flair item.'
+                "link": f"/{version}/flair",
+                "verb": "POST",
+                "description": "Create a new flair item.",
             }
         ],
     }

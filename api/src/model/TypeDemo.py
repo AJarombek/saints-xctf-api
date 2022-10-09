@@ -11,6 +11,6 @@ from model.Type import Type
 
 
 class TypeDemo(Type):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     type = Column(db.TEXT, primary_key=True, nullable=False)

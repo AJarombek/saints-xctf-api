@@ -1,0 +1,31 @@
+# GitHub Action for performing Black Formatting
+# Author: Andrew Jarombek
+# Date: 10/8/2022
+
+name: Black Formatting
+
+on:
+  push:
+    branches: ["main", "feature/*"]
+  pull_request:
+    branches: ["main"]
+
+  schedule:
+    - cron: "0 5 * * 1,5"
+
+  workflow_dispatch:
+
+jobs:
+  black_formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Job running on a ${{ runner.os }} server"
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Black formatting dry run
+        uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "./api/src"

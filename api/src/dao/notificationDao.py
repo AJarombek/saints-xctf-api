@@ -13,7 +13,7 @@ from model.Notification import Notification
 
 
 class NotificationDao:
-    engine = db.get_engine(app=app, bind='app')
+    engine = db.get_engine(app=app, bind="app")
 
     @staticmethod
     def get_notifications() -> list:
@@ -21,10 +21,11 @@ class NotificationDao:
         Retrieve all the notifications in the database.
         :return: The result of the query.
         """
-        return Notification.query\
-            .order_by(Notification.time)\
-            .filter(Notification.deleted.is_(False))\
+        return (
+            Notification.query.order_by(Notification.time)
+            .filter(Notification.deleted.is_(False))
             .all()
+        )
 
     @staticmethod
     def get_notification_by_id(notification_id: int) -> Notification:
@@ -33,10 +34,11 @@ class NotificationDao:
         :param notification_id: The unique identifier for a notification.
         :return: The result of the query.
         """
-        return Notification.query\
-            .filter_by(notification_id=notification_id)\
-            .filter(Notification.deleted.is_(False))\
+        return (
+            Notification.query.filter_by(notification_id=notification_id)
+            .filter(Notification.deleted.is_(False))
             .first()
+        )
 
     @staticmethod
     def get_notification_by_username(username: str) -> ResultProxy:
@@ -46,15 +48,15 @@ class NotificationDao:
         :return: A list of notifications
         """
         return db.session.execute(
-            '''
+            """
             SELECT * FROM notifications 
             WHERE username=:username 
             AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
             AND deleted IS FALSE
             ORDER BY time DESC
-            ''',
-            {'username': username},
-            bind=NotificationDao.engine
+            """,
+            {"username": username},
+            bind=NotificationDao.engine,
         )
 
     @staticmethod
@@ -76,17 +78,17 @@ class NotificationDao:
         :return: True if the notification is updated in the database, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE notifications 
             SET viewed=:viewed
             WHERE notification_id=:notification_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'notification_id': notification.notification_id,
-                'viewed': notification.viewed
+                "notification_id": notification.notification_id,
+                "viewed": notification.viewed,
             },
-            bind=NotificationDao.engine
+            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -98,9 +100,9 @@ class NotificationDao:
         :return: True if the deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            'DELETE FROM notifications WHERE notification_id=:notification_id AND deleted IS FALSE',
-            {'notification_id': notification_id},
-            bind=NotificationDao.engine
+            "DELETE FROM notifications WHERE notification_id=:notification_id AND deleted IS FALSE",
+            {"notification_id": notification_id},
+            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -112,7 +114,7 @@ class NotificationDao:
         :return: True if the soft deletion was successful without error, False otherwise.
         """
         db.session.execute(
-            '''
+            """
             UPDATE notifications SET 
                 deleted=:deleted,
                 modified_date=:modified_date,
@@ -121,15 +123,15 @@ class NotificationDao:
                 deleted_app=:deleted_app
             WHERE notification_id=:notification_id
             AND deleted IS FALSE
-            ''',
+            """,
             {
-                'notification_id': notification.notification_id,
-                'deleted': notification.deleted,
-                'modified_date': notification.modified_date,
-                'modified_app': notification.modified_app,
-                'deleted_date': notification.deleted_date,
-                'deleted_app': notification.deleted_app
+                "notification_id": notification.notification_id,
+                "deleted": notification.deleted,
+                "modified_date": notification.modified_date,
+                "modified_app": notification.modified_app,
+                "deleted_date": notification.deleted_date,
+                "deleted_app": notification.deleted_app,
             },
-            bind=NotificationDao.engine
+            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()

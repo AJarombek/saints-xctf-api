@@ -10,19 +10,23 @@ from model.ForgotPassword import ForgotPassword
 
 
 class TestForgotPassword(TestSuite):
-    forgot_password1 = ForgotPassword({
-        'forgot_code': '123ABC',
-        'username': 'andy',
-        'expires': datetime.fromisoformat('2019-11-10 00:00:00'),
-        'deleted': False
-    })
+    forgot_password1 = ForgotPassword(
+        {
+            "forgot_code": "123ABC",
+            "username": "andy",
+            "expires": datetime.fromisoformat("2019-11-10 00:00:00"),
+            "deleted": False,
+        }
+    )
 
-    forgot_password2 = ForgotPassword({
-        'forgot_code': '456DEF',
-        'username': 'andy',
-        'expires': datetime.fromisoformat('2019-11-10 02:00:00'),
-        'deleted': False
-    })
+    forgot_password2 = ForgotPassword(
+        {
+            "forgot_code": "456DEF",
+            "username": "andy",
+            "expires": datetime.fromisoformat("2019-11-10 02:00:00"),
+            "deleted": False,
+        }
+    )
 
     def test_forgot_password_str(self) -> None:
         """
@@ -30,19 +34,23 @@ class TestForgotPassword(TestSuite):
         """
         self.assertEquals(
             str(self.forgot_password1),
-            'ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]'
+            "ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]",
         )
         self.assertEquals(
             self.forgot_password1.__str__(),
-            'ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]'
+            "ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]",
         )
 
     def test_forgot_password_repr(self) -> None:
         """
         Prove that the machine readable string representation of a ForgotPassword object is as expected.
         """
-        self.assertEquals(repr(self.forgot_password1), "<ForgotPassword '123ABC','andy'>")
-        self.assertEquals(self.forgot_password1.__repr__(), "<ForgotPassword '123ABC','andy'>")
+        self.assertEquals(
+            repr(self.forgot_password1), "<ForgotPassword '123ABC','andy'>"
+        )
+        self.assertEquals(
+            self.forgot_password1.__repr__(), "<ForgotPassword '123ABC','andy'>"
+        )
 
     def test_forgot_password_eq(self) -> None:
         """

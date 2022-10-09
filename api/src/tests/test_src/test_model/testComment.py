@@ -10,27 +10,31 @@ from model.Comment import Comment
 
 
 class TestComment(TestSuite):
-    comment1 = Comment({
-        'comment_id': 1,
-        'username': 'andy',
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'log_id': 1,
-        'time': datetime.fromisoformat('2019-11-09'),
-        'content': 'Test Comment',
-        'deleted': False
-    })
+    comment1 = Comment(
+        {
+            "comment_id": 1,
+            "username": "andy",
+            "first": "Andy",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": datetime.fromisoformat("2019-11-09"),
+            "content": "Test Comment",
+            "deleted": False,
+        }
+    )
 
-    comment2 = Comment({
-        'comment_id': 2,
-        'username': 'andy',
-        'first': 'Andy',
-        'last': 'Jarombek',
-        'log_id': 1,
-        'time': datetime.now(),
-        'content': 'Another Test Comment',
-        'deleted': False
-    })
+    comment2 = Comment(
+        {
+            "comment_id": 2,
+            "username": "andy",
+            "first": "Andy",
+            "last": "Jarombek",
+            "log_id": 1,
+            "time": datetime.now(),
+            "content": "Another Test Comment",
+            "deleted": False,
+        }
+    )
 
     def test_comment_str(self) -> None:
         """
@@ -38,13 +42,13 @@ class TestComment(TestSuite):
         """
         self.assertEquals(
             str(self.comment1),
-            'Comment: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, '
-            'time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]'
+            "Comment: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, "
+            "time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]",
         )
         self.assertEquals(
             self.comment1.__str__(),
-            'Comment: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, '
-            'time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]'
+            "Comment: [comment_id: 1, username: andy, first: Andy, last: Jarombek, log_id: 1, "
+            "time: 2019-11-09 00:00:00, content: Test Comment, deleted: False]",
         )
 
     def test_comment_repr(self) -> None:

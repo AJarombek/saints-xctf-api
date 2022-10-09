@@ -11,13 +11,13 @@ from model.TeamGroup import TeamGroup
 
 
 class TeamGroupDemo(TeamGroup):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     id = Column(db.INTEGER, primary_key=True)
-    team_name = Column(db.TEXT, db.ForeignKey('teams.name'))
-    group_id = Column(db.INTEGER, db.ForeignKey('groups.id'))
-    group_name = Column(db.INTEGER, db.ForeignKey('groups.name'))
+    team_name = Column(db.TEXT, db.ForeignKey("teams.name"))
+    group_id = Column(db.INTEGER, db.ForeignKey("groups.id"))
+    group_name = Column(db.INTEGER, db.ForeignKey("groups.name"))
     deleted = Column(db.INTEGER)
 
     # Audit Columns

@@ -9,19 +9,23 @@ from model.TeamGroup import TeamGroup
 
 
 class TestTeamGroup(TestSuite):
-    team_group1 = TeamGroup({
-        'team_name': 'saintsxctf',
-        'group_id': 1,
-        'group_name': 'alumni',
-        'deleted': 'Y'
-    })
+    team_group1 = TeamGroup(
+        {
+            "team_name": "saintsxctf",
+            "group_id": 1,
+            "group_name": "alumni",
+            "deleted": "Y",
+        }
+    )
 
-    team_group2 = TeamGroup({
-        'team_name': 'saintsxctf_alumni',
-        'group_id': 2,
-        'group_name': 'alumni',
-        'deleted': 'N'
-    })
+    team_group2 = TeamGroup(
+        {
+            "team_name": "saintsxctf_alumni",
+            "group_id": 2,
+            "group_name": "alumni",
+            "deleted": "N",
+        }
+    )
 
     def test_team_group_str(self) -> None:
         """
@@ -37,7 +41,9 @@ class TestTeamGroup(TestSuite):
         Prove that the machine readable string representation of a TeamGroup object is as expected.
         """
         self.assertEquals(repr(self.team_group1), "<TeamGroup 'saintsxctf', 'alumni'>")
-        self.assertEquals(self.team_group1.__repr__(), "<TeamGroup 'saintsxctf', 'alumni'>")
+        self.assertEquals(
+            self.team_group1.__repr__(), "<TeamGroup 'saintsxctf', 'alumni'>"
+        )
 
     def test_team_group_eq(self) -> None:
         """

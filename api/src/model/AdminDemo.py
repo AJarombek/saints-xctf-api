@@ -11,6 +11,6 @@ from model.Admin import Admin
 
 
 class AdminDemo(Admin):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     user = Column(db.TEXT, primary_key=True, nullable=False)

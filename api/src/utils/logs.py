@@ -14,11 +14,11 @@ def to_miles(metric: str, distance: float) -> float:
     :param distance: The distance in the specified unit of measurement.
     :return: The distance converted to miles
     """
-    if metric == 'miles':
+    if metric == "miles":
         return distance
-    elif metric == 'meters':
+    elif metric == "meters":
         return distance / 1609.344
-    elif metric == 'kilometers':
+    elif metric == "kilometers":
         return distance * 0.621317
     else:
         return distance
@@ -31,9 +31,9 @@ def calculate_mile_pace(miles: float, time: str) -> str:
     :param time: The time taken exercising (represented as a string).
     :return: The pace per mile of the exercise (represented as a string).
     """
-    hour_regex = re.compile(r'(\d{1,2}):(\d{2}):(\d{2})')
-    minute_regex = re.compile(r'(\d{1,2}):(\d{2})')
-    seconds_regex = re.compile(r'(\d{2})')
+    hour_regex = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})")
+    minute_regex = re.compile(r"(\d{1,2}):(\d{2})")
+    seconds_regex = re.compile(r"(\d{2})")
 
     hour = 0
     minute = 0
@@ -58,12 +58,12 @@ def calculate_mile_pace(miles: float, time: str) -> str:
     hour_str = str((second_pace // 3600))
 
     if len(second_str) == 1:
-        second_str = f'0{second_str}'
+        second_str = f"0{second_str}"
 
     if len(minute_str) == 1:
-        minute_str = f'0{minute_str}'
+        minute_str = f"0{minute_str}"
 
     if len(hour_str) == 1:
-        hour_str = f'0{hour_str}'
+        hour_str = f"0{hour_str}"
 
-    return f'{hour_str}:{minute_str}:{second_str}'
+    return f"{hour_str}:{minute_str}:{second_str}"

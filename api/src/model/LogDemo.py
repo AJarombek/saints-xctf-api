@@ -11,19 +11,19 @@ from model.Log import Log
 
 
 class LogDemo(Log):
-    __bind_key__ = 'demo'
+    __bind_key__ = "demo"
 
     # Data Columns
     log_id = Column(db.INTEGER, autoincrement=True, primary_key=True)
-    username = Column(db.TEXT, db.ForeignKey('users.username'), nullable=False)
+    username = Column(db.TEXT, db.ForeignKey("users.username"), nullable=False)
     first = Column(db.TEXT, nullable=False)
     last = Column(db.TEXT, nullable=False)
     name = Column(db.TEXT)
     location = Column(db.TEXT)
     date = Column(db.NUMERIC, nullable=False)
-    type = Column(db.TEXT, db.ForeignKey('types.type'), nullable=False)
+    type = Column(db.TEXT, db.ForeignKey("types.type"), nullable=False)
     distance = Column(db.NUMERIC)
-    metric = Column(db.TEXT, db.ForeignKey('metrics.metric'))
+    metric = Column(db.TEXT, db.ForeignKey("metrics.metric"))
     miles = Column(db.NUMERIC)
     time = Column(db.NUMERIC)
     pace = Column(db.NUMERIC)

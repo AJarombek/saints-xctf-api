@@ -25,15 +25,17 @@ class TeamGroupData:
         String representation of a team and group binding.  This representation is meant to be human readable.
         :return: The team/group binding in string form.
         """
-        return f'TeamGroupData: [team_name: {self.team_name}, group_id: {self.group_id}, ' \
-            f'group_name: {self.group_name}, deleted: {self.deleted}]'
+        return (
+            f"TeamGroupData: [team_name: {self.team_name}, group_id: {self.group_id}, "
+            f"group_name: {self.group_name}, deleted: {self.deleted}]"
+        )
 
     def __repr__(self):
         """
         String representation of a team/group binding.  This representation is meant to be machine readable.
         :return: The team/group binding in string form.
         """
-        return '<TeamGroupData %r, %r>' % (self.team_name, self.group_name)
+        return "<TeamGroupData %r, %r>" % (self.team_name, self.group_name)
 
     def __eq__(self, other):
         """

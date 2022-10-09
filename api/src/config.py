@@ -6,39 +6,39 @@ Date: 6/23/2019
 
 
 class LocalConfig:
-    ENV = 'local'
-    AUTH_URL = 'http://saints-xctf-auth:5000'
-    FUNCTION_URL = 'https://dev.fn.saintsxctf.com'
+    ENV = "local"
+    AUTH_URL = "http://saints-xctf-auth:5000"
+    FUNCTION_URL = "https://dev.fn.saintsxctf.com"
 
 
 class LocalTestConfig:
-    ENV = 'localtest'
-    AUTH_URL = 'http://saints-xctf-auth:5000'
-    FUNCTION_URL = 'http://saints-xctf-fn:5000'
+    ENV = "localtest"
+    AUTH_URL = "http://saints-xctf-auth:5000"
+    FUNCTION_URL = "http://saints-xctf-fn:5000"
 
 
 class TestConfig:
-    ENV = 'test'
-    AUTH_URL = 'http://localhost:5000'
-    FUNCTION_URL = 'https://dev.fn.saintsxctf.com'
+    ENV = "test"
+    AUTH_URL = "http://localhost:5000"
+    FUNCTION_URL = "https://dev.fn.saintsxctf.com"
 
 
 class DevelopmentConfig:
-    ENV = 'dev'
-    AUTH_URL = 'https://dev.auth.saintsxctf.com'
-    FUNCTION_URL = 'https://dev.fn.saintsxctf.com'
+    ENV = "dev"
+    AUTH_URL = "https://dev.auth.saintsxctf.com"
+    FUNCTION_URL = "https://dev.fn.saintsxctf.com"
 
 
 class ProductionConfig:
-    ENV = 'prod'
-    AUTH_URL = 'https://auth.saintsxctf.com'
-    FUNCTION_URL = 'https://fn.saintsxctf.com'
+    ENV = "prod"
+    AUTH_URL = "https://auth.saintsxctf.com"
+    FUNCTION_URL = "https://fn.saintsxctf.com"
 
 
 config = {
-    'local': LocalConfig,
-    'localtest': LocalTestConfig,
-    'test': TestConfig,
-    'development': DevelopmentConfig,
-    'production': ProductionConfig
+    "local": LocalConfig,
+    "localtest": LocalTestConfig,
+    "test": TestConfig,
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
 }
