@@ -9,6 +9,7 @@ from sqlalchemy.engine.cursor import ResultProxy
 
 from app import app
 from database import db
+from dao.common.groupMemberDao import GroupMemberCommonDao
 
 
 class GroupMemberDemoDao:
@@ -21,15 +22,16 @@ class GroupMemberDemoDao:
         :param username: Unique identifier for the user
         :return: A list of groups
         """
-        return db.session.execute(
-            """
-            SELECT `groups`.id, groupmembers.group_name, group_title, status, user
-            FROM groupmembers 
-            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
-            WHERE username=:username
-            AND groupmembers.deleted IS FALSE 
-            AND `groups`.deleted IS FALSE 
-            """,
-            {"username": username},
-            bind=GroupMemberDemoDao.engine,
+        return GroupMemberCommonDao.get_user_groups(GroupMemberDemoDao.engine, username)
+
+    @staticmethod
+    def get_user_groups_in_team(username: str, team_name: str) -> ResultProxy:
+        """
+        Get information about all the groups a user is a member of within a team
+        :param username: Unique identifier for the user
+        :param team_name: Unique name for a team
+        :return: A list of groups
+        """
+        return GroupMemberCommonDao.get_user_groups_in_team(
+            GroupMemberDemoDao.engine, username, team_name
         )

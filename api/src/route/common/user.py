@@ -279,6 +279,56 @@ def user_teams_by_username_get(
     return response
 
 
+def user_memberships_by_username_get(
+    username,
+    version: Union[APIVersion.v2, APIVersion.demo],
+    team_member_dao: Union[Type[TeamMemberDao], Type[TeamMemberDemoDao]],
+    group_member_dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]],
+) -> Response:
+    """
+    Get the team and group memberships for a user.
+    :param username: Username that uniquely identifies a user.
+    :param version: Version of the API to use for the request.
+    :param team_member_dao: Data access object to use for database access for team members.
+    :param group_member_dao: Data access object to use for database access for group members.
+    :return: A response object for the GET API request.
+    """
+    teams: ResultProxy = team_member_dao.get_user_teams(username=username)
+    membership_list = []
+
+    for team in teams:
+        groups: ResultProxy = group_member_dao.get_user_groups_in_team(
+            username=username, team_name=team["team_name"]
+        )
+        membership_list.append(
+            {
+                "team_name": team["team_name"],
+                "title": team["title"],
+                "status": team["status"],
+                "user": team["user"],
+                "groups": [
+                    {
+                        "group_name": group["group_name"],
+                        "group_title": group["group_title"],
+                        "group_id": group["group_id"],
+                        "status": group["status"],
+                        "user": group["user"],
+                    }
+                    for group in groups
+                ],
+            }
+        )
+
+    response = jsonify(
+        {
+            "self": f"/{version}/users/memberships/{username}",
+            "memberships": membership_list,
+        }
+    )
+    response.status_code = 200
+    return response
+
+
 def user_snapshot_by_username_get(
     username: str,
     version: Union[APIVersion.v2, APIVersion.demo],
@@ -404,7 +454,7 @@ def user_snapshot_by_username_get(
 
 def user_statistics_by_username_get(
     username: str,
-    version: APIVersion,
+    version: Union[APIVersion.v2, APIVersion.demo],
     user_dao: Union[Type[UserDao], Type[UserDemoDao]],
     log_dao: Union[Type[LogDao], Type[LogDemoDao]],
 ) -> Response:

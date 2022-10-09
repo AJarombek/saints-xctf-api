@@ -15,6 +15,7 @@ from database import db
 from model.GroupMember import GroupMember
 from model.TeamGroup import TeamGroup
 from dao.basicDao import BasicDao
+from dao.common.groupMemberDao import GroupMemberCommonDao
 
 
 class GroupMemberDao:
@@ -71,18 +72,7 @@ class GroupMemberDao:
         :param username: Unique identifier for the user
         :return: A list of groups
         """
-        return db.session.execute(
-            """
-            SELECT `groups`.id, groupmembers.group_name, group_title, status, user
-            FROM groupmembers 
-            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
-            WHERE username=:username
-            AND groupmembers.deleted IS FALSE 
-            AND `groups`.deleted IS FALSE 
-            """,
-            {"username": username},
-            bind=GroupMemberDao.engine,
-        )
+        return GroupMemberCommonDao.get_user_groups(GroupMemberDao.engine, username)
 
     @staticmethod
     def get_user_groups_in_team(username: str, team_name: str) -> ResultProxy:
@@ -92,22 +82,8 @@ class GroupMemberDao:
         :param team_name: Unique name for a team
         :return: A list of groups
         """
-        return db.session.execute(
-            """
-            SELECT groupmembers.group_name,groupmembers.group_id,group_title,status,user 
-            FROM groupmembers 
-            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
-            INNER JOIN teamgroups ON teamgroups.group_id=`groups`.id
-            INNER JOIN teams ON teams.name=teamgroups.team_name 
-            WHERE username=:username
-            AND teams.name=:team_name
-            AND groupmembers.deleted IS FALSE 
-            AND `groups`.deleted IS FALSE 
-            AND teamgroups.deleted IS FALSE 
-            AND teams.deleted IS FALSE 
-            """,
-            {"username": username, "team_name": team_name},
-            bind=GroupMemberDao.engine,
+        return GroupMemberCommonDao.get_user_groups_in_team(
+            GroupMemberDao.engine, username, team_name
         )
 
     @staticmethod

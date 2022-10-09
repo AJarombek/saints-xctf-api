@@ -25,6 +25,7 @@ from route.common.user import (
     user_statistics_by_username_get as _user_statistics_by_username_get,
     user_groups_by_username_get as _user_groups_by_username_get,
     user_teams_by_username_get as _user_teams_by_username_get,
+    user_memberships_by_username_get as _user_memberships_by_username_get,
 )
 
 user_demo_route = Blueprint("user_demo_route", __name__, url_prefix="/demo/users")
@@ -382,11 +383,9 @@ def user_memberships_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    response = jsonify(
-        {"self": f"/demo/users/memberships/{username}", "memberships": {}}
+    return _user_memberships_by_username_get(
+        username, APIVersion.demo.value, TeamMemberDemoDao, GroupMemberDemoDao
     )
-    response.status_code = 200
-    return response
 
 
 def user_memberships_by_username_put(username) -> Response:
