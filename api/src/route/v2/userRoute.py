@@ -10,7 +10,6 @@ from datetime import datetime
 from typing import List
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
-from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
 from flasgger import swag_from
@@ -37,16 +36,7 @@ from model.ForgotPassword import ForgotPassword
 from model.Team import Team
 from model.Group import Group
 from route.common.versions import APIVersion
-from route.common.user import (
-    user_links,
-    users_get as _users_get,
-    user_by_username_get as _user_by_username_get,
-    user_snapshot_by_username_get as _user_snapshot_by_username_get,
-    user_statistics_by_username_get as _user_statistics_by_username_get,
-    user_groups_by_username_get as _user_groups_by_username_get,
-    user_teams_by_username_get as _user_teams_by_username_get,
-    user_memberships_by_username_get as _user_memberships_by_username_get,
-)
+import route.common.user as R
 
 user_route = Blueprint("user_route", __name__, url_prefix="/v2/users")
 
@@ -284,7 +274,7 @@ def users_get() -> Response:
     Retrieve all the users in the database.
     :return: A response object for the GET API request.
     """
-    return _users_get(APIVersion.v2.value, UserDao)
+    return R.users_get(APIVersion.v2.value, UserDao)
 
 
 def user_post() -> Response:
@@ -432,7 +422,7 @@ def user_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_by_username_get(username, APIVersion.v2.value, UserDao)
+    return R.user_by_username_get(username, APIVersion.v2.value, UserDao)
 
 
 def user_by_username_put(username) -> Response:
@@ -622,7 +612,7 @@ def user_snapshot_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_snapshot_by_username_get(
+    return R.user_snapshot_by_username_get(
         username=username,
         version=APIVersion.v2.value,
         user_dao=UserDao,
@@ -641,7 +631,7 @@ def user_groups_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_groups_by_username_get(username, APIVersion.v2.value, GroupMemberDao)
+    return R.user_groups_by_username_get(username, APIVersion.v2.value, GroupMemberDao)
 
 
 def user_teams_by_username_get(username) -> Response:
@@ -650,7 +640,7 @@ def user_teams_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_teams_by_username_get(username, APIVersion.v2.value, TeamMemberDao)
+    return R.user_teams_by_username_get(username, APIVersion.v2.value, TeamMemberDao)
 
 
 def user_memberships_by_username_get(username) -> Response:
@@ -659,7 +649,7 @@ def user_memberships_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_memberships_by_username_get(
+    return R.user_memberships_by_username_get(
         username, APIVersion.v2.value, TeamMemberDao, GroupMemberDao
     )
 
@@ -731,31 +721,9 @@ def user_notifications_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    notifications: ResultProxy = NotificationDao.get_notification_by_username(
-        username=username
+    return R.user_notifications_by_username_get(
+        username, APIVersion.v2.value, NotificationDao
     )
-
-    notification_dicts = []
-    for notification in notifications:
-        notification_dicts.append(
-            {
-                "notification_id": notification["notification_id"],
-                "username": notification["username"],
-                "time": notification["time"],
-                "link": notification["link"],
-                "viewed": notification["viewed"],
-                "description": notification["description"],
-            }
-        )
-
-    response = jsonify(
-        {
-            "self": f"/v2/users/notifications/{username}",
-            "notifications": notification_dicts,
-        }
-    )
-    response.status_code = 200
-    return response
 
 
 def user_flair_by_username_get(username) -> Response:
@@ -764,16 +732,7 @@ def user_flair_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    flairs: List[Flair] = FlairDao.get_flair_by_username(username=username)
-
-    flair_dicts = []
-
-    for flair in flairs:
-        flair_dicts.append(FlairData(flair).__dict__)
-
-    response = jsonify({"self": f"/v2/users/flair/{username}", "flair": flair_dicts})
-    response.status_code = 200
-    return response
+    return R.user_flair_by_username_get(username, APIVersion.v2.value, FlairDao)
 
 
 def user_statistics_by_username_get(username) -> Response:
@@ -782,7 +741,7 @@ def user_statistics_by_username_get(username) -> Response:
     :param username: Username that uniquely identifies a user.
     :return: A response object for the GET API request.
     """
-    return _user_statistics_by_username_get(
+    return R.user_statistics_by_username_get(
         username, APIVersion.v2.value, UserDao, LogDao
     )
 

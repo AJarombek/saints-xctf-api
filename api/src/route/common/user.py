@@ -215,7 +215,7 @@ def user_by_username_get(
 
 
 def user_groups_by_username_get(
-    username,
+    username: str,
     version: Union[APIVersion.v2, APIVersion.demo],
     dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]],
 ) -> Response:
@@ -248,7 +248,7 @@ def user_groups_by_username_get(
 
 
 def user_teams_by_username_get(
-    username,
+    username: str,
     version: Union[APIVersion.v2, APIVersion.demo],
     dao: Union[Type[TeamMemberDao], Type[TeamMemberDemoDao]],
 ) -> Response:
@@ -280,7 +280,7 @@ def user_teams_by_username_get(
 
 
 def user_memberships_by_username_get(
-    username,
+    username: str,
     version: Union[APIVersion.v2, APIVersion.demo],
     team_member_dao: Union[Type[TeamMemberDao], Type[TeamMemberDemoDao]],
     group_member_dao: Union[Type[GroupMemberDao], Type[GroupMemberDemoDao]],
@@ -324,6 +324,71 @@ def user_memberships_by_username_get(
             "self": f"/{version}/users/memberships/{username}",
             "memberships": membership_list,
         }
+    )
+    response.status_code = 200
+    return response
+
+
+def user_notifications_by_username_get(
+    username: str,
+    version: Union[APIVersion.v2, APIVersion.demo],
+    notification_dao: Union[Type[NotificationDao], Type[NotificationDemoDao]],
+) -> Response:
+    """
+    Get the notifications for a user.
+    :param username: Username that uniquely identifies a user.
+    :param version: Version of the API to use for the request.
+    :param notification_dao: Data access object to use for database access for notifications.
+    :return: A response object for the GET API request.
+    """
+    notifications: ResultProxy = notification_dao.get_notification_by_username(
+        username=username
+    )
+
+    notification_dicts = []
+    for notification in notifications:
+        notification_dicts.append(
+            {
+                "notification_id": notification["notification_id"],
+                "username": notification["username"],
+                "time": notification["time"],
+                "link": notification["link"],
+                "viewed": notification["viewed"],
+                "description": notification["description"],
+            }
+        )
+
+    response = jsonify(
+        {
+            "self": f"/{version}/users/notifications/{username}",
+            "notifications": notification_dicts,
+        }
+    )
+    response.status_code = 200
+    return response
+
+
+def user_flair_by_username_get(
+    username: str,
+    version: Union[APIVersion.v2, APIVersion.demo],
+    flair_dao: Union[Type[FlairDao], Type[FlairDemoDao]],
+) -> Response:
+    """
+    Get the flair for a user.
+    :param username: Username that uniquely identifies a user.
+    :param version: Version of the API to use for the request.
+    :param flair_dao: Data access object to use for database access for user flair.
+    :return: A response object for the GET API request.
+    """
+    flairs: List[Flair] = flair_dao.get_flair_by_username(username=username)
+
+    flair_dicts = []
+
+    for flair in flairs:
+        flair_dicts.append(FlairData(flair).__dict__)
+
+    response = jsonify(
+        {"self": f"/{version}/users/flair/{username}", "flair": flair_dicts}
     )
     response.status_code = 200
     return response

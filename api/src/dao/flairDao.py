@@ -12,18 +12,7 @@ from dao.basicDao import BasicDao
 
 
 class FlairDao:
-    @staticmethod
-    def get_flair_by_username(username: str) -> List[Flair]:
-        """
-        Get the all the flairs bound to a user
-        :param username: Unique identifier for the user
-        :return: A list of strings representing flairs.
-        """
-        return (
-            Flair.query.filter_by(username=username)
-            .filter(Flair.deleted.is_(False))
-            .all()
-        )
+    flair_model = Flair
 
     @staticmethod
     def get_flair_by_content(username: str, flair: str) -> Flair:

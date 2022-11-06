@@ -9,6 +9,7 @@ from app import app
 from database import db
 from sqlalchemy.engine.cursor import ResultProxy
 from dao.basicDao import BasicDao
+from dao.common.notificationDao import NotificationCommonDao
 from model.Notification import Notification
 
 
@@ -47,16 +48,8 @@ class NotificationDao:
         :param username: Unique identifier for a user
         :return: A list of notifications
         """
-        return db.session.execute(
-            """
-            SELECT * FROM notifications 
-            WHERE username=:username 
-            AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
-            AND deleted IS FALSE
-            ORDER BY time DESC
-            """,
-            {"username": username},
-            bind=NotificationDao.engine,
+        return NotificationCommonDao.get_notification_by_username(
+            NotificationDao.engine, username
         )
 
     @staticmethod

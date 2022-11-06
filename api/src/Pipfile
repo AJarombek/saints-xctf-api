@@ -12,10 +12,10 @@ verify_ssl = true
 black = ">=22.10.0"
 
 [packages]
-flask = ">=1.0.3"
-boto3 = ">=1.9.169"
+flask = ">=2.2.2"
+boto3 = ">=1.26.3"
 flasgger = ">=0.9.5"
-flask-sqlalchemy = ">=2.4.0"
+flask-sqlalchemy = ">=3.0.2"
 flask-bcrypt = ">=0.7.1"
 pymysql = ">=0.9.3"
 coverage = ">=4.5.4"
