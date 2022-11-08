@@ -17,9 +17,8 @@ class Type(db.Model):
         self.type = exercise_type.get("type")
 
     __tablename__ = "types"
-    __bind_key__ = "app"
 
-    type = Column(db.VARCHAR(15), primary_key=True, nullable=False)
+    type = Column(db.VARCHAR(15), primary_key=True)
 
     def __str__(self):
         """

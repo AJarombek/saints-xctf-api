@@ -29,7 +29,6 @@ class Flair(db.Model):
         self.deleted_app = flair.get("deleted_app")
 
     __tablename__ = "flair"
-    __bind_key__ = "app"
 
     # Data Columns
     flair_id = Column(db.INT, autoincrement=True, primary_key=True)

@@ -5,17 +5,13 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
-from app import app
 from database import db
 from sqlalchemy.engine.cursor import ResultProxy
 from dao.basicDao import BasicDao
-from dao.common.notificationDao import NotificationCommonDao
 from model.Notification import Notification
 
 
 class NotificationDao:
-    engine = db.get_engine(app=app, bind="app")
-
     @staticmethod
     def get_notifications() -> list:
         """
@@ -48,8 +44,15 @@ class NotificationDao:
         :param username: Unique identifier for a user
         :return: A list of notifications
         """
-        return NotificationCommonDao.get_notification_by_username(
-            NotificationDao.engine, username
+        return db.session.execute(
+            """
+            SELECT * FROM notifications 
+            WHERE username=:username 
+            AND time >= CURDATE() - INTERVAL DAYOFWEEK(CURDATE()) + 13 DAY 
+            AND deleted IS FALSE
+            ORDER BY time DESC
+            """,
+            {"username": username},
         )
 
     @staticmethod
@@ -81,7 +84,6 @@ class NotificationDao:
                 "notification_id": notification.notification_id,
                 "viewed": notification.viewed,
             },
-            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -95,7 +97,6 @@ class NotificationDao:
         db.session.execute(
             "DELETE FROM notifications WHERE notification_id=:notification_id AND deleted IS FALSE",
             {"notification_id": notification_id},
-            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -125,6 +126,5 @@ class NotificationDao:
                 "deleted_date": notification.deleted_date,
                 "deleted_app": notification.deleted_app,
             },
-            bind=NotificationDao.engine,
         )
         return BasicDao.safe_commit()

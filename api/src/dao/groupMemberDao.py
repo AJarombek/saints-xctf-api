@@ -8,19 +8,15 @@ Date: 7/2/2019
 from datetime import datetime
 
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 
-from app import app
 from database import db
 from model.GroupMember import GroupMember
 from model.TeamGroup import TeamGroup
 from dao.basicDao import BasicDao
-from dao.common.groupMemberDao import GroupMemberCommonDao
 
 
 class GroupMemberDao:
-    engine = db.get_engine(app=app, bind="app")
-
     @staticmethod
     def get_group_member(group_id: int, username: str) -> GroupMember:
         """
@@ -72,7 +68,17 @@ class GroupMemberDao:
         :param username: Unique identifier for the user
         :return: A list of groups
         """
-        return GroupMemberCommonDao.get_user_groups(GroupMemberDao.engine, username)
+        return db.session.execute(
+            """
+            SELECT `groups`.id, groupmembers.group_name, group_title, status, user
+            FROM groupmembers 
+            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
+            WHERE username=:username
+            AND groupmembers.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
+            """,
+            {"username": username},
+        )
 
     @staticmethod
     def get_user_groups_in_team(username: str, team_name: str) -> ResultProxy:
@@ -82,8 +88,21 @@ class GroupMemberDao:
         :param team_name: Unique name for a team
         :return: A list of groups
         """
-        return GroupMemberCommonDao.get_user_groups_in_team(
-            GroupMemberDao.engine, username, team_name
+        return db.session.execute(
+            """
+            SELECT groupmembers.group_name,groupmembers.group_id,group_title,status,user 
+            FROM groupmembers 
+            INNER JOIN `groups` ON `groups`.group_name=groupmembers.group_name 
+            INNER JOIN teamgroups ON teamgroups.group_id=`groups`.id
+            INNER JOIN teams ON teams.name=teamgroups.team_name 
+            WHERE username=:username
+            AND teams.name=:team_name
+            AND groupmembers.deleted IS FALSE 
+            AND `groups`.deleted IS FALSE 
+            AND teamgroups.deleted IS FALSE 
+            AND teams.deleted IS FALSE 
+            """,
+            {"username": username, "team_name": team_name},
         )
 
     @staticmethod
@@ -109,7 +128,6 @@ class GroupMemberDao:
             AND users.deleted IS FALSE 
             """,
             {"group_name": group_name, "team_name": team_name},
-            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
@@ -129,7 +147,6 @@ class GroupMemberDao:
             AND users.deleted IS FALSE 
             """,
             {"group_id": group_id},
-            bind=GroupMemberDao.engine,
         )
 
     @staticmethod
@@ -163,7 +180,6 @@ class GroupMemberDao:
                 "status": status,
                 "user": user,
             },
-            bind=GroupMemberDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -192,6 +208,5 @@ class GroupMemberDao:
                 "deleted_date": datetime.now(),
                 "deleted_app": "saints-xctf-api",
             },
-            bind=GroupMemberDao.engine,
         )
         return BasicDao.safe_commit()

@@ -31,7 +31,6 @@ class TeamMember(db.Model):
         self.deleted_app = team.get("deleted_app")
 
     __tablename__ = "teammembers"
-    __bind_key__ = "app"
 
     # Data Columns
     id = Column(db.INTEGER, primary_key=True)

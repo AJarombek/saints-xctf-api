@@ -10,9 +10,8 @@ from sqlalchemy import Column
 
 class Status(db.Model):
     __tablename__ = "status"
-    __bind_key__ = "app"
 
-    status = Column(db.VARCHAR(10), primary_key=True, nullable=False)
+    status = Column(db.VARCHAR(10), primary_key=True)
 
     group_members = db.relationship("GroupMember", backref="group_member")
 

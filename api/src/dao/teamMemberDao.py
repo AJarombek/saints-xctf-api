@@ -11,7 +11,6 @@ from datetime import datetime
 from sqlalchemy.engine.cursor import ResultProxy
 from flask import current_app
 
-from app import app
 from database import db
 from dao.basicDao import BasicDao
 from model.TeamMember import TeamMember
@@ -19,8 +18,6 @@ from model.GroupMember import GroupMember
 
 
 class TeamMemberDao:
-    engine = db.get_engine(app=app, bind="app")
-
     @staticmethod
     def get_user_teams(username: str) -> ResultProxy:
         """
@@ -38,7 +35,6 @@ class TeamMemberDao:
             AND teams.deleted IS FALSE
             """,
             {"username": username},
-            bind=TeamMemberDao.engine,
         )
 
     @staticmethod
@@ -60,7 +56,6 @@ class TeamMemberDao:
             AND teams.deleted IS FALSE
             """,
             {"username": username, "team_name": team_name},
-            bind=TeamMemberDao.engine,
         )
 
     @staticmethod
@@ -82,7 +77,6 @@ class TeamMemberDao:
             AND users.deleted IS FALSE 
             """,
             {"team_name": team_name},
-            bind=TeamMemberDao.engine,
         )
 
     @staticmethod
@@ -157,7 +151,6 @@ class TeamMemberDao:
                 "team_name": team_name,
                 "updating_username": updating_username,
             },
-            bind=TeamMemberDao.engine,
         )
         return BasicDao.safe_commit()
 
@@ -221,7 +214,6 @@ class TeamMemberDao:
                     AND teams.deleted IS FALSE
                     """,
                     {"username": username, "team_name": team_membership.team_name},
-                    bind=TeamMemberDao.engine,
                 )
 
                 if existing_team_memberships.rowcount > 0:
@@ -244,7 +236,6 @@ class TeamMemberDao:
                 AND deleted IS FALSE
                 """,
                 teams_left_dict,
-                bind=TeamMemberDao.engine,
             )
 
             db.session.execute(
@@ -265,7 +256,6 @@ class TeamMemberDao:
                 );
                 """,
                 teams_left_dict,
-                bind=TeamMemberDao.engine,
             )
 
         if len(groups_joined_dict) > 0:
@@ -281,7 +271,6 @@ class TeamMemberDao:
                     AND tg.deleted IS FALSE
                     """,
                     group_joined_dict,
-                    bind=TeamMemberDao.engine,
                 )
 
                 already_team_member: ResultProxy = db.session.execute(
@@ -292,7 +281,6 @@ class TeamMemberDao:
                     AND deleted IS FALSE
                     """,
                     group_joined_dict,
-                    bind=TeamMemberDao.engine,
                 )
 
                 if existing_memberships.rowcount > 0:
@@ -345,7 +333,6 @@ class TeamMemberDao:
                     )
                     """,
                     group_joined_dict,
-                    bind=TeamMemberDao.engine,
                 )
 
         if len(groups_left_dict) > 0:
@@ -368,7 +355,6 @@ class TeamMemberDao:
                 );
                 """,
                 groups_left_dict,
-                bind=TeamMemberDao.engine,
             )
 
         return BasicDao.safe_commit()

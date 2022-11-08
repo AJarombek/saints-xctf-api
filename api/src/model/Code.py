@@ -30,7 +30,6 @@ class Code(db.Model):
         self.deleted_app = code.get("deleted_app")
 
     __tablename__ = "codes"
-    __bind_key__ = "app"
 
     # Data Columns
     activation_code = Column(db.VARCHAR(8), primary_key=True)

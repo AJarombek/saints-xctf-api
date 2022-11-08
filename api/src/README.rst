@@ -35,23 +35,6 @@ Navigate to ``infra/docker-compose`` and view the ``README.rst`` file.
 
 To build the ECR dockerfiles, you must use docker compose.
 
-**Update Demo SQLite Database File Locally**
-
-.. code-block:: bash
-
-    # Create a SQLite database
-    sqlite3 demo.db
-    .database
-
-    # Exit the SQLite shell
-    .exit
-
-    # Run the init script
-    sqlite3 demo.db < demo-db-init.sql
-
-    # Run the update script
-    sqlite3 demo.db < demo-db-update.sql
-
 **Black Formatting**
 
 .. code-block:: bash

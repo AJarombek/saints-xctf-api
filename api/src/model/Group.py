@@ -34,7 +34,6 @@ class Group(db.Model):
         self.deleted_app = group.get("deleted_app")
 
     __tablename__ = "groups"
-    __bind_key__ = "app"
 
     # Data Columns
     id = Column(db.INT, autoincrement=True, primary_key=True)

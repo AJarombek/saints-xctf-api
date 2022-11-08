@@ -14,8 +14,6 @@ from utils.jwt import get_claims
 from dao.commentDao import CommentDao
 from model.Comment import Comment
 from model.CommentData import CommentData
-from route.common.comment import comment_links
-from route.common.versions import APIVersion
 
 comment_route = Blueprint("comment_route", __name__, url_prefix="/v2/comments")
 
@@ -495,6 +493,42 @@ def comment_links_get() -> Response:
     Get all the other comment API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(comment_links(APIVersion.v2.value))
+    response = jsonify(
+        {
+            "self": f"/v2/comments/links",
+            "endpoints": [
+                {
+                    "link": "/v2/comments",
+                    "verb": "GET",
+                    "description": "Get all the comments in the database.",
+                },
+                {
+                    "link": "/v2/comments",
+                    "verb": "POST",
+                    "description": "Create a new comment.",
+                },
+                {
+                    "link": "/v2/comments/<comment_id>",
+                    "verb": "GET",
+                    "description": "Retrieve a single comment with a given unique id.",
+                },
+                {
+                    "link": "/v2/comments/<comment_id>",
+                    "verb": "PUT",
+                    "description": "Update a comment with a given unique id.",
+                },
+                {
+                    "link": "/v2/comments/<comment_id>",
+                    "verb": "DELETE",
+                    "description": "Delete a single comment with a given unique id.",
+                },
+                {
+                    "link": "/v2/comments/soft/<comment_id>",
+                    "verb": "DELETE",
+                    "description": "Soft delete a single comment with a given unique id.",
+                },
+            ],
+        }
+    )
     response.status_code = 200
     return response

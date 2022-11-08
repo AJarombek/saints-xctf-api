@@ -16,8 +16,6 @@ from dao.teamMemberDao import TeamMemberDao
 from dao.teamGroupDao import TeamGroupDao
 from model.Team import Team
 from model.TeamData import TeamData
-from route.common.team import team_links, teams_get as common_teams_get
-from route.common.versions import APIVersion
 
 team_route = Blueprint("team_route", __name__, url_prefix="/v2/teams")
 
@@ -121,7 +119,24 @@ def teams_get() -> Response:
     Retrieve all the teams in the database.
     :return: A response object for the GET API request.
     """
-    return common_teams_get(APIVersion.v2, TeamDao)
+    all_teams: List[Team] = TeamDao.get_teams()
+
+    if all_teams is None:
+        response = jsonify(
+            {
+                "self": "/v2/teams",
+                "teams": None,
+                "error": "an unexpected error occurred retrieving teams",
+            }
+        )
+        response.status_code = 500
+        return response
+    else:
+        team_dicts = [TeamData(team_info).__dict__ for team_info in all_teams]
+
+        response = jsonify({"self": "/v2/teams", "teams": team_dicts})
+        response.status_code = 200
+        return response
 
 
 def team_by_name_get(name) -> Response:
@@ -274,6 +289,37 @@ def team_links_get() -> Response:
     Get all the other team API endpoints.
     :return: A response object for the GET API request
     """
-    response = jsonify(team_links(APIVersion.v2.value))
+    response = jsonify(
+        {
+            "self": f"/v2/teams/links",
+            "endpoints": [
+                {
+                    "link": "/v2/teams",
+                    "verb": "GET",
+                    "description": "Get all the teams in the database.",
+                },
+                {
+                    "link": "/v2/teams/<name>",
+                    "verb": "GET",
+                    "description": "Retrieve a single team with a given name.",
+                },
+                {
+                    "link": "/v2/teams/members/<name>",
+                    "verb": "GET",
+                    "description": "Retrieve the members of a team with a given name.",
+                },
+                {
+                    "link": "/v2/teams/groups/<name>",
+                    "verb": "GET",
+                    "description": "Retrieve the groups in a team based on the team name.",
+                },
+                {
+                    "link": "/v2/teams/search/<text>/<limit>",
+                    "verb": "GET",
+                    "description": "Text search for teams.",
+                },
+            ],
+        }
+    )
     response.status_code = 200
     return response

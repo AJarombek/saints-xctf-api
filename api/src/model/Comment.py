@@ -33,7 +33,6 @@ class Comment(db.Model):
         self.deleted_app = comment.get("deleted_app")
 
     __tablename__ = "comments"
-    __bind_key__ = "app"
 
     # Data Columns
     comment_id = Column(db.INT, autoincrement=True, primary_key=True)
