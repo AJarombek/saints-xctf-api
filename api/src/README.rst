@@ -75,9 +75,9 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``demo.db``                 | SQLite demo database file.                                                                   |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``demo-db-init.sql``        | SQL file to initialize the SQLite demo database with tables and static data.                 |
+| ``test-db-init.sql``        | SQL file to initialize a PostgreSQL test database with tables and static data.               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``demo-db-update.sql``      | SQL file to update the SQLite demo database with newer data.                                 |
+| ``test-db-update.sql``      | SQL file to update a PostgreSQL test database with newer data.                               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``Pipfile``                 | Pip dependencies and virtual environment for the application.                                |
 +-----------------------------+----------------------------------------------------------------------------------------------+

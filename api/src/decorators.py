@@ -11,6 +11,7 @@ from typing import List, Optional
 
 import aiohttp
 from flask import abort, current_app, request
+
 from utils.literals import HTTPMethod
 
 GET: HTTPMethod = "GET"

@@ -16,18 +16,18 @@ from flasgger import Swagger
 from commands import test
 from config import config
 from utils.db import get_connection_url
-from route.v2.activationCodeRoute import activation_code_route
+from route.activationCodeRoute import activation_code_route
 from route.apiRoute import api_route
-from route.v2.userRoute import user_route
-from route.v2.forgotPasswordRoute import forgot_password_route
-from route.v2.flairRoute import flair_route
-from route.v2.logRoute import log_route
-from route.v2.logFeedRoute import log_feed_route
-from route.v2.groupRoute import group_route
-from route.v2.commentRoute import comment_route
-from route.v2.rangeViewRoute import range_view_route
-from route.v2.notificationRoute import notification_route
-from route.v2.teamRoute import team_route
+from route.userRoute import user_route
+from route.forgotPasswordRoute import forgot_password_route
+from route.flairRoute import flair_route
+from route.logRoute import log_route
+from route.logFeedRoute import log_feed_route
+from route.groupRoute import group_route
+from route.commentRoute import comment_route
+from route.rangeViewRoute import range_view_route
+from route.notificationRoute import notification_route
+from route.teamRoute import team_route
 
 
 def create_app(config_name) -> Flask:
@@ -52,11 +52,6 @@ def create_app(config_name) -> Flask:
     application.register_blueprint(team_route)
 
     application.config["SQLALCHEMY_DATABASE_URI"] = get_connection_url()
-    application.config["SQLALCHEMY_BINDS"] = {
-        "app": application.config["SQLALCHEMY_DATABASE_URI"],
-        "demo": "sqlite:///demo.db",
-    }
-
     application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     application.config["SQLALCHEMY_RECORD_QUERIES"] = True
     application.config["SLOW_DB_QUERY_TIME"] = 0.5
