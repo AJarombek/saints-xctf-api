@@ -8,7 +8,8 @@ import os
 import logging
 
 from flask import Flask, jsonify
-from flask_sqlalchemy import get_debug_queries, current_app
+from flask_sqlalchemy.extension import current_app
+from flask_sqlalchemy.record_queries import get_recorded_queries
 from database import db
 from flaskBcrypt import flask_bcrypt
 from flasgger import Swagger
@@ -238,10 +239,10 @@ def after_request(response):
     :param response: HTTP response object.
     :return: Propagate the HTTP response object
     """
-    for query in get_debug_queries():
+    for query in get_recorded_queries():
         if query.duration >= current_app.config["SLOW_DB_QUERY_TIME"]:
             current_app.logger.warning(
                 "Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n"
-                % (query.statement, query.parameters, query.duration, query.context)
+                % (query.statement, query.parameters, query.duration, query.location)
             )
     return response
