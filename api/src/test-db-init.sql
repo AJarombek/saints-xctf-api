@@ -207,6 +207,79 @@ CREATE TABLE IF NOT EXISTS teamgroups(
     deleted_app   VARCHAR(31)              NULL
 );
 
+CREATE TABLE IF NOT EXISTS teammembers(
+    team_name     VARCHAR(31) CHARSET UTF8 NOT NULL,
+    username      VARCHAR(20)              NOT NULL,
+    status        VARCHAR(10)              NOT NULL,
+    user          VARCHAR(10)              NOT NULL,
+    deleted       TINYINT(1) DEFAULT 0     NULL,
+    created_date  DATETIME                 NULL,
+    created_user  VARCHAR(31)              NULL,
+    created_app   VARCHAR(31)              NULL,
+    modified_date DATETIME                 NULL,
+    modified_user VARCHAR(31)              NULL,
+    modified_app  VARCHAR(31)              NULL,
+    deleted_date  DATETIME                 NULL,
+    deleted_user  VARCHAR(31)              NULL,
+    deleted_app   VARCHAR(31)              NULL
+);
+
+CREATE TABLE IF NOT EXISTS teams(
+    name          VARCHAR(31) CHARSET UTF8  NOT NULL PRIMARY KEY,
+    title         VARCHAR(127) CHARSET UTF8 NOT NULL,
+    picture_name  VARCHAR(255)              NULL,
+    description   VARCHAR(255)              NULL,
+    week_start    VARCHAR(15)               NULL,
+    deleted       TINYINT(1) DEFAULT 0      NULL,
+    created_date  DATETIME                  NULL,
+    created_user  VARCHAR(31)               NULL,
+    created_app   VARCHAR(31)               NULL,
+    modified_date DATETIME                  NULL,
+    modified_user VARCHAR(31)               NULL,
+    modified_app  VARCHAR(31)               NULL,
+    deleted_date  DATETIME                  NULL,
+    deleted_user  VARCHAR(31)               NULL,
+    deleted_app   VARCHAR(31)               NULL
+);
+
+CREATE TABLE IF NOT EXISTS types(
+    type VARCHAR(15) NOT NULL PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS users(
+    username        VARCHAR(20)          NOT NULL PRIMARY KEY,
+    first           VARCHAR(30)          NOT NULL,
+    last            VARCHAR(30)          NOT NULL,
+    salt            VARCHAR(255)         NULL,
+    password        VARCHAR(255)         NOT NULL,
+    profilepic      LONGBLOB             NULL,
+    profilepic_name VARCHAR(50)          NULL,
+    description     VARCHAR(255)         NULL,
+    member_since    DATE                 NOT NULL,
+    class_year      INT(4)               NULL,
+    location        VARCHAR(50)          NULL,
+    favorite_event  VARCHAR(20)          NULL,
+    activation_code VARCHAR(8)           NOT NULL,
+    email           VARCHAR(50)          NULL,
+    last_signin     DATETIME             NOT NULL,
+    week_start      VARCHAR(15)          NULL,
+    subscribed      CHAR                 NULL,
+    deleted         TINYINT(1) DEFAULT 0 NULL,
+    created_date    DATETIME             NULL,
+    created_user    VARCHAR(31)          NULL,
+    created_app     VARCHAR(31)          NULL,
+    modified_date   DATETIME             NULL,
+    modified_user   VARCHAR(31)          NULL,
+    modified_app    VARCHAR(31)          NULL,
+    deleted_date    DATETIME             NULL,
+    deleted_user    VARCHAR(31)          NULL,
+    deleted_app     VARCHAR(31)          NULL
+);
+
+CREATE TABLE IF NOT EXISTS weekstart(
+    week_start VARCHAR(15) NOT NULL PRIMARY KEY
+);
+
 ALTER TABLE comments
 ADD CONSTRAINT comments_log_id_fk
 FOREIGN KEY (log_id) REFERENCES logs(log_id);
@@ -274,3 +347,15 @@ FOREIGN KEY (group_id) REFERENCES `groups`(id);
 ALTER TABLE teamgroups
 ADD CONSTRAINT teamgroups_username_fk
 FOREIGN KEY (group_name) REFERENCES `groups`(group_name);
+
+ALTER TABLE teammembers
+ADD CONSTRAINT teammembers_team_name_fk
+FOREIGN KEY (team_name) references teams(name);
+
+ALTER TABLE teammembers
+ADD CONSTRAINT teammembers_username_fk
+FOREIGN KEY (username) references users(username);
+
+ALTER TABLE users
+ADD CONSTRAINT users_week_start_fk
+FOREIGN KEY (week_start) references weekstart(week_start);
