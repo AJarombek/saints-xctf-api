@@ -11,6 +11,7 @@ DELETE FROM groupmembers;
 DELETE FROM logs;
 DELETE FROM notifications;
 DELETE FROM teams;
+
 INSERT INTO teams (
     name,
     title,
@@ -77,6 +78,7 @@ INSERT INTO teams (
 
 DELETE FROM teamgroups;
 DELETE FROM teammembers;
+
 INSERT INTO teammembers (
     team_name, username, status, user, deleted
 ) VALUES (
@@ -101,7 +103,15 @@ INSERT INTO teammembers (
     'jarombek', 'andy', 'accepted', 'admin', 0
 );
 
+DELETE FROM types;
+
+INSERT INTO types (type) VALUES ('run');
+INSERT INTO types (type) VALUES ('bike');
+INSERT INTO types (type) VALUES ('swim');
+INSERT INTO types (type) VALUES ('other');
+
 DELETE FROM users;
+
 INSERT INTO users (
     username,
     first,
