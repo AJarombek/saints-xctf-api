@@ -68,7 +68,12 @@ def types_get() -> Response:
         response.status_code = 500
         return response
     else:
-        response = jsonify({"self": "/v2/types", "types": [type_info.__dict__ for type_info in all_types]})
+        response = jsonify(
+            {
+                "self": "/v2/types",
+                "types": [type_info.__dict__ for type_info in all_types],
+            }
+        )
         response.status_code = 200
         return response
 

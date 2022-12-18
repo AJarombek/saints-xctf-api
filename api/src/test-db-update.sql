@@ -7,6 +7,61 @@ DELETE FROM comments;
 DELETE FROM flair;
 DELETE FROM forgotpassword;
 DELETE FROM groups;
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    1, 'alumni', 'Alumni', NULL, 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    2, 'friends', 'Andy & Friends', NULL, 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    3, 'jarombek', 'Jarombek Family', NULL, 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    4, 'menstf', 'Men''s Track & Field', 'Go Saints!', 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    5, 'mensxc', 'Men''s Cross Country', 'Joust!', 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    6, 'tf_alumni', 'Track & Field Alumni', NULL, 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    7, 'wmensxc', 'Women''s Cross Country', 'Gung Ho!', 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    8, 'xc_alumni', 'Cross Country Alumni', NULL, 'sunday', 0
+);
+
+INSERT INTO groups(
+    id, group_name, group_title, description, week_start, deleted
+) VALUES (
+    9, 'wmenstf', 'Women''s Track & Field', 'Go Saints!', 'sunday', 0
+);
+
 DELETE FROM groupmembers;
 DELETE FROM logs;
 DELETE FROM notifications;
@@ -77,6 +132,61 @@ INSERT INTO teams (
 );
 
 DELETE FROM teamgroups;
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf', 1, 'alumni', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf', 4, 'menstf', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf', 5, 'mensxc', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf', 7, 'wmenstf', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf', 8, 'wmensxc', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf_alumni', 9, 'xc_alumni', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'saintsxctf_alumni', 6, 'tf_alumni', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'friends', 2, 'friends', 0
+);
+
+INSERT INTO teamgroups (
+    team_name, group_id, group_name, deleted
+) VALUES (
+    'jarombek', 3, 'jarombek', 0
+);
+
 DELETE FROM teammembers;
 
 INSERT INTO teammembers (
