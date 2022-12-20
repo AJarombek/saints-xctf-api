@@ -2,10 +2,43 @@
 -- Author: Andrew Jarombek
 -- Date: 8/15/2022
 
+DELETE FROM admins;
+
+INSERT INTO admins(user) VALUES ('admin');
+INSERT INTO admins(user) VALUES ('user');
+
 DELETE FROM codes;
+
+INSERT INTO codes(
+    activation_code, email, group_id, expiration_date, deleted
+) VALUES (
+    'abc123', 'andrew@jarombek.com', 1, NOW() + INTERVAL 1 DAY, 0
+);
+
 DELETE FROM comments;
+
+INSERT INTO comments(
+    username, first, last, log_id, time, content, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
+);
+
 DELETE FROM flair;
+
+INSERT INTO flair(
+    username, flair, deleted
+) VALUES (
+    'andy', 'Site Creator', 0
+);
+
 DELETE FROM forgotpassword;
+
+INSERT INTO forgotpassword(
+    forgot_code, username, expires, deleted
+) VALUES (
+    'ABCD1234', 'andy', NOW() + INTERVAL 1 DAY, 0
+);
+
 DELETE FROM groups;
 
 INSERT INTO groups(
@@ -63,8 +96,66 @@ INSERT INTO groups(
 );
 
 DELETE FROM groupmembers;
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    1, 'alumni', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    9, 'xc_alumni', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    6, 'tf_alumni', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    2, 'friends', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    3, 'jarombek', 'andy', 'accepted', 'admin', 0
+);
+
 DELETE FROM logs;
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Citi Bike', 'New York, NY', CURRENT_DATE(),
+    'bike', 7.5, 'miles', 7.5,
+    '00:00:00', '00:00:00', 5,
+    'Citi biking through Harlem to practice, nice little adventure', NOW(), 0
+);
+
+DELETE FROM metrics;
+
+INSERT INTO metrics(metric) VALUES ('miles');
+INSERT INTO metrics(metric) VALUES ('kilometers');
+INSERT INTO metrics(metric) VALUES ('meters');
+
 DELETE FROM notifications;
+
+DELETE FROM status;
+
+INSERT INTO status(status) VALUES ('accepted');
+INSERT INTO status(status) VALUES ('pending');
+
 DELETE FROM teams;
 
 INSERT INTO teams (
@@ -261,3 +352,8 @@ INSERT INTO users (
     'subscribed',
     0
 );
+
+DELETE FROM weekstart;
+
+INSERT INTO weekstart(week_start) VALUES ('sunday');
+INSERT INTO weekstart(week_start) VALUES ('monday');
