@@ -11,10 +11,14 @@ LABEL maintainer="andrew@jarombek.com" \
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev libc-dev libffi-dev g++ \
     && pip install --upgrade pip \
-    && pip install pipenv
+    && pip install pipenv \
+    && apk add --update mysql mysql-client
 
 COPY . /src
 WORKDIR /src
+
+RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-init.sql
+RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-update.sql
 
 RUN pipenv install
 

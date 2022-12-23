@@ -139,8 +139,148 @@ INSERT INTO logs(
     'andy', 'Andy', 'Jarombek',
     'Citi Bike', 'New York, NY', CURRENT_DATE(),
     'bike', 7.5, 'miles', 7.5,
-    '00:00:00', '00:00:00', 5,
+    '00:00:00', '00:00:00', 6,
     'Citi biking through Harlem to practice, nice little adventure', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Track Workout', 'New York, NY', CURRENT_DATE(),
+    'run', 6.15, 'miles', 6.15,
+    '00:00:00', '00:00:00', 6,
+    '4x600m @ mile pace (1:42, 1:44, 1:43, 1:44). Felt difficult', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Central Park', 'New York, NY', CURRENT_DATE() - INTERVAL 1 DAY,
+    'run', 5.14, 'miles', 5.14,
+    '00:38:52', '00:07:33', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CP Long', 'New York, NY', CURRENT_DATE() - INTERVAL 2 DAY,
+    'run', 12.79, 'miles', 12.79,
+    '01:36:06', '00:07:30', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Cooldown', 'New York, NY', CURRENT_DATE() - INTERVAL 3 DAY,
+    'bike', 5.35, 'miles', 5.35,
+    '00:00:00', '00:00:00', 7,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Queens 10K', 'Queens, NY', CURRENT_DATE() - INTERVAL 3 DAY,
+    'run', 10.4, 'miles', 10.4,
+    '00:00:00', '00:00:00', 3,
+    'Mad stomach', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Pre Race', 'New York, NY', CURRENT_DATE() - INTERVAL 4 DAY,
+    'run', 5.66, 'miles', 5.66,
+    '00:41:39', '00:07:21', 7,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Citi Bike', 'New York, NY', CURRENT_DATE() - INTERVAL 5 DAY,
+    'bike', 8.19, 'miles', 8.19,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CP', 'New York, NY', CURRENT_DATE() - INTERVAL 6 DAY,
+    'run', 5.03, 'miles', 5.03,
+    '00:38:21', '00:07:37', 7,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'To Practice', 'New York, NY', CURRENT_DATE() - INTERVAL 7 DAY,
+    'bike', 1.54, 'miles', 1.54,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 7 DAY,
+    'run', 11.52, 'miles', 11.52,
+    '00:00:00', '00:00:00', 7,
+    '2x400m, 2x1600m, 2x400m', NOW(), 0
 );
 
 DELETE FROM metrics;
