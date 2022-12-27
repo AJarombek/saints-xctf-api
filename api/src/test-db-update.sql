@@ -2,6 +2,53 @@
 -- Author: Andrew Jarombek
 -- Date: 8/15/2022
 
+DELETE FROM weekstart;
+
+INSERT INTO weekstart(week_start) VALUES ('sunday');
+INSERT INTO weekstart(week_start) VALUES ('monday');
+
+DELETE FROM users;
+
+INSERT INTO users (
+    username,
+    first,
+    last,
+    salt,
+    password,
+    profilepic,
+    profilepic_name,
+    description,
+    member_since,
+    class_year,
+    location,
+    favorite_event,
+    activation_code,
+    email,
+    last_signin,
+    week_start,
+    subscribed,
+    deleted
+) VALUES (
+    'andy',
+    'Andy',
+    'Jarombek',
+    'aaa',
+    'aaa',
+    NULL,
+    'snow-race-profile-picture.jpg',
+    'I sometimes like to run...',
+    '2016-12-23',
+    2017,
+    'New York, NY',
+    'Shakeout',
+    'aaaaaa',
+    'andrew@jarombek.com',
+    NOW(),
+    'monday',
+    'Y',
+    0
+);
+
 DELETE FROM admins;
 
 INSERT INTO admins(user) VALUES ('admin');
@@ -13,14 +60,6 @@ INSERT INTO codes(
     activation_code, email, group_id, expiration_date, deleted
 ) VALUES (
     'abc123', 'andrew@jarombek.com', 1, NOW() + INTERVAL 1 DAY, 0
-);
-
-DELETE FROM comments;
-
-INSERT INTO comments(
-    username, first, last, log_id, time, content, deleted
-) VALUES (
-    'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
 );
 
 DELETE FROM flair;
@@ -95,6 +134,11 @@ INSERT INTO groups(
     9, 'wmenstf', 'Women''s Track & Field', 'Go Saints!', 'sunday', 0
 );
 
+DELETE FROM status;
+
+INSERT INTO status(status) VALUES ('accepted');
+INSERT INTO status(status) VALUES ('pending');
+
 DELETE FROM groupmembers;
 
 INSERT INTO groupmembers(
@@ -126,6 +170,19 @@ INSERT INTO groupmembers(
 ) VALUES (
     3, 'jarombek', 'andy', 'accepted', 'admin', 0
 );
+
+DELETE FROM metrics;
+
+INSERT INTO metrics(metric) VALUES ('miles');
+INSERT INTO metrics(metric) VALUES ('kilometers');
+INSERT INTO metrics(metric) VALUES ('meters');
+
+DELETE FROM types;
+
+INSERT INTO types (type) VALUES ('run');
+INSERT INTO types (type) VALUES ('bike');
+INSERT INTO types (type) VALUES ('swim');
+INSERT INTO types (type) VALUES ('other');
 
 DELETE FROM logs;
 
@@ -283,18 +340,155 @@ INSERT INTO logs(
     '2x400m, 2x1600m, 2x400m', NOW(), 0
 );
 
-DELETE FROM metrics;
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CP', 'New York, NY', CURRENT_DATE() - INTERVAL 8 DAY,
+    'run', 5.12, 'miles', 5.12,
+    '00:39:03', '00:07:37', 6,
+    NULL, NOW(), 0
+);
 
-INSERT INTO metrics(metric) VALUES ('miles');
-INSERT INTO metrics(metric) VALUES ('kilometers');
-INSERT INTO metrics(metric) VALUES ('meters');
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Longish', 'New York, NY', CURRENT_DATE() - INTERVAL 9 DAY,
+    'run', 8.97, 'miles', 8.97,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Easy', 'New York, NY', CURRENT_DATE() - INTERVAL 10 DAY,
+    'run', 6.55, 'miles', 6.55,
+    '00:49:03', '00:07:29', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Recovery', 'New York, NY', CURRENT_DATE() - INTERVAL 11 DAY,
+    'run', 5.3, 'miles', 5.3,
+    '00:39:56', '00:07:32', 7,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Tempo Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 12 DAY,
+    'run', 11.38, 'miles', 11.38,
+    '01:17:54', '00:06:50', 7,
+    '4mi @ HM, 8x1mi on/off', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Recovery', 'New York, NY', CURRENT_DATE() - INTERVAL 13 DAY,
+    'run', 4.31, 'miles', 4.31,
+    '00:32:05', '00:07:26', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 14 DAY,
+    'run', 11.15, 'miles', 11.15,
+    '00:00:00', '00:00:00', 6,
+    '2x400m, 2x1600m, 2x400m', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Dingletown', 'Greenwich, CT', CURRENT_DATE() - INTERVAL 15 DAY,
+    'run', 15.25, 'miles', 15.25,
+    '01:51:23', '00:07:18', 7,
+    'Lots of spontaneous route changes', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Battle Road Twilight 1500m', 'Waltham, MA', CURRENT_DATE() - INTERVAL 16 DAY,
+    'run', 7.45, 'miles', 7.45,
+    '00:00:00', '00:00:00', 5,
+    '4:21.50.  Continuing my string of sub-par performances, but the meet itself was very cool & got to see fellow alumni TC', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Easy + Strides', 'New York, NY', CURRENT_DATE() - INTERVAL 17 DAY,
+    'run', 5.34, 'miles', 5.34,
+    '00:38:06', '00:07:08', 7,
+    NULL, NOW(), 0
+);
+
+DELETE FROM comments;
+
+INSERT INTO comments(
+    username, first, last, log_id, time, content, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
+);
 
 DELETE FROM notifications;
-
-DELETE FROM status;
-
-INSERT INTO status(status) VALUES ('accepted');
-INSERT INTO status(status) VALUES ('pending');
 
 DELETE FROM teams;
 
@@ -443,57 +637,3 @@ INSERT INTO teammembers (
 ) VALUES (
     'jarombek', 'andy', 'accepted', 'admin', 0
 );
-
-DELETE FROM types;
-
-INSERT INTO types (type) VALUES ('run');
-INSERT INTO types (type) VALUES ('bike');
-INSERT INTO types (type) VALUES ('swim');
-INSERT INTO types (type) VALUES ('other');
-
-DELETE FROM users;
-
-INSERT INTO users (
-    username,
-    first,
-    last,
-    salt,
-    password,
-    profilepic,
-    profilepic_name,
-    description,
-    member_since,
-    class_year,
-    location,
-    favorite_event,
-    activation_code,
-    email,
-    last_signin,
-    week_start,
-    subscribed,
-    deleted
-) VALUES (
-    'andy',
-    'Andy',
-    'Jarombek',
-    'aaa',
-    'aaa',
-    NULL,
-    'snow-race-profile-picture.jpg',
-    'I sometimes like to run...',
-    '2016-12-23',
-    2017,
-    'New York, NY',
-    'Shakeout',
-    'aaaaaa',
-    'andrew@jarombek.com',
-    NULL,
-    'monday',
-    'subscribed',
-    0
-);
-
-DELETE FROM weekstart;
-
-INSERT INTO weekstart(week_start) VALUES ('sunday');
-INSERT INTO weekstart(week_start) VALUES ('monday');

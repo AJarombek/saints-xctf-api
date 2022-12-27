@@ -2,6 +2,28 @@
 -- Author: Andrew Jarombek
 -- Date: 11/8/2022
 
+SET foreign_key_checks = 0;
+
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS logs;
+DROP TABLE IF EXISTS teammembers;
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS flair;
+DROP TABLE IF EXISTS forgotpassword;
+DROP TABLE IF EXISTS groupmembers;
+DROP TABLE IF EXISTS teamgroups;
+DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS admins;
+DROP TABLE IF EXISTS status;
+DROP TABLE IF EXISTS codes;
+DROP TABLE IF EXISTS metrics;
+DROP TABLE IF EXISTS types;
+DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS weekstart;
+
 CREATE TABLE IF NOT EXISTS admins(
     user VARCHAR(10) NOT NULL PRIMARY KEY
 );
@@ -280,13 +302,15 @@ CREATE TABLE IF NOT EXISTS weekstart(
     week_start VARCHAR(15) NOT NULL PRIMARY KEY
 );
 
+ALTER TABLE `groups` ADD INDEX (group_name);
+
 ALTER TABLE comments
 ADD CONSTRAINT comments_log_id_fk
 FOREIGN KEY (log_id) REFERENCES logs(log_id);
 
 ALTER TABLE comments
 ADD CONSTRAINT comments_username_fk
-FOREIGN KEY (username) REFERENCES logs(username);
+FOREIGN KEY (username) REFERENCES users(username);
 
 ALTER TABLE events
 ADD CONSTRAINT events_group_name_fk
