@@ -480,6 +480,146 @@ INSERT INTO logs(
     NULL, NOW(), 0
 );
 
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Recovery', 'New York, NY', CURRENT_DATE() - INTERVAL 19 DAY,
+    'run', 5.18, 'miles', 5.18,
+    '00:38:42', '00:07:28', 5,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Track Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 20 DAY,
+    'run', 10.07, 'miles', 10.07,
+    '00:00:00', '00:00:00', 6,
+    '4x600m, 3x300m in the heat', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Neighborhood', 'Riverside, CT', CURRENT_DATE() - INTERVAL 21 DAY,
+    'run', 5.02, 'miles', 5.02,
+    '00:37:53', '00:07:32', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Tod''s Point', 'Old Greenwich, CT', CURRENT_DATE() - INTERVAL 22 DAY,
+    'run', 5.76, 'miles', 5.76,
+    '00:41:06', '00:07:08', 8,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Rockies', 'Sleepy Hollow, NY', CURRENT_DATE() - INTERVAL 23 DAY,
+    'run', 15.25, 'miles', 15.25,
+    '01:49:36', '00:07:11', 8,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Bridle Path', 'New York, NY', CURRENT_DATE() - INTERVAL 24 DAY,
+    'run', 5.17, 'miles', 5.17,
+    '00:38:38', '00:07:28', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 25 DAY,
+    'run', 7.2, 'miles', 7.2,
+    '00:00:00', '00:00:00', 9,
+    '4x(400m, 200m) at 67-70 & 29-31.  Feeling strong in recent weeks', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Bike', 'New York, NY', CURRENT_DATE() - INTERVAL 26 DAY,
+    'bike', 1.75, 'miles', 1.75,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CPTC Workout', 'New York, NY', CURRENT_DATE() - INTERVAL 26 DAY,
+    'run', 12.27, 'miles', 12.27,
+    '00:00:00', '00:00:00', 9,
+    '8x800m Workout, felt great.  2:27-2:30 for the reps', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'CP', 'New York, NY', CURRENT_DATE() - INTERVAL 27 DAY,
+    'run', 4.32, 'miles', 4.32,
+    '00:31:42', '00:07:20', 7,
+    NULL, NOW(), 0
+);
+
 DELETE FROM comments;
 
 INSERT INTO comments(

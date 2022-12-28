@@ -14,6 +14,10 @@ RUN apk update \
     && pip install pipenv \
     && apk add --update mysql mysql-client
 
+RUN mkdir logs
+WORKDIR /logs
+RUN touch saints-xctf-api.log
+
 COPY . /src
 WORKDIR /src
 

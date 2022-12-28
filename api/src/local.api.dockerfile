@@ -22,6 +22,8 @@ RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS '
     && mysql --protocol=tcp -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'"
 
 RUN mkdir logs
+WORKDIR /logs
+RUN touch saints-xctf-api.log
 
 COPY . /src
 WORKDIR /src
