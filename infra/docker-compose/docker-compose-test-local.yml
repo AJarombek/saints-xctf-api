@@ -11,6 +11,8 @@ services:
       network: host
     networks:
       - local-saints-xctf-api-net
+    volumes:
+      - ./logs:/logs
 
 networks:
   local-saints-xctf-api-net:

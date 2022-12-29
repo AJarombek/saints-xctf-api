@@ -81,24 +81,6 @@ class GroupDao:
         return result.first()
 
     @staticmethod
-    def get_newest_message_date(group_name: str) -> Column:
-        """
-        Get the date of the newest message in the group
-        :param group_name: The unique name for the group
-        :return: A date of a message
-        """
-        result: ResultProxy = db.session.execute(
-            """
-            SELECT MAX(time) AS newest 
-            FROM messages 
-            WHERE group_name=:group_name
-            AND deleted IS FALSE
-            """,
-            {"group_name": group_name},
-        )
-        return result.first()
-
-    @staticmethod
     def get_group_leaderboard(
         group_id: int, interval: str = None, week_start: WeekStart = "monday"
     ) -> ResultProxy:

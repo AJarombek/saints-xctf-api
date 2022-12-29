@@ -33,7 +33,7 @@ INSERT INTO users (
     'Andy',
     'Jarombek',
     'aaa',
-    'aaa',
+    '$2a$10$5N1gLnRVmm1hZBRTfGx4wO5lnYEMgca6G1GhpOJ9qg1uuNM1ysGUC', -- apitest
     NULL,
     'snow-race-profile-picture.jpg',
     'I sometimes like to run...',
@@ -617,6 +617,62 @@ INSERT INTO logs(
     'CP', 'New York, NY', CURRENT_DATE() - INTERVAL 27 DAY,
     'run', 4.32, 'miles', 4.32,
     '00:31:42', '00:07:20', 7,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Hot Long Run', 'New York, NY', CURRENT_DATE() - INTERVAL 28 DAY,
+    'run', 14.02, 'miles', 14.02,
+    '01:43:10', '00:07:21', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Hot', 'New York, NY', CURRENT_DATE() - INTERVAL 29 DAY,
+    'run', 5.61, 'miles', 5.61,
+    '00:41:48', '00:07:27', 4,
+    'Pushing the long run to tomorrow, that was brutal', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Tracksmith Community Mile', 'New York, NY', CURRENT_DATE() - INTERVAL 30 DAY,
+    'run', 14.65, 'miles', 14.65,
+    '00:00:00', '00:00:00', 7,
+    'Death, taxes, and running 4:40 for the mile. At least tried to make a high mileage day out of it', NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'andy', 'Andy', 'Jarombek',
+    'Pre Race Day', 'New York, NY', CURRENT_DATE() - INTERVAL 31 DAY,
+    'run', 5.26, 'miles', 5.26,
+    '00:37:56', '00:07:12', 7,
     NULL, NOW(), 0
 );
 

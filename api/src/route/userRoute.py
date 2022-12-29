@@ -708,9 +708,7 @@ def user_snapshot_by_username_get(username) -> Response:
             }
             newest_log: Column = GroupDao.get_newest_log_date(group["group_name"])
             group_dict["newest_log"] = newest_log["newest"]
-
-            newest_message = GroupDao.get_newest_message_date(group["group_name"])
-            group_dict["newest_message"] = newest_message["newest"]
+            group_dict["newest_message"] = None
 
             group_list.append(group_dict)
 

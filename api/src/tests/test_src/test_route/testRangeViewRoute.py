@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 12/7/2019
 """
 
+from datetime import datetime, timedelta
+
 from flask import Response
 
 from tests.TestSuite import TestSuite
@@ -77,8 +79,11 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a list of data that matches the user query.
         """
+        end = datetime.now().strftime('%Y-%m-%d')
+        start = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+
         response: Response = self.client.get(
-            "/v2/range_view/users/andy/r/2016-12-01/2016-12-31",
+            f"/v2/range_view/users/andy/r/{start}/{end}",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()

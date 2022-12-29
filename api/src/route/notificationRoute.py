@@ -1,6 +1,6 @@
 """
 Notification routes in the SaintsXCTF API.  Used for retrieving, creating, updating and deleting notifications for
-comments on logs, references, group member requests, and group messages.
+comments on logs, references, and group member requests.
 Author: Andrew Jarombek
 Date: 8/6/2019
 """

@@ -31,19 +31,11 @@ class TestSuite(unittest.TestCase):
         auth_url = config[flask_env].AUTH_URL
         TestSuite.auth_url = auth_url
 
-        secretsmanager = boto3.client("secretsmanager")
-        response = secretsmanager.get_secret_value(
-            SecretId=f"saints-xctf-andy-password"
-        )
-        secret_string = response.get("SecretString")
-        secret_dict = json.loads(secret_string)
-        client_secret = secret_dict.get("password")
-
         async def token():
             async with aiohttp.ClientSession() as session:
                 async with session.post(
                     url=f"{auth_url}/token",
-                    json={"clientId": "andy", "clientSecret": client_secret},
+                    json={"clientId": "andy", "clientSecret": "apitest"},
                 ) as response:
                     response_body = await response.json()
                     result = response_body.get("result")
