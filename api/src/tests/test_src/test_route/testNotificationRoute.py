@@ -396,22 +396,22 @@ class TestNotificationRoute(TestSuite):
         request_body = json.dumps(
             {
                 "username": "andy",
-                "time": "2017-07-01 21:00:21",
-                "link": "https://www.saintsxctf.com/log.php?logno=2017",
+                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "link": "https://www.saintsxctf.com/log.php?logno=1",
                 "viewed": "Y",
-                "description": f"Caroline Driscoll Commented on Your Log:.",
+                "description": f"Dotty J Commented on Your Log",
             }
         )
 
         response: Response = self.client.put(
-            "/v2/notifications/29",
+            "/v2/notifications/1",
             data=request_body,
             content_type="application/json",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get("self"), "/v2/notifications/29")
+        self.assertEqual(response_json.get("self"), "/v2/notifications/1")
         self.assertTrue(response_json.get("updated"))
         self.assertIsNotNone(response_json.get("notification"))
         self.assertIn("viewed", response_json.get("notification"))

@@ -49,6 +49,46 @@ INSERT INTO users (
     0
 );
 
+INSERT INTO users (
+    username,
+    first,
+    last,
+    salt,
+    password,
+    profilepic,
+    profilepic_name,
+    description,
+    member_since,
+    class_year,
+    location,
+    favorite_event,
+    activation_code,
+    email,
+    last_signin,
+    week_start,
+    subscribed,
+    deleted
+) VALUES (
+    'dotty',
+    'Dotty',
+    'J',
+    'aaa',
+    '$2a$10$5N1gLnRVmm1hZBRTfGx4wO5lnYEMgca6G1GhpOJ9qg1uuNM1ysGUC',
+    NULL,
+    NULL,
+    'Napping',
+    '2016-12-23',
+    2017,
+    'New York, NY',
+    'Nap',
+    'aaaaaa',
+    'dotty@horses.com',
+    NOW(),
+    'monday',
+    'Y',
+    0
+);
+
 DELETE FROM admins;
 
 INSERT INTO admins(user) VALUES ('admin');
@@ -59,7 +99,7 @@ DELETE FROM codes;
 INSERT INTO codes(
     activation_code, email, group_id, expiration_date, deleted
 ) VALUES (
-    'abc123', 'andrew@jarombek.com', 1, NOW() + INTERVAL 1 DAY, 0
+    'aaa111', 'andrew@jarombek.com', 1, NOW() + INTERVAL 1 DAY, 0
 );
 
 DELETE FROM flair;
@@ -676,6 +716,20 @@ INSERT INTO logs(
     NULL, NOW(), 0
 );
 
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'Nap', 'New York, NY', CURRENT_DATE() - INTERVAL 31 DAY,
+    'run', 0.1, 'meters', 0,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
 DELETE FROM comments;
 
 INSERT INTO comments(
@@ -684,7 +738,19 @@ INSERT INTO comments(
     'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
 );
 
+INSERT INTO comments(
+    username, first, last, log_id, time, content, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J', 1, NOW() - INTERVAL 12 HOUR, 'Second Comment', 0
+);
+
 DELETE FROM notifications;
+
+INSERT INTO notifications(
+    username, time, link, viewed, description, deleted
+) VALUES (
+    'andy', NOW(), 'https://www.saintsxctf.com/log.php?logno=1', 'N', 'Dotty J Commented on Your Log', 0
+);
 
 DELETE FROM teams;
 

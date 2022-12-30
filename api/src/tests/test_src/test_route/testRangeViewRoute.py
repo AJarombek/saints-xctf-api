@@ -103,8 +103,11 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a list of data that matches the group query.
         """
+        end = datetime.now().strftime('%Y-%m-%d')
+        start = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+
         response: Response = self.client.get(
-            "/v2/range_view/groups/1/r/2017-12-01/2017-12-31",
+            f"/v2/range_view/groups/1/r/{start}/{end}",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()

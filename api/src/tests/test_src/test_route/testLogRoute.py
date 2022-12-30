@@ -288,7 +288,7 @@ class TestLogRoute(TestSuite):
         update a log that belongs to another user results in a 400 error.
         """
         response: Response = self.client.get(
-            "/v2/logs/5", headers={"Authorization": f"Bearer {self.jwt}"}
+            "/v2/logs/36", headers={"Authorization": f"Bearer {self.jwt}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -297,19 +297,19 @@ class TestLogRoute(TestSuite):
         request_body = json.dumps(response_json.get("log"))
 
         response: Response = self.client.put(
-            "/v2/logs/5",
+            "/v2/logs/36",
             data=request_body,
             content_type="application/json",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get("self"), "/v2/logs/5")
+        self.assertEqual(response_json.get("self"), "/v2/logs/36")
         self.assertFalse(response_json.get("updated"))
         self.assertIsNone(response_json.get("log"))
         self.assertEqual(
             response_json.get("error"),
-            "User andy is not authorized to update an exercise log owned by user Joe.",
+            "User andy is not authorized to update an exercise log owned by user dotty.",
         )
 
     def test_log_by_id_put_route_400_no_update(self) -> None:
@@ -545,13 +545,13 @@ class TestLogRoute(TestSuite):
         endpoint should return a 400 failure status if the log belongs to another user.
         """
         response: Response = self.client.delete(
-            "/v2/logs/soft/5", headers={"Authorization": f"Bearer {self.jwt}"}
+            "/v2/logs/soft/36", headers={"Authorization": f"Bearer {self.jwt}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get("deleted"))
         self.assertEqual(
-            "User andy is not authorized to soft delete an exercise log owned by user Joe.",
+            "User andy is not authorized to soft delete an exercise log owned by user dotty.",
             response_json.get("error"),
         )
 
