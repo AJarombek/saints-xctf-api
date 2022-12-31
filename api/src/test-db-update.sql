@@ -89,6 +89,46 @@ INSERT INTO users (
     0
 );
 
+INSERT INTO users (
+    username,
+    first,
+    last,
+    salt,
+    password,
+    profilepic,
+    profilepic_name,
+    description,
+    member_since,
+    class_year,
+    location,
+    favorite_event,
+    activation_code,
+    email,
+    last_signin,
+    week_start,
+    subscribed,
+    deleted
+) VALUES (
+    'grandma',
+    'Mary',
+    'Jarombek',
+    'aaa',
+    '$2a$10$5N1gLnRVmm1hZBRTfGx4wO5lnYEMgca6G1GhpOJ9qg1uuNM1ysGUC',
+    NULL,
+    NULL,
+    'Knitting',
+    '2016-12-23',
+    2017,
+    'Cos Cob, CT',
+    'Knitting',
+    'aaaaaa',
+    'mary@jarombek.com',
+    NOW(),
+    'monday',
+    'Y',
+    0
+);
+
 DELETE FROM admins;
 
 INSERT INTO admins(user) VALUES ('admin');
@@ -209,6 +249,18 @@ INSERT INTO groupmembers(
     group_id, group_name, username, status, user, deleted
 ) VALUES (
     3, 'jarombek', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    7, 'wmensxc', 'grandma', 'accepted', 'user', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    9, 'wmenstf', 'grandma', 'accepted', 'user', 0
 );
 
 DELETE FROM metrics;
@@ -730,18 +782,46 @@ INSERT INTO logs(
     NULL, NOW(), 0
 );
 
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'grandma', 'Mary', 'Jarombek',
+    'Walk', 'Cos Cob, CT', CURRENT_DATE() - INTERVAL 1 DAY,
+    'other', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'grandma', 'Mary', 'Jarombek',
+    'Walk', 'Cos Cob, CT', CURRENT_DATE() - INTERVAL 1 DAY,
+    'run', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 6,
+    NULL, NOW(), 0
+);
+
 DELETE FROM comments;
 
 INSERT INTO comments(
-    username, first, last, log_id, time, content, deleted
+    comment_id, username, first, last, log_id, time, content, deleted
 ) VALUES (
-    'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
+    1, 'andy', 'Andy', 'Jarombek', 1, NOW() - INTERVAL 12 HOUR, 'First Comment', 0
 );
 
 INSERT INTO comments(
-    username, first, last, log_id, time, content, deleted
+    comment_id, username, first, last, log_id, time, content, deleted
 ) VALUES (
-    'dotty', 'Dotty', 'J', 1, NOW() - INTERVAL 12 HOUR, 'Second Comment', 0
+    2, 'dotty', 'Dotty', 'J', 1, NOW() - INTERVAL 12 HOUR, 'Second Comment', 0
 );
 
 DELETE FROM notifications;
@@ -898,4 +978,10 @@ INSERT INTO teammembers (
     team_name, username, status, user, deleted
 ) VALUES (
     'jarombek', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'saintsxctf', 'grandma', 'accepted', 'user', 0
 );

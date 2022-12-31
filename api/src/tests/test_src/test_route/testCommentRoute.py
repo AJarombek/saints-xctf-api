@@ -316,30 +316,30 @@ class TestCommentRoute(TestSuite):
         """
         request_body = json.dumps(
             {
-                "comment_id": 12,
-                "username": "Fish",
-                "first": "Benjamin",
-                "last": "Fishbein",
-                "log_id": 11,
-                "time": "2016-12-26 09:50:49",
+                "comment_id": 2,
+                "username": "dotty",
+                "first": "Dotty",
+                "last": "J",
+                "log_id": 1,
+                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "content": f"Keep up the good work!! (Edited {datetime.now()})",
             }
         )
 
         response: Response = self.client.put(
-            "/v2/comments/12",
+            "/v2/comments/2",
             data=request_body,
             content_type="application/json",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get("self"), "/v2/comments/12")
+        self.assertEqual(response_json.get("self"), "/v2/comments/2")
         self.assertFalse(response_json.get("updated"))
         self.assertIsNone(response_json.get("comment"))
         self.assertEqual(
             response_json.get("error"),
-            "User andy is not authorized to update a comment with id 12.",
+            "User andy is not authorized to update a comment with id 2.",
         )
 
     def test_comment_with_id_put_route_200(self) -> None:
@@ -411,15 +411,15 @@ class TestCommentRoute(TestSuite):
         endpoint should return a 400 error status, no matter if the code existed or not.
         """
         response: Response = self.client.delete(
-            "/v2/comments/12", headers={"Authorization": f"Bearer {self.jwt}"}
+            "/v2/comments/2", headers={"Authorization": f"Bearer {self.jwt}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get("self"), "/v2/comments/12")
+        self.assertEqual(response_json.get("self"), "/v2/comments/2")
         self.assertFalse(response_json.get("deleted"))
         self.assertEqual(
             response_json.get("error"),
-            "User andy is not authorized to delete a comment with id 12.",
+            "User andy is not authorized to delete a comment with id 2.",
         )
 
     def test_comment_with_id_delete_route_204(self) -> None:
@@ -575,15 +575,15 @@ class TestCommentRoute(TestSuite):
         endpoint should return a 400 error status, no matter if the code existed or not.
         """
         response: Response = self.client.delete(
-            "/v2/comments/soft/12", headers={"Authorization": f"Bearer {self.jwt}"}
+            "/v2/comments/soft/2", headers={"Authorization": f"Bearer {self.jwt}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json.get("self"), "/v2/comments/soft/12")
+        self.assertEqual(response_json.get("self"), "/v2/comments/soft/2")
         self.assertFalse(response_json.get("deleted"))
         self.assertEqual(
             response_json.get("error"),
-            "User andy is not authorized to soft delete a comment with id 12.",
+            "User andy is not authorized to soft delete a comment with id 2.",
         )
 
     def test_comment_with_id_soft_delete_route_forbidden(self) -> None:

@@ -74,15 +74,15 @@ class TestLogFeedRoute(TestSuite):
         a list of exercise logs that match the group query.
         """
         response: Response = self.client.get(
-            "/v2/log_feed/group/5/20/80",
+            "/v2/log_feed/group/1/10/10",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_json.get("self"), "/v2/log_feed/group/5/20/80")
-        self.assertEqual(response_json.get("next"), "/v2/log_feed/group/5/20/100")
-        self.assertEqual(response_json.get("prev"), "/v2/log_feed/group/5/20/60")
-        self.assertEqual(len(response_json.get("logs")), 20)
+        self.assertEqual(response_json.get("self"), "/v2/log_feed/group/1/10/10")
+        self.assertEqual(response_json.get("next"), "/v2/log_feed/group/1/10/20")
+        self.assertEqual(response_json.get("prev"), "/v2/log_feed/group/1/10/0")
+        self.assertEqual(len(response_json.get("logs")), 10)
 
     def test_log_feed_get_route_forbidden(self) -> None:
         """

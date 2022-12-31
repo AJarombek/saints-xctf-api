@@ -396,7 +396,7 @@ class TestNotificationRoute(TestSuite):
         request_body = json.dumps(
             {
                 "username": "andy",
-                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "link": "https://www.saintsxctf.com/log.php?logno=1",
                 "viewed": "Y",
                 "description": f"Dotty J Commented on Your Log",

@@ -418,13 +418,13 @@ class TestLogRoute(TestSuite):
         endpoint should return a 400 failure status if the log belongs to another user.
         """
         response: Response = self.client.delete(
-            "/v2/logs/5", headers={"Authorization": f"Bearer {self.jwt}"}
+            "/v2/logs/36", headers={"Authorization": f"Bearer {self.jwt}"}
         )
         response_json: dict = response.get_json()
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response_json.get("deleted"))
         self.assertEqual(
-            "User andy is not authorized to delete an exercise log owned by user Joe.",
+            "User andy is not authorized to delete an exercise log owned by user dotty.",
             response_json.get("error"),
         )
 

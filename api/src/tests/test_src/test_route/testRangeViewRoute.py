@@ -79,8 +79,8 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a list of data that matches the user query.
         """
-        end = datetime.now().strftime('%Y-%m-%d')
-        start = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+        end = datetime.now().strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
 
         response: Response = self.client.get(
             f"/v2/range_view/users/andy/r/{start}/{end}",
@@ -90,7 +90,7 @@ class TestRangeViewRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
 
         range_view = response_json.get("range_view")
-        self.assertEqual(len(range_view), 11)
+        self.assertEqual(len(range_view), 10)
         self.assertIn("date", range_view[0])
         self.assertIsInstance(range_view[0].get("date"), str)
         self.assertIn("feel", range_view[0])
@@ -103,8 +103,8 @@ class TestRangeViewRoute(TestSuite):
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
         returns a list of data that matches the group query.
         """
-        end = datetime.now().strftime('%Y-%m-%d')
-        start = (datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d')
+        end = datetime.now().strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
 
         response: Response = self.client.get(
             f"/v2/range_view/groups/1/r/{start}/{end}",
