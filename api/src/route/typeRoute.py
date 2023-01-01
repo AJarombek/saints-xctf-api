@@ -60,7 +60,7 @@ def types_get() -> Response:
     if all_types is None:
         response = jsonify(
             {
-                "self": "/v2/types",
+                "self": "/v2/types/",
                 "types": None,
                 "error": "an unexpected error occurred retrieving exercise types",
             }
@@ -70,8 +70,8 @@ def types_get() -> Response:
     else:
         response = jsonify(
             {
-                "self": "/v2/types",
-                "types": [type_info.__dict__ for type_info in all_types],
+                "self": "/v2/types/",
+                "types": [type_info.type for type_info in all_types],
             }
         )
         response.status_code = 200

@@ -263,3 +263,14 @@ class TestTeamRoute(TestSuite):
         test_route_auth(
             self, self.client, "GET", "/v2/teams/search/St/5", AuthVariant.UNAUTHORIZED
         )
+
+    def test_team_get_links_route_200(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/teams/links' route.  This test proves that calling
+        this endpoint returns a list of other team endpoints.
+        """
+        response: Response = self.client.get("/v2/teams/links")
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get("self"), "/v2/teams/links")
+        self.assertEqual(len(response_json.get("endpoints")), 5)

@@ -921,19 +921,19 @@ INSERT INTO teamgroups (
 INSERT INTO teamgroups (
     team_name, group_id, group_name, deleted
 ) VALUES (
-    'saintsxctf', 7, 'wmenstf', 0
+    'saintsxctf', 9, 'wmenstf', 0
 );
 
 INSERT INTO teamgroups (
     team_name, group_id, group_name, deleted
 ) VALUES (
-    'saintsxctf', 8, 'wmensxc', 0
+    'saintsxctf', 7, 'wmensxc', 0
 );
 
 INSERT INTO teamgroups (
     team_name, group_id, group_name, deleted
 ) VALUES (
-    'saintsxctf_alumni', 9, 'xc_alumni', 0
+    'saintsxctf_alumni', 8, 'xc_alumni', 0
 );
 
 INSERT INTO teamgroups (

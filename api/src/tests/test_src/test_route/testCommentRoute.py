@@ -321,7 +321,7 @@ class TestCommentRoute(TestSuite):
                 "first": "Dotty",
                 "last": "J",
                 "log_id": 1,
-                "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "content": f"Keep up the good work!! (Edited {datetime.now()})",
             }
         )
