@@ -17,6 +17,12 @@ class LocalTestConfig:
     FUNCTION_URL = "http://saints-xctf-fn:5000"
 
 
+class CICDTestConfig:
+    ENV = "cicdtest"
+    AUTH_URL = "http://auth"
+    FUNCTION_URL = "http://functions"
+
+
 class TestConfig:
     ENV = "test"
     AUTH_URL = "http://localhost:5000"
@@ -38,6 +44,7 @@ class ProductionConfig:
 config = {
     "local": LocalConfig,
     "localtest": LocalTestConfig,
+    "cicdtest": CICDTestConfig,
     "test": TestConfig,
     "development": DevelopmentConfig,
     "production": ProductionConfig,

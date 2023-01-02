@@ -95,6 +95,8 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``local.test.dockerfile``   | Dockerfile for running unit tests for the API while connected to the local database.         |
 +-----------------------------+----------------------------------------------------------------------------------------------+
+| ``cicd.test.dockerfile``    | Dockerfile for running unit tests for the API while in a CI/CD environment.                  |
++-----------------------------+----------------------------------------------------------------------------------------------+
 | ``nginx.conf``              | Nginx configuration file to server the Flask application in production.                      |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``uwsgi.ini``               | uwsgi configuration for the Flask application.                                               |

@@ -21,8 +21,13 @@ RUN touch saints-xctf-api.log
 COPY . /src
 WORKDIR /src
 
-RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-init.sql
-RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-update.sql
+RUN mysql --protocol=tcp -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'%'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'%' IDENTIFIED BY 'saintsxctf'" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "CREATE DATABASE IF NOT EXISTS saintsxctf" \
+    && mysql --protocol=tcp -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'"
+
+RUN mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-init.sql \
+    && mysql --protocol=tcp -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-update.sql
 
 RUN pipenv install
 

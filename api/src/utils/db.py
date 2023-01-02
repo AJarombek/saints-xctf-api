@@ -19,7 +19,7 @@ def get_connection_url() -> str:
         env = "prod"
 
     # Local development credentials aren't stored in a Secret
-    if env == "local" or env == "localtest":
+    if env in {"local", "localtest", "cicdtest"}:
         return "mysql+pymysql://saintsxctflocal:saintsxctf@db/saintsxctf"
     elif env == "test":
         return "mysql+pymysql://test:test@localhost/saintsxctf"
