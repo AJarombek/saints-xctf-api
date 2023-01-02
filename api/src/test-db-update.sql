@@ -271,10 +271,42 @@ INSERT INTO metrics(metric) VALUES ('meters');
 
 DELETE FROM types;
 
+-- Basic Exercises
 INSERT INTO types (type) VALUES ('run');
 INSERT INTO types (type) VALUES ('bike');
 INSERT INTO types (type) VALUES ('swim');
 INSERT INTO types (type) VALUES ('other');
+
+-- Strength Exercises
+INSERT INTO types (type) VALUES ('core');
+INSERT INTO types (type) VALUES ('strength');
+INSERT INTO types (type) VALUES ('weights');
+INSERT INTO types (type) VALUES ('yoga');
+
+-- Walking Exercises
+INSERT INTO types (type) VALUES ('walk');
+INSERT INTO types (type) VALUES ('hike');
+
+-- Virtual Exercises
+INSERT INTO types (type) VALUES ('virtual bike');
+
+-- Summer Exercises
+INSERT INTO types (type) VALUES ('kayak');
+INSERT INTO types (type) VALUES ('canoe');
+INSERT INTO types (type) VALUES ('row');
+INSERT INTO types (type) VALUES ('stand up paddle');
+
+-- Winter Exercises
+INSERT INTO types (type) VALUES ('alpine ski');
+INSERT INTO types (type) VALUES ('backcountry ski');
+INSERT INTO types (type) VALUES ('nordic ski');
+INSERT INTO types (type) VALUES ('snowboard');
+INSERT INTO types (type) VALUES ('snowshoe');
+INSERT INTO types (type) VALUES ('ice skate');
+
+-- Cross Train Exercises
+INSERT INTO types (type) VALUES ('roller ski');
+INSERT INTO types (type) VALUES ('inline skate');
 
 DELETE FROM logs;
 

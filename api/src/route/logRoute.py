@@ -158,7 +158,7 @@ def logs_post() -> Response:
     Create a new exercise log.
     :return: A response object for the POST API request.
     """
-    log_data: dict = request.get_json()
+    log_data: dict = request.get_json(silent=True)
 
     if log_data is None:
         response = jsonify(

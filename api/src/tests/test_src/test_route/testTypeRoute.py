@@ -30,7 +30,7 @@ class TestTypeRoute(TestSuite):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_json.get("self"), "/v2/types/")
         self.assertIsNotNone(response_json.get("types"))
-        self.assertEqual(len(response_json.get("types")), 4)
+        self.assertEqual(len(response_json.get("types")), 23)
         self.assertIsInstance(response_json.get("types")[0], str)
 
     def test_types_get_links_route_200(self) -> None:

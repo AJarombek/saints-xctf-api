@@ -1,0 +1,9 @@
+Links to all the endpoints in the API associated with exercise types.
+---
+produces:
+  - application/json
+tags:
+  - Type
+responses:
+  200:
+    description: Links to all exercise type API endpoints.

@@ -135,7 +135,7 @@ def comment_post():
     Create a new comment.
     :return: A response object for the POST API request.
     """
-    comment_data: dict = request.get_json()
+    comment_data: dict = request.get_json(silent=True)
 
     if comment_data is None:
         response = jsonify(

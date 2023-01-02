@@ -60,7 +60,7 @@ def flair_post():
     Endpoint for creating flair used on a users profile.
     :return: JSON with the resulting Flair object and relevant metadata.
     """
-    flair_data: dict = request.get_json()
+    flair_data: dict = request.get_json(silent=True)
 
     if flair_data is None:
         response = jsonify(

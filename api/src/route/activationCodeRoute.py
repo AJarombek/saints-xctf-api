@@ -112,7 +112,7 @@ def activation_code_post() -> Response:
     Create a new activation code.
     :return: A response object for the POST API request
     """
-    code_data: dict = request.get_json()
+    code_data: dict = request.get_json(silent=True)
 
     if code_data is None:
         response = jsonify(

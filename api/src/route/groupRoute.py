@@ -336,7 +336,7 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
 
     old_group_dict = dict(old_group_row)
     old_group = Group(old_group_dict)
-    group_data: dict = request.get_json()
+    group_data: dict = request.get_json(silent=True)
     new_group = Group(group_data)
 
     if old_group != new_group:
@@ -467,7 +467,7 @@ def group_by_id_put(group_id: str) -> Response:
         response.status_code = 400
         return response
 
-    group_data: dict = request.get_json()
+    group_data: dict = request.get_json(silent=True)
     new_group = Group(group_data)
 
     if new_group != old_group:

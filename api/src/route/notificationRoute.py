@@ -141,7 +141,7 @@ def notification_post() -> Response:
     Create a new notification for a user.
     :return: A response object for the POST API request.
     """
-    notification_data: dict = request.get_json()
+    notification_data: dict = request.get_json(silent=True)
 
     if notification_data is None:
         response = jsonify(

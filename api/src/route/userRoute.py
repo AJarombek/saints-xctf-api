@@ -310,7 +310,7 @@ def user_post() -> Response:
     Create a new user.
     :return: A response object for the POST API request.
     """
-    user_data: dict = request.get_json()
+    user_data: dict = request.get_json(silent=True)
 
     def create_validation_error_response(message: str):
         """

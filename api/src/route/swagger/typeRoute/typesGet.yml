@@ -1,0 +1,13 @@
+Route to retrieve all exercise types in the database.
+---
+produces:
+  - application/json
+tags:
+  - Type
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Successfully retrieved exercise types.
+  500:
+    description: Failed to retrieve exercise types.

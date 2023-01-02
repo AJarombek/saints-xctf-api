@@ -74,8 +74,27 @@ def create_app(config_name) -> Flask:
     application.cli.add_command(test)
 
     # Custom Error Handling
+    @application.errorhandler(400)
+    def error_400(ex):
+        """
+        Custom error handler for when 400 HTTP codes occur.
+        :param ex: String representing the error that occurred.
+        :return: JSON describing the error.
+        """
+        return (
+            jsonify(
+                {
+                    "error_description": "Bad Request",
+                    "exception": str(ex),
+                    "contact": "andrew@jarombek.com",
+                    "api_index": "/versions",
+                }
+            ),
+            400,
+        )
+
     @application.errorhandler(401)
-    def error_403(ex):
+    def error_401(ex):
         """
         Custom error handler for when 401 HTTP codes occur.
         :param ex: String representing the error that occurred.
