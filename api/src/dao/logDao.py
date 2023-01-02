@@ -4,13 +4,16 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
+from typing import Optional
+
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy.schema import Column
+from sqlalchemy.engine.row import Row
 
 import utils.dates as dates
 from dao.basicDao import BasicDao
 from database import db
 from model.Log import Log
+from utils.literals import WeekStart
 from utils.exerciseFilters import generate_exercise_filter_sql_query
 
 
@@ -33,7 +36,7 @@ class LogDao:
         return Log.query.filter_by(log_id=log_id).filter(Log.deleted.is_(False)).first()
 
     @staticmethod
-    def get_user_miles(username: str) -> Column:
+    def get_user_miles(username: str) -> Optional[Row]:
         """
         Get the total exercise miles for a user
         :param username: Unique identifier for a user
@@ -51,7 +54,7 @@ class LogDao:
         return result.first()
 
     @staticmethod
-    def get_user_miles_by_type(username: str, exercise_type: str) -> Column:
+    def get_user_miles_by_type(username: str, exercise_type: str) -> Optional[Row]:
         """
         Get the total miles of a certain exercise for a user
         :param username: Unique identifier for a user
@@ -72,8 +75,8 @@ class LogDao:
 
     @staticmethod
     def get_user_miles_interval(
-        username: str, interval: str = None, week_start: str = "monday"
-    ) -> Column:
+        username: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by a user in a certain time interval.  The options include
         the past year, month, or week.
@@ -114,8 +117,8 @@ class LogDao:
         username: str,
         exercise_type: str,
         interval: str = None,
-        week_start: str = "monday",
-    ) -> Column:
+        week_start: WeekStart = "monday",
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by a user in a certain time interval and specific exercise type.
         The interval options include the past year, month, and week.
@@ -156,7 +159,7 @@ class LogDao:
         return result.first()
 
     @staticmethod
-    def get_user_avg_feel(username: str) -> Column:
+    def get_user_avg_feel(username: str) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a user
         :param username: Unique identifier for a user
@@ -175,8 +178,8 @@ class LogDao:
 
     @staticmethod
     def get_user_avg_feel_interval(
-        username: str, interval: str = None, week_start: str = "monday"
-    ) -> Column:
+        username: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a user during a certain interval in time
         :param username: Unique identifier for a user
@@ -212,7 +215,7 @@ class LogDao:
         return result.first()
 
     @staticmethod
-    def get_group_miles(group_name: str) -> Column:
+    def get_group_miles(group_name: str) -> Optional[Row]:
         """
         Get the total exercise miles for all the users in a group.
         :param group_name: Unique name for a group.
@@ -234,8 +237,8 @@ class LogDao:
 
     @staticmethod
     def get_group_miles_interval(
-        group_name: str, interval: str = None, week_start: str = "monday"
-    ) -> Column:
+        group_name: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by all the group members in a certain time interval.  The time interval
         options include the past year, month, or week.
@@ -282,8 +285,8 @@ class LogDao:
         group_name: str,
         exercise_type: str,
         interval: str = None,
-        week_start: str = "monday",
-    ) -> Column:
+        week_start: WeekStart = "monday",
+    ) -> Optional[Row]:
         """
         Get the total number of miles exercised by all the group members in a certain time interval and of a specific
         exercise type.  The interval options include the past year, month, and week.
@@ -334,7 +337,7 @@ class LogDao:
             return result.first()
 
     @staticmethod
-    def get_group_avg_feel(group_name: str) -> Column:
+    def get_group_avg_feel(group_name: str) -> Optional[Row]:
         """
         Retrieve the average feel statistic for a group.
         :param group_name: A name which uniquely identifies a group.
@@ -356,8 +359,8 @@ class LogDao:
 
     @staticmethod
     def get_group_avg_feel_interval(
-        group_name: str, interval: str = None, week_start: str = "monday"
-    ) -> Column:
+        group_name: str, interval: str = None, week_start: WeekStart = "monday"
+    ) -> Optional[Row]:
         """
         Retrieve the average feel statistic for all group members during a certain interval in time.
         :param group_name: A name which uniquely identifies a group.

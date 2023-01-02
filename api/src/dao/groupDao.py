@@ -8,8 +8,7 @@ Date: 7/2/2019
 from typing import Optional
 
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy.engine.row import RowProxy
-from sqlalchemy.schema import Column
+from sqlalchemy.engine.row import RowProxy, Row
 
 from database import db
 from dao.basicDao import BasicDao
@@ -61,7 +60,7 @@ class GroupDao:
         return result.first()
 
     @staticmethod
-    def get_newest_log_date(group_name: str) -> Column:
+    def get_newest_log_date(group_name: str) -> Optional[Row]:
         """
         Get the date of the newest exercise log in the group
         :param group_name: The unique name for the group
@@ -105,7 +104,7 @@ class GroupDao:
                     COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
                     COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
                     COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
-                    COALESCE(SUM(CASE WHEN type = 'other' THEN miles END), 0) AS miles_other 
+                    COALESCE(SUM(CASE WHEN type NOT IN ('run', 'bike', 'swim') THEN miles END), 0) AS miles_other 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
                 WHERE group_id = :group_id 
@@ -128,7 +127,7 @@ class GroupDao:
                     COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
                     COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
                     COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
-                    COALESCE(SUM(CASE WHEN type = 'other' THEN miles END), 0) AS miles_other 
+                    COALESCE(SUM(CASE WHEN type NOT IN ('run', 'bike', 'swim') THEN miles END), 0) AS miles_other 
                 FROM logs 
                 INNER JOIN groupmembers ON logs.username = groupmembers.username 
                 WHERE group_id = :group_id 

@@ -230,7 +230,7 @@ INSERT INTO groupmembers(
 INSERT INTO groupmembers(
     group_id, group_name, username, status, user, deleted
 ) VALUES (
-    9, 'xc_alumni', 'andy', 'accepted', 'admin', 0
+    8, 'xc_alumni', 'andy', 'accepted', 'admin', 0
 );
 
 INSERT INTO groupmembers(

@@ -1,0 +1,41 @@
+# GitHub Action for performing Integration Tests on the API
+# Author: Andrew Jarombek
+# Date: 10/8/2022
+
+name: Integration Test
+
+on:
+#  push:
+#    branches: ["main", "feature/*"]
+#  pull_request:
+#    branches: ["main"]
+#
+#  schedule:
+#    - cron: "0 5 * * 1,5"
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ajarombek/saints-xctf-api-cicd
+    services:
+      mysql:
+        image: mysql:5.7.36
+      auth:
+        image: ajarombek/mock-saints-xctf-auth
+      functions:
+        image: ajarombek/mock-saints-xctf-functions
+    steps:
+      - run: echo "Job running on a ${{ runner.os }} server"
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Install libraries
+        working-directory: ./api/src
+        run: pipenv install
+
+      - name: Run tests
+        working-directory: ./api/src
+        run: pipenv run flask test
