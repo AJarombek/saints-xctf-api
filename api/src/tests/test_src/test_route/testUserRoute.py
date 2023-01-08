@@ -900,6 +900,39 @@ class TestUserRoute(TestSuite):
             or type(statistics.get("feel_past_week")) is float
         )
 
+    def test_user_snapshot_by_username_get_route_values_match_expected(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/users/snapshot/<username>' route.  This test proves that
+        values in a snapshot match what are expected.
+        """
+        response: Response = self.client.get(
+            "/v2/users/snapshot/dotty", headers={"Authorization": f"Bearer {self.jwt}"}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        user = response_json.get("user")
+        self.assertIsNotNone(user)
+
+        statistics = user.get("statistics")
+        self.assertIn("miles_all_time", statistics)
+        self.assertEqual(18, statistics.get("miles_all_time"))
+
+        self.assertIn("miles_past_week", statistics)
+        self.assertEqual(0, statistics.get("miles_past_week"))
+
+        self.assertIn("run_miles_all_time", statistics)
+        self.assertEqual(1, statistics.get("run_miles_all_time"))
+
+        self.assertIn("run_miles_past_week", statistics)
+        self.assertEqual(0, statistics.get("run_miles_past_week"))
+
+        self.assertIn("feel_all_time", statistics)
+        self.assertEqual(9, statistics.get("feel_all_time"))
+
+        self.assertIn("feel_past_week", statistics)
+        self.assertEqual(0, statistics.get("feel_past_week"))
+
     def test_user_snapshot_by_username_get_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP GET request on the '/v2/users/snapshot/<username>' route.

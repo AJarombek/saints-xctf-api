@@ -263,6 +263,18 @@ INSERT INTO groupmembers(
     9, 'wmenstf', 'grandma', 'accepted', 'user', 0
 );
 
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    3, 'jarombek', 'dotty', 'accepted', 'user', 0
+);
+
+INSERT INTO groupmembers(
+    group_id, group_name, username, status, user, deleted
+) VALUES (
+    7, 'wmensxc', 'dotty', 'accepted', 'user', 0
+);
+
 DELETE FROM metrics;
 
 INSERT INTO metrics(metric) VALUES ('miles');
@@ -808,8 +820,302 @@ INSERT INTO logs(
     description, time_created, deleted
 ) VALUES (
     'dotty', 'Dotty', 'J',
-    'Nap', 'New York, NY', CURRENT_DATE() - INTERVAL 31 DAY,
-    'run', 0.1, 'meters', 0,
+    'Nap', 'New York, NY', CURRENT_DATE() - INTERVAL 10 DAY,
+    'run', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'biking', 'New York, NY', CURRENT_DATE() - INTERVAL 11 DAY,
+    'bike', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'swimming', 'New York, NY', CURRENT_DATE() - INTERVAL 12 DAY,
+    'swim', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'sleep walking', 'New York, NY', CURRENT_DATE() - INTERVAL 13 DAY,
+    'other', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'exercising', 'New York, NY', CURRENT_DATE() - INTERVAL 14 DAY,
+    'core', 0, 'miles', 0,
+    '00:20:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'exercising', 'New York, NY', CURRENT_DATE() - INTERVAL 14 DAY,
+    'strength', 0, 'miles', 0,
+    '00:20:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'lifting', 'New York, NY', CURRENT_DATE() - INTERVAL 14 DAY,
+    'weights', 0, 'miles', 0,
+    '00:20:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'exercising', 'New York, NY', CURRENT_DATE() - INTERVAL 14 DAY,
+    'yoga', 0, 'miles', 0,
+    '00:20:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'hiking', 'New York, NY', CURRENT_DATE() - INTERVAL 15 DAY,
+    'hike', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'biking', 'New York, NY', CURRENT_DATE() - INTERVAL 16 DAY,
+    'virtual bike', 1, 'miles', 1,
+    '00:20:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'kayaking', 'New York, NY', CURRENT_DATE() - INTERVAL 17 DAY,
+    'kayak', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'canoeing', 'New York, NY', CURRENT_DATE() - INTERVAL 17 DAY,
+    'canoe', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'rowing', 'New York, NY', CURRENT_DATE() - INTERVAL 17 DAY,
+    'row', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'paddling', 'New York, NY', CURRENT_DATE() - INTERVAL 17 DAY,
+    'stand up paddle', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skiing', 'New York, NY', CURRENT_DATE() - INTERVAL 18 DAY,
+    'alpine ski', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skiing', 'New York, NY', CURRENT_DATE() - INTERVAL 18 DAY,
+    'backcountry ski', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skiing', 'New York, NY', CURRENT_DATE() - INTERVAL 18 DAY,
+    'nordic ski', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'snowboarding', 'New York, NY', CURRENT_DATE() - INTERVAL 19 DAY,
+    'snowboard', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'snowshoeing', 'New York, NY', CURRENT_DATE() - INTERVAL 20 DAY,
+    'snowshoe', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skating', 'New York, NY', CURRENT_DATE() - INTERVAL 21 DAY,
+    'ice skate', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skating', 'New York, NY', CURRENT_DATE() - INTERVAL 22 DAY,
+    'roller ski', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'skating', 'New York, NY', CURRENT_DATE() - INTERVAL 23 DAY,
+    'inline skate', 1, 'miles', 1,
     '00:00:00', '00:00:00', 9,
     NULL, NOW(), 0
 );
@@ -1010,6 +1316,12 @@ INSERT INTO teammembers (
     team_name, username, status, user, deleted
 ) VALUES (
     'jarombek', 'andy', 'accepted', 'admin', 0
+);
+
+INSERT INTO teammembers (
+    team_name, username, status, user, deleted
+) VALUES (
+    'jarombek', 'dotty', 'accepted', 'user', 0
 );
 
 INSERT INTO teammembers (
