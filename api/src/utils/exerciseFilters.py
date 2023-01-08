@@ -4,6 +4,8 @@ Author: Andrew Jarombek
 Date: 8/5/2019
 """
 
+from typing import List
+
 
 def create_exercise_filter_list(exercise_types: str) -> list:
     """
@@ -11,25 +13,41 @@ def create_exercise_filter_list(exercise_types: str) -> list:
     :param exercise_types: String of characters which are initials for exercise types.
     :return: A list of strings representing exercise types.
     """
-    return [char_to_exercise(exercise_type) for exercise_type in exercise_types]
+    filter_values = {
+        "r": ["run"],
+        "b": ["bike"],
+        "s": ["swim"],
+        "o": [
+            "other",
+            "core",
+            "strength",
+            "weights",
+            "yoga",
+            "walk",
+            "hike",
+            "virtual bike",
+            "kayak",
+            "canoe",
+            "row",
+            "stand up paddle",
+            "alpine ski",
+            "backcountry ski",
+            "nordic ski",
+            "snowboard",
+            "snowshoe",
+            "ice skate",
+            "roller ski",
+            "inline skate",
+        ],
+    }
 
-
-def char_to_exercise(exercise_type: str) -> str:
-    """
-    Convert a character to its corresponding exercise type.
-    :param exercise_type: A character representing an exercise type.
-    :return: A string representing an exercise type.
-    """
-    if exercise_type == "r":
-        return "run"
-    elif exercise_type == "b":
-        return "bike"
-    elif exercise_type == "s":
-        return "swim"
-    elif exercise_type == "o":
-        return "other"
-    else:
-        return "other"
+    return [
+        e
+        for exercise in [
+            filter_values.get(exercise_type, []) for exercise_type in exercise_types
+        ]
+        for e in exercise
+    ]
 
 
 def generate_exercise_filter_sql_query(filters: list) -> str:
