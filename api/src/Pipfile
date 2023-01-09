@@ -10,6 +10,7 @@ verify_ssl = true
 
 [dev-packages]
 black = ">=22.10.0"
+pylint = ">=2.15.9"
 
 [packages]
 flask = ">=2.2.2"

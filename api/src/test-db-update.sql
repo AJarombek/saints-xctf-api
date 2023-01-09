@@ -948,7 +948,7 @@ INSERT INTO logs(
     'dotty', 'Dotty', 'J',
     'biking', 'New York, NY', CURRENT_DATE() - INTERVAL 16 DAY,
     'virtual bike', 1, 'miles', 1,
-    '00:20:00', '00:00:00', 9,
+    '00:00:00', '00:00:00', 9,
     NULL, NOW(), 0
 );
 

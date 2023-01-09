@@ -98,6 +98,72 @@ class TestRangeViewRoute(TestSuite):
         self.assertIn("miles", range_view[0])
         self.assertIsInstance(range_view[0].get("miles"), float)
 
+    def test_range_view_get_route_200_user_values_match_expected(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
+        returns a list of data with expected values that matches the user query.
+        """
+        end = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=17)).strftime("%Y-%m-%d")
+
+        response: Response = self.client.get(
+            f"/v2/range_view/users/dotty/ro/{start}/{end}",
+            headers={"Authorization": f"Bearer {self.jwt}"},
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        range_view = response_json.get("range_view")
+        self.assertEqual(len(range_view), 6)
+
+        self.assertTrue(
+            range_view[0]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=17)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[0].get("feel"))
+        self.assertEqual(4, range_view[0].get("miles"))
+
+        self.assertTrue(
+            range_view[1]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=16)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[1].get("feel"))
+        self.assertEqual(1, range_view[1].get("miles"))
+
+        self.assertTrue(
+            range_view[2]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=15)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[2].get("feel"))
+        self.assertEqual(1, range_view[2].get("miles"))
+
+        self.assertTrue(
+            range_view[3]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=14)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[3].get("feel"))
+        self.assertEqual(0, range_view[3].get("miles"))
+
+        self.assertTrue(
+            range_view[4]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=13)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[4].get("feel"))
+        self.assertEqual(1, range_view[4].get("miles"))
+
+        self.assertTrue(
+            range_view[5]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=10)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[5].get("feel"))
+        self.assertEqual(1, range_view[5].get("miles"))
+
     def test_range_view_get_route_200_group(self) -> None:
         """
         Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
@@ -121,6 +187,72 @@ class TestRangeViewRoute(TestSuite):
         self.assertIsInstance(range_view[0].get("feel"), int)
         self.assertIn("miles", range_view[0])
         self.assertIsInstance(range_view[0].get("miles"), float)
+
+    def test_range_view_get_route_200_group_values_match_expected(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/range_view/' route.  This test proves that the endpoint
+        returns a list of data with expected values that matches the group query.
+        """
+        end = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=17)).strftime("%Y-%m-%d")
+
+        response: Response = self.client.get(
+            f"/v2/range_view/groups/7/bo/{start}/{end}",
+            headers={"Authorization": f"Bearer {self.jwt}"},
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        range_view = response_json.get("range_view")
+        self.assertEqual(len(range_view), 6)
+
+        self.assertTrue(
+            range_view[0]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=17)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[0].get("feel"))
+        self.assertEqual(4, range_view[0].get("miles"))
+
+        self.assertTrue(
+            range_view[1]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=16)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[1].get("feel"))
+        self.assertEqual(1, range_view[1].get("miles"))
+
+        self.assertTrue(
+            range_view[2]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=15)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[2].get("feel"))
+        self.assertEqual(1, range_view[2].get("miles"))
+
+        self.assertTrue(
+            range_view[3]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=14)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[3].get("feel"))
+        self.assertEqual(0, range_view[3].get("miles"))
+
+        self.assertTrue(
+            range_view[4]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=13)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[4].get("feel"))
+        self.assertEqual(1, range_view[4].get("miles"))
+
+        self.assertTrue(
+            range_view[5]
+            .get("date")
+            .startswith((datetime.now() - timedelta(days=11)).strftime("%a, %d %b %Y"))
+        )
+        self.assertEqual(9, range_view[5].get("feel"))
+        self.assertEqual(1, range_view[5].get("miles"))
 
     def test_range_view_get_route_forbidden(self) -> None:
         """
