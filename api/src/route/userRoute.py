@@ -7,10 +7,10 @@ Date: 6/16/2019
 
 import re
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from flask import Blueprint, request, jsonify, current_app, Response, redirect, url_for
-from sqlalchemy.schema import Column
+from sqlalchemy.engine.row import Row
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
 from flaskBcrypt import flask_bcrypt
@@ -706,7 +706,9 @@ def user_snapshot_by_username_get(username) -> Response:
                 "status": group["status"],
                 "user": group["user"],
             }
-            newest_log: Column = GroupDao.get_newest_log_date(group["group_name"])
+            newest_log: Optional[Row] = GroupDao.get_newest_log_date(
+                group["group_name"]
+            )
             group_dict["newest_log"] = newest_log["newest"]
             group_dict["newest_message"] = None
 
@@ -1273,26 +1275,26 @@ def compile_user_statistics(user: UserData, username: str) -> dict:
     :param user: A user object containing information such as their preferred week start date.
     :param username: The username of the user to get statistics for.
     """
-    miles: Column = LogDao.get_user_miles(username)
-    miles_past_year: Column = LogDao.get_user_miles_interval(username, "year")
-    miles_past_month: Column = LogDao.get_user_miles_interval(username, "month")
-    miles_past_week: Column = LogDao.get_user_miles_interval(
+    miles: Optional[Row] = LogDao.get_user_miles(username)
+    miles_past_year: Optional[Row] = LogDao.get_user_miles_interval(username, "year")
+    miles_past_month: Optional[Row] = LogDao.get_user_miles_interval(username, "month")
+    miles_past_week: Optional[Row] = LogDao.get_user_miles_interval(
         username, "week", week_start=user.week_start
     )
-    run_miles: Column = LogDao.get_user_miles_interval_by_type(username, "run")
-    run_miles_past_year: Column = LogDao.get_user_miles_interval_by_type(
+    run_miles: Optional[Row] = LogDao.get_user_miles_interval_by_type(username, "run")
+    run_miles_past_year: Optional[Row] = LogDao.get_user_miles_interval_by_type(
         username, "run", "year"
     )
-    run_miles_past_month: Column = LogDao.get_user_miles_interval_by_type(
+    run_miles_past_month: Optional[Row] = LogDao.get_user_miles_interval_by_type(
         username, "run", "month"
     )
-    run_miles_past_week: Column = LogDao.get_user_miles_interval_by_type(
+    run_miles_past_week: Optional[Row] = LogDao.get_user_miles_interval_by_type(
         username, "run", "week"
     )
-    all_time_feel: Column = LogDao.get_user_avg_feel(username)
-    year_feel: Column = LogDao.get_user_avg_feel_interval(username, "year")
-    month_feel: Column = LogDao.get_user_avg_feel_interval(username, "month")
-    week_feel: Column = LogDao.get_user_avg_feel_interval(
+    all_time_feel: Optional[Row] = LogDao.get_user_avg_feel(username)
+    year_feel: Optional[Row] = LogDao.get_user_avg_feel_interval(username, "year")
+    month_feel: Optional[Row] = LogDao.get_user_avg_feel_interval(username, "month")
+    week_feel: Optional[Row] = LogDao.get_user_avg_feel_interval(
         username, "week", week_start=user.week_start
     )
 

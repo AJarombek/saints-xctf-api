@@ -820,6 +820,76 @@ INSERT INTO logs(
     description, time_created, deleted
 ) VALUES (
     'dotty', 'Dotty', 'J',
+    'today''s activity', 'New York, NY', CURRENT_DATE(),
+    'run', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'today''s activity', 'New York, NY', CURRENT_DATE(),
+    'bike', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'today''s activity', 'New York, NY', CURRENT_DATE(),
+    'swim', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'today''s activity', 'New York, NY', CURRENT_DATE(),
+    'other', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
+    'today''s activity', 'New York, NY', CURRENT_DATE(),
+    'walk', 1, 'miles', 1,
+    '00:00:00', '00:00:00', 9,
+    NULL, NOW(), 0
+);
+
+INSERT INTO logs(
+    username, first, last,
+    name, location, date,
+    type, distance, metric, miles,
+    time, pace, feel,
+    description, time_created, deleted
+) VALUES (
+    'dotty', 'Dotty', 'J',
     'Nap', 'New York, NY', CURRENT_DATE() - INTERVAL 10 DAY,
     'run', 1, 'miles', 1,
     '00:00:00', '00:00:00', 9,

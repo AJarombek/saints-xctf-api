@@ -976,6 +976,31 @@ class TestGroupRoute(TestSuite):
         self.assertIn("miles_other", leaderboard_item)
         self.assertTrue(type(leaderboard_item.get("miles_other")) is float)
 
+    def test_group_leaderboard_get_route_expected_values(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard' route.  This test
+        proves that leaderboard information from a valid group has proper values.
+        """
+        response: Response = self.client.get(
+            "/v2/groups/leaderboard/7",
+            headers={"Authorization": f"Bearer {self.jwt}"},
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        leaderboard_items = response_json.get("leaderboard")
+        self.assertGreater(len(leaderboard_items), 0)
+
+        leaderboard_item = leaderboard_items[0]
+        self.assertEqual("dotty", leaderboard_item.get("username"))
+        self.assertEqual("Dotty", leaderboard_item.get("first"))
+        self.assertEqual("J", leaderboard_item.get("last"))
+        self.assertEqual(23, leaderboard_item.get("miles"))
+        self.assertEqual(2, leaderboard_item.get("miles_run"))
+        self.assertEqual(2, leaderboard_item.get("miles_biked"))
+        self.assertEqual(2, leaderboard_item.get("miles_swam"))
+        self.assertEqual(17, leaderboard_item.get("miles_other"))
+
     def test_group_leaderboard_get_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP GET request on the '/v2/groups/leaderboard/<group_id>' route.
@@ -1052,6 +1077,31 @@ class TestGroupRoute(TestSuite):
                 "No leaderboard data was found within this group and time interval.",
                 response_json.get("warning"),
             )
+
+    def test_group_leaderboard_with_interval_get_route_expected_values(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/leaderboard/<group_id>/<interval>' route.  This test
+        proves that leaderboard information in an interval from a valid group has proper values.
+        """
+        response: Response = self.client.get(
+            "/v2/groups/leaderboard/7/week",
+            headers={"Authorization": f"Bearer {self.jwt}"},
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        leaderboard_items = response_json.get("leaderboard")
+        self.assertGreater(len(leaderboard_items), 0)
+
+        leaderboard_item = leaderboard_items[0]
+        self.assertEqual("dotty", leaderboard_item.get("username"))
+        self.assertEqual("Dotty", leaderboard_item.get("first"))
+        self.assertEqual("J", leaderboard_item.get("last"))
+        self.assertEqual(5, leaderboard_item.get("miles"))
+        self.assertEqual(1, leaderboard_item.get("miles_run"))
+        self.assertEqual(1, leaderboard_item.get("miles_biked"))
+        self.assertEqual(1, leaderboard_item.get("miles_swam"))
+        self.assertEqual(2, leaderboard_item.get("miles_other"))
 
     def test_group_leaderboard_with_interval_get_route_forbidden(self) -> None:
         """

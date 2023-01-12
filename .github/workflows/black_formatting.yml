@@ -1,8 +1,8 @@
-# GitHub Action for performing Black Formatting
+# GitHub Action for performing Black Formatting and Pylint Linting
 # Author: Andrew Jarombek
 # Date: 10/8/2022
 
-name: Black Formatting
+name: Black Formatting & Pylint Linting
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  black_formatting:
+  linting_formatting:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Job running on a ${{ runner.os }} server"
@@ -29,3 +29,16 @@ jobs:
         with:
           options: "--check"
           src: "./api/src"
+
+      - name: Install Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install Pylint
+        run: |
+          pip install --upgrade pip
+          pip install pylint==2.15.9
+
+      - name: Analysing the Code with Pylint
+        run: pylint $(git ls-files '*.py')

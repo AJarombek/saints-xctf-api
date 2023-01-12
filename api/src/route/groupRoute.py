@@ -11,7 +11,6 @@ from flask import Blueprint, request, jsonify, Response, redirect, url_for, curr
 from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import Row
-from sqlalchemy.schema import Column
 
 from decorators import auth_required
 from utils.jwt import get_claims
@@ -1062,26 +1061,30 @@ def compile_group_statistics(group_object: Group):
     """
     group_name = group_object.group_name
 
-    miles: Column = LogDao.get_group_miles(group_name)
-    miles_past_year: Column = LogDao.get_group_miles_interval(group_name, "year")
-    miles_past_month: Column = LogDao.get_group_miles_interval(group_name, "month")
-    miles_past_week: Column = LogDao.get_group_miles_interval(
+    miles: Row[Optional] = LogDao.get_group_miles(group_name)
+    miles_past_year: Row[Optional] = LogDao.get_group_miles_interval(group_name, "year")
+    miles_past_month: Row[Optional] = LogDao.get_group_miles_interval(
+        group_name, "month"
+    )
+    miles_past_week: Row[Optional] = LogDao.get_group_miles_interval(
         group_name, "week", week_start=group_object.week_start
     )
-    run_miles: Column = LogDao.get_group_miles_interval_by_type(group_name, "run")
-    run_miles_past_year: Column = LogDao.get_group_miles_interval_by_type(
+    run_miles: Row[Optional] = LogDao.get_group_miles_interval_by_type(
+        group_name, "run"
+    )
+    run_miles_past_year: Row[Optional] = LogDao.get_group_miles_interval_by_type(
         group_name, "run", "year"
     )
-    run_miles_past_month: Column = LogDao.get_group_miles_interval_by_type(
+    run_miles_past_month: Row[Optional] = LogDao.get_group_miles_interval_by_type(
         group_name, "run", "month"
     )
-    run_miles_past_week: Column = LogDao.get_group_miles_interval_by_type(
+    run_miles_past_week: Row[Optional] = LogDao.get_group_miles_interval_by_type(
         group_name, "run", "week"
     )
-    all_time_feel: Column = LogDao.get_group_avg_feel(group_name)
-    year_feel: Column = LogDao.get_group_avg_feel_interval(group_name, "year")
-    month_feel: Column = LogDao.get_group_avg_feel_interval(group_name, "month")
-    week_feel: Column = LogDao.get_group_avg_feel_interval(
+    all_time_feel: Row[Optional] = LogDao.get_group_avg_feel(group_name)
+    year_feel: Row[Optional] = LogDao.get_group_avg_feel_interval(group_name, "year")
+    month_feel: Row[Optional] = LogDao.get_group_avg_feel_interval(group_name, "month")
+    week_feel: Row[Optional] = LogDao.get_group_avg_feel_interval(
         group_name, "week", week_start=group_object.week_start
     )
 
