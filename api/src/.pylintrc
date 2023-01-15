@@ -1,0 +1,27 @@
+# Pylint configuration file
+# Author: Andrew Jarombek
+# Date: 1/14/2023
+
+[MAIN]
+
+fail-under=7.64
+py-version=3.8
+
+[MESSAGES CONTROL]
+
+disable=
+    cyclic-import,
+    duplicate-code,
+    logging-fstring-interpolation
+
+[REPORTS]
+
+output-format=text
+
+[BASIC]
+
+good-names=i,j,k
+
+[EXCEPTIONS]
+
+max-line-length=200

@@ -61,3 +61,5 @@ jobs:
       - name: Run tests
         working-directory: ./api/src
         run: pipenv run flask test
+        env:
+          FLASK_ENV: cicdtest

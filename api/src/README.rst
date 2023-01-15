@@ -45,6 +45,15 @@ To build the ECR dockerfiles, you must use docker compose.
     # Reformat all the Python files
     black .
 
+**Python Linting**
+
+.. code-block:: bash
+
+    pipenv install --ignore-pipfile
+    pipenv shell
+
+    pylint $(git ls-files '*.py')
+
 Files
 -----
 
@@ -73,7 +82,7 @@ Files
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``decorators.py``           | Decorators used on routes throughout the API.                                                |
 +-----------------------------+----------------------------------------------------------------------------------------------+
-| ``demo.db``                 | SQLite demo database file.                                                                   |
+| ``.pylintrc``               | Pylint configuration file for linting Python code.                                           |
 +-----------------------------+----------------------------------------------------------------------------------------------+
 | ``test-db-init.sql``        | SQL file to initialize a PostgreSQL test database with tables and static data.               |
 +-----------------------------+----------------------------------------------------------------------------------------------+
