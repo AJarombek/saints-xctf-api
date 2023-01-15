@@ -5,13 +5,13 @@
 name: Integration Test
 
 on:
-#  push:
-#    branches: ["main", "feature/*"]
-#  pull_request:
-#    branches: ["main"]
-#
-#  schedule:
-#    - cron: "0 5 * * 5"
+  push:
+    branches: ["main", "feature/*"]
+  pull_request:
+    branches: ["main"]
+
+  schedule:
+    - cron: "0 5 * * 5"
 
   workflow_dispatch:
 
@@ -50,6 +50,13 @@ jobs:
       - name: Install libraries
         working-directory: ./api/src
         run: pipenv install
+
+      - name: Create Log File
+        working-directory: /
+        run: |
+          mkdir logs
+          cd logs
+          touch saints-xctf-api.log
 
       - name: Run tests
         working-directory: ./api/src

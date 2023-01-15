@@ -906,6 +906,29 @@ class TestGroupRoute(TestSuite):
             or type(statistics.get("feel_past_week")) is float
         )
 
+    def test_group_statistics_by_id_get_route_200_expected_values(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/statistics/<group_id>' route.  This test
+        proves that retrieving group statistics from a group with a valid id returns the expected data.
+        """
+        response: Response = self.client.get(
+            "/v2/groups/statistics/7", headers={"Authorization": f"Bearer {self.jwt}"}
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json.get("self"), "/v2/groups/statistics/7")
+        self.assertIsNotNone(response_json.get("stats"))
+
+        statistics = response_json.get("stats")
+        self.assertEqual(25, statistics.get("miles_all_time"))
+        self.assertEqual(7, statistics.get("miles_past_week"))
+
+        self.assertEqual(3, statistics.get("run_miles_all_time"))
+        self.assertEqual(2, statistics.get("run_miles_past_week"))
+
+        self.assertEqual(8.7931, statistics.get("feel_all_time"))
+        self.assertEqual(8.1429, statistics.get("feel_past_week"))
+
     def test_group_statistics_by_id_get_route_forbidden(self) -> None:
         """
         Test performing a forbidden HTTP GET request on the '/v2/groups/statistics/<group_id>' route.
@@ -1176,6 +1199,28 @@ class TestGroupRoute(TestSuite):
         self.assertGreater(
             response_json.get("group_snapshot")["statistics"]["feel_all_time"], 0
         )
+
+    def test_group_snapshot_by_group_name_get_route_200_expected_values(self) -> None:
+        """
+        Test performing an HTTP GET request on the '/v2/groups/snapshot/<team_name>/<group_name>' route.  This test
+        proves that retrieving a snapshot about a group with a valid group name results in the group with expected
+        statistics values.
+        """
+        response: Response = self.client.get(
+            "/v2/groups/snapshot/saintsxctf/wmensxc",
+            headers={"Authorization": f"Bearer {self.jwt}"},
+        )
+        response_json: dict = response.get_json()
+        self.assertEqual(response.status_code, 200)
+
+        statistics: dict = response_json.get("group_snapshot")["statistics"]
+        self.assertEqual(25, statistics["miles_all_time"])
+        self.assertEqual(3, statistics["run_miles_all_time"])
+        self.assertEqual(8.7931, statistics["feel_all_time"])
+
+        self.assertEqual(7, statistics["miles_past_week"])
+        self.assertEqual(2, statistics["run_miles_past_week"])
+        self.assertEqual(8.1429, statistics["feel_past_week"])
 
     def test_group_snapshot_by_group_name_get_route_forbidden(self) -> None:
         """

@@ -35,10 +35,14 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install Pylint
+      - name: Install Pylint & Pipenv
         run: |
           pip install --upgrade pip
           pip install pylint==2.15.9
+          pip install pipenv==2022.12.19
 
       - name: Analysing the Code with Pylint
-        run: pylint $(git ls-files '*.py')
+        working-directory: ./api/src
+        run: |
+          pipenv install
+          pylint $(git ls-files '*.py')
