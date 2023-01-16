@@ -11,19 +11,23 @@ from model.Admin import Admin
 class TestAdmin(TestSuite):
     def test_admin_str(self) -> None:
         """
-        Prove that the human readable string representation of an Admin object is as expected.
+        Prove that the human-readable string representation of an Admin object is as expected.
         """
         admin = Admin({"user": "user"})
-        self.assertEquals(str(admin), "Admin: [user: user]")
-        self.assertEquals(admin.__str__(), "Admin: [user: user]")
+        self.assertEqual(str(admin), "Admin: [user: user]")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(admin.__str__(), "Admin: [user: user]")
 
     def test_admin_repr(self) -> None:
         """
-        Prove that the machine readable string representation of an Admin object is as expected.
+        Prove that the machine-readable string representation of an Admin object is as expected.
         """
         admin = Admin({"user": "admin"})
-        self.assertEquals(repr(admin), "<Admin 'admin'>")
-        self.assertEquals(admin.__repr__(), "<Admin 'admin'>")
+        self.assertEqual(repr(admin), "<Admin 'admin'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(admin.__repr__(), "<Admin 'admin'>")
 
     def test_admin_eq(self) -> None:
         """
@@ -32,6 +36,8 @@ class TestAdmin(TestSuite):
         admin1 = Admin({"user": "admin"})
         admin2 = Admin({"user": "admin"})
         self.assertTrue(admin1 == admin2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(admin1.__eq__(admin2))
 
     def test_admin_ne(self) -> None:
@@ -41,4 +47,6 @@ class TestAdmin(TestSuite):
         admin1 = Admin({"user": "admin"})
         admin2 = Admin({"user": "user"})
         self.assertTrue(admin1 != admin2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(admin1.__ne__(admin2))

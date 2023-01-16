@@ -6,7 +6,7 @@ Date: 12/8/2022
 
 from typing import List
 
-from flask import Blueprint, Response, request, redirect, url_for, jsonify
+from flask import Blueprint, Response, abort, request, redirect, url_for, jsonify
 from flasgger import swag_from
 
 from dao.typeDao import TypeDao
@@ -25,6 +25,8 @@ def types_redirect() -> Response:
         """[GET] /v2/types"""
         return redirect(url_for("type_route.types"), code=302)
 
+    return abort(404)
+
 
 @type_route.route("/", methods=["GET"])
 @swag_from("swagger/typeRoute/typesGet.yml", methods=["GET"])
@@ -37,6 +39,8 @@ def types() -> Response:
         """[GET] /v2/types/"""
         return types_get()
 
+    return abort(404)
+
 
 @type_route.route("/links", methods=["GET"])
 @swag_from("swagger/typeRoute/typeLinks.yml", methods=["GET"])
@@ -48,6 +52,8 @@ def type_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/types/links"""
         return type_links_get()
+
+    return abort(404)
 
 
 def types_get() -> Response:
@@ -67,15 +73,15 @@ def types_get() -> Response:
         )
         response.status_code = 500
         return response
-    else:
-        response = jsonify(
-            {
-                "self": "/v2/types/",
-                "types": [type_info.type for type_info in all_types],
-            }
-        )
-        response.status_code = 200
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/types/",
+            "types": [type_info.type for type_info in all_types],
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def type_links_get() -> Response:
@@ -85,7 +91,7 @@ def type_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/types/links",
+            "self": "/v2/types/links",
             "endpoints": [
                 {
                     "link": "/v2/types",

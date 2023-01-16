@@ -6,7 +6,7 @@ Date: 11/29/2020
 
 from typing import List
 
-from flask import Blueprint, Response, request, redirect, url_for, jsonify
+from flask import Blueprint, Response, abort, request, redirect, url_for, jsonify
 from sqlalchemy.engine.cursor import ResultProxy
 from flasgger import swag_from
 
@@ -31,6 +31,8 @@ def teams_redirect() -> Response:
         """[GET] /v2/teams"""
         return redirect(url_for("team_route.teams"), code=302)
 
+    return abort(404)
+
 
 @team_route.route("/", methods=["GET"])
 @auth_required()
@@ -43,6 +45,8 @@ def teams() -> Response:
     if request.method == "GET":
         """[GET] /v2/teams/"""
         return teams_get()
+
+    return abort(404)
 
 
 @team_route.route("/<name>", methods=["GET"])
@@ -58,6 +62,8 @@ def team(name) -> Response:
         """[GET] /v2/teams/<name>"""
         return team_by_name_get(name)
 
+    return abort(404)
+
 
 @team_route.route("/members/<team_name>", methods=["GET"])
 @auth_required()
@@ -72,6 +78,8 @@ def team_members(team_name) -> Response:
         """[GET] /v2/teams/members/<team_name>"""
         return team_members_by_team_name_get(team_name)
 
+    return abort(404)
+
 
 @team_route.route("/groups/<team_name>", methods=["GET"])
 @auth_required()
@@ -85,6 +93,8 @@ def team_groups(team_name) -> Response:
     if request.method == "GET":
         """[GET] /v2/teams/groups/<team_name>"""
         return team_groups_by_team_name_get(team_name)
+
+    return abort(404)
 
 
 @team_route.route("/search/<text>/<limit>", methods=["GET"])
@@ -101,6 +111,8 @@ def search_teams(text, limit) -> Response:
         """[GET] /v2/teams/search/<text>/<limit>"""
         return search_teams_by_text_get(text, limit)
 
+    return abort(404)
+
 
 @team_route.route("/links", methods=["GET"])
 @swag_from("swagger/teamRoute/teamLinks.yml", methods=["GET"])
@@ -112,6 +124,8 @@ def team_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/teams/links"""
         return team_links_get()
+
+    return abort(404)
 
 
 def teams_get() -> Response:
@@ -131,12 +145,12 @@ def teams_get() -> Response:
         )
         response.status_code = 500
         return response
-    else:
-        team_dicts = [TeamData(team_info).__dict__ for team_info in all_teams]
 
-        response = jsonify({"self": "/v2/teams", "teams": team_dicts})
-        response.status_code = 200
-        return response
+    team_dicts = [TeamData(team_info).__dict__ for team_info in all_teams]
+
+    response = jsonify({"self": "/v2/teams", "teams": team_dicts})
+    response.status_code = 200
+    return response
 
 
 def team_by_name_get(name) -> Response:
@@ -157,12 +171,12 @@ def team_by_name_get(name) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        team_dict: dict = TeamData(team_info).__dict__
 
-        response = jsonify({"self": f"/v2/teams/{name}", "team": team_dict})
-        response.status_code = 200
-        return response
+    team_dict: dict = TeamData(team_info).__dict__
+
+    response = jsonify({"self": f"/v2/teams/{name}", "team": team_dict})
+    response.status_code = 200
+    return response
 
 
 def team_members_by_team_name_get(team_name) -> Response:
@@ -186,29 +200,29 @@ def team_members_by_team_name_get(team_name) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        team_members_list = [
-            {
-                "username": member.username,
-                "first": member.first,
-                "last": member.last,
-                "member_since": member.member_since,
-                "user": member.user,
-                "status": member.status,
-                "deleted": member.deleted,
-            }
-            for member in team_members_result
-        ]
 
-        response = jsonify(
-            {
-                "self": f"/v2/teams/members/{team_name}",
-                "group": f"/v2/teams/{team_name}",
-                "team_members": team_members_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    team_members_list = [
+        {
+            "username": member.username,
+            "first": member.first,
+            "last": member.last,
+            "member_since": member.member_since,
+            "user": member.user,
+            "status": member.status,
+            "deleted": member.deleted,
+        }
+        for member in team_members_result
+    ]
+
+    response = jsonify(
+        {
+            "self": f"/v2/teams/members/{team_name}",
+            "group": f"/v2/teams/{team_name}",
+            "team_members": team_members_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def team_groups_by_team_name_get(team_name) -> Response:
@@ -230,29 +244,29 @@ def team_groups_by_team_name_get(team_name) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        team_groups_list = [
-            {
-                "id": member.id,
-                "group_name": member.group_name,
-                "group_title": member.group_title,
-                "grouppic_name": member.grouppic_name,
-                "description": member.description,
-                "week_start": member.week_start,
-                "deleted": member.deleted,
-            }
-            for member in team_groups_result
-        ]
 
-        response = jsonify(
-            {
-                "self": f"/v2/teams/groups/{team_name}",
-                "group": f"/v2/teams/{team_name}",
-                "team_groups": team_groups_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    team_groups_list = [
+        {
+            "id": member.id,
+            "group_name": member.group_name,
+            "group_title": member.group_title,
+            "grouppic_name": member.grouppic_name,
+            "description": member.description,
+            "week_start": member.week_start,
+            "deleted": member.deleted,
+        }
+        for member in team_groups_result
+    ]
+
+    response = jsonify(
+        {
+            "self": f"/v2/teams/groups/{team_name}",
+            "group": f"/v2/teams/{team_name}",
+            "team_groups": team_groups_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def search_teams_by_text_get(text: str, limit: int) -> Response:
@@ -274,14 +288,14 @@ def search_teams_by_text_get(text: str, limit: int) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        team_dicts = [TeamData(team_info).__dict__ for team_info in searched_teams]
 
-        response = jsonify(
-            {"self": f"/v2/teams/search/{text}/{limit}", "teams": team_dicts}
-        )
-        response.status_code = 200
-        return response
+    team_dicts = [TeamData(team_info).__dict__ for team_info in searched_teams]
+
+    response = jsonify(
+        {"self": f"/v2/teams/search/{text}/{limit}", "teams": team_dicts}
+    )
+    response.status_code = 200
+    return response
 
 
 def team_links_get() -> Response:
@@ -291,7 +305,7 @@ def team_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/teams/links",
+            "self": "/v2/teams/links",
             "endpoints": [
                 {
                     "link": "/v2/teams",

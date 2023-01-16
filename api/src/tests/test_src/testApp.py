@@ -10,6 +10,9 @@ from tests.TestSuite import TestSuite
 
 class TestApp(TestSuite):
     def test_app_exists(self):
+        """
+        Test asserting that the current app import is truthy as expected.
+        """
         self.assertTrue(current_app is not None)
 
     def test_non_existent_route(self) -> None:

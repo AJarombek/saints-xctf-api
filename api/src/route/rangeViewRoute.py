@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 8/3/2019
 """
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, abort, request, jsonify, Response
 from flasgger import swag_from
 
 from decorators import auth_required
@@ -34,6 +34,8 @@ def range_view(filter_by, bucket, exercise_types, start, end):
         """[GET] /v2/range_view"""
         return range_view_get(filter_by, bucket, exercise_types, start, end)
 
+    return abort(404)
+
 
 @range_view_route.route("/links", methods=["GET"])
 @swag_from("swagger/rangeViewRoute/rangeViewLinks.yml", methods=["GET"])
@@ -45,6 +47,8 @@ def range_view_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/range_view/links"""
         return range_view_links_get()
+
+    return abort(404)
 
 
 def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
@@ -62,22 +66,22 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
         exercise_types
     )
 
-    if filter_by == "group" or filter_by == "groups":
-        range_view = LogDao.get_group_range_view(
+    if filter_by in {"group", "groups"}:
+        range_view_data = LogDao.get_group_range_view(
             group_id=int(bucket), types=exercise_type_filter_list, start=start, end=end
         )
-    elif filter_by == "user" or filter_by == "users":
-        range_view = LogDao.get_user_range_view(
+    elif filter_by in {"user", "users"}:
+        range_view_data = LogDao.get_user_range_view(
             username=bucket, types=exercise_type_filter_list, start=start, end=end
         )
     elif filter_by == "all":
-        range_view = LogDao.get_range_view(
+        range_view_data = LogDao.get_range_view(
             types=exercise_type_filter_list, start=start, end=end
         )
     else:
-        range_view = None
+        range_view_data = None
 
-    if range_view is None or range_view.rowcount == 0:
+    if range_view_data is None or range_view_data.rowcount == 0:
         response = jsonify(
             {
                 "self": f"/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
@@ -87,21 +91,21 @@ def range_view_get(filter_by, bucket, exercise_types, start, end) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        range_view_list = []
-        for item in range_view:
-            range_view_list.append(
-                {"date": item.date, "miles": item.miles, "feel": item.feel}
-            )
 
-        response = jsonify(
-            {
-                "self": f"/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
-                "range_view": range_view_list,
-            }
+    range_view_list = []
+    for item in range_view_data:
+        range_view_list.append(
+            {"date": item.date, "miles": item.miles, "feel": item.feel}
         )
-        response.status_code = 200
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/range_view/{filter_by}/{bucket}/{exercise_types}/{start}/{end}",
+            "range_view": range_view_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def range_view_links_get() -> Response:
@@ -111,7 +115,7 @@ def range_view_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/range_view/links",
+            "self": "/v2/range_view/links",
             "endpoints": [
                 {
                     "link": "/v2/range_view/<filter_by>/<bucket>/<exercise_types>/<start>/<end>",

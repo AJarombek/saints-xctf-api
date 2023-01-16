@@ -39,7 +39,7 @@ class TestNotificationData(TestSuite):
 
     def test_notification_data_str(self) -> None:
         """
-        Prove that the human readable string representation of a NotificationData object is as expected.
+        Prove that the human-readable string representation of a NotificationData object is as expected.
         """
         log_str = (
             "NotificationData: [notification_id: 3, username: andy, time: 2019-12-01 00:00:00, link: None, "
@@ -47,21 +47,27 @@ class TestNotificationData(TestSuite):
         )
 
         self.maxDiff = None
-        self.assertEquals(str(self.notification1), log_str)
-        self.assertEquals(self.notification1.__str__(), log_str)
+        self.assertEqual(str(self.notification1), log_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.notification1.__str__(), log_str)
 
     def test_notification_data_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a NotificationData object is as expected.
+        Prove that the machine-readable string representation of a NotificationData object is as expected.
         """
-        self.assertEquals(repr(self.notification1), "<NotificationData 3>")
-        self.assertEquals(self.notification1.__repr__(), "<NotificationData 3>")
+        self.assertEqual(repr(self.notification1), "<NotificationData 3>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.notification1.__repr__(), "<NotificationData 3>")
 
     def test_notification_data_eq(self) -> None:
         """
         Prove that two NotificationData objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.notification1 == self.notification1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.notification1.__eq__(self.notification1copy))
 
     def test_notification_data_ne(self) -> None:
@@ -69,4 +75,6 @@ class TestNotificationData(TestSuite):
         Prove that two NotificationData objects with different property values test negative for value equality.
         """
         self.assertTrue(self.notification1 != self.notification2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.notification1.__ne__(self.notification2))

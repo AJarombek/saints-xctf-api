@@ -39,7 +39,7 @@ class TestNotification(TestSuite):
 
     def test_notification_str(self) -> None:
         """
-        Prove that the human readable string representation of a Notification object is as expected.
+        Prove that the human-readable string representation of a Notification object is as expected.
         """
         log_str = (
             "Notification: [notification_id: 1, username: andy, time: 2019-12-31 00:00:00, link: None, "
@@ -48,21 +48,27 @@ class TestNotification(TestSuite):
         )
 
         self.maxDiff = None
-        self.assertEquals(str(self.notification1), log_str)
-        self.assertEquals(self.notification1.__str__(), log_str)
+        self.assertEqual(str(self.notification1), log_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.notification1.__str__(), log_str)
 
     def test_notification_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a Notification object is as expected.
+        Prove that the machine-readable string representation of a Notification object is as expected.
         """
-        self.assertEquals(repr(self.notification1), "<Notification 1>")
-        self.assertEquals(self.notification1.__repr__(), "<Notification 1>")
+        self.assertEqual(repr(self.notification1), "<Notification 1>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.notification1.__repr__(), "<Notification 1>")
 
     def test_notification_eq(self) -> None:
         """
         Prove that two Notification objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.notification1 == self.notification1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.notification1.__eq__(self.notification1copy))
 
     def test_notification_ne(self) -> None:
@@ -70,4 +76,6 @@ class TestNotification(TestSuite):
         Prove that two Notification objects with different property values test negative for value equality.
         """
         self.assertTrue(self.notification1 != self.notification2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.notification1.__ne__(self.notification2))

@@ -30,25 +30,29 @@ class TestForgotPassword(TestSuite):
 
     def test_forgot_password_str(self) -> None:
         """
-        Prove that the human readable string representation of a ForgotPassword object is as expected.
+        Prove that the human-readable string representation of a ForgotPassword object is as expected.
         """
-        self.assertEquals(
+        self.assertEqual(
             str(self.forgot_password1),
             "ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]",
         )
-        self.assertEquals(
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.forgot_password1.__str__(),
             "ForgotPassword: [forgot_code: 123ABC, username: andy, expires: 2019-11-10 00:00:00, deleted: False]",
         )
 
     def test_forgot_password_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a ForgotPassword object is as expected.
+        Prove that the machine-readable string representation of a ForgotPassword object is as expected.
         """
-        self.assertEquals(
+        self.assertEqual(
             repr(self.forgot_password1), "<ForgotPassword '123ABC','andy'>"
         )
-        self.assertEquals(
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.forgot_password1.__repr__(), "<ForgotPassword '123ABC','andy'>"
         )
 
@@ -57,6 +61,8 @@ class TestForgotPassword(TestSuite):
         Prove that two ForgotPassword objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.forgot_password1 == self.forgot_password1)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.forgot_password1.__eq__(self.forgot_password1))
 
     def test_forgot_password_ne(self) -> None:
@@ -64,4 +70,6 @@ class TestForgotPassword(TestSuite):
         Prove that two ForgotPassword objects with different property values test negative for value equality.
         """
         self.assertTrue(self.forgot_password1 != self.forgot_password2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.forgot_password1.__ne__(self.forgot_password2))

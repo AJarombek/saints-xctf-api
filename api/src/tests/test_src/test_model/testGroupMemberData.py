@@ -41,22 +41,26 @@ class TestGroupMemberData(TestSuite):
 
     def test_group_member_data_str(self) -> None:
         """
-        Prove that the human readable string representation of an GroupMember object is as expected.
+        Prove that the human-readable string representation of an GroupMember object is as expected.
         """
         group_member_str = (
             "GroupMemberData: [id: 2, group_name: alumni, group_id: 1, username: andy, "
             "status: accepted, user: admin, deleted: False]"
         )
 
-        self.assertEquals(str(self.group_member2), group_member_str)
-        self.assertEquals(self.group_member2.__str__(), group_member_str)
+        self.assertEqual(str(self.group_member2), group_member_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.group_member2.__str__(), group_member_str)
 
     def test_group_member_data_repr(self) -> None:
         """
-        Prove that the machine readable string representation of an GroupMember object is as expected.
+        Prove that the machine-readable string representation of an GroupMember object is as expected.
         """
-        self.assertEquals(repr(self.group_member2), "<GroupMemberData 'alumni','andy'>")
-        self.assertEquals(
+        self.assertEqual(repr(self.group_member2), "<GroupMemberData 'alumni','andy'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.group_member2.__repr__(), "<GroupMemberData 'alumni','andy'>"
         )
 
@@ -65,6 +69,8 @@ class TestGroupMemberData(TestSuite):
         Prove that two GroupMember objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.group_member1 == self.group_member1)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.group_member1.__eq__(self.group_member1))
 
     def test_group_member_data_ne(self) -> None:
@@ -72,4 +78,6 @@ class TestGroupMemberData(TestSuite):
         Prove that two GroupMember objects with different property values test negative for value equality.
         """
         self.assertTrue(self.group_member1 != self.group_member2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.group_member1.__ne__(self.group_member2))

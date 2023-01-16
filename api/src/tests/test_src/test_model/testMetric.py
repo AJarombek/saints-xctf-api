@@ -21,25 +21,31 @@ class TestMetric(TestSuite):
 
     def test_metric_str(self) -> None:
         """
-        Prove that the human readable string representation of a Metric object is as expected.
+        Prove that the human-readable string representation of a Metric object is as expected.
         """
         metric_str = "Metric: [metric: meters]"
 
-        self.assertEquals(str(self.metric1), metric_str)
-        self.assertEquals(self.metric1.__str__(), metric_str)
+        self.assertEqual(str(self.metric1), metric_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.metric1.__str__(), metric_str)
 
     def test_metric_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a Metric object is as expected.
+        Prove that the machine-readable string representation of a Metric object is as expected.
         """
-        self.assertEquals(repr(self.metric2), "<Metric 'miles'>")
-        self.assertEquals(self.metric2.__repr__(), "<Metric 'miles'>")
+        self.assertEqual(repr(self.metric2), "<Metric 'miles'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.metric2.__repr__(), "<Metric 'miles'>")
 
     def test_metric_eq(self) -> None:
         """
         Prove that two Metric objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.metric1 == self.metric1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.metric1.__eq__(self.metric1copy))
 
     def test_metric_ne(self) -> None:
@@ -47,4 +53,6 @@ class TestMetric(TestSuite):
         Prove that two Metric objects with different property values test negative for value equality.
         """
         self.assertTrue(self.metric1 != self.metric3)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.metric1.__ne__(self.metric3))

@@ -445,7 +445,7 @@ class TestLogRoute(TestSuite):
                 "time": "00:43:47",
                 "feel": 6,
                 "description": "Going to try and run a 5K time trial around central park on Sunday, stride progressions "
-                f"today and 15 second strides tomorrow.",
+                "today and 15 second strides tomorrow.",
                 "time_created": "2021-03-26 16:00:00",
                 "deleted": False,
             }
@@ -515,7 +515,7 @@ class TestLogRoute(TestSuite):
                 "time": "00:35:00",
                 "feel": 5,
                 "description": "Loosen up my legs before running this morning, my knee hurt a little bit yesterday and I"
-                f"want it to be healthy for the Manchester Road Race on Thursday.",
+                "want it to be healthy for the Manchester Road Race on Thursday.",
                 "time_created": "2019-11-23 16:00:00",
                 "deleted": False,
             }

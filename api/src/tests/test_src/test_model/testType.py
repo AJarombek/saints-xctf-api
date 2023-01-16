@@ -21,25 +21,31 @@ class TestType(TestSuite):
 
     def test_type_str(self) -> None:
         """
-        Prove that the human readable string representation of a Type object is as expected.
+        Prove that the human-readable string representation of a Type object is as expected.
         """
         type_str = "Type: [type: run]"
 
-        self.assertEquals(str(self.type1), type_str)
-        self.assertEquals(self.type1.__str__(), type_str)
+        self.assertEqual(str(self.type1), type_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.type1.__str__(), type_str)
 
     def test_type_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a Type object is as expected.
+        Prove that the machine-readable string representation of a Type object is as expected.
         """
-        self.assertEquals(repr(self.type2), "<Type 'bike'>")
-        self.assertEquals(self.type2.__repr__(), "<Type 'bike'>")
+        self.assertEqual(repr(self.type2), "<Type 'bike'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.type2.__repr__(), "<Type 'bike'>")
 
     def test_type_eq(self) -> None:
         """
         Prove that two Type objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.type1 == self.type1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.type1.__eq__(self.type1copy))
 
     def test_type_ne(self) -> None:
@@ -47,4 +53,6 @@ class TestType(TestSuite):
         Prove that two Type objects with different property values test negative for value equality.
         """
         self.assertTrue(self.type1 != self.type3)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.type1.__ne__(self.type3))

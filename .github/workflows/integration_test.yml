@@ -30,11 +30,11 @@ jobs:
       auth:
         image: ajarombek/mock-saints-xctf-auth
         ports:
-          - 80:5000
+          - 5000:5000
       functions:
         image: ajarombek/mock-saints-xctf-functions
         ports:
-          - 80:5000
+          - 5000:5000
     steps:
       - run: echo "Job running on a ${{ runner.os }} server"
 

@@ -4,7 +4,7 @@
 
 [MAIN]
 
-fail-under=8.17
+fail-under=9
 py-version=3.8
 
 [MESSAGES CONTROL]
@@ -15,9 +15,15 @@ disable=
     invalid-name,
     logging-fstring-interpolation,
     missing-class-docstring,
+    pointless-string-statement,
+    too-few-public-methods,
+    too-many-instance-attributes,
     too-many-lines,
+    too-many-locals,
     too-many-public-methods,
-    too-many-statements
+    too-many-return-statements,
+    too-many-statements,
+    trailing-whitespace
 
 [REPORTS]
 

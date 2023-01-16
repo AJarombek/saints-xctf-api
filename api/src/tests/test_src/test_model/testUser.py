@@ -58,7 +58,7 @@ class TestUser(TestSuite):
 
     def test_user_str(self) -> None:
         """
-        Prove that the human readable string representation of a User object is as expected.
+        Prove that the human-readable string representation of a User object is as expected.
         """
         log_str = (
             "User: [username: andy, first: Andy, last: Jarombek, salt: None, "
@@ -70,21 +70,27 @@ class TestUser(TestSuite):
         )
 
         self.maxDiff = None
-        self.assertEquals(str(self.user1), log_str)
-        self.assertEquals(self.user1.__str__(), log_str)
+        self.assertEqual(str(self.user1), log_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.user1.__str__(), log_str)
 
     def test_user_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a User object is as expected.
+        Prove that the machine-readable string representation of a User object is as expected.
         """
-        self.assertEquals(repr(self.user1), "<User 'andy'>")
-        self.assertEquals(self.user1.__repr__(), "<User 'andy'>")
+        self.assertEqual(repr(self.user1), "<User 'andy'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.user1.__repr__(), "<User 'andy'>")
 
     def test_user_eq(self) -> None:
         """
         Prove that two User objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.user1 == self.user1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.user1.__eq__(self.user1copy))
 
     def test_user_ne(self) -> None:
@@ -92,4 +98,6 @@ class TestUser(TestSuite):
         Prove that two User objects with different property values test negative for value equality.
         """
         self.assertTrue(self.user1 != self.user2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.user1.__ne__(self.user2))

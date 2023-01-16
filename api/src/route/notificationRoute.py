@@ -7,7 +7,7 @@ Date: 8/6/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flask import Blueprint, abort, request, jsonify, Response, redirect, url_for, current_app
 from flasgger import swag_from
 
 from decorators import auth_required
@@ -32,9 +32,11 @@ def notifications_redirect() -> Response:
         """[GET] /v2/notifications"""
         return redirect(url_for("notification_route.notifications"), code=302)
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/notifications"""
         return redirect(url_for("notification_route.notifications"), code=307)
+
+    return abort(404)
 
 
 @notification_route.route("/", methods=["GET", "POST"])
@@ -50,9 +52,11 @@ def notifications() -> Response:
         """[GET] /v2/notifications/"""
         return notifications_get()
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/notifications/"""
         return notification_post()
+
+    return abort(404)
 
 
 @notification_route.route("/<notification_id>", methods=["GET", "PUT", "DELETE"])
@@ -70,13 +74,15 @@ def notification_by_id(notification_id) -> Response:
         """[GET] /v2/notifications/<notification_id>"""
         return notification_by_id_get(notification_id)
 
-    elif request.method == "PUT":
+    if request.method == "PUT":
         """[PUT] /v2/notifications/<notification_id>"""
         return notification_by_id_put(notification_id)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         """[DELETE] /v2/notifications/<notification_id>"""
         return notification_by_id_delete(notification_id)
+
+    return abort(404)
 
 
 @notification_route.route("/soft/<notification_id>", methods=["DELETE"])
@@ -92,6 +98,8 @@ def notification_soft_by_id(notification_id) -> Response:
         """[DELETE] /v2/notifications/soft/<code>"""
         return notification_by_id_soft_delete(notification_id)
 
+    return abort(404)
+
 
 @notification_route.route("/links", methods=["GET"])
 @swag_from("swagger/notificationRoute/notificationLinks.yml", methods=["GET"])
@@ -104,15 +112,17 @@ def notification_links() -> Response:
         """[GET] /v2/notifications/links"""
         return notification_links_get()
 
+    return abort(404)
+
 
 def notifications_get() -> Response:
     """
     Retrieve all the notifications in the database.
     :return: A response object for the GET API request.
     """
-    notifications = NotificationDao.get_notifications()
+    notifications_data = NotificationDao.get_notifications()
 
-    if notifications is None:
+    if notifications_data is None:
         response = jsonify(
             {
                 "self": "/v2/notifications",
@@ -122,18 +132,18 @@ def notifications_get() -> Response:
         )
         response.status_code = 500
         return response
-    else:
-        notification_dicts = []
-        for notification in notifications:
-            notification_dict = NotificationData(notification).__dict__
-            notification_dict["time"] = str(notification_dict["time"])
-            notification_dicts.append(notification_dict)
 
-        response = jsonify(
-            {"self": "/v2/notifications", "notifications": notification_dicts}
-        )
-        response.status_code = 200
-        return response
+    notification_dicts = []
+    for notification in notifications_data:
+        notification_dict = NotificationData(notification).__dict__
+        notification_dict["time"] = str(notification_dict["time"])
+        notification_dicts.append(notification_dict)
+
+    response = jsonify(
+        {"self": "/v2/notifications", "notifications": notification_dicts}
+    )
+    response.status_code = 200
+    return response
 
 
 def notification_post() -> Response:
@@ -146,7 +156,7 @@ def notification_post() -> Response:
     if notification_data is None:
         response = jsonify(
             {
-                "self": f"/v2/notifications",
+                "self": "/v2/notifications",
                 "added": False,
                 "notification": None,
                 "error": "the request body isn't populated",
@@ -160,7 +170,7 @@ def notification_post() -> Response:
     if None in [notification_to_add.username, notification_to_add.description]:
         response = jsonify(
             {
-                "self": f"/v2/notifications",
+                "self": "/v2/notifications",
                 "added": False,
                 "notification": None,
                 "error": "'username' and 'description' are required fields",
@@ -203,17 +213,17 @@ def notification_post() -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": "/v2/notifications",
-                "added": False,
-                "notification": None,
-                "error": "failed to create a new notification",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/notifications",
+            "added": False,
+            "notification": None,
+            "error": "failed to create a new notification",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def notification_by_id_get(notification_id) -> Response:
@@ -236,18 +246,18 @@ def notification_by_id_get(notification_id) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        notification_dict = NotificationData(notification).__dict__
-        notification_dict["time"] = str(notification_dict["time"])
 
-        response = jsonify(
-            {
-                "self": f"/v2/notifications/{notification_id}",
-                "notification": notification_dict,
-            }
-        )
-        response.status_code = 200
-        return response
+    notification_dict = NotificationData(notification).__dict__
+    notification_dict["time"] = str(notification_dict["time"])
+
+    response = jsonify(
+        {
+            "self": f"/v2/notifications/{notification_id}",
+            "notification": notification_dict,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def notification_by_id_put(notification_id) -> Response:
@@ -322,28 +332,28 @@ def notification_by_id_put(notification_id) -> Response:
             )
             response.status_code = 200
             return response
-        else:
-            response = jsonify(
-                {
-                    "self": f"/v2/notifications/{notification_id}",
-                    "updated": False,
-                    "notification": None,
-                    "error": "the notification failed to update",
-                }
-            )
-            response.status_code = 500
-            return response
-    else:
+
         response = jsonify(
             {
                 "self": f"/v2/notifications/{notification_id}",
                 "updated": False,
                 "notification": None,
-                "error": "the notification submitted is equal to the existing notification with the same id",
+                "error": "the notification failed to update",
             }
         )
-        response.status_code = 400
+        response.status_code = 500
         return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/notifications/{notification_id}",
+            "updated": False,
+            "notification": None,
+            "error": "the notification submitted is equal to the existing notification with the same id",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def notification_by_id_delete(notification_id) -> Response:
@@ -402,16 +412,16 @@ def notification_by_id_delete(notification_id) -> Response:
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/notifications/{notification_id}",
-                "deleted": False,
-                "error": "failed to delete the notification",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/notifications/{notification_id}",
+            "deleted": False,
+            "error": "failed to delete the notification",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def notification_by_id_soft_delete(notification_id) -> Response:
@@ -476,16 +486,16 @@ def notification_by_id_soft_delete(notification_id) -> Response:
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/notifications/soft/{notification_id}",
-                "deleted": False,
-                "error": "failed to soft delete the notification",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/notifications/soft/{notification_id}",
+            "deleted": False,
+            "error": "failed to soft delete the notification",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def notification_links_get() -> Response:
@@ -495,7 +505,7 @@ def notification_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/notifications/links",
+            "self": "/v2/notifications/links",
             "endpoints": [
                 {
                     "link": "/v2/notifications",

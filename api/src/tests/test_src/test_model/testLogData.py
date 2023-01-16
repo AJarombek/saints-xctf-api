@@ -21,7 +21,7 @@ class TestLogData(TestSuite):
 
     def test_log_data_str(self) -> None:
         """
-        Prove that the human readable string representation of a Log object is as expected.
+        Prove that the human-readable string representation of a Log object is as expected.
         """
         log_str = (
             "LogData: [log_id: 1, username: andy, first: Andrew, last: Jarombek, "
@@ -33,21 +33,27 @@ class TestLogData(TestSuite):
         )
 
         self.maxDiff = None
-        self.assertEquals(str(self.log1), log_str)
-        self.assertEquals(self.log1.__str__(), log_str)
+        self.assertEqual(str(self.log1), log_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.log1.__str__(), log_str)
 
     def test_log_data_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a LogData object is as expected.
+        Prove that the machine-readable string representation of a LogData object is as expected.
         """
-        self.assertEquals(repr(self.log1), "<LogData 1>")
-        self.assertEquals(self.log1.__repr__(), "<LogData 1>")
+        self.assertEqual(repr(self.log1), "<LogData 1>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.log1.__repr__(), "<LogData 1>")
 
     def test_log_data_eq(self) -> None:
         """
         Prove that two LogData objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.log1 == self.log1copy)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.log1.__eq__(self.log1copy))
 
     def test_log_data_ne(self) -> None:
@@ -55,4 +61,6 @@ class TestLogData(TestSuite):
         Prove that two LogData objects with different property values test negative for value equality.
         """
         self.assertTrue(self.log1 != self.log2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.log1.__ne__(self.log2))

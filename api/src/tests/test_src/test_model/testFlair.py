@@ -29,29 +29,35 @@ class TestFlair(TestSuite):
 
     def test_flair_str(self) -> None:
         """
-        Prove that the human readable string representation of a Flair object is as expected.
+        Prove that the human-readable string representation of a Flair object is as expected.
         """
-        self.assertEquals(
+        self.assertEqual(
             str(self.flair1),
             "Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
-        self.assertEquals(
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.flair1.__str__(),
             "Flair: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
 
     def test_flair_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a Flair object is as expected.
+        Prove that the machine-readable string representation of a Flair object is as expected.
         """
-        self.assertEquals(repr(self.flair1), "<Flair 1,'andy'>")
-        self.assertEquals(self.flair1.__repr__(), "<Flair 1,'andy'>")
+        self.assertEqual(repr(self.flair1), "<Flair 1,'andy'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.flair1.__repr__(), "<Flair 1,'andy'>")
 
     def test_flair_eq(self) -> None:
         """
         Prove that two Flair objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.flair1 == self.flair1)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.flair1.__eq__(self.flair1))
 
     def test_flair_ne(self) -> None:
@@ -59,4 +65,6 @@ class TestFlair(TestSuite):
         Prove that two Flair objects with different property values test negative for value equality.
         """
         self.assertTrue(self.flair1 != self.flair2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.flair1.__ne__(self.flair2))

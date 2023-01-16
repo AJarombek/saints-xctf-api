@@ -7,9 +7,7 @@ Date: 6/22/2019
 import unittest
 import os
 import asyncio
-import json
 
-import boto3
 import aiohttp
 from flask.testing import FlaskClient
 

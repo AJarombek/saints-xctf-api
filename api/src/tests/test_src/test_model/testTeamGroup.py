@@ -29,19 +29,23 @@ class TestTeamGroup(TestSuite):
 
     def test_team_group_str(self) -> None:
         """
-        Prove that the human readable string representation of a TeamGroup object is as expected.
+        Prove that the human-readable string representation of a TeamGroup object is as expected.
         """
         team_str = "TeamGroup: [team_name: saintsxctf, group_id: 1, group_name: alumni, deleted: Y]"
 
-        self.assertEquals(str(self.team_group1), team_str)
-        self.assertEquals(self.team_group1.__str__(), team_str)
+        self.assertEqual(str(self.team_group1), team_str)
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.team_group1.__str__(), team_str)
 
     def test_team_group_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a TeamGroup object is as expected.
+        Prove that the machine-readable string representation of a TeamGroup object is as expected.
         """
-        self.assertEquals(repr(self.team_group1), "<TeamGroup 'saintsxctf', 'alumni'>")
-        self.assertEquals(
+        self.assertEqual(repr(self.team_group1), "<TeamGroup 'saintsxctf', 'alumni'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.team_group1.__repr__(), "<TeamGroup 'saintsxctf', 'alumni'>"
         )
 
@@ -50,6 +54,8 @@ class TestTeamGroup(TestSuite):
         Prove that two TeamGroup objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.team_group1 == self.team_group1)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.team_group1.__eq__(self.team_group1))
 
     def test_team_group_ne(self) -> None:
@@ -57,4 +63,6 @@ class TestTeamGroup(TestSuite):
         Prove that two TeamGroup objects with different property values test negative for value equality.
         """
         self.assertTrue(self.team_group1 != self.team_group2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.team_group1.__ne__(self.team_group2))

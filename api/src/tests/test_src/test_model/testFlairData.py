@@ -34,29 +34,35 @@ class TestFlairData(TestSuite):
 
     def test_flair_data_str(self) -> None:
         """
-        Prove that the human readable string representation of a FlairData object is as expected.
+        Prove that the human-readable string representation of a FlairData object is as expected.
         """
-        self.assertEquals(
+        self.assertEqual(
             str(self.flair1),
             "FlairData: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
-        self.assertEquals(
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(
             self.flair1.__str__(),
             "FlairData: [flair_id: 1, username: andy, flair: Website Creator, deleted: False]",
         )
 
     def test_flair_data_repr(self) -> None:
         """
-        Prove that the machine readable string representation of a FlairData object is as expected.
+        Prove that the machine-readable string representation of a FlairData object is as expected.
         """
-        self.assertEquals(repr(self.flair1), "<FlairData 1,'andy'>")
-        self.assertEquals(self.flair1.__repr__(), "<FlairData 1,'andy'>")
+        self.assertEqual(repr(self.flair1), "<FlairData 1,'andy'>")
+
+        # pylint: disable=unnecessary-dunder-call
+        self.assertEqual(self.flair1.__repr__(), "<FlairData 1,'andy'>")
 
     def test_flair_data_eq(self) -> None:
         """
         Prove that two FlairData objects with the same property values test positive for value equality.
         """
         self.assertTrue(self.flair1 == self.flair1)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.flair1.__eq__(self.flair1))
 
     def test_flair_data_ne(self) -> None:
@@ -64,4 +70,6 @@ class TestFlairData(TestSuite):
         Prove that two FlairData objects with different property values test negative for value equality.
         """
         self.assertTrue(self.flair1 != self.flair2)
+
+        # pylint: disable=unnecessary-dunder-call
         self.assertTrue(self.flair1.__ne__(self.flair2))

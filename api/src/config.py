@@ -19,8 +19,8 @@ class LocalTestConfig:
 
 class CICDTestConfig:
     ENV = "cicdtest"
-    AUTH_URL = "http://auth"
-    FUNCTION_URL = "http://functions"
+    AUTH_URL = "http://auth:5000"
+    FUNCTION_URL = "http://functions:5000"
 
 
 class TestConfig:

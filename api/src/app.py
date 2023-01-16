@@ -10,12 +10,12 @@ import logging
 from flask import Flask, jsonify
 from flask_sqlalchemy.extension import current_app
 from flask_sqlalchemy.record_queries import get_recorded_queries
-from database import db
-from flaskBcrypt import flask_bcrypt
 from flasgger import Swagger
+from flaskBcrypt import flask_bcrypt
 
 from commands import test
 from config import config
+from database import db
 from utils.db import get_connection_url
 from route.activationCodeRoute import activation_code_route
 from route.apiRoute import api_route
@@ -263,7 +263,6 @@ def after_request(response):
     for query in get_recorded_queries():
         if query.duration >= current_app.config["SLOW_DB_QUERY_TIME"]:
             current_app.logger.warning(
-                "Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n"
-                % (query.statement, query.parameters, query.duration, query.location)
+                f"Slow query: {query.statement}\nParameters: {query.parameters}\nDuration: {query.duration}s\nContext: {query.location}\n"
             )
     return response
