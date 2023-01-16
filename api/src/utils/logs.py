@@ -16,12 +16,12 @@ def to_miles(metric: str, distance: float) -> float:
     """
     if metric == "miles":
         return distance
-    elif metric == "meters":
+    if metric == "meters":
         return distance / 1609.344
-    elif metric == "kilometers":
+    if metric == "kilometers":
         return distance * 0.621317
-    else:
-        return distance
+
+    return distance
 
 
 def calculate_mile_pace(miles: float, time: str) -> str:

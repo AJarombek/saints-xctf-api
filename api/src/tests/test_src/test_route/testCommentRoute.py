@@ -486,7 +486,7 @@ class TestCommentRoute(TestSuite):
                 "last": "Jarombek",
                 "log_id": 1,
                 "time": "2019-10-26 20:00:00",
-                "content": f"Comment to be soft deleted",
+                "content": "Comment to be soft deleted",
                 "deleted": False,
             }
         )

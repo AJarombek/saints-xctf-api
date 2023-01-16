@@ -78,7 +78,7 @@ class TestForgotPasswordRoute(TestSuite):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_json.get("self"), "/v2/forgot_password/fake_user")
         self.assertFalse(response_json.get("created"))
-        self.assertEquals(
+        self.assertEqual(
             response_json.get("error"),
             "There is no user associated with this username/email.",
         )

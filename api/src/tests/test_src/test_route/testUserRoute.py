@@ -96,47 +96,47 @@ class TestUserRoute(TestSuite):
         self.assertIn("last", user)
         self.assertIsInstance(user.get("last"), str)
         self.assertIn("salt", user)
-        self.assertTrue(user.get("salt") is None or type(user.get("salt")) is str)
+        self.assertTrue(user.get("salt") is None or isinstance(user.get("salt"), str))
         self.assertIn("password", user)
         self.assertIsInstance(user.get("password"), str)
         self.assertNotIn("profilepic", user)
         self.assertIn("profilepic_name", user)
         self.assertTrue(
             user.get("profilepic_name") is None
-            or type(user.get("profilepic_name")) is str
+            or isinstance(user.get("profilepic_name"), str)
         )
         self.assertIn("description", user)
         self.assertTrue(
-            user.get("description") is None or type(user.get("description")) is str
+            user.get("description") is None or isinstance(user.get("description"), str)
         )
         self.assertIn("member_since", user)
         self.assertIsInstance(user.get("member_since"), str)
         self.assertIn("class_year", user)
         self.assertTrue(
-            user.get("class_year") is None or type(user.get("class_year")) is int
+            user.get("class_year") is None or isinstance(user.get("class_year"), int)
         )
         self.assertIn("location", user)
         self.assertTrue(
-            user.get("location") is None or type(user.get("location")) is str
+            user.get("location") is None or isinstance(user.get("location"), str)
         )
         self.assertIn("favorite_event", user)
         self.assertTrue(
             user.get("favorite_event") is None
-            or type(user.get("favorite_event")) is str
+            or isinstance(user.get("favorite_event"), str)
         )
         self.assertIn("activation_code", user)
         self.assertIsInstance(user.get("activation_code"), str)
         self.assertIn("email", user)
-        self.assertTrue(user.get("email") is None or type(user.get("email")) is str)
+        self.assertTrue(user.get("email") is None or isinstance(user.get("email"), str))
         self.assertIn("last_signin", user)
         self.assertIsInstance(user.get("last_signin"), str)
         self.assertIn("week_start", user)
         self.assertTrue(
-            user.get("week_start") is None or type(user.get("week_start")) is str
+            user.get("week_start") is None or isinstance(user.get("week_start"), str)
         )
         self.assertIn("subscribed", user)
         self.assertTrue(
-            user.get("subscribed") is None or type(user.get("subscribed")) is str
+            user.get("subscribed") is None or isinstance(user.get("subscribed"), str)
         )
         self.assertIn("deleted", user)
         self.assertIsInstance(user.get("deleted"), bool)
@@ -779,47 +779,47 @@ class TestUserRoute(TestSuite):
         self.assertIn("last", user)
         self.assertIsInstance(user.get("last"), str)
         self.assertIn("salt", user)
-        self.assertTrue(user.get("salt") is None or type(user.get("salt")) is str)
+        self.assertTrue(user.get("salt") is None or isinstance(user.get("salt"), str))
         self.assertIn("password", user)
         self.assertIsInstance(user.get("password"), str)
         self.assertNotIn("profilepic", user)
         self.assertIn("profilepic_name", user)
         self.assertTrue(
             user.get("profilepic_name") is None
-            or type(user.get("profilepic_name")) is str
+            or isinstance(user.get("profilepic_name"), str)
         )
         self.assertIn("description", user)
         self.assertTrue(
-            user.get("description") is None or type(user.get("description")) is str
+            user.get("description") is None or isinstance(user.get("description"), str)
         )
         self.assertIn("member_since", user)
         self.assertIsInstance(user.get("member_since"), str)
         self.assertIn("class_year", user)
         self.assertTrue(
-            user.get("class_year") is None or type(user.get("class_year")) is int
+            user.get("class_year") is None or isinstance(user.get("class_year"), int)
         )
         self.assertIn("location", user)
         self.assertTrue(
-            user.get("location") is None or type(user.get("location")) is str
+            user.get("location") is None or isinstance(user.get("location"), str)
         )
         self.assertIn("favorite_event", user)
         self.assertTrue(
             user.get("favorite_event") is None
-            or type(user.get("favorite_event")) is str
+            or isinstance(user.get("favorite_event"), str)
         )
         self.assertIn("activation_code", user)
         self.assertIsInstance(user.get("activation_code"), str)
         self.assertIn("email", user)
-        self.assertTrue(user.get("email") is None or type(user.get("email")) is str)
+        self.assertTrue(user.get("email") is None or isinstance(user.get("email"), str))
         self.assertIn("last_signin", user)
         self.assertIsInstance(user.get("last_signin"), str)
         self.assertIn("week_start", user)
         self.assertTrue(
-            user.get("week_start") is None or type(user.get("week_start")) is str
+            user.get("week_start") is None or isinstance(user.get("week_start"), str)
         )
         self.assertIn("subscribed", user)
         self.assertTrue(
-            user.get("subscribed") is None or type(user.get("subscribed")) is str
+            user.get("subscribed") is None or isinstance(user.get("subscribed"), str)
         )
         self.assertIn("deleted", user)
         self.assertIsInstance(user.get("deleted"), bool)
@@ -842,62 +842,62 @@ class TestUserRoute(TestSuite):
         self.assertIn("miles_all_time", statistics)
         self.assertTrue(
             statistics.get("miles_all_time") is None
-            or type(statistics.get("miles_all_time")) is float
+            or isinstance(statistics.get("miles_all_time"), float)
         )
         self.assertIn("miles_past_month", statistics)
         self.assertTrue(
             statistics.get("miles_past_month") is None
-            or type(statistics.get("miles_past_month")) is float
+            or isinstance(statistics.get("miles_past_month"), float)
         )
         self.assertIn("miles_past_week", statistics)
         self.assertTrue(
             statistics.get("miles_past_week") is None
-            or type(statistics.get("miles_past_week")) is float
+            or isinstance(statistics.get("miles_past_week"), float)
         )
         self.assertIn("miles_past_year", statistics)
         self.assertTrue(
             statistics.get("miles_past_year") is None
-            or type(statistics.get("miles_past_year")) is float
+            or isinstance(statistics.get("miles_past_year"), float)
         )
         self.assertIn("run_miles_all_time", statistics)
         self.assertTrue(
             statistics.get("run_miles_all_time") is None
-            or type(statistics.get("run_miles_all_time")) is float
+            or isinstance(statistics.get("run_miles_all_time"), float)
         )
         self.assertIn("run_miles_past_year", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_year") is None
-            or type(statistics.get("run_miles_past_year")) is float
+            or isinstance(statistics.get("run_miles_past_year"), float)
         )
         self.assertIn("run_miles_past_month", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_month") is None
-            or type(statistics.get("run_miles_past_month")) is float
+            or isinstance(statistics.get("run_miles_past_month"), float)
         )
         self.assertIn("run_miles_past_week", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_week") is None
-            or type(statistics.get("run_miles_past_week")) is float
+            or isinstance(statistics.get("run_miles_past_week"), float)
         )
         self.assertIn("feel_all_time", statistics)
         self.assertTrue(
             statistics.get("feel_all_time") is None
-            or type(statistics.get("feel_all_time")) is float
+            or isinstance(statistics.get("feel_all_time"), float)
         )
         self.assertIn("feel_past_year", statistics)
         self.assertTrue(
             statistics.get("feel_past_year") is None
-            or type(statistics.get("feel_past_year")) is float
+            or isinstance(statistics.get("feel_past_year"), float)
         )
         self.assertIn("feel_past_month", statistics)
         self.assertTrue(
             statistics.get("feel_past_month") is None
-            or type(statistics.get("feel_past_month")) is float
+            or isinstance(statistics.get("feel_past_month"), float)
         )
         self.assertIn("feel_past_week", statistics)
         self.assertTrue(
             statistics.get("feel_past_week") is None
-            or type(statistics.get("feel_past_week")) is float
+            or isinstance(statistics.get("feel_past_week"), float)
         )
 
     def test_user_snapshot_by_username_get_route_values_match_expected(self) -> None:
@@ -970,16 +970,19 @@ class TestUserRoute(TestSuite):
         group = groups[0]
         self.assertIn("group_name", group)
         self.assertTrue(
-            group.get("group_name") is None or type(group.get("group_name")) is str
+            group.get("group_name") is None or isinstance(group.get("group_name"), str)
         )
         self.assertIn("group_title", group)
         self.assertTrue(
-            group.get("group_title") is None or type(group.get("group_title")) is str
+            group.get("group_title") is None
+            or isinstance(group.get("group_title"), str)
         )
         self.assertIn("status", group)
-        self.assertTrue(group.get("status") is None or type(group.get("status")) is str)
+        self.assertTrue(
+            group.get("status") is None or isinstance(group.get("status"), str)
+        )
         self.assertIn("user", group)
-        self.assertTrue(group.get("user") is None or type(group.get("user")) is str)
+        self.assertTrue(group.get("user") is None or isinstance(group.get("user"), str))
 
     def test_user_groups_by_username_get_route_forbidden(self) -> None:
         """
@@ -1014,14 +1017,16 @@ class TestUserRoute(TestSuite):
         team = teams[0]
         self.assertIn("team_name", team)
         self.assertTrue(
-            team.get("team_name") is None or type(team.get("team_name")) is str
+            team.get("team_name") is None or isinstance(team.get("team_name"), str)
         )
         self.assertIn("title", team)
-        self.assertTrue(team.get("title") is None or type(team.get("title")) is str)
+        self.assertTrue(team.get("title") is None or isinstance(team.get("title"), str))
         self.assertIn("status", team)
-        self.assertTrue(team.get("status") is None or type(team.get("status")) is str)
+        self.assertTrue(
+            team.get("status") is None or isinstance(team.get("status"), str)
+        )
         self.assertIn("user", team)
-        self.assertTrue(team.get("user") is None or type(team.get("user")) is str)
+        self.assertTrue(team.get("user") is None or isinstance(team.get("user"), str))
 
     def test_user_teams_by_username_get_route_forbidden(self) -> None:
         """
@@ -1058,27 +1063,27 @@ class TestUserRoute(TestSuite):
         self.assertIn("team_name", team_membership)
         self.assertTrue(
             team_membership.get("team_name") is None
-            or type(team_membership.get("team_name")) is str
+            or isinstance(team_membership.get("team_name"), str)
         )
         self.assertIn("title", team_membership)
         self.assertTrue(
             team_membership.get("title") is None
-            or type(team_membership.get("title")) is str
+            or isinstance(team_membership.get("title"), str)
         )
         self.assertIn("status", team_membership)
         self.assertTrue(
             team_membership.get("status") is None
-            or type(team_membership.get("status")) is str
+            or isinstance(team_membership.get("status"), str)
         )
         self.assertIn("user", team_membership)
         self.assertTrue(
             team_membership.get("user") is None
-            or type(team_membership.get("user")) is str
+            or isinstance(team_membership.get("user"), str)
         )
         self.assertIn("groups", team_membership)
         self.assertTrue(
             team_membership.get("groups") is None
-            or type(team_membership.get("groups")) is list
+            or isinstance(team_membership.get("groups"), list)
         )
 
         groups = team_membership.get("groups")
@@ -1089,22 +1094,22 @@ class TestUserRoute(TestSuite):
             self.assertIn("group_name", group_membership)
             self.assertTrue(
                 group_membership.get("group_name") is None
-                or type(group_membership.get("group_name")) is str
+                or isinstance(group_membership.get("group_name"), str)
             )
             self.assertIn("group_title", group_membership)
             self.assertTrue(
                 group_membership.get("group_title") is None
-                or type(group_membership.get("group_title")) is str
+                or isinstance(group_membership.get("group_title"), str)
             )
             self.assertIn("status", group_membership)
             self.assertTrue(
                 group_membership.get("status") is None
-                or type(group_membership.get("status")) is str
+                or isinstance(group_membership.get("status"), str)
             )
             self.assertIn("user", group_membership)
             self.assertTrue(
                 group_membership.get("user") is None
-                or type(group_membership.get("user")) is str
+                or isinstance(group_membership.get("user"), str)
             )
 
     def test_user_memberships_by_username_get_route_forbidden(self) -> None:
@@ -1367,30 +1372,32 @@ class TestUserRoute(TestSuite):
         self.assertIn("notification_id", notification)
         self.assertTrue(
             notification.get("notification_id") is None
-            or type(notification.get("notification_id")) is int
+            or isinstance(notification.get("notification_id"), int)
         )
         self.assertIn("username", notification)
         self.assertTrue(
             notification.get("username") is None
-            or type(notification.get("username")) is str
+            or isinstance(notification.get("username"), str)
         )
         self.assertIn("time", notification)
         self.assertTrue(
-            notification.get("time") is None or type(notification.get("time")) is str
+            notification.get("time") is None
+            or isinstance(notification.get("time"), str)
         )
         self.assertIn("link", notification)
         self.assertTrue(
-            notification.get("link") is None or type(notification.get("link")) is str
+            notification.get("link") is None
+            or isinstance(notification.get("link"), str)
         )
         self.assertIn("viewed", notification)
         self.assertTrue(
             notification.get("viewed") is None
-            or type(notification.get("viewed")) is str
+            or isinstance(notification.get("viewed"), str)
         )
         self.assertIn("description", notification)
         self.assertTrue(
             notification.get("description") is None
-            or type(notification.get("description")) is str
+            or isinstance(notification.get("description"), str)
         )
 
     def test_user_notifications_by_username_get_route_forbidden(self) -> None:
@@ -1434,14 +1441,16 @@ class TestUserRoute(TestSuite):
         flair = flair_list[0]
         self.assertIn("flair_id", flair)
         self.assertTrue(
-            flair.get("flair_id") is None or type(flair.get("flair_id")) is int
+            flair.get("flair_id") is None or isinstance(flair.get("flair_id"), int)
         )
         self.assertIn("username", flair)
         self.assertTrue(
-            flair.get("username") is None or type(flair.get("username")) is str
+            flair.get("username") is None or isinstance(flair.get("username"), str)
         )
         self.assertIn("flair", flair)
-        self.assertTrue(flair.get("flair") is None or type(flair.get("flair")) is str)
+        self.assertTrue(
+            flair.get("flair") is None or isinstance(flair.get("flair"), str)
+        )
 
     def test_user_flair_by_username_get_route_forbidden(self) -> None:
         """
@@ -1495,62 +1504,62 @@ class TestUserRoute(TestSuite):
         self.assertIn("miles_all_time", statistics)
         self.assertTrue(
             statistics.get("miles_all_time") is None
-            or type(statistics.get("miles_all_time")) is float
+            or isinstance(statistics.get("miles_all_time"), float)
         )
         self.assertIn("miles_past_month", statistics)
         self.assertTrue(
             statistics.get("miles_past_month") is None
-            or type(statistics.get("miles_past_month")) is float
+            or isinstance(statistics.get("miles_past_month"), float)
         )
         self.assertIn("miles_past_week", statistics)
         self.assertTrue(
             statistics.get("miles_past_week") is None
-            or type(statistics.get("miles_past_week")) is float
+            or isinstance(statistics.get("miles_past_week"), float)
         )
         self.assertIn("miles_past_year", statistics)
         self.assertTrue(
             statistics.get("miles_past_year") is None
-            or type(statistics.get("miles_past_year")) is float
+            or isinstance(statistics.get("miles_past_year"), float)
         )
         self.assertIn("run_miles_all_time", statistics)
         self.assertTrue(
             statistics.get("run_miles_all_time") is None
-            or type(statistics.get("run_miles_all_time")) is float
+            or isinstance(statistics.get("run_miles_all_time"), float)
         )
         self.assertIn("run_miles_past_year", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_year") is None
-            or type(statistics.get("run_miles_past_year")) is float
+            or isinstance(statistics.get("run_miles_past_year"), float)
         )
         self.assertIn("run_miles_past_month", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_month") is None
-            or type(statistics.get("run_miles_past_month")) is float
+            or isinstance(statistics.get("run_miles_past_month"), float)
         )
         self.assertIn("run_miles_past_week", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_week") is None
-            or type(statistics.get("run_miles_past_week")) is float
+            or isinstance(statistics.get("run_miles_past_week"), float)
         )
         self.assertIn("feel_all_time", statistics)
         self.assertTrue(
             statistics.get("feel_all_time") is None
-            or type(statistics.get("feel_all_time")) is float
+            or isinstance(statistics.get("feel_all_time"), float)
         )
         self.assertIn("feel_past_year", statistics)
         self.assertTrue(
             statistics.get("feel_past_year") is None
-            or type(statistics.get("feel_past_year")) is float
+            or isinstance(statistics.get("feel_past_year"), float)
         )
         self.assertIn("feel_past_month", statistics)
         self.assertTrue(
             statistics.get("feel_past_month") is None
-            or type(statistics.get("feel_past_month")) is float
+            or isinstance(statistics.get("feel_past_month"), float)
         )
         self.assertIn("feel_past_week", statistics)
         self.assertTrue(
             statistics.get("feel_past_week") is None
-            or type(statistics.get("feel_past_week")) is float
+            or isinstance(statistics.get("feel_past_week"), float)
         )
 
     def test_user_statistics_by_username_get_route_forbidden(self) -> None:

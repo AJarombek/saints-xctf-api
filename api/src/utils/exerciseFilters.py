@@ -4,8 +4,6 @@ Author: Andrew Jarombek
 Date: 8/5/2019
 """
 
-from typing import List
-
 
 def create_exercise_filter_list(exercise_types: str) -> list:
     """
@@ -56,10 +54,10 @@ def generate_exercise_filter_sql_query(filters: list) -> str:
     :param filters: A list of exercise types to filter logs on.
     :return: A SQL query string.
     """
-    if filters is None or filters.__len__() == 0:
+    if filters is None or len(filters) == 0:
         return ""
-    else:
-        sql_query = "type IN ("
-        for exercise_filter in filters:
-            sql_query += f"'{exercise_filter}'" + ","
-        return sql_query[:-1] + ")"
+
+    sql_query = "type IN ("
+    for exercise_filter in filters:
+        sql_query += f"'{exercise_filter}'" + ","
+    return sql_query[:-1] + ")"

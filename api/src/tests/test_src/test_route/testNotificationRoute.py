@@ -99,14 +99,15 @@ class TestNotificationRoute(TestSuite):
         self.assertIsInstance(notification.get("time"), str)
         self.assertIn("link", response_json.get("notifications")[0])
         self.assertTrue(
-            notification.get("link") is None or type(notification.get("link")) is str
+            notification.get("link") is None
+            or isinstance(notification.get("link"), str)
         )
         self.assertIn("viewed", response_json.get("notifications")[0])
         self.assertIsInstance(notification.get("viewed"), str)
         self.assertIn("description", response_json.get("notifications")[0])
         self.assertTrue(
             notification.get("description") is None
-            or type(notification.get("description")) is str
+            or isinstance(notification.get("description"), str)
         )
         self.assertIn("deleted", response_json.get("notifications")[0])
         self.assertIsInstance(notification.get("deleted"), bool)
@@ -399,7 +400,7 @@ class TestNotificationRoute(TestSuite):
                 "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "link": "https://www.saintsxctf.com/log.php?logno=1",
                 "viewed": "Y",
-                "description": f"Dotty J Commented on Your Log",
+                "description": "Dotty J Commented on Your Log",
             }
         )
 

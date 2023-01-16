@@ -5,8 +5,8 @@ Date: 10/11/2019
 """
 
 import json
+
 from flask import Response
-import unittest
 
 from tests.TestSuite import TestSuite
 from tests.test_src.test_route.utils import test_route_auth, AuthVariant
@@ -341,7 +341,7 @@ class TestActivationCodeRoute(TestSuite):
         endpoint should return a 400 failure status if the activation code does not exist.
         """
         response: Response = self.client.delete(
-            f"/v2/activation_code/TESTCD",
+            "/v2/activation_code/TESTCD",
             headers={"Authorization": f"Bearer {self.jwt}"},
         )
         response_json: dict = response.get_json()

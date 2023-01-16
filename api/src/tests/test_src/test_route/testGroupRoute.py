@@ -380,7 +380,7 @@ class TestGroupRoute(TestSuite):
         self.assertIsNone(response_json.get("group"))
         self.assertEqual(
             response_json.get("error"),
-            f"The group submitted is equal to the existing group with the same id.",
+            "The group submitted is equal to the existing group with the same id.",
         )
 
     def test_group_by_id_put_route_200(self) -> None:
@@ -848,62 +848,62 @@ class TestGroupRoute(TestSuite):
         self.assertIn("miles_all_time", statistics)
         self.assertTrue(
             statistics.get("miles_all_time") is None
-            or type(statistics.get("miles_all_time")) is float
+            or isinstance(statistics.get("miles_all_time"), float)
         )
         self.assertIn("miles_past_month", statistics)
         self.assertTrue(
             statistics.get("miles_past_month") is None
-            or type(statistics.get("miles_past_month")) is float
+            or isinstance(statistics.get("miles_past_month"), float)
         )
         self.assertIn("miles_past_week", statistics)
         self.assertTrue(
             statistics.get("miles_past_week") is None
-            or type(statistics.get("miles_past_week")) is float
+            or isinstance(statistics.get("miles_past_week"), float)
         )
         self.assertIn("miles_past_year", statistics)
         self.assertTrue(
             statistics.get("miles_past_year") is None
-            or type(statistics.get("miles_past_year")) is float
+            or isinstance(statistics.get("miles_past_year"), float)
         )
         self.assertIn("run_miles_all_time", statistics)
         self.assertTrue(
             statistics.get("run_miles_all_time") is None
-            or type(statistics.get("run_miles_all_time")) is float
+            or isinstance(statistics.get("run_miles_all_time"), float)
         )
         self.assertIn("run_miles_past_year", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_year") is None
-            or type(statistics.get("run_miles_past_year")) is float
+            or isinstance(statistics.get("run_miles_past_year"), float)
         )
         self.assertIn("run_miles_past_month", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_month") is None
-            or type(statistics.get("run_miles_past_month")) is float
+            or isinstance(statistics.get("run_miles_past_month"), float)
         )
         self.assertIn("run_miles_past_week", statistics)
         self.assertTrue(
             statistics.get("run_miles_past_week") is None
-            or type(statistics.get("run_miles_past_week")) is float
+            or isinstance(statistics.get("run_miles_past_week"), float)
         )
         self.assertIn("feel_all_time", statistics)
         self.assertTrue(
             statistics.get("feel_all_time") is None
-            or type(statistics.get("feel_all_time")) is float
+            or isinstance(statistics.get("feel_all_time"), float)
         )
         self.assertIn("feel_past_year", statistics)
         self.assertTrue(
             statistics.get("feel_past_year") is None
-            or type(statistics.get("feel_past_year")) is float
+            or isinstance(statistics.get("feel_past_year"), float)
         )
         self.assertIn("feel_past_month", statistics)
         self.assertTrue(
             statistics.get("feel_past_month") is None
-            or type(statistics.get("feel_past_month")) is float
+            or isinstance(statistics.get("feel_past_month"), float)
         )
         self.assertIn("feel_past_week", statistics)
         self.assertTrue(
             statistics.get("feel_past_week") is None
-            or type(statistics.get("feel_past_week")) is float
+            or isinstance(statistics.get("feel_past_week"), float)
         )
 
     def test_group_statistics_by_id_get_route_200_expected_values(self) -> None:
@@ -983,21 +983,21 @@ class TestGroupRoute(TestSuite):
 
         leaderboard_item = leaderboard_items[0]
         self.assertIn("username", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("username")) is str)
+        self.assertTrue(isinstance(leaderboard_item.get("username"), str))
         self.assertIn("first", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("first")) is str)
+        self.assertTrue(isinstance(leaderboard_item.get("first"), str))
         self.assertIn("last", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("last")) is str)
+        self.assertTrue(isinstance(leaderboard_item.get("last"), str))
         self.assertIn("miles", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("miles")) is float)
+        self.assertTrue(isinstance(leaderboard_item.get("miles"), float))
         self.assertIn("miles_run", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("miles_run")) is float)
+        self.assertTrue(isinstance(leaderboard_item.get("miles_run"), float))
         self.assertIn("miles_biked", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("miles_biked")) is float)
+        self.assertTrue(isinstance(leaderboard_item.get("miles_biked"), float))
         self.assertIn("miles_swam", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("miles_swam")) is float)
+        self.assertTrue(isinstance(leaderboard_item.get("miles_swam"), float))
         self.assertIn("miles_other", leaderboard_item)
-        self.assertTrue(type(leaderboard_item.get("miles_other")) is float)
+        self.assertTrue(isinstance(leaderboard_item.get("miles_other"), float))
 
     def test_group_leaderboard_get_route_expected_values(self) -> None:
         """
@@ -1080,21 +1080,21 @@ class TestGroupRoute(TestSuite):
         if len(leaderboard_items) > 0:
             leaderboard_item = leaderboard_items[0]
             self.assertIn("username", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("username")) is str)
+            self.assertTrue(isinstance(leaderboard_item.get("username"), str))
             self.assertIn("first", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("first")) is str)
+            self.assertTrue(isinstance(leaderboard_item.get("first"), str))
             self.assertIn("last", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("last")) is str)
+            self.assertTrue(isinstance(leaderboard_item.get("last"), str))
             self.assertIn("miles", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("miles")) is float)
+            self.assertTrue(isinstance(leaderboard_item.get("miles"), float))
             self.assertIn("miles_run", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("miles_run")) is float)
+            self.assertTrue(isinstance(leaderboard_item.get("miles_run"), float))
             self.assertIn("miles_biked", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("miles_biked")) is float)
+            self.assertTrue(isinstance(leaderboard_item.get("miles_biked"), float))
             self.assertIn("miles_swam", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("miles_swam")) is float)
+            self.assertTrue(isinstance(leaderboard_item.get("miles_swam"), float))
             self.assertIn("miles_other", leaderboard_item)
-            self.assertTrue(type(leaderboard_item.get("miles_other")) is float)
+            self.assertTrue(isinstance(leaderboard_item.get("miles_other"), float))
         else:
             self.assertEqual(
                 "No leaderboard data was found within this group and time interval.",

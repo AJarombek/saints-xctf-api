@@ -44,6 +44,5 @@ jobs:
       - name: Analysing the Code with Pylint
         working-directory: ./api/src
         run: |
-          pipenv install --ignore-pipfile
-          pipenv shell
+          pipenv install --ignore-pipfile --system
           pylint $(git ls-files '*.py')

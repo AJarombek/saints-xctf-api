@@ -4,7 +4,7 @@
 
 [MAIN]
 
-fail-under=7.64
+fail-under=8.17
 py-version=3.8
 
 [MESSAGES CONTROL]
@@ -12,7 +12,12 @@ py-version=3.8
 disable=
     cyclic-import,
     duplicate-code,
-    logging-fstring-interpolation
+    invalid-name,
+    logging-fstring-interpolation,
+    missing-class-docstring,
+    too-many-lines,
+    too-many-public-methods,
+    too-many-statements
 
 [REPORTS]
 

@@ -16,7 +16,7 @@ class TestUtilLog(TestSuite):
         miles = 3.11
         metric = "miles"
 
-        self.assertEqual("3.11", "{0:.2f}".format(to_miles(metric, miles)))
+        self.assertEqual("3.11", f"{to_miles(metric, miles):.2f}")
 
         miles = 0
         metric = "miles"
@@ -30,7 +30,7 @@ class TestUtilLog(TestSuite):
         kilometers = 5
         metric = "kilometers"
 
-        self.assertEqual("3.11", "{0:.2f}".format(to_miles(metric, kilometers)))
+        self.assertEqual("3.11", f"{to_miles(metric, kilometers):.2f}")
 
         kilometers = 0
         metric = "kilometers"
@@ -44,7 +44,7 @@ class TestUtilLog(TestSuite):
         meters = 5000
         metric = "meters"
 
-        self.assertEqual("3.11", "{0:.2f}".format(to_miles(metric, meters)))
+        self.assertEqual("3.11", f"{to_miles(metric, meters):.2f}")
 
         meters = 0
         metric = "meters"

@@ -21,7 +21,8 @@ def get_connection_url() -> str:
     # Local development credentials aren't stored in a Secret
     if env in {"local", "localtest", "cicdtest"}:
         return "mysql+pymysql://saintsxctflocal:saintsxctf@db/saintsxctf"
-    elif env == "test":
+
+    if env == "test":
         return "mysql+pymysql://test:test@localhost/saintsxctf"
 
     secret_map = aws.retrieve_db_cred(env)
