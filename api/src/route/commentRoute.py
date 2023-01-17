@@ -6,7 +6,16 @@ Date: 7/12/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    Response,
+    redirect,
+    url_for,
+    current_app,
+)
 from flasgger import swag_from
 
 from decorators import auth_required
@@ -29,9 +38,11 @@ def comments_redirect() -> Response:
         """[GET] /v2/comments"""
         return redirect(url_for("comment_route.comments"), code=302)
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/comments"""
         return redirect(url_for("comment_route.comments"), code=307)
+
+    return abort(404)
 
 
 @comment_route.route("/", methods=["GET", "POST"])
@@ -47,9 +58,11 @@ def comments() -> Response:
         """[GET] /v2/comments"""
         return comments_get()
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/comments"""
         return comment_post()
+
+    return abort(404)
 
 
 @comment_route.route("/<comment_id>", methods=["GET", "PUT", "DELETE"])
@@ -67,13 +80,15 @@ def comment_with_id(comment_id) -> Response:
         """[GET] /v2/comments/<comment_id>"""
         return comment_with_id_get(comment_id)
 
-    elif request.method == "PUT":
+    if request.method == "PUT":
         """[PUT] /v2/comments/<comment_id>"""
         return comment_with_id_put(comment_id)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         """[DELETE] /v2/comments/<comment_id>"""
         return comment_with_id_delete(comment_id)
+
+    return abort(404)
 
 
 @comment_route.route("/soft/<comment_id>", methods=["DELETE"])
@@ -89,6 +104,8 @@ def comment_soft_by_code(comment_id) -> Response:
         """[DELETE] /v2/comments/soft/<code>"""
         return comment_with_id_soft_delete(comment_id)
 
+    return abort(404)
+
 
 @comment_route.route("/links", methods=["GET"])
 @swag_from("swagger/commentRoute/commentLinks.yml", methods=["GET"])
@@ -101,15 +118,17 @@ def comment_links() -> Response:
         """[GET] /v2/comments/links"""
         return comment_links_get()
 
+    return abort(404)
+
 
 def comments_get():
     """
     Get all the comments in the database.
     :return: A response object for the GET API request.
     """
-    comments: list = CommentDao.get_comments()
+    comments_data: list = CommentDao.get_comments()
 
-    if comments is None:
+    if comments_data is None:
         response = jsonify(
             {
                 "self": "/v2/comments",
@@ -119,15 +138,15 @@ def comments_get():
         )
         response.status_code = 500
         return response
-    else:
-        comment_dicts = [CommentData(comment).__dict__ for comment in comments]
 
-        for comment_dict in comment_dicts:
-            comment_dict["log"] = f'/v2/logs/{comment_dict.get("log_id")}'
+    comment_dicts = [CommentData(comment).__dict__ for comment in comments_data]
 
-        response = jsonify({"self": "/v2/comments", "comments": comment_dicts})
-        response.status_code = 200
-        return response
+    for comment_dict in comment_dicts:
+        comment_dict["log"] = f'/v2/logs/{comment_dict.get("log_id")}'
+
+    response = jsonify({"self": "/v2/comments", "comments": comment_dicts})
+    response.status_code = 200
+    return response
 
 
 def comment_post():
@@ -140,7 +159,7 @@ def comment_post():
     if comment_data is None:
         response = jsonify(
             {
-                "self": f"/v2/comments",
+                "self": "/v2/comments",
                 "added": False,
                 "comment": None,
                 "error": "the request body isn't populated",
@@ -165,7 +184,7 @@ def comment_post():
         )
         response = jsonify(
             {
-                "self": f"/v2/comments",
+                "self": "/v2/comments",
                 "added": False,
                 "comment": None,
                 "error": f"User {jwt_username} is not authorized to create a comment for user {comment_to_add.username}.",
@@ -182,7 +201,7 @@ def comment_post():
     ]:
         response = jsonify(
             {
-                "self": f"/v2/comments",
+                "self": "/v2/comments",
                 "added": False,
                 "comment": None,
                 "error": "'username', 'first', 'last', and 'log_id' are required fields",
@@ -216,17 +235,17 @@ def comment_post():
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": "/v2/comments",
-                "added": False,
-                "comment": None,
-                "error": "failed to create a new comment",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/comments",
+            "added": False,
+            "comment": None,
+            "error": "failed to create a new comment",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def comment_with_id_get(comment_id):
@@ -248,19 +267,19 @@ def comment_with_id_get(comment_id):
         )
         response.status_code = 400
         return response
-    else:
-        comment_dict: dict = CommentData(comment).__dict__
-        comment_dict["time"] = str(comment_dict["time"])
 
-        response = jsonify(
-            {
-                "self": f"/v2/comments/{comment_id}",
-                "comment": comment_dict,
-                "log": f'/v2/logs/{comment_dict.get("log_id")}',
-            }
-        )
-        response.status_code = 200
-        return response
+    comment_dict: dict = CommentData(comment).__dict__
+    comment_dict["time"] = str(comment_dict["time"])
+
+    response = jsonify(
+        {
+            "self": f"/v2/comments/{comment_id}",
+            "comment": comment_dict,
+            "log": f'/v2/logs/{comment_dict.get("log_id")}',
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def comment_with_id_put(comment_id):
@@ -330,28 +349,28 @@ def comment_with_id_put(comment_id):
             )
             response.status_code = 200
             return response
-        else:
-            response = jsonify(
-                {
-                    "self": f"/v2/comments/{comment_id}",
-                    "updated": False,
-                    "comment": None,
-                    "error": "the comment failed to update",
-                }
-            )
-            response.status_code = 500
-            return response
-    else:
+
         response = jsonify(
             {
                 "self": f"/v2/comments/{comment_id}",
                 "updated": False,
                 "comment": None,
-                "error": "the comment submitted is equal to the existing comment with the same id",
+                "error": "the comment failed to update",
             }
         )
-        response.status_code = 400
+        response.status_code = 500
         return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/comments/{comment_id}",
+            "updated": False,
+            "comment": None,
+            "error": "the comment submitted is equal to the existing comment with the same id",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def comment_with_id_delete(comment_id):
@@ -405,16 +424,16 @@ def comment_with_id_delete(comment_id):
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/comments/{comment_id}",
-                "deleted": False,
-                "error": "failed to delete the comment",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/comments/{comment_id}",
+            "deleted": False,
+            "error": "failed to delete the comment",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def comment_with_id_soft_delete(comment_id):
@@ -476,16 +495,16 @@ def comment_with_id_soft_delete(comment_id):
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/comments/soft/{comment_id}",
-                "deleted": False,
-                "error": "failed to soft delete the comment",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/comments/soft/{comment_id}",
+            "deleted": False,
+            "error": "failed to soft delete the comment",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def comment_links_get() -> Response:
@@ -495,7 +514,7 @@ def comment_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/comments/links",
+            "self": "/v2/comments/links",
             "endpoints": [
                 {
                     "link": "/v2/comments",

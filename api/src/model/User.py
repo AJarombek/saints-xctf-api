@@ -4,10 +4,11 @@ Author: Andrew Jarombek
 Date: 6/21/2019
 """
 
-from database import db
 from sqlalchemy import Column
 from sqlalchemy.orm import deferred
 from sqlalchemy.dialects.mysql import LONGBLOB
+
+from database import db
 
 
 class User(db.Model):
@@ -101,7 +102,7 @@ class User(db.Model):
         String representation of a user.  This representation is meant to be machine readable.
         :return: The user in string form.
         """
-        return "<User %r>" % self.username
+        return f"<User {self.username}>"
 
     def __eq__(self, other):
         """

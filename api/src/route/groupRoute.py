@@ -7,7 +7,16 @@ Date: 7/7/2019
 from datetime import datetime
 from typing import Optional
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    Response,
+    redirect,
+    url_for,
+    current_app,
+)
 from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import Row
@@ -40,6 +49,8 @@ def groups_redirect() -> Response:
         """[GET] /v2/groups"""
         return redirect(url_for("group_route.groups"), code=302)
 
+    return abort(404)
+
 
 @group_route.route("/", methods=["GET"])
 @auth_required()
@@ -52,6 +63,8 @@ def groups() -> Response:
     if request.method == "GET":
         """[GET] /v2/groups"""
         return groups_get()
+
+    return abort(404)
 
 
 @group_route.route("/<team_name>/<group_name>", methods=["GET", "PUT"])
@@ -69,9 +82,11 @@ def group(team_name, group_name) -> Response:
         """[GET] /v2/groups/<team_name>/<group_name>"""
         return group_by_group_name_get(team_name, group_name)
 
-    elif request.method == "PUT":
+    if request.method == "PUT":
         """[PUT] /v2/groups/<team_name>/<group_name>"""
         return group_by_group_name_put(team_name, group_name)
+
+    return abort(404)
 
 
 @group_route.route("/<group_id>", methods=["GET", "PUT"])
@@ -88,9 +103,11 @@ def group_by_id(group_id) -> Response:
         """[GET] /v2/groups/<id>"""
         return group_by_id_get(group_id)
 
-    elif request.method == "PUT":
+    if request.method == "PUT":
         """[PUT] /v2/groups/<id>"""
         return group_by_id_put(group_id)
+
+    return abort(404)
 
 
 @group_route.route("/team/<group_id>", methods=["GET"])
@@ -105,6 +122,8 @@ def team_by_group_id(group_id) -> Response:
     if request.method == "GET":
         """[GET] /v2/groups/team/<id>"""
         return team_by_group_id_get(group_id)
+
+    return abort(404)
 
 
 @group_route.route("/members/<team_name>/<group_name>", methods=["GET"])
@@ -121,6 +140,8 @@ def group_members(team_name, group_name) -> Response:
         """[GET] /v2/groups/members/<team_name>/<group_name>"""
         return group_members_by_group_name_get(team_name, group_name)
 
+    return abort(404)
+
 
 @group_route.route("/members/<group_id>", methods=["GET"])
 @auth_required()
@@ -134,6 +155,8 @@ def group_members_by_id(group_id) -> Response:
     if request.method == "GET":
         """[GET] /v2/groups/members/<group_id>"""
         return group_members_by_id_get(group_id)
+
+    return abort(404)
 
 
 @group_route.route("/members/<group_id>/<username>", methods=["PUT", "DELETE"])
@@ -151,9 +174,11 @@ def group_members_by_group_id_and_username(group_id, username) -> Response:
         """[PUT] /v2/groups/members/<group_id>/<username>"""
         return group_members_by_group_id_and_username_put(group_id, username)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         """[DELETE] /v2/groups/members/<group_id>/<username>"""
         return group_members_by_group_id_and_username_delete(group_id, username)
+
+    return abort(404)
 
 
 @group_route.route("/statistics/<group_id>", methods=["GET"])
@@ -168,6 +193,8 @@ def group_statistics(group_id) -> Response:
     if request.method == "GET":
         """[GET] /v2/groups/statistics/<group_id>"""
         return group_statistics_by_id_get(group_id)
+
+    return abort(404)
 
 
 @group_route.route("/leaderboard/<group_id>", methods=["GET"])
@@ -187,6 +214,8 @@ def group_leaderboard(group_id, interval=None) -> Response:
         """[GET] /v2/groups/leaderboard/<group_id>/<interval>"""
         return group_leaderboard_get(group_id, interval)
 
+    return abort(404)
+
 
 @group_route.route("/snapshot/<team_name>/<group_name>", methods=["GET"])
 @auth_required()
@@ -202,6 +231,8 @@ def group_snapshot(team_name, group_name) -> Response:
         """[GET] /v2/groups/snapshot/<team_name>/<group_name>"""
         return group_snapshot_by_group_name_get(team_name, group_name)
 
+    return abort(404)
+
 
 @group_route.route("/links", methods=["GET"])
 @swag_from("swagger/groupRoute/groupLinks.yml", methods=["GET"])
@@ -213,6 +244,8 @@ def group_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/groups/links"""
         return group_links_get()
+
+    return abort(404)
 
 
 def groups_get() -> Response:
@@ -234,19 +267,19 @@ def groups_get() -> Response:
                 except AttributeError:
                     pass
 
-        response = jsonify({"self": f"/v2/groups", "groups": group_data_list})
+        response = jsonify({"self": "/v2/groups", "groups": group_data_list})
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/groups",
-                "groups": None,
-                "error": "failed to retrieve groups from the database",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/groups",
+            "groups": None,
+            "error": "failed to retrieve groups from the database",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def group_by_group_name_get(team_name: str, group_name: str) -> Response:
@@ -271,12 +304,12 @@ def group_by_group_name_get(team_name: str, group_name: str) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        response = jsonify(
-            {"self": f"/v2/groups/{team_name}/{group_name}", "group": dict(group_row)}
-        )
-        response.status_code = 200
-        return response
+
+    response = jsonify(
+        {"self": f"/v2/groups/{team_name}/{group_name}", "group": dict(group_row)}
+    )
+    response.status_code = 200
+    return response
 
 
 def group_by_group_name_put(team_name: str, group_name: str) -> Response:
@@ -360,28 +393,28 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
             )
             response.status_code = 200
             return response
-        else:
-            response = jsonify(
-                {
-                    "self": f"/v2/groups/{team_name}/{group_name}",
-                    "updated": False,
-                    "group": None,
-                    "error": "the group failed to update",
-                }
-            )
-            response.status_code = 500
-            return response
-    else:
+
         response = jsonify(
             {
                 "self": f"/v2/groups/{team_name}/{group_name}",
                 "updated": False,
                 "group": None,
-                "error": "the group submitted is equal to the existing group with the same name",
+                "error": "the group failed to update",
             }
         )
-        response.status_code = 400
+        response.status_code = 500
         return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/{team_name}/{group_name}",
+            "updated": False,
+            "group": None,
+            "error": "the group submitted is equal to the existing group with the same name",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def group_by_id_get(group_id: str) -> Response:
@@ -402,18 +435,18 @@ def group_by_id_get(group_id: str) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        group_dict = GroupData(group_row).__dict__
 
-        if group_dict["grouppic"] is not None:
-            try:
-                group_dict["grouppic"] = group_dict["grouppic"].decode("utf-8")
-            except AttributeError:
-                pass
+    group_dict = GroupData(group_row).__dict__
 
-        response = jsonify({"self": f"/v2/groups/{group_id}", "group": group_dict})
-        response.status_code = 200
-        return response
+    if group_dict["grouppic"] is not None:
+        try:
+            group_dict["grouppic"] = group_dict["grouppic"].decode("utf-8")
+        except AttributeError:
+            pass
+
+    response = jsonify({"self": f"/v2/groups/{group_id}", "group": group_dict})
+    response.status_code = 200
+    return response
 
 
 def group_by_id_put(group_id: str) -> Response:
@@ -488,28 +521,28 @@ def group_by_id_put(group_id: str) -> Response:
             )
             response.status_code = 200
             return response
-        else:
-            response = jsonify(
-                {
-                    "self": f"/v2/groups/{group_id}",
-                    "updated": False,
-                    "group": None,
-                    "error": "The group failed to update.",
-                }
-            )
-            response.status_code = 500
-            return response
-    else:
+
         response = jsonify(
             {
                 "self": f"/v2/groups/{group_id}",
                 "updated": False,
                 "group": None,
-                "error": "The group submitted is equal to the existing group with the same id.",
+                "error": "The group failed to update.",
             }
         )
-        response.status_code = 400
+        response.status_code = 500
         return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/{group_id}",
+            "updated": False,
+            "group": None,
+            "error": "The group submitted is equal to the existing group with the same id.",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def team_by_group_id_get(group_id: str) -> Response:
@@ -530,12 +563,12 @@ def team_by_group_id_get(group_id: str) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        team_dict = TeamData(team_row).__dict__
 
-        response = jsonify({"self": f"/v2/groups/team/{group_id}", "team": team_dict})
-        response.status_code = 200
-        return response
+    team_dict = TeamData(team_row).__dict__
+
+    response = jsonify({"self": f"/v2/groups/team/{group_id}", "team": team_dict})
+    response.status_code = 200
+    return response
 
 
 def group_members_by_group_name_get(team_name: str, group_name: str) -> Response:
@@ -545,11 +578,11 @@ def group_members_by_group_name_get(team_name: str, group_name: str) -> Response
     :param group_name: Unique name which identifies a group within a team.
     :return: A response object for the GET API request.
     """
-    group_members: ResultProxy = GroupMemberDao.get_group_members(
+    group_members_data: ResultProxy = GroupMemberDao.get_group_members(
         group_name=group_name, team_name=team_name
     )
 
-    if group_members is None or group_members.rowcount == 0:
+    if group_members_data is None or group_members_data.rowcount == 0:
         response = jsonify(
             {
                 "self": f"/v2/groups/members/{team_name}/{group_name}",
@@ -560,28 +593,28 @@ def group_members_by_group_name_get(team_name: str, group_name: str) -> Response
         )
         response.status_code = 400
         return response
-    else:
-        group_members_list = [
-            {
-                "username": member.username,
-                "first": member.first,
-                "last": member.last,
-                "member_since": member.member_since,
-                "user": member.user,
-                "status": member.status,
-            }
-            for member in group_members
-        ]
 
-        response = jsonify(
-            {
-                "self": f"/v2/groups/members/{team_name}/{group_name}",
-                "group": f"/v2/groups/{team_name}/{group_name}",
-                "group_members": group_members_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    group_members_list = [
+        {
+            "username": member.username,
+            "first": member.first,
+            "last": member.last,
+            "member_since": member.member_since,
+            "user": member.user,
+            "status": member.status,
+        }
+        for member in group_members_data
+    ]
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/members/{team_name}/{group_name}",
+            "group": f"/v2/groups/{team_name}/{group_name}",
+            "group_members": group_members_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def group_members_by_id_get(group_id: str) -> Response:
@@ -590,11 +623,11 @@ def group_members_by_id_get(group_id: str) -> Response:
     :param group_id: Unique id which identifies a group.
     :return: A response object for the GET API request.
     """
-    group_members: ResultProxy = GroupMemberDao.get_group_members_by_id(
+    group_members_data: ResultProxy = GroupMemberDao.get_group_members_by_id(
         group_id=group_id
     )
 
-    if group_members is None or group_members.rowcount == 0:
+    if group_members_data is None or group_members_data.rowcount == 0:
         response = jsonify(
             {
                 "self": f"/v2/groups/members/{group_id}",
@@ -605,28 +638,28 @@ def group_members_by_id_get(group_id: str) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        group_members_list = [
-            {
-                "username": member.username,
-                "first": member.first,
-                "last": member.last,
-                "member_since": member.member_since,
-                "user": member.user,
-                "status": member.status,
-            }
-            for member in group_members
-        ]
 
-        response = jsonify(
-            {
-                "self": f"/v2/groups/members/{group_id}",
-                "group": f"/v2/groups/{group_id}",
-                "group_members": group_members_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    group_members_list = [
+        {
+            "username": member.username,
+            "first": member.first,
+            "last": member.last,
+            "member_since": member.member_since,
+            "user": member.user,
+            "status": member.status,
+        }
+        for member in group_members_data
+    ]
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/members/{group_id}",
+            "group": f"/v2/groups/{group_id}",
+            "group_members": group_members_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def group_members_by_group_id_and_username_put(
@@ -706,17 +739,17 @@ def group_members_by_group_id_and_username_put(
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/groups/members/{group_id}/{username}",
-                "updated": False,
-                "group_member": None,
-                "error": "The group membership failed to update.",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/members/{group_id}/{username}",
+            "updated": False,
+            "group_member": None,
+            "error": "The group membership failed to update.",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def group_members_by_group_id_and_username_delete(
@@ -788,16 +821,16 @@ def group_members_by_group_id_and_username_delete(
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/groups/members/{group_id}/{username}",
-                "deleted": False,
-                "error": "Failed to delete the group membership.",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/members/{group_id}/{username}",
+            "deleted": False,
+            "error": "Failed to delete the group membership.",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def group_statistics_by_id_get(group_id: str) -> Response:
@@ -863,7 +896,8 @@ def group_leaderboard_get(group_id: str, interval: str) -> Response:
         )
         response.status_code = 500
         return response
-    elif leaderboard.rowcount == 0:
+
+    if leaderboard.rowcount == 0:
         response = jsonify(
             {
                 "self": f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
@@ -873,29 +907,29 @@ def group_leaderboard_get(group_id: str, interval: str) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        leaderboard_list = [
-            {
-                "username": entry.username,
-                "first": entry.first,
-                "last": entry.last,
-                "miles": entry.miles,
-                "miles_run": entry.miles_run,
-                "miles_biked": entry.miles_biked,
-                "miles_swam": entry.miles_swam,
-                "miles_other": entry.miles_other,
-            }
-            for entry in leaderboard
-        ]
 
-        response = jsonify(
-            {
-                "self": f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
-                "leaderboard": leaderboard_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    leaderboard_list = [
+        {
+            "username": entry.username,
+            "first": entry.first,
+            "last": entry.last,
+            "miles": entry.miles,
+            "miles_run": entry.miles_run,
+            "miles_biked": entry.miles_biked,
+            "miles_swam": entry.miles_swam,
+            "miles_other": entry.miles_other,
+        }
+        for entry in leaderboard
+    ]
+
+    response = jsonify(
+        {
+            "self": f"/v2/groups/leaderboard/{group_id}{f'/{interval}' if interval else ''}",
+            "leaderboard": leaderboard_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Response:
@@ -922,9 +956,9 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
         return response
 
     group_dict = dict(group_row)
-    group = Group(group_dict)
+    group_data = Group(group_dict)
 
-    group_members: ResultProxy = GroupMemberDao.get_group_members(
+    group_members_data: ResultProxy = GroupMemberDao.get_group_members(
         group_name=group_name, team_name=team_name
     )
     group_members_list = [
@@ -936,13 +970,13 @@ def group_snapshot_by_group_name_get(team_name: str, group_name: str) -> Respons
             "user": member.user,
             "status": member.status,
         }
-        for member in group_members
+        for member in group_members_data
     ]
 
     # All group statistics are queried separately but combined into a single map
-    statistics = compile_group_statistics(group_object=group)
+    statistics = compile_group_statistics(group_object=group_data)
 
-    group_dict: dict = GroupData(group).__dict__
+    group_dict: dict = GroupData(group_data).__dict__
 
     try:
         group_dict["grouppic"] = group_dict["grouppic"].decode("utf-8")
@@ -970,7 +1004,7 @@ def group_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/groups/links",
+            "self": "/v2/groups/links",
             "endpoints": [
                 {
                     "link": "/v2/groups",

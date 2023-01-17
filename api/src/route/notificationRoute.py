@@ -7,7 +7,16 @@ Date: 8/6/2019
 
 from datetime import datetime
 
-from flask import Blueprint, abort, request, jsonify, Response, redirect, url_for, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    Response,
+    redirect,
+    url_for,
+    current_app,
+)
 from flasgger import swag_from
 
 from decorators import auth_required

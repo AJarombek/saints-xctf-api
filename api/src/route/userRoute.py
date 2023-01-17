@@ -9,7 +9,16 @@ import re
 from datetime import datetime
 from typing import List, Optional
 
-from flask import Blueprint, request, jsonify, abort, current_app, Response, redirect, url_for
+from flask import (
+    Blueprint,
+    request,
+    jsonify,
+    abort,
+    current_app,
+    Response,
+    redirect,
+    url_for,
+)
 from sqlalchemy.engine.row import Row
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.exc import SQLAlchemyError
@@ -737,9 +746,7 @@ def user_snapshot_by_username_get(username) -> Response:
             "status": group["status"],
             "user": group["user"],
         }
-        newest_log: Optional[Row] = GroupDao.get_newest_log_date(
-            group["group_name"]
-        )
+        newest_log: Optional[Row] = GroupDao.get_newest_log_date(group["group_name"])
         group_dict["newest_log"] = newest_log["newest"]
         group_dict["newest_message"] = None
 
@@ -747,8 +754,8 @@ def user_snapshot_by_username_get(username) -> Response:
 
     user_dict["groups"] = group_list
 
-    forgot_password_codes: ResultProxy = (
-        ForgotPasswordDao.get_forgot_password_codes(username=username)
+    forgot_password_codes: ResultProxy = ForgotPasswordDao.get_forgot_password_codes(
+        username=username
     )
 
     forgot_password_list = []
@@ -794,9 +801,7 @@ def user_snapshot_by_username_get(username) -> Response:
     stats = compile_user_statistics(user_data, username)
     user_dict["statistics"] = stats
 
-    response = jsonify(
-        {"self": f"/v2/users/snapshot/{username}", "user": user_dict}
-    )
+    response = jsonify({"self": f"/v2/users/snapshot/{username}", "user": user_dict})
     response.status_code = 200
     return response
 

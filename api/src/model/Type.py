@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Type(db.Model):
@@ -32,7 +33,7 @@ class Type(db.Model):
         String representation of an exercise log type.  This representation is meant to be machine readable.
         :return: The type in string form.
         """
-        return "<Type %r>" % self.type
+        return f"<Type {self.type}>"
 
     def __eq__(self, other):
         """

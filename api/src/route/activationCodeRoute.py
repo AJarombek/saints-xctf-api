@@ -7,7 +7,16 @@ Date: 8/5/2019
 
 from datetime import datetime, timedelta
 
-from flask import Blueprint, request, jsonify, Response, redirect, url_for, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    Response,
+    redirect,
+    url_for,
+    current_app,
+)
 from sqlalchemy.schema import Column
 from flasgger import swag_from
 
@@ -34,6 +43,8 @@ def activation_code_redirect() -> Response:
         """[POST] /v2/activation_code"""
         return redirect(url_for("activation_code_route.activation_code"), code=307)
 
+    return abort(404)
+
 
 @activation_code_route.route("/", methods=["POST"])
 @auth_required()
@@ -46,6 +57,8 @@ def activation_code() -> Response:
     if request.method == "POST":
         """[POST] /v2/activation_code/"""
         return activation_code_post()
+
+    return abort(404)
 
 
 @activation_code_route.route("/<code>", methods=["GET", "DELETE"])
@@ -62,9 +75,11 @@ def activation_code_by_code(code) -> Response:
         """[GET] /v2/activation_code/<code>"""
         return activation_code_by_code_get(code)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         """[DELETE] /v2/activation_code/<code>"""
         return activation_code_by_code_delete(code)
+
+    return abort(404)
 
 
 @activation_code_route.route("/exists/<code>", methods=["GET"])
@@ -80,6 +95,8 @@ def activation_code_exists_by_code(code) -> Response:
         """[GET] /v2/activation_code/exists/<code>"""
         return activation_code_exists_get(code)
 
+    return abort(404)
+
 
 @activation_code_route.route("/soft/<code>", methods=["DELETE"])
 @auth_required()
@@ -94,6 +111,8 @@ def activation_code_soft_by_code(code) -> Response:
         """[DELETE] /v2/activation_code/soft/<code>"""
         return activation_code_by_code_soft_delete(code)
 
+    return abort(404)
+
 
 @activation_code_route.route("/links", methods=["GET"])
 @swag_from("swagger/activationCodeRoute/activationCodeLinks.yml")
@@ -106,6 +125,8 @@ def activation_code_links() -> Response:
         """[GET] /v2/activation_code/links"""
         return activation_code_links_get()
 
+    return abort(404)
+
 
 def activation_code_post() -> Response:
     """
@@ -117,7 +138,7 @@ def activation_code_post() -> Response:
     if code_data is None:
         response = jsonify(
             {
-                "self": f"/v2/activation_code",
+                "self": "/v2/activation_code",
                 "added": False,
                 "error": "the request body isn't populated",
             }
@@ -132,7 +153,7 @@ def activation_code_post() -> Response:
     if None in [code_to_add.group_id, code_to_add.email]:
         response = jsonify(
             {
-                "self": f"/v2/activation_code",
+                "self": "/v2/activation_code",
                 "added": False,
                 "log": None,
                 "error": "'group_id' and 'email' are required fields",
@@ -172,17 +193,17 @@ def activation_code_post() -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": "/v2/activation_code",
-                "added": False,
-                "activation_code": None,
-                "error": "failed to create a new activation code",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/activation_code",
+            "added": False,
+            "activation_code": None,
+            "error": "failed to create a new activation code",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def activation_code_exists_get(code: str) -> Response:
@@ -203,16 +224,16 @@ def activation_code_exists_get(code: str) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/activation_code/exists/{code}",
-                "matching_code_exists": matching_code_exists,
-                "error": "there is no matching activation code",
-            }
-        )
-        response.status_code = 400
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/activation_code/exists/{code}",
+            "matching_code_exists": matching_code_exists,
+            "error": "there is no matching activation code",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def activation_code_by_code_get(code: str) -> Response:
@@ -234,16 +255,16 @@ def activation_code_by_code_get(code: str) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/activation_code/{code}",
-                "activation_code": None,
-                "error": "there is no matching activation code",
-            }
-        )
-        response.status_code = 400
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/activation_code/{code}",
+            "activation_code": None,
+            "error": "there is no matching activation code",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def activation_code_by_code_delete(code: str) -> Response:
@@ -293,16 +314,16 @@ def activation_code_by_code_delete(code: str) -> Response:
         response = jsonify({"self": f"/v2/activation_code/{code}", "deleted": True})
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/activation_code/{code}",
-                "deleted": False,
-                "error": "failed to delete the activation code",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/activation_code/{code}",
+            "deleted": False,
+            "error": "failed to delete the activation code",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def activation_code_by_code_soft_delete(code: str) -> Response:
@@ -362,16 +383,16 @@ def activation_code_by_code_soft_delete(code: str) -> Response:
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/activation_code/soft/{code}",
-                "deleted": False,
-                "error": "failed to soft delete the activation code",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/activation_code/soft/{code}",
+            "deleted": False,
+            "error": "failed to soft delete the activation code",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def activation_code_links_get() -> Response:
@@ -381,7 +402,7 @@ def activation_code_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/activation_code/links",
+            "self": "/v2/activation_code/links",
             "endpoints": [
                 {
                     "link": "/v2/activation_code",

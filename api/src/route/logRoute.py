@@ -6,7 +6,16 @@ Date: 7/6/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, redirect, url_for, Response, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    Response,
+    current_app,
+)
 from flasgger import swag_from
 
 from decorators import auth_required
@@ -32,9 +41,11 @@ def logs_redirect() -> Response:
         """[GET] /v2/logs"""
         return redirect(url_for("log_route.logs"), code=302)
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/logs"""
         return redirect(url_for("log_route.logs"), code=307)
+
+    return abort(404)
 
 
 @log_route.route("/", methods=["GET", "POST"])
@@ -50,9 +61,11 @@ def logs():
         """[GET] /v2/logs/"""
         return logs_get()
 
-    elif request.method == "POST":
+    if request.method == "POST":
         """[POST] /v2/logs/"""
         return logs_post()
+
+    return abort(404)
 
 
 @log_route.route("/<log_id>", methods=["GET", "PUT", "DELETE"])
@@ -70,13 +83,15 @@ def logs_with_id(log_id):
         """[GET] /v2/logs/<log_id>"""
         return log_by_id_get(log_id)
 
-    elif request.method == "PUT":
+    if request.method == "PUT":
         """[PUT] /v2/logs/<log_id>"""
         return log_by_id_put(log_id)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         """[DELETE] /v2/logs/<log_id>"""
         return log_by_id_delete(log_id)
+
+    return abort(404)
 
 
 @log_route.route("/soft/<log_id>", methods=["DELETE"])
@@ -92,6 +107,8 @@ def log_soft_with_id(log_id) -> Response:
         """[DELETE] /v2/logs/soft/<code>"""
         return log_by_id_soft_delete(log_id)
 
+    return abort(404)
+
 
 @log_route.route("/links", methods=["GET"])
 @swag_from("swagger/logRoute/logLinks.yml", methods=["GET"])
@@ -104,15 +121,17 @@ def log_links() -> Response:
         """[GET] /v2/logs/links"""
         return log_links_get()
 
+    return abort(404)
+
 
 def logs_get() -> Response:
     """
     Retrieve all the exercise logs in the database.
     :return: A response object for the GET API request.
     """
-    logs: list = LogDao.get_logs()
+    logs_data: list = LogDao.get_logs()
 
-    if logs is None:
+    if logs_data is None:
         response = jsonify(
             {
                 "self": "/v2/logs",
@@ -122,35 +141,35 @@ def logs_get() -> Response:
         )
         response.status_code = 500
         return response
-    else:
-        log_dicts = []
 
-        for log in logs:
-            log_dict: dict = LogData(log).__dict__
-            log_comments = CommentDao.get_comments_by_log_id(log.log_id)
+    log_dicts = []
 
-            comment_dicts = []
-            for comment in log_comments:
-                comment_dict: dict = CommentData(comment).__dict__
-                comment_dict["comment"] = f"/v2/comments/{comment.comment_id}"
-                comment_dict["time"] = str(comment_dict["time"])
+    for log in logs_data:
+        log_dict: dict = LogData(log).__dict__
+        log_comments = CommentDao.get_comments_by_log_id(log.log_id)
 
-                comment_dicts.append(comment_dict)
+        comment_dicts = []
+        for comment in log_comments:
+            comment_dict: dict = CommentData(comment).__dict__
+            comment_dict["comment"] = f"/v2/comments/{comment.comment_id}"
+            comment_dict["time"] = str(comment_dict["time"])
 
-            log_dict["comments"] = comment_dicts
+            comment_dicts.append(comment_dict)
 
-            if log_dict.get("date") is not None:
-                log_dict["date"] = str(log_dict["date"])
-            if log_dict.get("time") is not None:
-                log_dict["time"] = str(log_dict["time"])
-            if log_dict.get("pace") is not None:
-                log_dict["pace"] = str(log_dict["pace"])
+        log_dict["comments"] = comment_dicts
 
-            log_dicts.append(log_dict)
+        if log_dict.get("date") is not None:
+            log_dict["date"] = str(log_dict["date"])
+        if log_dict.get("time") is not None:
+            log_dict["time"] = str(log_dict["time"])
+        if log_dict.get("pace") is not None:
+            log_dict["pace"] = str(log_dict["pace"])
 
-        response = jsonify({"self": "/v2/logs", "logs": log_dicts})
-        response.status_code = 200
-        return response
+        log_dicts.append(log_dict)
+
+    response = jsonify({"self": "/v2/logs", "logs": log_dicts})
+    response.status_code = 200
+    return response
 
 
 def logs_post() -> Response:
@@ -163,7 +182,7 @@ def logs_post() -> Response:
     if log_data is None:
         response = jsonify(
             {
-                "self": f"/v2/logs",
+                "self": "/v2/logs",
                 "added": False,
                 "log": None,
                 "error": "the request body isn't populated",
@@ -185,7 +204,7 @@ def logs_post() -> Response:
         )
         response = jsonify(
             {
-                "self": f"/v2/logs",
+                "self": "/v2/logs",
                 "added": False,
                 "log": None,
                 "error": f"User {jwt_username} is not authorized to upload an exercise log for user {log_to_add.username}.",
@@ -204,7 +223,7 @@ def logs_post() -> Response:
     ]:
         response = jsonify(
             {
-                "self": f"/v2/logs",
+                "self": "/v2/logs",
                 "added": False,
                 "log": None,
                 "error": "'username', 'first', 'last', 'date', 'type', and 'feel' are required fields",
@@ -247,17 +266,17 @@ def logs_post() -> Response:
         response = jsonify({"self": "/v2/logs", "added": True, "log": log_dict})
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": "/v2/logs",
-                "added": False,
-                "log": None,
-                "error": "failed to create a new log",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/logs",
+            "added": False,
+            "log": None,
+            "error": "failed to create a new log",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def log_by_id_get(log_id) -> Response:
@@ -293,17 +312,17 @@ def log_by_id_get(log_id) -> Response:
         )
         response.status_code = 200
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/logs/{log_id}",
-                "log": None,
-                "comments": None,
-                "error": "there is no log with this identifier",
-            }
-        )
-        response.status_code = 400
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/logs/{log_id}",
+            "log": None,
+            "comments": None,
+            "error": "there is no log with this identifier",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def log_by_id_put(log_id) -> Response:
@@ -379,29 +398,28 @@ def log_by_id_put(log_id) -> Response:
             )
             response.status_code = 200
             return response
-        else:
-            response = jsonify(
-                {
-                    "self": f"/v2/logs/{log_id}",
-                    "updated": False,
-                    "log": None,
-                    "error": "the log failed to update",
-                }
-            )
-            response.status_code = 500
-            return response
 
-    else:
         response = jsonify(
             {
                 "self": f"/v2/logs/{log_id}",
                 "updated": False,
                 "log": None,
-                "error": "the log submitted is equal to the existing log with the same id",
+                "error": "the log failed to update",
             }
         )
-        response.status_code = 400
+        response.status_code = 500
         return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/logs/{log_id}",
+            "updated": False,
+            "log": None,
+            "error": "the log submitted is equal to the existing log with the same id",
+        }
+    )
+    response.status_code = 400
+    return response
 
 
 def log_by_id_delete(log_id) -> Response:
@@ -469,16 +487,16 @@ def log_by_id_delete(log_id) -> Response:
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/logs/{log_id}",
-                "deleted": False,
-                "error": "failed to delete the log",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/logs/{log_id}",
+            "deleted": False,
+            "error": "failed to delete the log",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def log_by_id_soft_delete(log_id) -> Response:
@@ -565,16 +583,16 @@ def log_by_id_soft_delete(log_id) -> Response:
         )
         response.status_code = 204
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/logs/soft/{log_id}",
-                "deleted": False,
-                "error": "failed to soft delete the log",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/logs/soft/{log_id}",
+            "deleted": False,
+            "error": "failed to soft delete the log",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def log_links_get() -> Response:
@@ -584,7 +602,7 @@ def log_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/logs/links",
+            "self": "/v2/logs/links",
             "endpoints": [
                 {
                     "link": "/v2/logs",

@@ -29,12 +29,8 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       auth:
         image: ajarombek/mock-saints-xctf-auth
-        ports:
-          - 5000:5000
       functions:
         image: ajarombek/mock-saints-xctf-functions
-        ports:
-          - 5000:5000
     steps:
       - run: echo "Job running on a ${{ runner.os }} server"
 

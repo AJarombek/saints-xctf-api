@@ -4,7 +4,7 @@ Author: Andrew Jarombek
 Date: 7/10/2019
 """
 
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, abort, request, jsonify, Response
 from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 
@@ -34,6 +34,8 @@ def log_feed(filter_by, bucket, limit, offset):
         """[GET] /v2/log_feed"""
         return log_feed_get(filter_by, bucket, limit, offset)
 
+    return abort(404)
+
 
 @log_feed_route.route("/links", methods=["GET"])
 @swag_from("swagger/logFeedRoute/logFeedLinks.yml", methods=["GET"])
@@ -45,6 +47,8 @@ def log_feed_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/log_feed/links"""
         return log_feed_links_get()
+
+    return abort(404)
 
 
 def log_feed_get(filter_by, bucket, limit, offset) -> Response:
@@ -65,12 +69,12 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
     jwt_claims: dict = get_claims(request)
     jwt_username = jwt_claims.get("sub")
 
-    if filter_by == "group" or filter_by == "groups":
+    if filter_by in {"group", "groups"}:
         logs = LogDao.get_group_log_feed(
             group_id=int(bucket), limit=limit, offset=offset
         )
         count = LogDao.get_group_log_feed_count(group_id=int(bucket)).first()["count"]
-    elif filter_by == "user" or filter_by == "users" or filter_by == "username":
+    elif filter_by in {"user", "users", "username"}:
         logs = LogDao.get_user_log_feed(username=bucket, limit=limit, offset=offset)
         count = LogDao.get_user_log_feed_count(username=bucket).first()["count"]
     elif filter_by == "all":
@@ -101,46 +105,46 @@ def log_feed_get(filter_by, bucket, limit, offset) -> Response:
         )
         response.status_code = 500
         return response
-    else:
-        log_list = []
-        for log in logs:
-            comments: list = CommentDao.get_comments_by_log_id(log.log_id)
-            comments = [CommentData(comment).__dict__ for comment in comments]
 
-            log_list.append(
-                {
-                    "log_id": log.log_id,
-                    "username": log.username,
-                    "first": log.first,
-                    "last": log.last,
-                    "name": log.name,
-                    "location": log.location,
-                    "date": str(log.date) if log.date is not None else None,
-                    "type": log.type,
-                    "distance": log.distance,
-                    "metric": log.metric,
-                    "miles": log.miles,
-                    "time": str(log.time) if log.time is not None else None,
-                    "pace": str(log.pace) if log.pace is not None else None,
-                    "feel": log.feel,
-                    "description": log.description,
-                    "comments": comments,
-                }
-            )
+    log_list = []
+    for log in logs:
+        comments: list = CommentDao.get_comments_by_log_id(log.log_id)
+        comments = [CommentData(comment).__dict__ for comment in comments]
 
-        next_url = f"/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset + limit}"
-
-        response = jsonify(
+        log_list.append(
             {
-                "self": self_url,
-                "next": next_url,
-                "prev": prev_url,
-                "logs": log_list,
-                "pages": pages,
+                "log_id": log.log_id,
+                "username": log.username,
+                "first": log.first,
+                "last": log.last,
+                "name": log.name,
+                "location": log.location,
+                "date": str(log.date) if log.date is not None else None,
+                "type": log.type,
+                "distance": log.distance,
+                "metric": log.metric,
+                "miles": log.miles,
+                "time": str(log.time) if log.time is not None else None,
+                "pace": str(log.pace) if log.pace is not None else None,
+                "feel": log.feel,
+                "description": log.description,
+                "comments": comments,
             }
         )
-        response.status_code = 200
-        return response
+
+    next_url = f"/v2/log_feed/{filter_by}/{bucket}/{limit}/{offset + limit}"
+
+    response = jsonify(
+        {
+            "self": self_url,
+            "next": next_url,
+            "prev": prev_url,
+            "logs": log_list,
+            "pages": pages,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def log_feed_links_get() -> Response:
@@ -150,7 +154,7 @@ def log_feed_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/log_feed/links",
+            "self": "/v2/log_feed/links",
             "endpoints": [
                 {
                     "link": "/v2/log_feed/<filter_by>/<bucket>/<limit>/<offset>",

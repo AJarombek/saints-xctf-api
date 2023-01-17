@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class WeekStart(db.Model):
@@ -21,4 +22,4 @@ class WeekStart(db.Model):
         String representation of the start of week options.  This representation is meant to be machine readable.
         :return: The week start object in string form.
         """
-        return "<WeekStart %r>" % self.week_start
+        return f"<WeekStart {self.week_start}>"

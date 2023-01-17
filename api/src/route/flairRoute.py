@@ -6,7 +6,16 @@ Date: 7/5/2019
 
 from datetime import datetime
 
-from flask import Blueprint, request, jsonify, redirect, url_for, Response, current_app
+from flask import (
+    Blueprint,
+    abort,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    Response,
+    current_app,
+)
 from flasgger import swag_from
 
 from decorators import auth_required
@@ -29,6 +38,8 @@ def flair_redirect() -> Response:
         """[POST] /v2/flair"""
         return redirect(url_for("flair_route.flair"), code=307)
 
+    return abort(404)
+
 
 @flair_route.route("/", methods=["POST"])
 @auth_required()
@@ -42,6 +53,8 @@ def flair():
         """[GET] /v2/flair/"""
         return flair_post()
 
+    return abort(404)
+
 
 @flair_route.route("/links", methods=["GET"])
 @swag_from("swagger/flairRoute/flairLinks.yml")
@@ -54,6 +67,8 @@ def flair_links() -> Response:
         """[GET] /v2/flair/links"""
         return flair_links_get()
 
+    return abort(404)
+
 
 def flair_post():
     """
@@ -65,7 +80,7 @@ def flair_post():
     if flair_data is None:
         response = jsonify(
             {
-                "self": f"/v2/flair",
+                "self": "/v2/flair",
                 "added": False,
                 "error": "the request body isn't populated",
             }
@@ -89,7 +104,7 @@ def flair_post():
         )
         response = jsonify(
             {
-                "self": f"/v2/flair",
+                "self": "/v2/flair",
                 "added": False,
                 "error": f"User {jwt_username} is not authorized to create a flair for user {username}.",
             }
@@ -100,7 +115,7 @@ def flair_post():
     if username is None or flair_content is None:
         response = jsonify(
             {
-                "self": f"/v2/flair",
+                "self": "/v2/flair",
                 "added": False,
                 "error": "'username' and 'flair' are required fields",
             }
@@ -108,41 +123,41 @@ def flair_post():
         response.status_code = 400
         return response
 
-    flair = Flair({"username": username, "flair": flair_content})
+    flair_data = Flair({"username": username, "flair": flair_content})
 
-    flair.created_date = datetime.now()
-    flair.created_app = "saints-xctf-api"
-    flair.created_user = None
-    flair.modified_date = None
-    flair.modified_app = None
-    flair.modified_user = None
-    flair.deleted_date = None
-    flair.deleted_app = None
-    flair.deleted_user = None
-    flair.deleted = False
+    flair_data.created_date = datetime.now()
+    flair_data.created_app = "saints-xctf-api"
+    flair_data.created_user = None
+    flair_data.modified_date = None
+    flair_data.modified_app = None
+    flair_data.modified_user = None
+    flair_data.deleted_date = None
+    flair_data.deleted_app = None
+    flair_data.deleted_user = None
+    flair_data.deleted = False
 
-    flair_added: bool = FlairDao.add_flair(flair)
+    flair_added: bool = FlairDao.add_flair(flair_data)
 
     if flair_added:
         new_flair: Flair = FlairDao.get_flair_by_content(username, flair_content)
         new_flair_dict: dict = FlairData(new_flair).__dict__
 
         response = jsonify(
-            {"self": f"/v2/flair", "added": True, "flair": new_flair_dict}
+            {"self": "/v2/flair", "added": True, "flair": new_flair_dict}
         )
         response.status_code = 201
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/flair",
-                "added": False,
-                "flair": None,
-                "error": "the flair creation failed",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": "/v2/flair",
+            "added": False,
+            "flair": None,
+            "error": "the flair creation failed",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def flair_links_get() -> Response:
@@ -152,7 +167,7 @@ def flair_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/flair/links",
+            "self": "/v2/flair/links",
             "endpoints": [
                 {
                     "link": "/v2/flair",

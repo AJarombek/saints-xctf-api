@@ -13,7 +13,7 @@ from flasgger import swag_from
 from sqlalchemy.engine.cursor import ResultProxy
 import aiohttp
 
-from decorators import auth_required
+from decorators import auth_required, GET
 from utils.codes import generate_code
 from utils.jwt import get_claims
 from dao.forgotPasswordDao import ForgotPasswordDao
@@ -21,7 +21,6 @@ from dao.userDao import UserDao
 from model.ForgotPassword import ForgotPassword
 from model.ForgotPasswordData import ForgotPasswordData
 from model.User import User
-from decorators import GET
 
 forgot_password_route = Blueprint(
     "forgot_password_route", __name__, url_prefix="/v2/forgot_password"
@@ -41,9 +40,12 @@ def forgot_password(username) -> Response:
     if request.method == "GET":
         """[GET] /v2/forgot_password/<username|email>"""
         return forgot_password_get(username)
+
     if request.method == "POST":
         """[POST] /v2/forgot_password/<username|email>"""
         return forgot_password_post(username)
+
+    return abort(404)
 
 
 @forgot_password_route.route("/validate/<code>", methods=["GET"])
@@ -58,6 +60,8 @@ def forgot_password_code_validation(code) -> Response:
         """[GET] /v2/forgot_password/validate/<code>"""
         return forgot_password_validate_code_get(code)
 
+    return abort(404)
+
 
 @forgot_password_route.route("/links", methods=["GET"])
 @swag_from("swagger/forgotPasswordRoute/forgotPasswordLinks.yml", methods=["GET"])
@@ -69,6 +73,8 @@ def forgot_password_links() -> Response:
     if request.method == "GET":
         """[GET] /v2/forgot_password/links"""
         return forgot_password_links_get()
+
+    return abort(404)
 
 
 def forgot_password_get(username) -> Response:
@@ -130,24 +136,24 @@ def forgot_password_get(username) -> Response:
         )
         response.status_code = 400
         return response
-    else:
-        forgot_password_list = []
-        for code in forgot_password_codes:
-            fpw = ForgotPasswordData(None)
-            fpw.forgot_code = code[0]
-            fpw.username = code[1]
-            fpw.expires = code[2]
-            fpw.deleted = code[3]
-            forgot_password_list.append(fpw.__dict__)
 
-        response = jsonify(
-            {
-                "self": f"/v2/forgot_password/{username}",
-                "forgot_password_codes": forgot_password_list,
-            }
-        )
-        response.status_code = 200
-        return response
+    forgot_password_list = []
+    for code in forgot_password_codes:
+        fpw = ForgotPasswordData(None)
+        fpw.forgot_code = code[0]
+        fpw.username = code[1]
+        fpw.expires = code[2]
+        fpw.deleted = code[3]
+        forgot_password_list.append(fpw.__dict__)
+
+    response = jsonify(
+        {
+            "self": f"/v2/forgot_password/{username}",
+            "forgot_password_codes": forgot_password_list,
+        }
+    )
+    response.status_code = 200
+    return response
 
 
 def forgot_password_post(username) -> Response:
@@ -223,16 +229,16 @@ def forgot_password_post(username) -> Response:
         response = jsonify({"self": f"/v2/forgot_password/{username}", "created": True})
         response.status_code = 201
         return response
-    else:
-        response = jsonify(
-            {
-                "self": f"/v2/forgot_password/{username}",
-                "created": False,
-                "error": "An unexpected error occurred while creating the new forgot password code.",
-            }
-        )
-        response.status_code = 500
-        return response
+
+    response = jsonify(
+        {
+            "self": f"/v2/forgot_password/{username}",
+            "created": False,
+            "error": "An unexpected error occurred while creating the new forgot password code.",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def forgot_password_validate_code_get(code: str) -> Response:
@@ -263,7 +269,7 @@ def forgot_password_links_get() -> Response:
     """
     response = jsonify(
         {
-            "self": f"/v2/forgot_password/links",
+            "self": "/v2/forgot_password/links",
             "endpoints": [
                 {
                     "link": "/v2/forgot_password/<username>",

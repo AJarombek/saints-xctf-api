@@ -25,6 +25,10 @@ def api() -> Response:
 @api_route.route("/versions", methods=["GET"])
 @swag_from("swagger/apiRoute/versions.yml")
 def versions() -> Response:
+    """
+    Endpoint to get all versions of the SaintsXCTF API
+    :return: A JSON with links to API versions
+    """
     return jsonify(
         {
             "self": "/versions",
@@ -38,12 +42,20 @@ def versions() -> Response:
 @api_route.route("/v2", methods=["GET"])
 @swag_from("swagger/apiRoute/v2.yml")
 def version2() -> Response:
+    """
+    Endpoint for information about the second version of the SaintsXCTF API
+    :return: A JSON with details about the second version of the API
+    """
     return jsonify({"self": "/v2", "version": 2, "latest": True, "links": "/v2/links"})
 
 
 @api_route.route("/v2/links", methods=["GET"])
 @swag_from("swagger/apiRoute/v2Links.yml")
 def links() -> Response:
+    """
+    Endpoint for links to endpoints in the second version of the SaintsXCTF API
+    :return: A JSON with links in the second version of the API
+    """
     return jsonify(
         {
             "self": "/v2/links",
