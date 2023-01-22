@@ -46,4 +46,4 @@ def test():
         print(f"HTML version: file://{cov_dir}/index.html")
         cov.erase()
 
-    sys.exit(len(result.errors))
+    sys.exit(len(result.errors + result.failures))
