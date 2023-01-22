@@ -63,3 +63,4 @@ jobs:
         run: pipenv run flask test
         env:
           FLASK_ENV: cicdtest
+          ENV: cicdtest
