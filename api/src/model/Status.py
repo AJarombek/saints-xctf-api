@@ -21,4 +21,4 @@ class Status(db.Model):
         String representation of a group member status.  This representation is meant to be machine-readable.
         :return: The group member status in string form.
         """
-        return f"<Status {self.status}>"
+        return f"<Status '{self.status}'>"

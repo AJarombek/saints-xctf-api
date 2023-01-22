@@ -65,7 +65,7 @@ class TeamGroup(db.Model):
         String representation of a team and group binding.  This representation is meant to be machine-readable.
         :return: The team/group binding in string form.
         """
-        return f"<TeamGroup {self.team_name}, {self.group_name}>"
+        return f"<TeamGroup '{self.team_name}', '{self.group_name}'>"
 
     def __eq__(self, other):
         """

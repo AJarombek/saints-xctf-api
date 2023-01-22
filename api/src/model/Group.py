@@ -73,7 +73,7 @@ class Group(db.Model):
         String representation of a group within a team.  This representation is meant to be machine-readable.
         :return: The group in string form.
         """
-        return f"<Group {self.id}, {self.group_name}>"
+        return f"<Group {self.id}, '{self.group_name}'>"
 
     def __eq__(self, other):
         """

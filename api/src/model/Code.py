@@ -65,7 +65,7 @@ class Code(db.Model):
         String representation of an activation code.  This representation is meant to be machine-readable.
         :return: The activation code string.
         """
-        return f"<Code {self.activation_code}>"
+        return f"<Code '{self.activation_code}'>"
 
     def __eq__(self, other):
         """

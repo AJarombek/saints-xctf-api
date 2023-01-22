@@ -55,7 +55,7 @@ class UserData:
         String representation of a user.  This representation is meant to be machine-readable.
         :return: The user in string form.
         """
-        return f"<UserData {self.username}>"
+        return f"<UserData '{self.username}'>"
 
     def __eq__(self, other):
         """

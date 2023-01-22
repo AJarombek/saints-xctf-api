@@ -67,7 +67,7 @@ class TeamMember(db.Model):
         String representation of a team membership.  This representation is meant to be machine-readable.
         :return: The team membership in string form.
         """
-        return f"<TeamMember {self.team_name}, {self.username}>"
+        return f"<TeamMember '{self.team_name}', '{self.username}'>"
 
     def __eq__(self, other):
         """

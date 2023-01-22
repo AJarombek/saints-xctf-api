@@ -65,7 +65,7 @@ class ForgotPassword(db.Model):
         String representation of a forgot password code.  This representation is meant to be machine-readable.
         :return: The forgot password code in string form.
         """
-        return f"<ForgotPassword {self.forgot_code},{self.username}>"
+        return f"<ForgotPassword '{self.forgot_code}','{self.username}'>"
 
     def __eq__(self, other):
         """
