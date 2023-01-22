@@ -19,7 +19,7 @@ class WeekStart(db.Model):
 
     def __repr__(self):
         """
-        String representation of the start of week options.  This representation is meant to be machine readable.
+        String representation of the start of week options.  This representation is meant to be machine-readable.
         :return: The week start object in string form.
         """
         return f"<WeekStart {self.week_start}>"

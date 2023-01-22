@@ -45,6 +45,7 @@ class GroupDao:
         :param group_name: Unique name which identifies a group within a team.
         :return: The result of the query.
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT `groups`.id, `groups`.group_name, group_title, grouppic_name, description, week_start
@@ -66,6 +67,7 @@ class GroupDao:
         :param group_name: The unique name for the group
         :return: A date of an exercise log
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT MAX(time_created) AS newest 
@@ -94,6 +96,7 @@ class GroupDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             return db.session.execute(
                 """
                 SELECT 
@@ -116,30 +119,31 @@ class GroupDao:
                 """,
                 {"group_id": group_id},
             )
-        else:
-            return db.session.execute(
-                """
-                SELECT 
-                    groupmembers.username,
-                    MAX(logs.first) AS first,
-                    MAX(logs.last) AS last,
-                    COALESCE(SUM(miles), 0) AS miles, 
-                    COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
-                    COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
-                    COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
-                    COALESCE(SUM(CASE WHEN type NOT IN ('run', 'bike', 'swim') THEN miles END), 0) AS miles_other 
-                FROM logs 
-                INNER JOIN groupmembers ON logs.username = groupmembers.username 
-                WHERE group_id = :group_id 
-                AND date >= :date 
-                AND status = 'accepted' 
-                AND logs.deleted IS FALSE
-                AND groupmembers.deleted IS FALSE
-                GROUP BY groupmembers.username 
-                ORDER BY miles DESC
-                """,
-                {"group_id": group_id, "date": date},
-            )
+
+        # pylint: disable=no-member
+        return db.session.execute(
+            """
+            SELECT 
+                groupmembers.username,
+                MAX(logs.first) AS first,
+                MAX(logs.last) AS last,
+                COALESCE(SUM(miles), 0) AS miles, 
+                COALESCE(SUM(CASE WHEN type = 'run' THEN miles END), 0) AS miles_run,
+                COALESCE(SUM(CASE WHEN type = 'bike' THEN miles END), 0) AS miles_biked,
+                COALESCE(SUM(CASE WHEN type = 'swim' THEN miles END), 0) AS miles_swam,
+                COALESCE(SUM(CASE WHEN type NOT IN ('run', 'bike', 'swim') THEN miles END), 0) AS miles_other 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_id = :group_id 
+            AND date >= :date 
+            AND status = 'accepted' 
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
+            GROUP BY groupmembers.username 
+            ORDER BY miles DESC
+            """,
+            {"group_id": group_id, "date": date},
+        )
 
     @staticmethod
     def update_group(group: Group) -> bool:
@@ -148,6 +152,7 @@ class GroupDao:
         :param group: Object representing an updated group.
         :return: True if the group is updated in the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE groups SET

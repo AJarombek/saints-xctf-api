@@ -30,6 +30,7 @@ class CodeDao:
         :param code: Object model for a row in the code table.
         :return: True if the activation code is deleted, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM codes WHERE activation_code=:activation_code AND deleted IS FALSE",
             {"activation_code": code.activation_code},

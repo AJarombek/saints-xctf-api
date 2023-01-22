@@ -5,8 +5,9 @@ Author: Andrew Jarombek
 Date: 7/3/2019
 """
 
-from database import db
 from sqlalchemy.engine.cursor import ResultProxy
+
+from database import db
 from dao.basicDao import BasicDao
 from model.Notification import Notification
 
@@ -44,6 +45,7 @@ class NotificationDao:
         :param username: Unique identifier for a user
         :return: A list of notifications
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT * FROM notifications 
@@ -62,6 +64,7 @@ class NotificationDao:
         :param new_notification: Object representing a notification for a user.
         :return: True if the notification is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(new_notification)
         return BasicDao.safe_commit()
 
@@ -73,6 +76,7 @@ class NotificationDao:
         :param notification: Object representing an updated notification.
         :return: True if the notification is updated in the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE notifications 
@@ -94,6 +98,7 @@ class NotificationDao:
         :param notification_id: ID which uniquely identifies the notification.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM notifications WHERE notification_id=:notification_id AND deleted IS FALSE",
             {"notification_id": notification_id},
@@ -107,6 +112,7 @@ class NotificationDao:
         :param notification: Object representing a notification to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE notifications SET 

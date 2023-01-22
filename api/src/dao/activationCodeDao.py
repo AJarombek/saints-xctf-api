@@ -32,6 +32,7 @@ class ActivationCodeDao:
         :param activation_code: Random characters that make up an activation code.
         :return: The result of the query.
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT COUNT(*) AS 'exists' 
@@ -50,6 +51,7 @@ class ActivationCodeDao:
         :param new_code: Object representing an activation code for a user.
         :return: True if the code is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(new_code)
         return BasicDao.safe_commit()
 
@@ -60,6 +62,7 @@ class ActivationCodeDao:
         :param activation_code: An activation code.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM codes WHERE activation_code=:activation_code AND deleted IS FALSE",
             {"activation_code": activation_code},
@@ -73,6 +76,7 @@ class ActivationCodeDao:
         :param code: Object representing an activation code for a user.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE codes SET 

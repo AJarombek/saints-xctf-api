@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Event(db.Model):
@@ -61,7 +62,7 @@ class Event(db.Model):
 
     def __str__(self):
         """
-        String representation of an event.  This representation is meant to be human readable.
+        String representation of an event.  This representation is meant to be human-readable.
         :return: The event/meeting.
         """
         return (
@@ -72,10 +73,10 @@ class Event(db.Model):
 
     def __repr__(self):
         """
-        String representation of an event.  This representation is meant to be machine readable.
+        String representation of an event.  This representation is meant to be machine-readable.
         :return: The event/meeting.
         """
-        return "<Event %r>" % self.name
+        return f"<Event {self.name}>"
 
     def __eq__(self, other):
         """

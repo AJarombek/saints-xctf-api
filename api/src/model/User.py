@@ -86,7 +86,7 @@ class User(db.Model):
 
     def __str__(self):
         """
-        String representation of a user.  This representation is meant to be human readable.
+        String representation of a user.  This representation is meant to be human-readable.
         :return: The user in string form.
         """
         return (
@@ -99,7 +99,7 @@ class User(db.Model):
 
     def __repr__(self):
         """
-        String representation of a user.  This representation is meant to be machine readable.
+        String representation of a user.  This representation is meant to be machine-readable.
         :return: The user in string form.
         """
         return f"<User {self.username}>"

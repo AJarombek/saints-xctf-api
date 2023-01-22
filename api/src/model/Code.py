@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Code(db.Model):
@@ -51,7 +52,7 @@ class Code(db.Model):
 
     def __str__(self):
         """
-        String representation of an activation code.  This representation is meant to be human readable.
+        String representation of an activation code.  This representation is meant to be human-readable.
         :return: The activation code string.
         """
         return (
@@ -61,10 +62,10 @@ class Code(db.Model):
 
     def __repr__(self):
         """
-        String representation of an activation code.  This representation is meant to be machine readable.
+        String representation of an activation code.  This representation is meant to be machine-readable.
         :return: The activation code string.
         """
-        return "<Code %r>" % self.activation_code
+        return f"<Code {self.activation_code}>"
 
     def __eq__(self, other):
         """

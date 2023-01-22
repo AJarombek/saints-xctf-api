@@ -4,4 +4,5 @@ Author: Andrew Jarombek
 Date: 9/20/2020
 """
 
+# pylint: disable=unused-import
 from app import app

@@ -25,7 +25,7 @@ class GroupMemberData:
     def __str__(self):
         """
         String representation of information about a user who is a member of a group.  This representation is meant
-        to be human readable.
+        to be human-readable.
         :return: The group member in string form.
         """
         return (
@@ -36,10 +36,10 @@ class GroupMemberData:
     def __repr__(self):
         """
         String representation of information about a user who is a member of a group.  This representation is meant
-        to be machine readable.
+        to be machine-readable.
         :return: The group member in string form.
         """
-        return "<GroupMemberData %r,%r>" % (self.group_name, self.username)
+        return f"<GroupMemberData {self.group_name},{self.username}>"
 
     def __eq__(self, other):
         """

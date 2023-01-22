@@ -21,7 +21,7 @@ class FlairData:
 
     def __str__(self):
         """
-        String representation of the user's flair.  This representation is meant to be human readable.
+        String representation of the user's flair.  This representation is meant to be human-readable.
         :return: The flair in string form.
         """
         return (
@@ -31,10 +31,10 @@ class FlairData:
 
     def __repr__(self):
         """
-        String representation of the user's flair.  This representation is meant to be machine readable.
+        String representation of the user's flair.  This representation is meant to be machine-readable.
         :return: The flair in string form.
         """
-        return "<FlairData %r,%r>" % (self.flair_id, self.username)
+        return f"<FlairData {self.flair_id},{self.username}>"
 
     def __eq__(self, other):
         """

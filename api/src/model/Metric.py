@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Metric(db.Model):
@@ -22,17 +23,17 @@ class Metric(db.Model):
 
     def __str__(self):
         """
-        String representation of a distance metric.  This representation is meant to be human readable.
+        String representation of a distance metric.  This representation is meant to be human-readable.
         :return: The metric in string form.
         """
         return f"Metric: [metric: {self.metric}]"
 
     def __repr__(self):
         """
-        String representation of a distance metric.  This representation is meant to be machine readable.
+        String representation of a distance metric.  This representation is meant to be machine-readable.
         :return: The metric in string form.
         """
-        return "<Metric %r>" % self.metric
+        return f"<Metric {self.metric}>"
 
     def __eq__(self, other):
         """

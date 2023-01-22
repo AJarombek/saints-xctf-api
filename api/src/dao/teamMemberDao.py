@@ -25,6 +25,7 @@ class TeamMemberDao:
         :param username: Unique identifier for the user
         :return: A list of teams
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT team_name,title,status,user 
@@ -45,6 +46,7 @@ class TeamMemberDao:
         :param team_name: Unique name of a team.
         :return: Details about a team membership.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT team_name,title,status,user 
@@ -65,6 +67,7 @@ class TeamMemberDao:
         :param team_name: Unique name of a team.
         :return: A list of team members.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT users.username,first,last,member_since,user,status,teammembers.deleted 
@@ -104,6 +107,7 @@ class TeamMemberDao:
             }
         )
 
+        # pylint: disable=no-member
         db.session.add(team_membership)
 
         group_membership = GroupMember(
@@ -120,6 +124,7 @@ class TeamMemberDao:
             }
         )
 
+        # pylint: disable=no-member
         db.session.add(group_membership)
 
         return BasicDao.safe_commit()
@@ -135,6 +140,7 @@ class TeamMemberDao:
         :param updating_username: Unique identifier for the user who is updating a team membership.
         :return: Whether or not the team membership was successfully updated.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE teammembers SET 
@@ -203,6 +209,7 @@ class TeamMemberDao:
 
         if len(teams_joined_dict) > 0:
             for team_membership in teams_joined_dict:
+                # pylint: disable=no-member
                 existing_team_memberships = db.session.execute(
                     """
                     SELECT team_name
@@ -221,9 +228,11 @@ class TeamMemberDao:
                         f"The user {username} already has a membership to team {team_membership.team_name}."
                     )
                 else:
+                    # pylint: disable=no-member
                     db.session.add(team_membership)
 
         if len(teams_left_dict) > 0:
+            # pylint: disable=no-member
             db.session.execute(
                 """
                 UPDATE teammembers SET 
@@ -238,6 +247,7 @@ class TeamMemberDao:
                 teams_left_dict,
             )
 
+            # pylint: disable=no-member
             db.session.execute(
                 """
                 UPDATE groupmembers SET
@@ -260,6 +270,7 @@ class TeamMemberDao:
 
         if len(groups_joined_dict) > 0:
             for group_joined_dict in groups_joined_dict:
+                # pylint: disable=no-member
                 existing_memberships: ResultProxy = db.session.execute(
                     """
                     SELECT gm.* FROM groupmembers gm
@@ -273,6 +284,7 @@ class TeamMemberDao:
                     group_joined_dict,
                 )
 
+                # pylint: disable=no-member
                 already_team_member: ResultProxy = db.session.execute(
                     """
                     SELECT * FROM teammembers
@@ -300,6 +312,7 @@ class TeamMemberDao:
                     )
                     continue
 
+                # pylint: disable=no-member
                 db.session.execute(
                     """
                     INSERT INTO groupmembers (
@@ -336,6 +349,7 @@ class TeamMemberDao:
                 )
 
         if len(groups_left_dict) > 0:
+            # pylint: disable=no-member
             db.session.execute(
                 """
                 UPDATE groupmembers SET

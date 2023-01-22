@@ -9,10 +9,10 @@ from typing import Optional
 from sqlalchemy.engine.cursor import ResultProxy
 from sqlalchemy.engine.row import Row
 
-import utils.dates as dates
 from dao.basicDao import BasicDao
 from database import db
 from model.Log import Log
+from utils import dates
 from utils.literals import WeekStart
 from utils.exerciseFilters import generate_exercise_filter_sql_query
 
@@ -42,6 +42,7 @@ class LogDao:
         :param username: Unique identifier for a user
         :return: The total number of miles exercised
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT SUM(miles) AS total 
@@ -61,6 +62,7 @@ class LogDao:
         :param exercise_type: A certain type of exercise
         :return: The total number of miles exercised of a certain type
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT SUM(miles) AS total 
@@ -89,6 +91,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT SUM(miles) AS total 
@@ -99,7 +102,7 @@ class LogDao:
                 {"username": username},
             )
         else:
-            result: ResultProxy = db.session.execute(
+            result: ResultProxy = db.session.execute(  # pylint: disable=no-member
                 """
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -133,6 +136,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT SUM(miles) AS total 
@@ -144,7 +148,7 @@ class LogDao:
                 {"username": username, "exercise_type": exercise_type},
             )
         else:
-            result: ResultProxy = db.session.execute(
+            result: ResultProxy = db.session.execute(  # pylint: disable=no-member
                 """
                 SELECT SUM(miles) AS total 
                 FROM logs 
@@ -165,6 +169,7 @@ class LogDao:
         :param username: Unique identifier for a user
         :return: The average feel
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT AVG(feel) AS average 
@@ -191,6 +196,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT AVG(feel) AS average 
@@ -201,7 +207,7 @@ class LogDao:
                 {"username": username},
             )
         else:
-            result: ResultProxy = db.session.execute(
+            result: ResultProxy = db.session.execute(  # pylint: disable=no-member
                 """
                 SELECT AVG(feel) AS average 
                 FROM logs 
@@ -221,6 +227,7 @@ class LogDao:
         :param group_name: Unique name for a group.
         :return: The total number of miles exercised.
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT SUM(miles) AS total 
@@ -251,6 +258,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT SUM(miles) AS total 
@@ -264,21 +272,22 @@ class LogDao:
                 {"group_name": group_name},
             )
             return result.first()
-        else:
-            result: ResultProxy = db.session.execute(
-                """
-                SELECT SUM(miles) AS total 
-                FROM logs 
-                INNER JOIN groupmembers ON logs.username = groupmembers.username 
-                WHERE group_name=:group_name 
-                AND date >= :date 
-                AND status='accepted'
-                AND logs.deleted IS FALSE
-                AND groupmembers.deleted IS FALSE
-                """,
-                {"group_name": group_name, "date": date},
-            )
-            return result.first()
+
+        # pylint: disable=no-member
+        result: ResultProxy = db.session.execute(
+            """
+            SELECT SUM(miles) AS total 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_name=:group_name 
+            AND date >= :date 
+            AND status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
+            """,
+            {"group_name": group_name, "date": date},
+        )
+        return result.first()
 
     @staticmethod
     def get_group_miles_interval_by_type(
@@ -301,6 +310,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT SUM(miles) AS total 
@@ -315,26 +325,27 @@ class LogDao:
                 {"group_name": group_name, "exercise_type": exercise_type},
             )
             return result.first()
-        else:
-            result: ResultProxy = db.session.execute(
-                """
-                SELECT SUM(miles) AS total 
-                FROM logs 
-                INNER JOIN groupmembers ON logs.username = groupmembers.username 
-                WHERE group_name=:group_name 
-                AND type=:exercise_type
-                AND date >= :date 
-                AND status='accepted'
-                AND logs.deleted IS FALSE
-                AND groupmembers.deleted IS FALSE
-                """,
-                {
-                    "group_name": group_name,
-                    "exercise_type": exercise_type,
-                    "date": date,
-                },
-            )
-            return result.first()
+
+        # pylint: disable=no-member
+        result: ResultProxy = db.session.execute(
+            """
+            SELECT SUM(miles) AS total 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_name=:group_name 
+            AND type=:exercise_type
+            AND date >= :date 
+            AND status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
+            """,
+            {
+                "group_name": group_name,
+                "exercise_type": exercise_type,
+                "date": date,
+            },
+        )
+        return result.first()
 
     @staticmethod
     def get_group_avg_feel(group_name: str) -> Optional[Row]:
@@ -343,6 +354,7 @@ class LogDao:
         :param group_name: A name which uniquely identifies a group.
         :return: The average feel.
         """
+        # pylint: disable=no-member
         result: ResultProxy = db.session.execute(
             """
             SELECT AVG(feel) AS average 
@@ -372,6 +384,7 @@ class LogDao:
         date = dates.get_start_date_interval(interval=interval, week_start=week_start)
 
         if date is None:
+            # pylint: disable=no-member
             result: ResultProxy = db.session.execute(
                 """
                 SELECT AVG(feel) AS average 
@@ -385,21 +398,22 @@ class LogDao:
                 {"group_name": group_name},
             )
             return result.first()
-        else:
-            result: ResultProxy = db.session.execute(
-                """
-                SELECT AVG(feel) AS average 
-                FROM logs 
-                INNER JOIN groupmembers ON logs.username = groupmembers.username 
-                WHERE group_name=:group_name 
-                AND date >= :date
-                AND status='accepted'
-                AND logs.deleted IS FALSE
-                AND groupmembers.deleted IS FALSE
-                """,
-                {"group_name": group_name, "date": date},
-            )
-            return result.first()
+
+        # pylint: disable=no-member
+        result: ResultProxy = db.session.execute(
+            """
+            SELECT AVG(feel) AS average 
+            FROM logs 
+            INNER JOIN groupmembers ON logs.username = groupmembers.username 
+            WHERE group_name=:group_name 
+            AND date >= :date
+            AND status='accepted'
+            AND logs.deleted IS FALSE
+            AND groupmembers.deleted IS FALSE
+            """,
+            {"group_name": group_name, "date": date},
+        )
+        return result.first()
 
     @staticmethod
     def get_log_feed(limit: int, offset: int, username: str) -> ResultProxy:
@@ -411,6 +425,7 @@ class LogDao:
         :param username: Unique identifier of the user making the log feed request
         :return: A list of logs
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT DISTINCT logs.* FROM logs
@@ -436,6 +451,7 @@ class LogDao:
         Calculate the number of logs in the log feed.
         :return: The number of logs in existence.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT COUNT(*) AS count FROM logs WHERE deleted IS FALSE
@@ -451,6 +467,7 @@ class LogDao:
         :param offset: The number of logs to skip before returning
         :return: A list of logs
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT * FROM logs 
@@ -469,6 +486,7 @@ class LogDao:
         :param username: The unique username for a user
         :return: The number of logs in existence.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT COUNT(*) AS count FROM logs
@@ -487,6 +505,7 @@ class LogDao:
         :param offset: The number of logs to skip before returning
         :return: A list of logs
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT log_id,logs.username,first,last,name,location,date,type,
@@ -510,6 +529,7 @@ class LogDao:
         :param group_id: The unique id of a group
         :return: The number of logs in existence.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT COUNT(*) AS count FROM logs
@@ -532,6 +552,7 @@ class LogDao:
         :return: A list of exercise miles and feel statistics for each day a log exists.
         """
         type_query = generate_exercise_filter_sql_query(types)
+        # pylint: disable=no-member
         return db.session.execute(
             f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
@@ -558,6 +579,7 @@ class LogDao:
         :return: A list of exercise miles and feel statistics for each day a log exists.
         """
         type_query = generate_exercise_filter_sql_query(types)
+        # pylint: disable=no-member
         return db.session.execute(
             f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
@@ -585,6 +607,7 @@ class LogDao:
         :return: A list of exercise miles and feel statistics for each day a log exists.
         """
         type_query = generate_exercise_filter_sql_query(types)
+        # pylint: disable=no-member
         return db.session.execute(
             f"""
             SELECT date, SUM(miles) AS miles, CAST(AVG(feel) AS UNSIGNED) AS feel 
@@ -609,6 +632,7 @@ class LogDao:
         :param new_log: Object representing an exercise log for a user.
         :return: True if the log is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(new_log)
         return BasicDao.safe_commit()
 
@@ -619,6 +643,7 @@ class LogDao:
         :param log: Object representing an updated log.
         :return: True if the log is updated in the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE logs SET 
@@ -660,6 +685,7 @@ class LogDao:
         :param log_id: ID which uniquely identifies the log.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM logs WHERE log_id=:log_id AND deleted IS FALSE",
             {"log_id": log_id},
@@ -673,6 +699,7 @@ class LogDao:
         :param log: Object representing a log to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE logs SET 

@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 11/28/2020
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Team(db.Model):
@@ -53,7 +54,7 @@ class Team(db.Model):
 
     def __str__(self):
         """
-        String representation of a team.  This representation is meant to be human readable.
+        String representation of a team.  This representation is meant to be human-readable.
         :return: The team in string form.
         """
         return (
@@ -63,10 +64,10 @@ class Team(db.Model):
 
     def __repr__(self):
         """
-        String representation of a team.  This representation is meant to be machine readable.
+        String representation of a team.  This representation is meant to be machine-readable.
         :return: The team in string form.
         """
-        return "<Team %r>" % self.name
+        return f"<Team {self.name}>"
 
     def __eq__(self, other):
         """

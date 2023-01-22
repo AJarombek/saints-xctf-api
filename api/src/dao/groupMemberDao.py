@@ -8,7 +8,7 @@ Date: 7/2/2019
 from datetime import datetime
 
 from sqlalchemy.engine.cursor import ResultProxy
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 
 from database import db
 from model.GroupMember import GroupMember
@@ -68,6 +68,7 @@ class GroupMemberDao:
         :param username: Unique identifier for the user
         :return: A list of groups
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT `groups`.id, groupmembers.group_name, group_title, status, user
@@ -88,6 +89,7 @@ class GroupMemberDao:
         :param team_name: Unique name for a team
         :return: A list of groups
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT groupmembers.group_name,groupmembers.group_id,group_title,status,user 
@@ -113,6 +115,7 @@ class GroupMemberDao:
         :param team_name: Unique name for a team.
         :return: A list of group members.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT users.username,first,last,member_since,user,status 
@@ -137,6 +140,7 @@ class GroupMemberDao:
         :param group_id: Unique id of a group.
         :return: A list of group members.
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT users.username,first,last,member_since,user,status 
@@ -161,6 +165,7 @@ class GroupMemberDao:
         :param user: User type of a group membership - whether the user is an admin or a regular user.
         :return: True if the group membership was updated, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE groupmembers SET 
@@ -191,6 +196,7 @@ class GroupMemberDao:
         :param username: Unique name for a user.
         :return: True if the group membership was soft deleted, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE groupmembers SET 

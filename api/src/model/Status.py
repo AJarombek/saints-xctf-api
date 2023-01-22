@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Status(db.Model):
@@ -16,4 +17,8 @@ class Status(db.Model):
     group_members = db.relationship("GroupMember", backref="group_member")
 
     def __repr__(self):
-        return "<Status %r>" % self.status
+        """
+        String representation of a group member status.  This representation is meant to be machine-readable.
+        :return: The group member status in string form.
+        """
+        return f"<Status {self.status}>"

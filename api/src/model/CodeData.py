@@ -22,7 +22,7 @@ class CodeData:
 
     def __str__(self):
         """
-        String representation of an activation code.  This representation is meant to be human readable.
+        String representation of an activation code.  This representation is meant to be human-readable.
         :return: The activation code string.
         """
         return (
@@ -32,10 +32,10 @@ class CodeData:
 
     def __repr__(self):
         """
-        String representation of an activation code.  This representation is meant to be machine readable.
+        String representation of an activation code.  This representation is meant to be machine-readable.
         :return: The activation code string.
         """
-        return "<CodeData %r>" % self.activation_code
+        return f"<CodeData {self.activation_code}>"
 
     def __eq__(self, other):
         """

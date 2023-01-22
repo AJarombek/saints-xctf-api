@@ -54,7 +54,7 @@ class TeamMember(db.Model):
 
     def __str__(self):
         """
-        String representation of a team membership.  This representation is meant to be human readable.
+        String representation of a team membership.  This representation is meant to be human-readable.
         :return: The team membership in string form.
         """
         return (
@@ -64,7 +64,7 @@ class TeamMember(db.Model):
 
     def __repr__(self):
         """
-        String representation of a team membership.  This representation is meant to be machine readable.
+        String representation of a team membership.  This representation is meant to be machine-readable.
         :return: The team membership in string form.
         """
         return f"<TeamMember {self.team_name}, {self.username}>"

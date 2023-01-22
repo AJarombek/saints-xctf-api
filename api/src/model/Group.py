@@ -4,9 +4,10 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
 from sqlalchemy.dialects.mysql import LONGBLOB
+
+from app import db
 
 
 class Group(db.Model):
@@ -58,7 +59,7 @@ class Group(db.Model):
 
     def __str__(self):
         """
-        String representation of a group within a team.  This representation is meant to be human readable.
+        String representation of a group within a team.  This representation is meant to be human-readable.
         :return: The group in string form.
         """
         return (
@@ -69,10 +70,10 @@ class Group(db.Model):
 
     def __repr__(self):
         """
-        String representation of a group within a team.  This representation is meant to be machine readable.
+        String representation of a group within a team.  This representation is meant to be machine-readable.
         :return: The group in string form.
         """
-        return "<Group %r, %r>" % (self.id, self.group_name)
+        return f"<Group {self.id}, {self.group_name}>"
 
     def __eq__(self, other):
         """

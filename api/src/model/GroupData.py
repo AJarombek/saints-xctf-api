@@ -25,7 +25,7 @@ class GroupData:
 
     def __str__(self):
         """
-        String representation of a group within a team.  This representation is meant to be human readable.
+        String representation of a group within a team.  This representation is meant to be human-readable.
         :return: The group in string form.
         """
         return (
@@ -36,10 +36,10 @@ class GroupData:
 
     def __repr__(self):
         """
-        String representation of a group within a team.  This representation is meant to be machine readable.
+        String representation of a group within a team.  This representation is meant to be machine-readable.
         :return: The group in string form.
         """
-        return "<GroupData %r, %r>" % (self.id, self.group_name)
+        return f"<GroupData {self.id}, {self.group_name}>"
 
     def __eq__(self, other):
         """

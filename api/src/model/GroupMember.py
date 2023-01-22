@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class GroupMember(db.Model):
@@ -56,7 +57,7 @@ class GroupMember(db.Model):
     def __str__(self):
         """
         String representation of information about a user who is a member of a group.  This representation is meant
-        to be human readable.
+        to be human-readable.
         :return: The group member in string form.
         """
         return (
@@ -67,10 +68,10 @@ class GroupMember(db.Model):
     def __repr__(self):
         """
         String representation of information about a user who is a member of a group.  This representation is meant
-        to be machine readable.
+        to be machine-readable.
         :return: The group member in string form.
         """
-        return "<GroupMember %r,%r>" % (self.group_name, self.username)
+        return f"<GroupMember {self.group_name},{self.username}>"
 
     def __eq__(self, other):
         """

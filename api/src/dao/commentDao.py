@@ -60,6 +60,7 @@ class CommentDao:
         :param new_comment: Object representing a comment for an exercise log.
         :return: True if the comment is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(new_comment)
         return BasicDao.safe_commit()
 
@@ -70,6 +71,7 @@ class CommentDao:
         :param comment: Object representing an updated comment.
         :return: True if the comment is updated in the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE comments SET 
@@ -97,6 +99,7 @@ class CommentDao:
         :param comment_id: ID which uniquely identifies the comment.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM comments WHERE comment_id=:comment_id AND deleted IS FALSE",
             {"comment_id": comment_id},
@@ -110,6 +113,7 @@ class CommentDao:
         :param log_id: ID which uniquely identifies the log.
         :return: True if the deletions were successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM comments WHERE log_id=:log_id AND deleted IS FALSE",
             {"log_id": log_id},
@@ -123,6 +127,7 @@ class CommentDao:
         :param comment: Object representing a comment to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE comments SET 
@@ -152,6 +157,7 @@ class CommentDao:
         :param log_id: Unique identifier for an exercise log.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE comments SET 

@@ -5,10 +5,11 @@ Date: 6/22/2019
 """
 
 import os
-import coverage
-import click
 import sys
 import unittest
+
+import coverage
+import click
 from flask.cli import with_appcontext
 
 cov = None
@@ -42,7 +43,7 @@ def test():
         basedir = os.path.abspath(os.path.dirname(__file__))
         cov_dir = os.path.join(basedir, "tmp/coverage")
         cov.html_report(directory=cov_dir)
-        print("HTML version: file://%s/index.html" % cov_dir)
+        print(f"HTML version: file://{cov_dir}/index.html")
         cov.erase()
 
-    exit(len(result.errors))
+    sys.exit(len(result.errors))

@@ -23,14 +23,14 @@ class Type(db.Model):
 
     def __str__(self):
         """
-        String representation of an exercise log type.  This representation is meant to be human readable.
+        String representation of an exercise log type.  This representation is meant to be human-readable.
         :return: The type in string form.
         """
         return f"Type: [type: {self.type}]"
 
     def __repr__(self):
         """
-        String representation of an exercise log type.  This representation is meant to be machine readable.
+        String representation of an exercise log type.  This representation is meant to be machine-readable.
         :return: The type in string form.
         """
         return f"<Type {self.type}>"

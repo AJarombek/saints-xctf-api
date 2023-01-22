@@ -25,7 +25,7 @@ class CommentData:
 
     def __str__(self):
         """
-        String representation of the comment.  This representation is meant to be human readable.
+        String representation of the comment.  This representation is meant to be human-readable.
         :return: The comment string.
         """
         return (
@@ -36,10 +36,10 @@ class CommentData:
 
     def __repr__(self):
         """
-        String representation of the comment.  This representation is meant to be machine readable.
+        String representation of the comment.  This representation is meant to be machine-readable.
         :return: The comment string.
         """
-        return "<CommentData %r>" % self.comment_id
+        return f"<CommentData {self.comment_id}>"
 
     def __eq__(self, other):
         """

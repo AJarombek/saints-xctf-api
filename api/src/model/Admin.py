@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Admin(db.Model):
@@ -22,17 +23,17 @@ class Admin(db.Model):
 
     def __str__(self):
         """
-        String representation of a type of group member.  This representation is meant to be human readable.
+        String representation of a type of group member.  This representation is meant to be human-readable.
         :return: Either a 'user' or 'admin' type of group member.
         """
         return f"Admin: [user: {self.user}]"
 
     def __repr__(self):
         """
-        String representation of a type of group member.  This representation is meant to be machine readable.
+        String representation of a type of group member.  This representation is meant to be machine-readable.
         :return: Either a 'user' or 'admin' type of group member.
         """
-        return "<Admin %r>" % self.user
+        return f"<Admin {self.user}>"
 
     def __eq__(self, other):
         """

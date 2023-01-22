@@ -22,7 +22,7 @@ class TeamGroupData:
 
     def __str__(self):
         """
-        String representation of a team and group binding.  This representation is meant to be human readable.
+        String representation of a team and group binding.  This representation is meant to be human-readable.
         :return: The team/group binding in string form.
         """
         return (
@@ -32,10 +32,10 @@ class TeamGroupData:
 
     def __repr__(self):
         """
-        String representation of a team/group binding.  This representation is meant to be machine readable.
+        String representation of a team/group binding.  This representation is meant to be machine-readable.
         :return: The team/group binding in string form.
         """
-        return "<TeamGroupData %r, %r>" % (self.team_name, self.group_name)
+        return f"<TeamGroupData {self.team_name}, {self.group_name}>"
 
     def __eq__(self, other):
         """

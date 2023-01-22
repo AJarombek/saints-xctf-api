@@ -36,6 +36,7 @@ class ForgotPasswordDao:
         :param username: The unique identifier for a user
         :return: A list of forgot password codes
         """
+        # pylint: disable=no-member
         return db.session.execute(
             """
             SELECT forgot_code, username, expires, deleted 
@@ -54,6 +55,7 @@ class ForgotPasswordDao:
         :param code: A ForgotPassword object representing a code that expires after a certain date.
         :return: True if the code was inserted successfully, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(code)
         return BasicDao.safe_commit()
 
@@ -64,6 +66,7 @@ class ForgotPasswordDao:
         :param code: Value of the secret forgot password code.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             DELETE FROM forgotpassword 

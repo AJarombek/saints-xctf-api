@@ -46,5 +46,6 @@ class FlairDao:
         :param flair: Object representing a flair for a user in the application.
         :return: True if the flair is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(flair)
         return BasicDao.safe_commit()

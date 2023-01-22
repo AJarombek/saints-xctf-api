@@ -24,7 +24,7 @@ class NotificationData:
 
     def __str__(self):
         """
-        String representation of a notification for a user.  This representation is meant to be human readable.
+        String representation of a notification for a user.  This representation is meant to be human-readable.
         :return: The notification in string form.
         """
         return (
@@ -35,10 +35,10 @@ class NotificationData:
 
     def __repr__(self):
         """
-        String representation of a notification for a user.  This representation is meant to be machine readable.
+        String representation of a notification for a user.  This representation is meant to be machine-readable.
         :return: The notification in string form.
         """
-        return "<NotificationData %d>" % self.notification_id
+        return f"<NotificationData {self.notification_id}>"
 
     def __eq__(self, other):
         """

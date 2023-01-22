@@ -34,7 +34,7 @@ class LogData:
 
     def __str__(self):
         """
-        String representation of an exercise log.  This representation is meant to be human readable.
+        String representation of an exercise log.  This representation is meant to be human-readable.
         :return: The exercise log in string form.
         """
         return (
@@ -47,10 +47,10 @@ class LogData:
 
     def __repr__(self):
         """
-        String representation of an exercise log.  This representation is meant to be machine readable.
+        String representation of an exercise log.  This representation is meant to be machine-readable.
         :return: The exercise log in string form.
         """
-        return "<LogData %r>" % self.log_id
+        return f"<LogData {self.log_id}>"
 
     def __eq__(self, other):
         """

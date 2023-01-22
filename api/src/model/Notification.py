@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Notification(db.Model):
@@ -57,7 +58,7 @@ class Notification(db.Model):
 
     def __str__(self):
         """
-        String representation of a notification for a user.  This representation is meant to be human readable.
+        String representation of a notification for a user.  This representation is meant to be human-readable.
         :return: The notification in string form.
         """
         return (
@@ -68,10 +69,10 @@ class Notification(db.Model):
 
     def __repr__(self):
         """
-        String representation of a notification for a user.  This representation is meant to be machine readable.
+        String representation of a notification for a user.  This representation is meant to be machine-readable.
         :return: The notification in string form.
         """
-        return "<Notification %d>" % self.notification_id
+        return f"<Notification {self.notification_id}>"
 
     def __eq__(self, other):
         """

@@ -23,7 +23,7 @@ class TeamMemberData:
 
     def __str__(self):
         """
-        String representation of a team membership.  This representation is meant to be human readable.
+        String representation of a team membership.  This representation is meant to be human-readable.
         :return: The team membership in string form.
         """
         return (
@@ -33,7 +33,7 @@ class TeamMemberData:
 
     def __repr__(self):
         """
-        String representation of a team membership.  This representation is meant to be machine readable.
+        String representation of a team membership.  This representation is meant to be machine-readable.
         :return: The team membership in string form.
         """
         return f"<TeamMemberData {self.team_name}, {self.username}>"

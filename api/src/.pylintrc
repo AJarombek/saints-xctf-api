@@ -4,7 +4,7 @@
 
 [MAIN]
 
-fail-under=9
+fail-under=10
 py-version=3.8
 
 [MESSAGES CONTROL]

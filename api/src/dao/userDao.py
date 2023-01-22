@@ -57,6 +57,7 @@ class UserDao:
         :param user: Object representing a user for the application.
         :return: True if the user is inserted into the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.add(user)
         return BasicDao.safe_commit()
 
@@ -68,6 +69,7 @@ class UserDao:
         :param user: Object representing an updated user for the application.
         :return: True if the user is updated in the database, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE users SET 
@@ -106,6 +108,7 @@ class UserDao:
         :param password: New password for a user.
         :return: True if the update was successful, False otherwise
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE users 
@@ -124,6 +127,7 @@ class UserDao:
         :param username: Username which uniquely identifies the user.
         :return: True if the update was successful, False otherwise
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE users 
@@ -142,9 +146,11 @@ class UserDao:
         :param username: Username which uniquely identifies the user.
         :return: True if the deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM teammembers WHERE username=:username", {"username": username}
         )
+        # pylint: disable=no-member
         db.session.execute(
             "DELETE FROM users WHERE username=:username", {"username": username}
         )
@@ -157,6 +163,7 @@ class UserDao:
         :param user: Object representing a user to soft delete.
         :return: True if the soft deletion was successful without error, False otherwise.
         """
+        # pylint: disable=no-member
         db.session.execute(
             """
             UPDATE users SET 

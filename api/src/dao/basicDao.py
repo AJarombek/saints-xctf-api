@@ -4,9 +4,10 @@ Author: Andrew Jarombek
 Date: 6/23/2019
 """
 
-from database import db
 from flask import current_app
 from sqlalchemy.exc import SQLAlchemyError
+
+from database import db
 
 
 class BasicDao:
@@ -17,10 +18,12 @@ class BasicDao:
         :return: True if the commit was successful, False if a rollback occurred.
         """
         try:
+            # pylint: disable=no-member
             db.session.commit()
             current_app.logger.info("SQL Safely Committed")
             return True
         except SQLAlchemyError as error:
+            # pylint: disable=no-member
             db.session.rollback()
             current_app.logger.error("SQL Commit Failed!  Rolling back...")
             current_app.logger.error(error.args)

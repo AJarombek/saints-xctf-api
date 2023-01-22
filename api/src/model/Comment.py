@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Comment(db.Model):
@@ -57,7 +58,7 @@ class Comment(db.Model):
 
     def __str__(self):
         """
-        String representation of the comment.  This representation is meant to be human readable.
+        String representation of the comment.  This representation is meant to be human-readable.
         :return: The comment string.
         """
         return (
@@ -68,10 +69,10 @@ class Comment(db.Model):
 
     def __repr__(self):
         """
-        String representation of the comment.  This representation is meant to be machine readable.
+        String representation of the comment.  This representation is meant to be machine-readable.
         :return: The comment string.
         """
-        return "<Comment %r>" % self.comment_id
+        return f"<Comment {self.comment_id}>"
 
     def __eq__(self, other):
         """

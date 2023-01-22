@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/21/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class Flair(db.Model):
@@ -49,7 +50,7 @@ class Flair(db.Model):
 
     def __str__(self):
         """
-        String representation of the user's flair.  This representation is meant to be human readable.
+        String representation of the user's flair.  This representation is meant to be human-readable.
         :return: The flair in string form.
         """
         return (
@@ -59,10 +60,10 @@ class Flair(db.Model):
 
     def __repr__(self):
         """
-        String representation of the user's flair.  This representation is meant to be machine readable.
+        String representation of the user's flair.  This representation is meant to be machine-readable.
         :return: The flair in string form.
         """
-        return "<Flair %r,%r>" % (self.flair_id, self.username)
+        return f"<Flair {self.flair_id},{self.username}>"
 
     def __eq__(self, other):
         """

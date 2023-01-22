@@ -4,8 +4,9 @@ Author: Andrew Jarombek
 Date: 6/22/2019
 """
 
-from app import db
 from sqlalchemy import Column
+
+from app import db
 
 
 class ForgotPassword(db.Model):
@@ -51,7 +52,7 @@ class ForgotPassword(db.Model):
 
     def __str__(self):
         """
-        String representation of a forgot password code.  This representation is meant to be human readable.
+        String representation of a forgot password code.  This representation is meant to be human-readable.
         :return: The forgot password code in string form.
         """
         return (
@@ -61,10 +62,10 @@ class ForgotPassword(db.Model):
 
     def __repr__(self):
         """
-        String representation of a forgot password code.  This representation is meant to be machine readable.
+        String representation of a forgot password code.  This representation is meant to be machine-readable.
         :return: The forgot password code in string form.
         """
-        return "<ForgotPassword %r,%r>" % (self.forgot_code, self.username)
+        return f"<ForgotPassword {self.forgot_code},{self.username}>"
 
     def __eq__(self, other):
         """

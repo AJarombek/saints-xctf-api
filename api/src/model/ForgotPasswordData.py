@@ -23,7 +23,7 @@ class ForgotPasswordData:
 
     def __str__(self):
         """
-        String representation of a forgot password code.  This representation is meant to be human readable.
+        String representation of a forgot password code.  This representation is meant to be human-readable.
         :return: The forgot password code in string form.
         """
         return (
@@ -33,10 +33,10 @@ class ForgotPasswordData:
 
     def __repr__(self):
         """
-        String representation of a forgot password code.  This representation is meant to be machine readable.
+        String representation of a forgot password code.  This representation is meant to be machine-readable.
         :return: The forgot password code in string form.
         """
-        return "<ForgotPasswordData %r,%r>" % (self.forgot_code, self.username)
+        return f"<ForgotPasswordData {self.forgot_code},{self.username}>"
 
     def __eq__(self, other):
         """
