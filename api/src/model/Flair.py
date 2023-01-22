@@ -63,7 +63,7 @@ class Flair(db.Model):
         String representation of the user's flair.  This representation is meant to be machine-readable.
         :return: The flair in string form.
         """
-        return f"<Flair {self.flair_id},{self.username}>"
+        return f"<Flair {self.flair_id},'{self.username}'>"
 
     def __eq__(self, other):
         """

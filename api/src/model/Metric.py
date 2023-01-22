@@ -33,7 +33,7 @@ class Metric(db.Model):
         String representation of a distance metric.  This representation is meant to be machine-readable.
         :return: The metric in string form.
         """
-        return f"<Metric {self.metric}>"
+        return f"<Metric '{self.metric}'>"
 
     def __eq__(self, other):
         """

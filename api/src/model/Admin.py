@@ -33,7 +33,7 @@ class Admin(db.Model):
         String representation of a type of group member.  This representation is meant to be machine-readable.
         :return: Either a 'user' or 'admin' type of group member.
         """
-        return f"<Admin {self.user}>"
+        return f"<Admin '{self.user}'>"
 
     def __eq__(self, other):
         """

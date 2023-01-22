@@ -35,7 +35,7 @@ class CodeData:
         String representation of an activation code.  This representation is meant to be machine-readable.
         :return: The activation code string.
         """
-        return f"<CodeData {self.activation_code}>"
+        return f"<CodeData '{self.activation_code}'>"
 
     def __eq__(self, other):
         """

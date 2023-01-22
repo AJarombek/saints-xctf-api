@@ -39,6 +39,14 @@ Directories
 Version History
 ---------------
 
+`v2.0.3 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.3>`_ - GitHub Actions CI/CD and New Exercise Types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Release Date: Jan 22nd, 2023
+
+Added new exercise types for use in logs.  Added GitHub Actions for running integration tests and linting & formatting
+Python code.
+
 `v2.0.2 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.2>`_ - Swagger Docs & Group Route Fix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

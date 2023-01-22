@@ -40,12 +40,12 @@ jobs:
       - name: Setup Database
         working-directory: ./api/src
         run: |
-          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'%'"
-          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'%' IDENTIFIED BY 'saintsxctf'"
-          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "CREATE DATABASE IF NOT EXISTS saintsxctf"
-          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'"
-          mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-init.sql
-          mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf < test-db-update.sql
+          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "DROP USER IF EXISTS 'saintsxctflocal'@'%'" -v
+          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "CREATE USER 'saintsxctflocal'@'%' IDENTIFIED BY 'saintsxctf'" -v
+          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "CREATE DATABASE IF NOT EXISTS saintsxctf" -v
+          mysql --protocol=tcp -h db -u root --password=saintsxctf -e "GRANT ALL ON saintsxctf.* TO 'saintsxctflocal'@'%'" -v
+          mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf -v < test-db-init.sql
+          mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf -v < test-db-update.sql
 
       - name: Install libraries
         working-directory: ./api/src
@@ -63,3 +63,4 @@ jobs:
         run: pipenv run flask test
         env:
           FLASK_ENV: cicdtest
+          ENV: cicdtest

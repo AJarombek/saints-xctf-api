@@ -33,7 +33,7 @@ class Type(db.Model):
         String representation of an exercise log type.  This representation is meant to be machine-readable.
         :return: The type in string form.
         """
-        return f"<Type {self.type}>"
+        return f"<Type '{self.type}'>"
 
     def __eq__(self, other):
         """

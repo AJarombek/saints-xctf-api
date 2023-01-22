@@ -22,4 +22,4 @@ class WeekStart(db.Model):
         String representation of the start of week options.  This representation is meant to be machine-readable.
         :return: The week start object in string form.
         """
-        return f"<WeekStart {self.week_start}>"
+        return f"<WeekStart '{self.week_start}'>"

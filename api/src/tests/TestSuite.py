@@ -46,8 +46,12 @@ class TestSuite(unittest.TestCase):
         """
         Set up logic performed before every test.
         """
-        if os.environ.get("ENV") == "localtest":
+        os_env = os.environ.get("ENV")
+
+        if os_env == "localtest":
             env = "localtest"
+        elif os_env == "cicdtest":
+            env = "cicdtest"
         else:
             env = "test"
 

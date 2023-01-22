@@ -39,7 +39,7 @@ class GroupMemberData:
         to be machine-readable.
         :return: The group member in string form.
         """
-        return f"<GroupMemberData {self.group_name},{self.username}>"
+        return f"<GroupMemberData '{self.group_name}','{self.username}'>"
 
     def __eq__(self, other):
         """

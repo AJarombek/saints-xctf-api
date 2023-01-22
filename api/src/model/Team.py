@@ -67,7 +67,7 @@ class Team(db.Model):
         String representation of a team.  This representation is meant to be machine-readable.
         :return: The team in string form.
         """
-        return f"<Team {self.name}>"
+        return f"<Team '{self.name}'>"
 
     def __eq__(self, other):
         """

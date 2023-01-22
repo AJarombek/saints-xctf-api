@@ -76,7 +76,7 @@ class Event(db.Model):
         String representation of an event.  This representation is meant to be machine-readable.
         :return: The event/meeting.
         """
-        return f"<Event {self.name}>"
+        return f"<Event '{self.name}'>"
 
     def __eq__(self, other):
         """
