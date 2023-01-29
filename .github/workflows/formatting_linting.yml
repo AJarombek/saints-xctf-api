@@ -18,6 +18,7 @@ on:
 jobs:
   linting_formatting:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - run: echo "Job running on a ${{ runner.os }} server"
 
@@ -41,7 +42,7 @@ jobs:
           pip install pylint==2.15.9
           pip install pipenv==2022.12.19
 
-      - name: Analysing the Code with Pylint
+      - name: Analyzing the Code with Pylint
         working-directory: ./api/src
         run: |
           pipenv install --ignore-pipfile --system

@@ -35,6 +35,20 @@ Navigate to ``infra/docker-compose`` and view the ``README.rst`` file.
 
 To build the ECR dockerfiles, you must use docker compose.
 
+**Push CI/CD Dockerfile to DockerHub**
+
+All other Dockerfiles are pushed to a registry via a Jenkins job, but the CI/CD Dockerfile is
+lightweight and can be pushed locally.
+
+.. code-block:: bash
+
+    docker image build -t saints-xctf-api-cicd:latest -f cicd.test.dockerfile .
+    docker image tag saints-xctf-api-cicd:latest ajarombek/saints-xctf-api-cicd:latest
+    docker push ajarombek/saints-xctf-api-cicd:latest
+
+    docker image tag saints-xctf-api-cicd:latest ajarombek/saints-xctf-api-cicd:2.0.4
+    docker push ajarombek/saints-xctf-api-cicd:2.0.4
+
 **Black Formatting**
 
 .. code-block:: bash

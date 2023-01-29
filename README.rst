@@ -39,6 +39,14 @@ Directories
 Version History
 ---------------
 
+`v2.0.4 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.4>`_ - Flask API GitHub Actions Article
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Release Date: Jan 29th, 2023
+
+Small tweaks and improvements for an upcoming article
+on `Configuring GitHub Actions to Test a Flask API <https://jarombek.com/blog/jan-31-2023-flask-api-github-actions>`_.
+
 `v2.0.3 <https://github.com/AJarombek/saints-xctf-web/tree/v2.0.3>`_ - GitHub Actions CI/CD and New Exercise Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -15,8 +15,3 @@ RUN apk update \
     && apk add --update mysql mysql-client
 
 ENV FLASK_APP app.py
-ENV ENV cicdtest
-
-COPY credentials .aws/
-ENV AWS_DEFAULT_REGION us-east-1
-ENV AWS_SHARED_CREDENTIALS_FILE .aws/credentials
