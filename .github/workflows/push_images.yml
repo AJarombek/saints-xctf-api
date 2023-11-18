@@ -1,0 +1,69 @@
+name: Build and Push Docker Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Docker image to build and push'
+        required: true
+        type: choice
+        default: 'saints-xctf-api-flask'
+        options:
+          - saints-xctf-api-flask
+          - saints-xctf-api-nginx
+      version:
+        description: 'Version of the Docker image to build and push'
+        type: string
+        required: true
+        default: '0.0.0'
+      is_latest:
+        description: 'Whether the Docker image is the latest version'
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build Docker Image
+        run: |
+          dockerfile="api.flask.dockerfile"
+
+          case ${{ github.event.inputs.image }} in
+            saints-xctf-api-nginx)
+              dockerfile="api.nginx.dockerfile"
+              ;;
+          esac
+          
+          docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ dockerfile }} .
+          
+          docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.run_number }}
+          docker tag${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+          
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.run_number }}
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+          
+          if [ ${{ github.event.inputs.is_latest }} == "true" ]; then
+            docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:latest
+            docker push ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:latest
+          fi
