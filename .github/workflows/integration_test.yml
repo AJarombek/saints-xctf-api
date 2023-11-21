@@ -19,7 +19,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    container: ajarombek/saints-xctf-api-cicd
     services:
       db:
         image: mysql:5.7.36
@@ -37,6 +36,17 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v3
+
+      - name: Install Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install Pylint & Pipenv
+        run: |
+          pip install --upgrade pip
+          pip install pylint==2.15.9
+          pip install pipenv==2022.12.19
 
       - name: Setup Database
         working-directory: ./api/src
