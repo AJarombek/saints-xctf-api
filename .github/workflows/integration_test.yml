@@ -48,16 +48,16 @@ jobs:
           mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf -v < test-db-init.sql
           mysql --protocol=tcp -h db -u saintsxctflocal -D saintsxctf --password=saintsxctf -v < test-db-update.sql
 
-      - name: Install libraries
-        working-directory: ./api/src
-        run: pipenv install
-
       - name: Create Log File
         working-directory: /
         run: |
           mkdir logs
           cd logs
           touch saints-xctf-api.log
+
+      - name: Install libraries
+        working-directory: ./api/src
+        run: pipenv install --ignore-pipfile
 
       - name: Run tests
         working-directory: ./api/src
