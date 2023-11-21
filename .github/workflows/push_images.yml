@@ -73,7 +73,7 @@ jobs:
           docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ env.dockerfile }} .
           
           docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.run_number }}
-          docker tag${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+          docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
           
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.run_number }}
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
