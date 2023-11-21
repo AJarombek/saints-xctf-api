@@ -45,17 +45,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Build Docker Image
+      - name: Set Dockerfile
+        id: set-dockerfile
         run: |
-          dockerfile="api.flask.dockerfile"
-
+          echo "dockerfile=api.flask.dockerfile" >> $GITHUB_ENV
           case ${{ github.event.inputs.image }} in
             saints-xctf-api-nginx)
-              dockerfile="api.nginx.dockerfile"
+              echo "dockerfile=api.nginx.dockerfile" >> $GITHUB_ENV
               ;;
           esac
-          
-          docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ dockerfile }} .
+
+      - name: Build Docker Image
+        working-directory: api/src
+        run: |
+          docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ env.dockerfile }} .
           
           docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.run_number }}
           docker tag${{ github.event.inputs.image }}:${{ github.run_number }} ${{ steps.login-ecr.outputs.registry }}/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
