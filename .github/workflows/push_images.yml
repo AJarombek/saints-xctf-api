@@ -32,15 +32,20 @@ jobs:
 
     steps:
       - name: Checkout Repository
+        id: checkout-repository
         uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        id: configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: ${{ env.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set Dockerfile
         id: set-dockerfile
@@ -53,6 +58,7 @@ jobs:
           esac
 
       - name: Build Docker Image
+        id: build-docker-image
         working-directory: api/src
         run: |
           docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ env.dockerfile }} .
