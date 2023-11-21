@@ -6,7 +6,7 @@ name: Black Formatting & Pylint Linting
 
 on:
   push:
-    branches: ["main", "feature/*"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 

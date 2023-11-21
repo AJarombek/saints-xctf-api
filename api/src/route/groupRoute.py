@@ -372,7 +372,6 @@ def group_by_group_name_put(team_name: str, group_name: str) -> Response:
     new_group = Group(group_data)
 
     if old_group != new_group:
-
         new_group.modified_date = datetime.now()
         new_group.modified_app = "saints-xctf-api"
 

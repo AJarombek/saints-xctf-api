@@ -328,7 +328,6 @@ def comment_with_id_put(comment_id):
     new_comment = Comment(comment_data)
 
     if old_comment != new_comment:
-
         new_comment.modified_date = datetime.now()
         new_comment.modified_app = "saints-xctf-api"
 
