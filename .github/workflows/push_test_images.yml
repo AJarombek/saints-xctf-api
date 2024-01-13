@@ -1,0 +1,62 @@
+name: Build and Push Docker Image to DockerHub
+
+on:
+  workflow_dispatch:
+    image:
+      description: 'Docker image to build and push'
+      required: true
+      type: choice
+      default: 'saints-xctf-api-cicd'
+      options:
+        - saints-xctf-api-cicd
+    version:
+      description: 'Version of the Docker image to build and push'
+      type: string
+      required: true
+      default: '0.0.0'
+    is_latest:
+      description: 'Whether the Docker image is the latest version'
+      type: boolean
+      required: true
+      default: true
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        id: checkout-repository
+        uses: actions/checkout@v3
+
+      - name: Login to DockerHub
+        id: login-dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Set Dockerfile
+        id: set-dockerfile
+        run: echo "dockerfile=cicd.test.dockerfile" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        id: build-docker-image
+        working-directory: api/src
+        run: |
+          docker build -t ${{ github.event.inputs.image }}:${{ github.run_number }} -f ${{ env.dockerfile }} .
+          docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ajarombek/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+          docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ajarombek/${{ github.event.inputs.image }}:${{ github.run_number }}
+
+      - name: Push Docker Image
+        id: push-docker-image
+        working-directory: api/src
+        run: |
+          docker push ajarombek/${{ github.event.inputs.image }}:${{ github.event.inputs.version }}
+          docker push ajarombek/${{ github.event.inputs.image }}:${{ github.run_number }}
+          
+          if [ ${{ github.event.inputs.is_latest }} == "true" ]; then
+            docker tag ${{ github.event.inputs.image }}:${{ github.run_number }} ajarombek/${{ github.event.inputs.image }}:latest
+            docker push ajarombek/${{ github.event.inputs.image }}:latest
+          fi
